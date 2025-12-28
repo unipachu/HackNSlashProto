@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class WeaponColliderHitSensor : MonoBehaviour
 {
-    // TODO: Figure out how to pass dmg info to this.
-    [SerializeField] private int weaponDamage = 1;
     [Tooltip("Currently does not ignore collisons, unless set here")]
     [SerializeField] private LayerMask hitMask;
 
@@ -25,7 +23,7 @@ public class WeaponColliderHitSensor : MonoBehaviour
         alreadyHit.Clear();
     }
 
-    public void CheckHits()
+    public void CheckHits(int damage, Transform attacker)
     {
         Collider[] candidates = Physics.OverlapSphere(
             weaponCollider.bounds.center,
@@ -41,9 +39,6 @@ public class WeaponColliderHitSensor : MonoBehaviour
 
             if (alreadyHit.Contains(damageable)) continue;
 
-            // TODO: Use the direction from the player to the enemy instead.
-            Vector3 collisionDirection = Vector3.zero;
-
             if (Physics.ComputePenetration(
                 weaponCollider,
                 weaponCollider.transform.position,
@@ -51,12 +46,12 @@ public class WeaponColliderHitSensor : MonoBehaviour
                 otherCol,
                 otherCol.transform.position,
                 otherCol.transform.rotation,
-                out collisionDirection,
+                out _,
                 out _
             ))
             {
                 // NOTE: We use negation of the collision direction here to get the direction of the attack.
-                damageable.GetHit(weaponDamage, -collisionDirection);
+                damageable.GetHit(damage, attacker.position);
                 alreadyHit.Add(damageable);
             }
         }

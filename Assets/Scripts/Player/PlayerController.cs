@@ -10,22 +10,25 @@ public enum PlayerState
 public class PlayerController : MonoBehaviour
 {
 
-    [Header("Settings")]
+    [Header("Movement Settings")]
     [Tooltip("Units per second.")]
     [SerializeField] private float maxLinearSpeed = 5;
     [Tooltip("Degrees per second.")]
     [SerializeField] private float maxAngularSpeed = 800;
     [Tooltip("Units per second squared.")]
     [SerializeField] private float acceleration = 100;
+
+    [Header("Attack Settings")]
     [Tooltip("In seconds.")]
     [SerializeField] private float attackDuration = 0.3f;
+    [SerializeField] private int swordSwingDmg = 1;
 
     [Header("Refs")]
     [SerializeField] private CharacterController characterController;
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private InputActionProperty moveActionProperty;
     [SerializeField] private InputActionProperty attackActionProperty;
-    [SerializeField] private UnityEngine.Transform sword;
+    [SerializeField] private Transform sword;
     //[SerializeField] private CapsuleCollider swordHitTrigger;
     [SerializeField] private CharacterVisualsAnimationController _characterVisualsAnimationController;
     [SerializeField] private WeaponColliderHitSensor _weaponColliderHitSensor;
@@ -101,7 +104,7 @@ public class PlayerController : MonoBehaviour
                     }
                 }
 
-                _weaponColliderHitSensor.CheckHits();
+                _weaponColliderHitSensor.CheckHits(swordSwingDmg, transform);
 
                 attackTimer += Time.deltaTime;
                 break;
@@ -110,7 +113,6 @@ public class PlayerController : MonoBehaviour
                 break;
         }
     }
-
 
     private void OnDisable()
     {

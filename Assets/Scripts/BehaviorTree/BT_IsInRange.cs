@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Checks if the this object is in the specified range to some other object.
+/// </summary>
+// TODO: You might want to check the tr
 public class BT_IsInRange : BT_Node
 {
     private float _minDistance;
@@ -23,8 +27,7 @@ public class BT_IsInRange : BT_Node
             return NodeState.Failure;
         }
 
-        float distance = Vector3.Distance(_thisTransform.position, _otherTransform.position);
-        if (distance <= _maxDistance && distance >= _minDistance)
+        if(GeneralUtils.IsWithinAllowedDist(_thisTransform.position, _otherTransform.position, _minDistance, _maxDistance))
         {
             return NodeState.Success;
         }

@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Used for objects that can be moved with nav mesh agent.
+/// Used for objects that can chase the player with nav mesh agent.
 /// </summary>
 public interface IPlayerChaser
 {

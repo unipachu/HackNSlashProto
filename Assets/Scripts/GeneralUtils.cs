@@ -43,6 +43,16 @@ public static class GeneralUtils
         return x >= greaterThanOrEqualTo && x <= lessThanOrEqualTo;
     }
 
+    /// <summary>
+    /// Checks if the two positions are within the allowed distance from each other.
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsWithinAllowedDist(Vector3 a, Vector3 b, float minDist, float maxDist)
+    {
+        float distance = Vector3.Distance(a, b);
+        return distance >= minDist && distance <= maxDist;
+    }
+
     // TODO: Perhaps expand this so that parameter takes in the axis instead of the transform. Also write the direction of the rotation.
     /// <summary>
     /// Returns world pos and rot of an object when rotated around the right-axis of a pivot object. 

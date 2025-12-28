@@ -75,12 +75,12 @@ public class SwordEnemy : MonoBehaviour, IPlayerChaser, IHittable
         return NodeState.Success;
     }
 
-    public void GetHit(int dmgAmount, Vector3 impactDirection)
+    public void GetHit(int dmgAmount, Vector3 attackerPos)
     {
         Agent.isStopped = true;
         _characterVisualsaAnimationController.Play_KnockBackBackward();
         _currentHealth -= dmgAmount;
-        _knockBack.StartKnockBack(impactDirection, 0.5f, 10);
+        Vector3 knockBackDir = (transform.position - attackerPos).normalized;
+        _knockBack.StartKnockBack(knockBackDir, 0.2f, 50);
     }
-
 }

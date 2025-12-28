@@ -10,11 +10,13 @@ public class BT_SwordEnemy : BT_Tree
 
     protected override BT_Node SetupTree()
     {
-        // TODO: If the enemy is dead, do nothing, i.e. use sequence where the IsDeadNode is first.
         BT_Node root = new BT_Selector(new List<BT_Node>
         {
             new BT_IsDead(GetComponent<IHittable>()),
             new BT_Selector(new List<BT_Node> {
+                // TODO: check if in attack range, if so then attack and exit selector.
+                // TODO: Cooldown node?
+                // TODO: Random node to check whether to do one or two hit combo?
                 new BT_Sequence(new List<BT_Node>
                 {
                     new BT_IsInRange(_chaseMinDist, _chaseMaxDist, transform, _playerTransform),
@@ -22,7 +24,6 @@ public class BT_SwordEnemy : BT_Tree
                 }),
                 new BT_Idle(GetComponent<IPlayerChaser>())
             })
-            // TODO: check if enemy is in range, if so, then do melee attack. Otherwise move onwards.
         });
         return root;
     }
