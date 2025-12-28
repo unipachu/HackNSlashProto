@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,8 +7,6 @@ public enum PlayerState
     Attacking,
 }
 
-
-
 public class PlayerController : MonoBehaviour
 {
 
@@ -17,7 +14,7 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Units per second.")]
     [SerializeField] private float maxLinearSpeed = 5;
     [Tooltip("Degrees per second.")]
-    [SerializeField] private float maxAngularSpeed = 360;
+    [SerializeField] private float maxAngularSpeed = 800;
     [Tooltip("Units per second squared.")]
     [SerializeField] private float acceleration = 100;
     [Tooltip("In seconds.")]
@@ -28,10 +25,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionAsset inputActions;
     [SerializeField] private InputActionProperty moveActionProperty;
     [SerializeField] private InputActionProperty attackActionProperty;
-    [SerializeField] private Transform sword;
+    [SerializeField] private UnityEngine.Transform sword;
+    //[SerializeField] private CapsuleCollider swordHitTrigger;
+    [SerializeField] private CharacterVisualsAnimationController _characterVisualsAnimationController;
+    [SerializeField] private WeaponColliderHitSensor _weaponColliderHitSensor;
 
     private Vector2 velocity = Vector2.zero;
-
     private Vector2 moveInput = Vector2.zero;
     private bool attackInput = false;
     private PlayerState state = PlayerState.Walking;
@@ -57,6 +56,7 @@ public class PlayerController : MonoBehaviour
                     break;
                 }
                 break;
+            // TODO: Change this to use animations instead.
             case PlayerState.Attacking:
                 float t = attackTimer / attackDuration;
                 float half = attackDuration / 2;
@@ -100,6 +100,9 @@ public class PlayerController : MonoBehaviour
                         sword.localRotation = Quaternion.Slerp(Quaternion.identity, endRot, (attackTimer - half) * 2 / attackDuration);
                     }
                 }
+
+                _weaponColliderHitSensor.CheckHits();
+
                 attackTimer += Time.deltaTime;
                 break;
             default:
@@ -124,6 +127,7 @@ public class PlayerController : MonoBehaviour
             case PlayerState.Walking:
                 break;
             case PlayerState.Attacking:
+                _weaponColliderHitSensor.BeginAttack();
                 attackTimer = 0;
                 break;
             default:
@@ -144,8 +148,19 @@ public class PlayerController : MonoBehaviour
     private void SolveMovement(Vector2 movementInput)
     {
         UpdateVelocity(movementInput);
-        characterController.SimpleMove(new Vector3(velocity.x, 0, velocity.y));
+        Vector3 XYVelocity = new Vector3(velocity.x, 0, velocity.y);
+        characterController.SimpleMove(XYVelocity);
         RotateForward();
+
+        // Set correct animations.
+        if(XYVelocity != Vector3.zero && !_characterVisualsAnimationController.IsPlaying_Walk())
+        {
+            _characterVisualsAnimationController.Play_Walk();
+        }
+        else if (!_characterVisualsAnimationController.IsPlaying_Idle())
+        {
+            _characterVisualsAnimationController.Play_Idle();
+        }
     }
 
     private void UpdateVelocity(Vector2 movementInput)
