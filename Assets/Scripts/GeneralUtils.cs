@@ -6,12 +6,20 @@ public enum Side
     Right,
 }
 
-public enum Directions2D
+public enum Directions2DVertical
 {
     Left,
     Right,
     Up,
     Down,
+}
+
+public enum Directions2DHorizontal
+{
+    Left,
+    Right,
+    Forward,
+    Backward,
 }
 
 public enum Directions3D
@@ -146,6 +154,7 @@ public static class GeneralUtils
     /// <returns>
     /// True if currently in the specified state or transitioning into the specified state.
     /// </returns>
+    // TODO: Move into a separate "CustomAnimatorController" class
     public static bool IsInAnimationState(Animator animator, int layerIndex, int stateHash)
     {
         AnimatorStateInfo current =
@@ -166,13 +175,16 @@ public static class GeneralUtils
         return false;
     }
 
-    /// <returns>True if the animator has the trigger with specified hash.</returns>
-    public static bool HasTrigger(Animator animator, int hash)
+    /// <returns>
+    /// True if the animator has the trigger with specified hash.
+    /// </returns>
+    // TODO: Move into a separate "CustomAnimatorController" class
+    public static bool HasTrigger(Animator animator, int triggerHash)
     {
         foreach (var param in animator.parameters)
         {
             if (param.type == AnimatorControllerParameterType.Trigger &&
-                Animator.StringToHash(param.name) == hash)
+                Animator.StringToHash(param.name) == triggerHash)
                 return true;
         }
         return false;

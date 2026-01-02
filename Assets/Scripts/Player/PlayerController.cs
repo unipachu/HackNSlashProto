@@ -9,7 +9,6 @@ public enum PlayerState
 
 public class PlayerController : MonoBehaviour
 {
-
     [Header("Movement Settings")]
     [Tooltip("Units per second.")]
     [SerializeField] private float maxLinearSpeed = 5;
@@ -49,6 +48,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         ReadInputs();
+        // TODO: Check animation states instead?
         switch (state)
         {
             case PlayerState.Walking:
@@ -159,7 +159,7 @@ public class PlayerController : MonoBehaviour
         {
             _characterVisualsAnimationController.Play_Walk();
         }
-        else if (!_characterVisualsAnimationController.IsPlaying_Idle())
+        else if (XYVelocity == Vector3.zero && !_characterVisualsAnimationController.IsPlaying_Idle())
         {
             _characterVisualsAnimationController.Play_Idle();
         }

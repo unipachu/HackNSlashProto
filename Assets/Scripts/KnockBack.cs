@@ -21,8 +21,10 @@ public class KnockBack : MonoBehaviour
     {
         if(isInKnockBack)
         {
+            //Debug.Log("knockBackTimer: " + knockBackTimer + " . knockBackDuration: " + knockBackDuration);
             if(knockBackTimer > knockBackDuration)
             {
+                // TODO: Both the knockback animation and the knockback movements should be finished before transitioning to walking state etc.
                 isInKnockBack = false;
                 return;
             }

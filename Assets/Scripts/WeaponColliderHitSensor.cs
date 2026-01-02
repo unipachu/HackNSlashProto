@@ -18,6 +18,7 @@ public class WeaponColliderHitSensor : MonoBehaviour
     private readonly HashSet<IHittable> alreadyHit = new();
 
     // TODO: Make a better and more foolproof system for starting and ending active attack frames.
+    // TODO CONTD: Perhaps if you enable/disable attack colliders, you could use "OnEnable" to initialize the attack?
     public void BeginAttack()
     {
         alreadyHit.Clear();
@@ -50,7 +51,6 @@ public class WeaponColliderHitSensor : MonoBehaviour
                 out _
             ))
             {
-                // NOTE: We use negation of the collision direction here to get the direction of the attack.
                 damageable.GetHit(damage, attacker.position);
                 alreadyHit.Add(damageable);
             }
