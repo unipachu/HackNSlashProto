@@ -132,6 +132,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4469584405981832785}
   - component: {fileID: 2077890477677646626}
+  - component: {fileID: 3077390213605257582}
   - component: {fileID: 8617234715213431562}
   m_Layer: 0
   m_Name: CharacterVisuals
@@ -175,6 +176,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df6d29c6a2b53f5448995f829b5513cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterVisualsAnimationController
+  _animator: {fileID: 8617234715213431562}
+  _customAnimator: {fileID: 3077390213605257582}
+--- !u!114 &3077390213605257582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2077680040131786573}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2acc6e3aa545ef54fbc742b688607417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimator
   _animator: {fileID: 8617234715213431562}
 --- !u!95 &8617234715213431562
 Animator:
