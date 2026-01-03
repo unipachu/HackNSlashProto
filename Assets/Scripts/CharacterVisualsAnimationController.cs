@@ -1,4 +1,7 @@
+using System;
 using UnityEngine;
+
+
 
 /// <summary>
 /// Used to control the animations of the CharacterVisuals prefab.
@@ -41,6 +44,7 @@ public class CharacterVisualsAnimationController : MonoBehaviour
 
             Debug.Assert(stateInfo.shortNameHash == currentStateHash, "Current state was not the same one set in the PlayNext method.");
             Debug.Assert(!stateInfo.loop, "State cannot be looping, because then transition to the next state will never happen.");
+
             // NOTE: Current animation cannot be looping, since the transition happens only after the animation has "finished" i.e. normlized time is >= 1.
             if (stateInfo.normalizedTime >= 1f)
             {
@@ -68,7 +72,7 @@ public class CharacterVisualsAnimationController : MonoBehaviour
         Debug.Log("Went to play then!");
         
         // If already in the 
-        if(GeneralUtils.IsInAnimationState(_animator, 0, firstAnimationHash))
+        if(CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, firstAnimationHash))
         {
             // I want to set normalized time to zero since I want the animation to start from the beginning.
             _animator.Play(firstAnimationHash, 0, 0f);
@@ -121,17 +125,17 @@ public class CharacterVisualsAnimationController : MonoBehaviour
 
     public bool IsPlaying_Idle()
     {
-        return GeneralUtils.IsInAnimationState(_animator, 0, _animHash_Idle);
+        return CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_Idle);
     }
 
     public bool IsPlaying_Walk()
     {
-        return GeneralUtils.IsInAnimationState(_animator, 0, _animHash_Walk);
+        return CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_Walk);
     }
 
     public bool IsPlaying_KnockBackBackward()
     {
-        return GeneralUtils.IsInAnimationState(_animator, 0, _animHash_KnockBackBackward);
+        return CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_KnockBackBackward);
     }
 
     public void PlayAnimationWithCrossFadeInFixedTimeAndThenPlayAnother(int firstAnimationHash, float firstCrossFadeDuration, int secondAnimationHash, float secondCrossFadeDuration)
@@ -209,21 +213,21 @@ public class CharacterVisualsAnimationController : MonoBehaviour
     public void Play_Test1()
     {
         PlayAnimationWithCrossFadeInFixedTime(_animHash_Test1, 1f);
-        if (GeneralUtils.IsInAnimationState(_animator, 0, _animHash_Test1))
+        if (CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_Test1))
             Debug.Log("Tried to transition to the same state this was already in.");
     }
 
     public void Play_Test2()
     {
         PlayAnimationWithCrossFadeInFixedTime(_animHash_Test2, 0.01f);
-        if (GeneralUtils.IsInAnimationState(_animator, 0, _animHash_Test2))
+        if (CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_Test2))
             Debug.Log("Tried to transition to the same state this was already in.");
     }
 
     public void Play_Test3()
     {
         PlayAnimationWithCrossFadeInFixedTime(_animHash_Test3, 1f);
-        if (GeneralUtils.IsInAnimationState(_animator, 0, _animHash_Test3))
+        if (CustomAnimator.IsInOrIsTransitioningToAnimatorState(_animator, 0, _animHash_Test3))
             Debug.Log("Tried to transition to the same state this was already in.");
     }
 

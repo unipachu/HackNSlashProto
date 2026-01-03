@@ -1034,7 +1034,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!143 &402864395
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2152,6 +2152,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2077890477677646626, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4469584405981832785, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
@@ -2201,6 +2205,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       insertIndex: 1
       addedObject: {fileID: 1081111096}
+    - targetCorrespondingSourceObject: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1081111100}
+    - targetCorrespondingSourceObject: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1081111099}
   m_SourcePrefab: {fileID: 100100000, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
 --- !u!1 &1081111094 stripped
 GameObject:
@@ -2243,6 +2253,38 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 844819117}
+--- !u!95 &1081111097 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8617234715213431562, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+  m_PrefabInstance: {fileID: 1081111093}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1081111099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081111094}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf01dac21c90a354fbc7d702713dd3e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorStates
+  _animator: {fileID: 1081111097}
+  _animatorStates: []
+--- !u!114 &1081111100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1081111094}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2acc6e3aa545ef54fbc742b688607417, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimator
+  _animator: {fileID: 1081111097}
 --- !u!1 &1087880472
 GameObject:
   m_ObjectHideFlags: 0
@@ -2263,7 +2305,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!195 &1087880473
 NavMeshAgent:
   m_ObjectHideFlags: 0

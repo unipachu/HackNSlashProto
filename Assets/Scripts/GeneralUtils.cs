@@ -150,43 +150,4 @@ public static class GeneralUtils
     {
         return transform.rotation * rotationInRbSpace;
     }
-
-    /// <returns>
-    /// True if currently in the specified state or transitioning into the specified state.
-    /// </returns>
-    // TODO: Move into a separate "CustomAnimatorController" class
-    public static bool IsInAnimationState(Animator animator, int layerIndex, int stateHash)
-    {
-        AnimatorStateInfo current =
-            animator.GetCurrentAnimatorStateInfo(layerIndex);
-
-        if (current.shortNameHash == stateHash)
-            return true;
-
-        if (animator.IsInTransition(layerIndex))
-        {
-            AnimatorStateInfo next =
-                animator.GetNextAnimatorStateInfo(layerIndex);
-
-            if (next.shortNameHash == stateHash)
-                return true;
-        }
-
-        return false;
-    }
-
-    /// <returns>
-    /// True if the animator has the trigger with specified hash.
-    /// </returns>
-    // TODO: Move into a separate "CustomAnimatorController" class
-    public static bool HasTrigger(Animator animator, int triggerHash)
-    {
-        foreach (var param in animator.parameters)
-        {
-            if (param.type == AnimatorControllerParameterType.Trigger &&
-                Animator.StringToHash(param.name) == triggerHash)
-                return true;
-        }
-        return false;
-    }
 }
