@@ -1,8 +1,12 @@
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Controls the functionality of the sword enemy. It represent the bodily functions and states of the enemy, where
+/// as the ai or the "brains" of the enemy are controller by a separate class.
+/// </summary>
 [RequireComponent(typeof(NavMeshAgent), typeof(CharacterController), typeof(KnockBack))]
-public class SwordEnemy : MonoBehaviour, IPlayerChaser, IHittable
+public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
 {
     [Header("Settings")]
     [SerializeField] private int _maxHealth = 3;
@@ -57,21 +61,27 @@ public class SwordEnemy : MonoBehaviour, IPlayerChaser, IHittable
         // TODO: Think when to return failure.
 
         // NOTE: The knockback state is expected to be in the layer 0.
-        if (_characterVisualsaAnimationController.IsPlaying_KnockBackBackward()) return NodeState.Failure;
+        if (IsStunned())
+        {
+            return NodeState.Failure;
+        }
 
         // NOTE: If the navmeshagent was stopped, it is set to not stopped in here.
         Agent.isStopped = false;
         Agent.SetDestination(_playerTransform.position);
-        //_characterVisualsaAnimationController.Play_Walk();
+        if (!_characterVisualsaAnimationController.IsPlaying_Walk()) _characterVisualsaAnimationController.Play_Walk();
         return NodeState.Running;
     }
 
     public NodeState RequestIdle()
     {
-        if (_characterVisualsaAnimationController.IsPlaying_KnockBackBackward()) return NodeState.Failure;
+        if (IsStunned())
+        {
+            return NodeState.Failure;
+        }
 
         Agent.isStopped = true;
-        //_characterVisualsaAnimationController.Play_Idle();
+        if(!_characterVisualsaAnimationController.IsPlaying_Idle()) _characterVisualsaAnimationController.Play_Idle();
         return NodeState.Success;
     }
 
@@ -82,5 +92,15 @@ public class SwordEnemy : MonoBehaviour, IPlayerChaser, IHittable
         _currentHealth -= dmgAmount;
         Vector3 knockBackDir = (transform.position - attackerPos).normalized;
         _knockBack.StartKnockBack(knockBackDir, 0.2f, 50);
+    }
+
+    /// <returns>
+    /// If the character is in a state where it cannot move
+    /// </returns>
+    // TODO: Add death states and such.
+    private bool IsStunned()
+    {
+        return _characterVisualsaAnimationController.IsPlaying_KnockBackBackward()
+            || _knockBack.IsInKnockBack;
     }
 }

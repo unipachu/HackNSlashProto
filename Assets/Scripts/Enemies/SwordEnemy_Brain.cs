@@ -1,7 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BT_SwordEnemy : BT_Tree
+/// <summary>
+/// Behavior tree of the sword enemy.
+/// </summary>
+public class SwordEnemy_Brain : BT_Tree
 {
     // TODO: Possibly set member variables in constructor and create this in the SwordEnemy controller script.
     [SerializeField] private float _chaseMinDist;

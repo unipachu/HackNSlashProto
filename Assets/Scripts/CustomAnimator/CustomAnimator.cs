@@ -42,8 +42,11 @@ public class CustomAnimator : MonoBehaviour
         }
         float normalizedTime = animatorState.normalizedTime;
 
-        Debug.Assert(IsInOrIsTransitioningToAnimatorState(0, _currentAnimInfo.ThisAnimationHash),
-            "currentAnim was different than the active state in the animator.");
+        //Debug.Assert(IsInOrIsTransitioningToAnimatorState(0, _currentAnimInfo.ThisAnimationHash),
+        //    "currentAnim was different than the active state in the animator. "
+        //    + AnimatorStateInfo(),
+        //    this);
+        //Debug.Log(AnimatorStateInfo());
 
         // Transition to fallback animation
         if (_animationQueue.Count == 0
@@ -66,7 +69,7 @@ public class CustomAnimator : MonoBehaviour
             // TODO CONTD: has passed since QueueTransitionPercent.
             // TODO CONTD: Actually it might be possible that normalized time actually goes beyond 1 and Unity only uses fractional part
             // TODO CONTD: for looping.
-            TransitionToAnimation(_animationQueue.Dequeue());   
+            TransitionToNextAnimationInQueue();
         }
     }
 
@@ -79,11 +82,26 @@ public class CustomAnimator : MonoBehaviour
     }
 
     /// <summary>
+    /// Instantly start transition to the next animation in the queue. This can be used if e.g. want an animation event to trigger
+    /// the next animation in the queue.
+    /// </summary>
+    public void TransitionToNextAnimationInQueue()
+    {
+        TransitionToAnimation(_animationQueue.Dequeue());
+    }
+
+    /// <summary>
     /// Clears current animation queue and starts playing this animation instantly (without adding it into the queue).
     /// </summary>
-    public void InterruptAnimationQueue(CustomAnimatorStateInfo newAnimation)
+    /// <param name="startFromBeginning">
+    /// If the same animation is currently playing, should this start it from the beginning (instead of letting it play
+    /// from where it currently is)? True by default.
+    /// </param>
+    public void InterruptAnimationQueue(CustomAnimatorStateInfo newAnimation, bool startFromBeginning = true)
     {
-        _animationQueue.Clear();
+        ClearAnimationQueue();
+        // NOTE: Currently only works with layer 0.
+        if (IsInOrIsTransitioningToAnimatorState(0, newAnimation.ThisAnimationHash) && !startFromBeginning) return;
         TransitionToAnimation(newAnimation);
     }
 
@@ -130,7 +148,7 @@ public class CustomAnimator : MonoBehaviour
     }
 
     /// <returns>
-    /// True if currently in the specified state or transitioning into the specified state.
+    /// True if currently in the specified state (if not in transition) or transitioning into the specified state (if in transition).
     /// </returns>
     public bool IsInOrIsTransitioningToAnimatorState(int animatorLayer, int stateHash)
     {
@@ -154,6 +172,32 @@ public class CustomAnimator : MonoBehaviour
         }
 
         return false;
+    }
+
+    /// <returns>
+    /// If the Animator used by this CustomAnimator has the specified state.
+    /// </returns>
+    public bool HasState(int animatorLayer, int stateHash)
+    {
+        return _animator.HasState(animatorLayer, stateHash);
+    }
+
+    /// <returns>
+    /// Debug info about states of the animator.
+    /// </returns>
+    public string AnimatorStateInfo()
+    {
+        if (_currentAnimInfo == null) return "CustomAnimator's state was null.";
+        string returnString = "";
+        returnString += "Current state of the CustomAnimator: " + _currentAnimInfo.ThisAnimationName
+                + " , going by hash: " + _currentAnimInfo.ThisAnimationHash
+                + ". Current state of the animator was: " + _animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
+        if (_animator.IsInTransition(0))
+        {
+            returnString += ". Next state of the animator was: " + _animator.GetNextAnimatorStateInfo(0).shortNameHash;
+
+        }
+        return returnString;
     }
 }
 

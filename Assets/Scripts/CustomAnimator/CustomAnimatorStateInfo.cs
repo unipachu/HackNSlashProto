@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Info about an animation state used by the CustomAnimator class.
 /// </summary>
+// TODO: Make this into an abstract class and each animator state an inherited class. Also create on enter and on exit states.
 [Serializable]
 public class CustomAnimatorStateInfo
 {
@@ -36,7 +37,7 @@ public class CustomAnimatorStateInfo
         float crossFadeDurationToThis = 0.1f,
         float queueTransitionPercent = 0,
         CustomAnimatorStateInfo fallbackAnimation = null,
-        float fallbackTransitionPercent = 0
+        float fallbackTransitionPercent = 0.9f
         )
     {
         ThisAnimationName = thisAnimationName;

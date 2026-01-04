@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Checks if the this object is in the specified range to some other object.
 /// </summary>
-// TODO: You might want to check the tr
+// TODO: Rename class to something like "FindATarget". Then create separate nodes for checking if in range for chasing.
 public class BT_IsInRange : BT_Node
 {
     private float _minDistance;

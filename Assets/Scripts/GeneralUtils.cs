@@ -65,7 +65,7 @@ public static class GeneralUtils
     /// <summary>
     /// Returns world pos and rot of an object when rotated around the right-axis of a pivot object. 
     /// </summary>
-    public static (Vector3, Quaternion) ComputeNewPosRotByRotationAroundPivotXAxis(UnityEngine.Transform movedObject, UnityEngine.Transform pivotObject, float rotationAroundAxis, float rotationMult = 1)
+    public static (Vector3, Quaternion) ComputeNewPosRotByRotationAroundPivotXAxis(Transform movedObject, Transform pivotObject, float rotationAroundAxis, float rotationMult = 1)
     {
         // NOTE: rotationMult is used here to rotate the object slightly further.
         float deltaXAngle = rotationAroundAxis * rotationMult;
@@ -121,7 +121,7 @@ public static class GeneralUtils
     /// Transforms point from transform's local space to world space.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.TransformPoint.
     /// </summary>
-    public static Vector3 UnscaledTransformPoint(UnityEngine.Transform transform, Vector3 pointInTransformSpace)
+    public static Vector3 UnscaledTransformPoint(Transform transform, Vector3 pointInTransformSpace)
     {
         return transform.rotation * pointInTransformSpace + transform.position;
     }
@@ -130,7 +130,7 @@ public static class GeneralUtils
     /// Transforms point from world space to transform's local space.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.InverseTransformPoint.
     /// </summary>
-    public static Vector3 UnscaledInverseTransformPoint(UnityEngine.Transform transform, Vector3 pointInWorldSpace)
+    public static Vector3 UnscaledInverseTransformPoint(Transform transform, Vector3 pointInWorldSpace)
     {
         return Quaternion.Inverse(transform.rotation) * (pointInWorldSpace - transform.position);
     }
@@ -138,7 +138,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a world space rotation into the transform's local space rotation.
     /// </summary>
-    public static Quaternion RotationFromWorldToTransformSpace(UnityEngine.Transform transform, Quaternion rotationInWorldSpace)
+    public static Quaternion RotationFromWorldToTransformSpace(Transform transform, Quaternion rotationInWorldSpace)
     {
         return Quaternion.Inverse(transform.rotation) * rotationInWorldSpace;
     }
@@ -146,7 +146,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a transforms's local space rotation into world space rotation.
     /// </summary>
-    public static Quaternion RotationFromTransformSpaceToWorld(UnityEngine.Transform transform, Quaternion rotationInRbSpace)
+    public static Quaternion RotationFromTransformSpaceToWorld(Transform transform, Quaternion rotationInRbSpace)
     {
         return transform.rotation * rotationInRbSpace;
     }
