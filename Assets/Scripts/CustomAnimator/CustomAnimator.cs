@@ -6,6 +6,7 @@ using UnityEngine;
 /// Has the ability to enqueue animations. <br/>
 /// NOTE: Do not use Unity Animator's transitions if you use this class.
 /// </summary>
+// TODO: The animation queue system is stupid. Just use animation events.
 public class CustomAnimator : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
@@ -42,11 +43,16 @@ public class CustomAnimator : MonoBehaviour
         }
         float normalizedTime = animatorState.normalizedTime;
 
+        // NOTE: The assert will fail if the an animator state transition is called before Unity's internal animation update
+        // NOTE CONTD: has the time to start the transition. The differenece between this class' current state hash and
+        // NOTE CONTD: the Unity's animator's current state hash can cause problems later. The animator's event calls also cause assert
+        // NOTE CONTD: to fail, because the transition is only applied during the next frame.
+        // TODO: Figure a solution to this problem. Maybe buffer animation transitions and only apply them after this
+        // TODO CONTD: assert (and other related logic).
         //Debug.Assert(IsInOrIsTransitioningToAnimatorState(0, _currentAnimInfo.ThisAnimationHash),
         //    "currentAnim was different than the active state in the animator. "
         //    + AnimatorStateInfo(),
         //    this);
-        //Debug.Log(AnimatorStateInfo());
 
         // Transition to fallback animation
         if (_animationQueue.Count == 0

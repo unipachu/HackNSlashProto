@@ -36,7 +36,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
     void Start()
     {
         _playerTransform = FindFirstObjectByType<PlayerController>().transform;
-        Debug.Assert(_playerTransform != null, "_playerTransform of " + gameObject.name + "was null!");
+        Debug.Assert(_playerTransform != null, "_playerTransform of " + gameObject.name + "was null!", this);
     }
 
     // Update is called once per frame
