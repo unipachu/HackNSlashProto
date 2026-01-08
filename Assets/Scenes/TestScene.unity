@@ -937,6 +937,7 @@ GameObject:
   m_Component:
   - component: {fileID: 402864396}
   - component: {fileID: 402864399}
+  - component: {fileID: 402864400}
   - component: {fileID: 402864395}
   m_Layer: 8
   m_Name: Player
@@ -998,12 +999,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7feb868c848444d973e5ea63b14d0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  maxLinearSpeed: 5
-  maxAngularSpeed: 800
-  acceleration: 200
   swordSwingDmg: 1
-  characterController: {fileID: 402864395}
   _weaponSensor: {fileID: 2108488788}
+  _movement: {fileID: 402864400}
   inputActions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   _moveInputAction:
     m_UseReference: 1
@@ -1029,9 +1027,25 @@ MonoBehaviour:
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 2098250655}
-  _characterVisualsAnimationController: {fileID: 3810280138809237338}
+  _customAnimator: {fileID: 3810280138809237338}
   swingR1State: {fileID: 3810280138809237340}
   swingR2State: {fileID: 3810280138809237339}
+--- !u!114 &402864400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402864394}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e2a81142f64c794f8d68ae600abbbc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
+  maxLinearSpeed: 5
+  maxAngularSpeed: 800
+  acceleration: 100
+  characterController: {fileID: 402864395}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -1791,7 +1805,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: m_Name
-      value: CharacterVisuals
+      value: SwordEnemyCharacterVisuals
       objectReference: {fileID: 0}
     - target: {fileID: 2458152467311728067, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -4169,7 +4183,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: m_Name
-      value: CharacterVisuals
+      value: PlayerCharacterVisuals
       objectReference: {fileID: 0}
     - target: {fileID: 4469584405981832785, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: m_LocalPosition.x

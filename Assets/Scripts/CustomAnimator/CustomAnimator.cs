@@ -12,21 +12,25 @@ public abstract class CustomAnimator : MonoBehaviour
     [SerializeField] private CustomAnimatorState _initialState;
 
     /// <summary>
-    /// Animation that is currently played.
-    /// NOTE: This offends the SSOT principle, since CustomAnimationInfo saves the hash of the animation separately 
-    /// NOTE CONTD: from the Unity's Animator for transition purposes.
-    /// NOTE CONTD: Use HashOfActiveAnimation() to get the current animation hash, to get the hash the actual animator is using.
+    /// Currently active state (animation). If in transition, refers to the "next animator state".
+    /// NOTE: Animator component refers to its own current/next state -> this offends the SSOT principle. 
     /// </summary>
-    private CustomAnimatorState _state;
+    private CustomAnimatorState _activeState;
     /// <summary>
-    /// If transition to the next state would be 
+    /// This custom animator never changes state until the very end of its Update(). Other scripts may request change in animator state,
+    /// which is saved here to wait for the end of the Update().
     /// </summary>
     private CustomAnimatorState _requestedState;
+
+    /// <summary>
+    /// Currently active state (animation). If in transition, refers to the "next animator state".
+    /// </summary>
+    public CustomAnimatorState ActiveState => _activeState;
 
     void Update()
     {
         // NOTE: Animator's initial state will be its own default state. It will transition to 
-        if (_state == null)
+        if (_activeState == null)
         {
             InstantTransitionToAnimation(_initialState);
             // NOTE: needs to return here, so that the animatior can transition to the initial animation after this Update().
@@ -55,21 +59,21 @@ public abstract class CustomAnimator : MonoBehaviour
         // NOTE CONTD: to fail, because the transition is only applied during the next frame.
         // TODO: Figure a solution to this problem. Maybe buffer animation transitions and only apply them after this
         // TODO CONTD: assert (and other related logic).
-        //Debug.Assert(IsInOrIsTransitioningToAnimatorState(0, _currentAnimInfo.ThisAnimationHash),
-        //    "currentAnim was different than the active state in the animator. "
-        //    + AnimatorStateInfo(),
-        //    this);
+        Debug.Assert(IsActiveState(0, _activeState.StateHash),
+            "Active state of the custom animator was different than the active state of the Animator."
+            + AnimatorStateInfo(),
+            this);
 
         // Transition to fallback animation
-        if (_state.FallbackState != null
-            && normalizedTime >= _state.FallbackTransitionPrecent)
+        if (_activeState.FallbackState != null
+            && normalizedTime >= _activeState.FallbackTransitionPrecent)
         {
             //Debug.Log("Normalized time was: " + normalizedTime
             //    + ", and so it was time for " + _state.StateName + " to fallback to: " + _state.FallbackState.StateName);
 
             // TODO: Start the next animation from a later point based on how much the normalized time is over the fallback precent.
             // TODO CONTD: Be wary though that this might skip some animator events (I don't know if it does).
-            CrossFadeInFixedTimeToAnimation(_state.FallbackState);
+            CrossFadeInFixedTimeToAnimation(_activeState.FallbackState);
         }
 
         // TODO: This is here because Unity's Animator component does not start transition until the internal animation update that happens
@@ -118,7 +122,7 @@ public abstract class CustomAnimator : MonoBehaviour
     {
         //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
 
-        _state = nextAnimation;
+        _activeState = nextAnimation;
         // NOTE: Currently only works with layer 0.
         _animator.CrossFadeInFixedTime(
             nextAnimation.StateHash,
@@ -136,7 +140,7 @@ public abstract class CustomAnimator : MonoBehaviour
     {
         //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
 
-        _state = nextAnimation;
+        _activeState = nextAnimation;
         // NOTE: Currently only works with layer 0.
         _animator.Play(
             nextAnimation.StateHash,
@@ -194,10 +198,10 @@ public abstract class CustomAnimator : MonoBehaviour
     /// </returns>
     protected string AnimatorStateInfo()
     {
-        if (_state == null) return "CustomAnimator's state was null.";
+        if (_activeState == null) return "CustomAnimator's state was null.";
         string returnString = "";
-        returnString += "Current state of the CustomAnimator: " + _state.StateName
-                + " , going by hash: " + _state.StateHash
+        returnString += "Current state of the CustomAnimator: " + _activeState.StateName
+                + " , going by hash: " + _activeState.StateHash
                 + ". Current state of the animator was: " + _animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
         if (_animator.IsInTransition(0))
         {

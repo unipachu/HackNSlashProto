@@ -3,21 +3,15 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    [Header("Movement Settings")]
-    [Tooltip("Units per second.")]
-    [SerializeField] private float maxLinearSpeed = 5;
-    [Tooltip("Degrees per second.")]
-    [SerializeField] private float maxAngularSpeed = 800;
-    [Tooltip("Units per second squared.")]
-    [SerializeField] private float acceleration = 100;
+
 
     [Header("Attack Settings")]
     [Tooltip("In seconds.")]
     [SerializeField] private int swordSwingDmg = 1;
 
     [Header("Refs")]
-    [SerializeField] private CharacterController characterController;
     [SerializeField] private WeaponColliderHitSensor _weaponSensor;
+    [SerializeField] private PlayerMovement _movement;
 
     [Header("Input Related Refs")]
     [SerializeField] private InputActionAsset inputActions;
@@ -25,11 +19,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionProperty _attackInputAction;
 
     [Header("Animaton Related Refs")]
-    [SerializeField] private CustomAnimator_CharacterVisuals _characterVisualsAnimationController;
+    [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
     [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_1 swingR1State;
     [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_2 swingR2State;
 
-    private Vector2 velocity = Vector2.zero;
     private Vector2 moveInput = Vector2.zero;
     private bool attackInput = false;
 
@@ -47,53 +40,73 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         ReadInputs();
-        if (attackInput) TryBufferAttack();
 
+        CustomAnimatorState animatorState = _customAnimator.ActiveState;
 
-        // TODO: Make better system using animator states instead, maybe.
-        if (_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.IdleState.StateHash))
+        switch (animatorState)
         {
-            if(attackInput)
-            {
-                EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
-            }
-            else if (moveInput != Vector2.zero)
-            {
-                EnterNewStateAndInitialize(_characterVisualsAnimationController.WalkState);
-            }
-        }
-        else if (_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.WalkState.StateHash))
-        {
-            SolveMovement(moveInput);
-
-            if (attackInput)
-            {
-                EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
-            }
-            else if (moveInput == Vector2.zero)
-            {
-                EnterNewStateAndInitialize(_characterVisualsAnimationController.IdleState);
-            }
-        }
-        else if(_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.SwingR1State.StateHash)
-            || _characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.SwingR2State.StateHash))
-        {
-            if(_comboWindowEnded)
-            {
-                // Set correct animations.
-                if (moveInput != Vector2.zero
-                    && !_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.WalkState.StateHash))
+            case CustomAnimatorState_CharacterVisuals_Idle:
+                if (attackInput)
                 {
-                    EnterNewStateAndInitialize(_characterVisualsAnimationController.WalkState);
+                    ChangeAnimatorState(_customAnimator.SwingR1State);
                 }
-            }
+                else if (moveInput != Vector2.zero)
+                {
+                    ChangeAnimatorState(_customAnimator.WalkState);
+                }
+                break;
+            case CustomAnimatorState_CharacterVisuals_Walk:
+                _movement.SolveMovement(moveInput);
+                if (attackInput)
+                {
+                    ChangeAnimatorState(_customAnimator.SwingR1State);
+                }
+                else if (moveInput == Vector2.zero)
+                {
+                    ChangeAnimatorState(_customAnimator.IdleState);
+                }
+                break;
+            case CustomAnimatorState_CharacterVisuals_SwingHandR_1:
+                // TODO: Create input buffer for dodge/attack, choosing the last one.
+                if (attackInput) TryBufferAttack();
+                if (_attackActive)
+                {
+                    _weaponSensor.CheckHits(swordSwingDmg, transform);
+                }
+                if (_comboWindowEnded)
+                {
+                    if (moveInput != Vector2.zero
+                        && !_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
+                    {
+                        ChangeAnimatorState(_customAnimator.WalkState);
+                    }
+                }
+                break;
+            case CustomAnimatorState_CharacterVisuals_SwingHandR_2:
+                // TODO: Create input buffer for dodge/attack, choosing the last one.
+                if (attackInput) TryBufferAttack();
+                if (_attackActive)
+                {
+                    _weaponSensor.CheckHits(swordSwingDmg, transform);
+                }
+                if (_comboWindowEnded)
+                {
+                    // Set correct animations.
+                    if (moveInput != Vector2.zero
+                        && !_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
+                    {
+                        ChangeAnimatorState(_customAnimator.WalkState);
+                    }
+                }
+                break;
+            default:
+                // TODO: Since the custom animator first initializes its initial state at the end of its first Update,
+                // TODO CONTD: this switch will likely default during first frame.
+                Debug.LogWarning("Switch defaulted.", this);
+                break;
         }
 
-        if (_attackActive)
-        {
-            // TODO: Find correct damage value.
-            _weaponSensor.CheckHits(1, transform);
-        }
+
     }
 
     private void OnDisable()
@@ -134,30 +147,6 @@ public class PlayerController : MonoBehaviour
         swingR2State.OnWeaponAttackInputBufferingDisabled -= OnSwing2AttackBufferingEnd;
     }
 
-    private void SolveMovement(Vector2 movementInput)
-    {
-        UpdateVelocity(movementInput);
-        Vector3 XYVelocity = new Vector3(velocity.x, 0, velocity.y);
-        characterController.SimpleMove(XYVelocity);
-        RotateForward();
-    }
-
-    private void UpdateVelocity(Vector2 movementInput)
-    {
-        velocity = Vector2.MoveTowards(velocity, movementInput * maxLinearSpeed, acceleration * Time.deltaTime);
-    }
-
-    public void RotateForward()
-    {
-        if(velocity ==  Vector2.zero) return;
-
-        Vector3 dir3D = new(velocity.x, 0, velocity.y);
-
-        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
-
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngularSpeed * Time.deltaTime);
-    }
-
     public bool TryBufferAttack()
     {
         if (_newAttackCanBeBuffered)
@@ -171,14 +160,16 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// NOTE: Always call this when entering new animation state.
     /// </summary>
-    private void EnterNewStateAndInitialize(CustomAnimatorState newState)
+    private void ChangeAnimatorState(CustomAnimatorState newState)
     {
         _attackActive = false;
         _newAttackCanBeBuffered = false;
         _bufferedAttackInput = false;
         _comboWindowEnded = false;
-        _characterVisualsAnimationController.RequestCrossfadeTo(newState);
+        _customAnimator.RequestCrossfadeTo(newState);
     }
+
+    //--------------------------------------------- Animation Event Callbacks
 
     public void OnWeaponActiveStart()
     {
@@ -200,9 +191,8 @@ public class PlayerController : MonoBehaviour
     {
         if (_bufferedAttackInput)
         {
-            // TODO: Calling this causes an error, likely because it is called in some other time than Update().
-            // TODO: Animator seems to only register transition to a new state at a certain point during frame cycle. This is weird so you should write it down.
-            EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR2State);
+            // NOTE: Animator seems to only register transition to a new state during the internal animation update.
+            ChangeAnimatorState(_customAnimator.SwingR2State);
         }
         else
         {
@@ -217,7 +207,7 @@ public class PlayerController : MonoBehaviour
         {
             // TODO: Calling this causes an error, likely because it is called in some other time than Update().
             // TODO: Animator seems to only register transition to a new state at a certain point during frame cycle. This is weird so you should write it down.
-            EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
+            ChangeAnimatorState(_customAnimator.SwingR1State);
         }
         else
         {
