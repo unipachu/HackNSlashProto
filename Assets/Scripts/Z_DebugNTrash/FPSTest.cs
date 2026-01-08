@@ -23,7 +23,7 @@ public class FPSTest : MonoBehaviour
         if(timer > 1)
         {
             timer = 1 - timer;
-            Debug.Log("Frames per second: " + frames);
+            //Debug.Log("Frames per second: " + frames);
             frames = 0;
         }
     }

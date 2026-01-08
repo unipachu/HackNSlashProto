@@ -1,17 +1,15 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
 /// Custom animator class which uses Unity's animator for playing animations but handles state transitions fully by itself.
 /// Has the ability to enqueue animations. <br/>
 /// NOTE: Do not use Unity Animator's transitions if you use this class.
+/// NOTE: Crossfades now use fixed time which does not scale if the animator speed is scaled.
 /// </summary>
-// TODO: The animation queue system is stupid. Just use animation events.
-public class CustomAnimator : MonoBehaviour
+public abstract class CustomAnimator : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
-
-    private readonly Queue<CustomAnimatorStateInfo> _animationQueue = new();
+    [SerializeField] private CustomAnimatorState _initialState;
 
     /// <summary>
     /// Animation that is currently played.
@@ -19,13 +17,21 @@ public class CustomAnimator : MonoBehaviour
     /// NOTE CONTD: from the Unity's Animator for transition purposes.
     /// NOTE CONTD: Use HashOfActiveAnimation() to get the current animation hash, to get the hash the actual animator is using.
     /// </summary>
-    private CustomAnimatorStateInfo _currentAnimInfo;
+    private CustomAnimatorState _state;
+    /// <summary>
+    /// If transition to the next state would be 
+    /// </summary>
+    private CustomAnimatorState _requestedState;
 
     void Update()
     {
-        // NOTE: If no animation has been initialized through this class, the update will return.
-        // TODO: You might want to create a "InitialAnimState" variable or similar.
-        if (_currentAnimInfo == null) return;
+        // NOTE: Animator's initial state will be its own default state. It will transition to 
+        if (_state == null)
+        {
+            InstantTransitionToAnimation(_initialState);
+            // NOTE: needs to return here, so that the animatior can transition to the initial animation after this Update().
+            return;
+        }
 
         // NOTE: currentAnim variable holds the animation we are currently in (if not transitioning) or
         // the animation we are currently transitioning into. We want the corresponsing state from the animator.
@@ -55,85 +61,87 @@ public class CustomAnimator : MonoBehaviour
         //    this);
 
         // Transition to fallback animation
-        if (_animationQueue.Count == 0
-            && _currentAnimInfo.FallbackAnimation != null
-            && normalizedTime >= _currentAnimInfo.FallbackTransitionPercent)
+        if (_state.FallbackState != null
+            && normalizedTime >= _state.FallbackTransitionPrecent)
         {
+            //Debug.Log("Normalized time was: " + normalizedTime
+            //    + ", and so it was time for " + _state.StateName + " to fallback to: " + _state.FallbackState.StateName);
+
             // TODO: Start the next animation from a later point based on how much the normalized time is over the fallback precent.
-            TransitionToAnimation(_currentAnimInfo.FallbackAnimation);
+            // TODO CONTD: Be wary though that this might skip some animator events (I don't know if it does).
+            CrossFadeInFixedTimeToAnimation(_state.FallbackState);
         }
-        // Transition to the next animation in the queue:
-        // NOTE: There's a risk that the animation will never transition if the current animation is looping and the
-        // NOTE CONTD: normalized time jumps over the QueueTransitionPercent and back to the beginning of the animation in one frame.
-        else if (_animationQueue.Count != 0 && normalizedTime >= _currentAnimInfo.QueueTransitionPercent)
+
+        // TODO: This is here because Unity's Animator component does not start transition until the internal animation update that happens
+        // TODO CONTD: in between Update and LateUpdate, so the "current state" of the Animator lags behind this, causing problems.
+        // TODO: This is problematic since if this update is called before other updates where new animation are requested,
+        // TODO CONTD: changes to animations will be one frame behind.
+        // TODO CONTD: And if you run this in LateUpdate, it will also skip the animation update of this frame (since animation update happens
+        // TODO CONTD: in between Update and LateUpdate).
+        // TODO CONTD: This is just a temporary solution. I might need to check out Unity Playables...
+        if(_requestedState != null)
         {
-            // TODO: Start the next animation from a later point based on how much the normalized time is over the fallback precent.
-            // TODO CONTD: NOTE: This might cause unintentional jumps in animations if a new animation is added to the queue
-            // TODO CONTD: after QueueTransitionPercent point has passed. Therefor you should make it optional or remove such functionality
-            // TODO CONTD: from animations that loop/don't have fallback animation.
-            // TODO CONTD: Also note that if the normalized time passed 1, then the normalized time will show incorrectly how much time
-            // TODO CONTD: has passed since QueueTransitionPercent.
-            // TODO CONTD: Actually it might be possible that normalized time actually goes beyond 1 and Unity only uses fractional part
-            // TODO CONTD: for looping.
-            TransitionToNextAnimationInQueue();
+            StartCrossfadeTo(_requestedState);
+            _requestedState = null;
         }
     }
 
     /// <summary>
-    /// Adds an animation to the animation queue. The animation will play after a time specified by the animation playing just before this.
-    /// </summary>
-    public void EnqueueAnimation(CustomAnimatorStateInfo animation)
-    {
-        _animationQueue.Enqueue(animation);
-    }
-
-    /// <summary>
-    /// Instantly start transition to the next animation in the queue. This can be used if e.g. want an animation event to trigger
-    /// the next animation in the queue.
-    /// </summary>
-    public void TransitionToNextAnimationInQueue()
-    {
-        TransitionToAnimation(_animationQueue.Dequeue());
-    }
-
-    /// <summary>
-    /// Clears current animation queue and starts playing this animation instantly (without adding it into the queue).
+    /// Starts crossfade to another animator state.
     /// </summary>
     /// <param name="startFromBeginning">
     /// If the same animation is currently playing, should this start it from the beginning (instead of letting it play
     /// from where it currently is)? True by default.
     /// </param>
-    public void InterruptAnimationQueue(CustomAnimatorStateInfo newAnimation, bool startFromBeginning = true)
+    private void StartCrossfadeTo(CustomAnimatorState newAnimation, bool startFromBeginning = true)
     {
-        ClearAnimationQueue();
         // NOTE: Currently only works with layer 0.
-        if (IsInOrIsTransitioningToAnimatorState(0, newAnimation.ThisAnimationHash) && !startFromBeginning) return;
-        TransitionToAnimation(newAnimation);
+        if (IsActiveState(0, newAnimation.StateHash) && !startFromBeginning) return;
+        CrossFadeInFixedTimeToAnimation(newAnimation);
     }
 
-    public int AnimationQueueCount() => _animationQueue.Count;
-
-    /// <summary>
-    /// Animation queue can be safely cleared at any point.
-    /// </summary>
-    public void ClearAnimationQueue()
+    public void RequestCrossfadeTo(CustomAnimatorState newAnimation)
     {
-        _animationQueue.Clear();
+        if(_requestedState != null)
+        {
+            Debug.LogWarning("During this animation update cycle, " +
+                "another state was already requested for " + gameObject.name + ": " + _requestedState.StateName, this);
+        }
+        _requestedState = newAnimation;
     }
 
     /// <summary>
     /// Uses CrossFadeInFixedTime. <br/>
     /// NOTE: Always call this when you want to transition to new animation. NEVER crossfade or play other animations through any other method.
     /// </summary>
-    private void TransitionToAnimation(CustomAnimatorStateInfo nextAnimation, float fixedTimeOffset = 0)
+    private void CrossFadeInFixedTimeToAnimation(CustomAnimatorState nextAnimation, float fixedTimeOffset = 0)
     {
-        _currentAnimInfo = nextAnimation;
+        //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
+
+        _state = nextAnimation;
         // NOTE: Currently only works with layer 0.
         _animator.CrossFadeInFixedTime(
-            nextAnimation.ThisAnimationHash,
+            nextAnimation.StateHash,
             nextAnimation.CrossFadeDurationToThis,
             0,
             fixedTimeOffset
+        );
+    }
+
+    /// <summary>
+    /// Uses CrossFadeInFixedTime. <br/>
+    /// NOTE: Always call this when you want to transition to new animation. NEVER crossfade or play other animations through any other method.
+    /// </summary>
+    private void InstantTransitionToAnimation(CustomAnimatorState nextAnimation, float normalizedTimeOffset = 0)
+    {
+        //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
+
+        _state = nextAnimation;
+        // NOTE: Currently only works with layer 0.
+        _animator.Play(
+            nextAnimation.StateHash,
+            0,
+            normalizedTimeOffset
         );
     }
 
@@ -141,7 +149,7 @@ public class CustomAnimator : MonoBehaviour
     /// The hash of the current animation state if not in transition, or the the hash of the next animation state if in transition.
     /// </returns>
     /// 
-    public int HashOfActiveAnimation(int animatorLayer)
+    protected int HashOfActiveAnimation(int animatorLayer)
     {
         if (_animator.IsInTransition(animatorLayer))
         {
@@ -154,9 +162,10 @@ public class CustomAnimator : MonoBehaviour
     }
 
     /// <returns>
-    /// True if currently in the specified state (if not in transition) or transitioning into the specified state (if in transition).
+    /// True if currently in the specified state (if not in transition) or transitioning into the specified
+    /// state (if in transition) in the Animator.
     /// </returns>
-    public bool IsInOrIsTransitioningToAnimatorState(int animatorLayer, int stateHash)
+    public bool IsActiveState(int animatorLayer, int stateHash)
     {
         if (_animator.IsInTransition(animatorLayer))
         {
@@ -181,22 +190,14 @@ public class CustomAnimator : MonoBehaviour
     }
 
     /// <returns>
-    /// If the Animator used by this CustomAnimator has the specified state.
-    /// </returns>
-    public bool HasState(int animatorLayer, int stateHash)
-    {
-        return _animator.HasState(animatorLayer, stateHash);
-    }
-
-    /// <returns>
     /// Debug info about states of the animator.
     /// </returns>
-    public string AnimatorStateInfo()
+    protected string AnimatorStateInfo()
     {
-        if (_currentAnimInfo == null) return "CustomAnimator's state was null.";
+        if (_state == null) return "CustomAnimator's state was null.";
         string returnString = "";
-        returnString += "Current state of the CustomAnimator: " + _currentAnimInfo.ThisAnimationName
-                + " , going by hash: " + _currentAnimInfo.ThisAnimationHash
+        returnString += "Current state of the CustomAnimator: " + _state.StateName
+                + " , going by hash: " + _state.StateHash
                 + ". Current state of the animator was: " + _animator.GetCurrentAnimatorStateInfo(0).shortNameHash;
         if (_animator.IsInTransition(0))
         {
@@ -204,6 +205,40 @@ public class CustomAnimator : MonoBehaviour
 
         }
         return returnString;
+    }
+
+    /// <summary>
+    /// Checks that all provided animation states exist in the animator.
+    /// </summary>
+    protected void ValidateAnimationStates(params CustomAnimatorState[] animStates)
+    {
+        if (animStates == null || animStates.Length == 0)
+        {
+            Debug.LogWarning("ValidateAnimationStates called with no states.", this);
+            return;
+        }
+
+        foreach (var animState in animStates)
+        {
+            if (animState == null)
+            {
+                Debug.LogError("Null CustomAnimatorState.", this);
+                continue;
+            }
+
+            string stateName = animState.StateName;
+
+            if (string.IsNullOrWhiteSpace(stateName))
+            {
+                Debug.LogError("Animator state name is empty.", animState);
+                continue;
+            }
+
+            int stateHash = Animator.StringToHash(stateName);
+
+            // NOTE: Only checks layer 0. Extend if needed.
+            Debug.Assert(_animator.HasState(0, stateHash), "Animator didn't have state: " + stateName, animState);
+        }
     }
 }
 
@@ -249,3 +284,10 @@ public class CustomAnimator : MonoBehaviour
 // - By default it seems that even when transitioning to the same animation, the new animation always starts from the beginning.
 //   I.e. it seems like Unity creates two instanses of the same animation and the "next" animation will start from the beginning,
 //   while the current one continues from where its at, and the crossfade is done between these normally.
+
+// - Animation events can only reference monobehaviours' methods that are in the same object as the animator component. Also, if
+//   multiple component have animation event callback methods that have the same name, the animator might call the wrong method.
+
+// - TODO: TEST: If transition offset to new state "skips" the time of an animation event, will it still fire? Will animation events during
+//   a transition fire, on both the current and next animations? You might want to prevent animation events if they are triggered in the
+//   "current" animation during a transition.

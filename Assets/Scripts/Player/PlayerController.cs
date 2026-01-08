@@ -1,12 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum PlayerState
-{
-    Walking,
-    Attacking,
-}
-
 public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
@@ -23,166 +17,121 @@ public class PlayerController : MonoBehaviour
 
     [Header("Refs")]
     [SerializeField] private CharacterController characterController;
+    [SerializeField] private WeaponColliderHitSensor _weaponSensor;
+
+    [Header("Input Related Refs")]
     [SerializeField] private InputActionAsset inputActions;
-    [SerializeField] private InputActionProperty moveActionProperty;
-    [SerializeField] private InputActionProperty attackActionProperty;
-    [SerializeField] private Transform sword;
-    [SerializeField] private CharacterVisualsAnimationController _characterVisualsAnimationController;
-    [SerializeField] private WeaponColliderHitSensor _weaponColliderHitSensor;
+    [SerializeField] private InputActionProperty _moveInputAction;
+    [SerializeField] private InputActionProperty _attackInputAction;
+
+    [Header("Animaton Related Refs")]
+    [SerializeField] private CustomAnimator_CharacterVisuals _characterVisualsAnimationController;
+    [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_1 swingR1State;
+    [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_2 swingR2State;
 
     private Vector2 velocity = Vector2.zero;
     private Vector2 moveInput = Vector2.zero;
     private bool attackInput = false;
 
+    private bool _attackActive = false;
+    private bool _newAttackCanBeBuffered = false;
+    private bool _bufferedAttackInput = false;
+    private bool _comboWindowEnded = false;
+
     private void OnEnable()
     {
         inputActions.FindActionMap("Player").Enable();
+        SubscribeToAnimationEvents();
     }
 
     private void Update()
     {
         ReadInputs();
-        if (attackInput) _characterVisualsAnimationController.TryBufferAttack();
+        if (attackInput) TryBufferAttack();
 
 
         // TODO: Make better system using animator states instead, maybe.
-        if (_characterVisualsAnimationController.IsPlaying_Idle())
+        if (_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.IdleState.StateHash))
         {
             if(attackInput)
             {
-                _characterVisualsAnimationController.Play_SwingAttack();
+                EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
             }
             else if (moveInput != Vector2.zero)
             {
-                _characterVisualsAnimationController.Play_Walk();
+                EnterNewStateAndInitialize(_characterVisualsAnimationController.WalkState);
             }
         }
-        else if (_characterVisualsAnimationController.IsPlaying_Walk())
+        else if (_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.WalkState.StateHash))
         {
             SolveMovement(moveInput);
 
             if (attackInput)
             {
-                _characterVisualsAnimationController.Play_SwingAttack();
+                EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
             }
             else if (moveInput == Vector2.zero)
             {
-                _characterVisualsAnimationController.Play_Idle();
+                EnterNewStateAndInitialize(_characterVisualsAnimationController.IdleState);
             }
         }
-        else if (_characterVisualsAnimationController.IsPlaying_KnockBackBackward())
+        else if(_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.SwingR1State.StateHash)
+            || _characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.SwingR2State.StateHash))
         {
-            //???
-        }
-        else if(_characterVisualsAnimationController.IsPlaying_SwingAttack())
-        {
-            if(_characterVisualsAnimationController.ComboWindowEnded())
+            if(_comboWindowEnded)
             {
                 // Set correct animations.
-                if (moveInput != Vector2.zero && !_characterVisualsAnimationController.IsPlaying_Walk())
+                if (moveInput != Vector2.zero
+                    && !_characterVisualsAnimationController.IsActiveState(0, _characterVisualsAnimationController.WalkState.StateHash))
                 {
-                    _characterVisualsAnimationController.Play_Walk();
+                    EnterNewStateAndInitialize(_characterVisualsAnimationController.WalkState);
                 }
             }
         }
 
-        // TODO: Check animation states instead?
-        //switch (state)
-        //{
-        //    case PlayerState.Walking:
-        //        SolveMovement(moveInput);
-        //        if(attackInput)
-        //        {
-        //            ChangeState(PlayerState.Attacking);
-        //            break;
-        //        }
-        //        break;
-        //    // TODO: Change this to use animations instead.
-        //    case PlayerState.Attacking:
-        //        float t = attackTimer / attackDuration;
-        //        float half = attackDuration / 2;
-        //        if (swordSide == Side.Left)
-        //        {
-        //            Quaternion startRot = Quaternion.Euler(0f, -100f, 0f);
-        //            Quaternion endRot = Quaternion.Euler(0f, 100f, 0f);
-        //            if (attackTimer / attackDuration >= 1)
-        //            {
-        //                sword.localRotation = Quaternion.Euler(0f, 90f, 0f);
-        //                swordSide = Side.Right;
-        //                ChangeState(PlayerState.Walking);
-        //                break;
-        //            }
-        //            if (t < 0.5f)
-        //            {
-        //                sword.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, attackTimer * 2 / attackDuration);
-        //            }
-        //            else
-        //            {
-        //                sword.localRotation = Quaternion.Slerp(Quaternion.identity, endRot, (attackTimer - half) * 2 / attackDuration);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            Quaternion startRot = Quaternion.Euler(0f, 100f, 0f);
-        //            Quaternion endRot = Quaternion.Euler(0f, -100f, 0f);
-        //            if (attackTimer / attackDuration >= 1)
-        //            {
-        //                sword.localRotation = Quaternion.Euler(0f, -90f, 0f);
-        //                swordSide = Side.Left;
-        //                ChangeState(PlayerState.Walking);
-        //                break;
-        //            }
-        //            if (t < 0.5f)
-        //            {
-        //                sword.localRotation = Quaternion.Slerp(startRot, Quaternion.identity, attackTimer * 2 / attackDuration);
-        //            }
-        //            else
-        //            {
-        //                sword.localRotation = Quaternion.Slerp(Quaternion.identity, endRot, (attackTimer - half) * 2 / attackDuration);
-        //            }
-        //        }
-
-        //        _weaponColliderHitSensor.CheckHits(swordSwingDmg, transform);
-
-        //        attackTimer += Time.deltaTime;
-        //        break;
-        //    default:
-        //        Debug.LogError("Switch defaulted.");
-        //        break;
-        //}
+        if (_attackActive)
+        {
+            // TODO: Find correct damage value.
+            _weaponSensor.CheckHits(1, transform);
+        }
     }
 
     private void OnDisable()
     {
         inputActions.FindActionMap("Player").Disable();
+        UnsubscribeToAnimationEvents();
     }
-
-    //private void ChangeState(PlayerState newState)
-    //{
-    //    Debug.Assert(!isChangingState, "Tried to change state while already changing state.");
-    //    isChangingState = true;
-
-    //    switch (newState)
-    //    {
-    //        case PlayerState.Walking:
-    //            break;
-    //        case PlayerState.Attacking:
-    //            _weaponColliderHitSensor.BeginAttack();
-    //            attackTimer = 0;
-    //            break;
-    //        default:
-    //            Debug.LogError("Switch defaulted.");
-    //            break;
-    //    }
-
-    //    state = newState;
-    //    isChangingState = false;
-    //}
 
     private void ReadInputs()
     {
-        moveInput = moveActionProperty.action.ReadValue<Vector2>();
-        attackInput = attackActionProperty.action.WasPressedThisFrame();
+        moveInput = _moveInputAction.action.ReadValue<Vector2>();
+        attackInput = _attackInputAction.action.WasPressedThisFrame();
+    }
+
+    private void SubscribeToAnimationEvents()
+    {
+        swingR1State.OnWeaponActiveStart += OnWeaponActiveStart;
+        swingR1State.OnWeaponActiveEnd += OnWeaponActiveEnd;
+        swingR1State.OnWeaponAttackInputBufferingEnabled += OnAttackInputBufferingAllowed;
+        swingR1State.OnWeaponAttackInputBufferingDisabled += OnSwing1AttackBufferingEnd;
+
+        swingR2State.OnWeaponActiveStart += OnWeaponActiveStart;
+        swingR2State.OnWeaponActiveEnd += OnWeaponActiveEnd;
+        swingR2State.OnWeaponAttackInputBufferingEnabled += OnAttackInputBufferingAllowed;
+        swingR2State.OnWeaponAttackInputBufferingDisabled += OnSwing2AttackBufferingEnd;
+    }
+
+    private void UnsubscribeToAnimationEvents()
+    {
+        swingR1State.OnWeaponActiveStart -= OnWeaponActiveStart;
+        swingR1State.OnWeaponActiveEnd -= OnWeaponActiveEnd;
+        swingR1State.OnWeaponAttackInputBufferingEnabled -= OnAttackInputBufferingAllowed;
+        swingR1State.OnWeaponAttackInputBufferingDisabled -= OnSwing1AttackBufferingEnd;
+
+        swingR2State.OnWeaponActiveStart -= OnWeaponActiveStart;
+        swingR2State.OnWeaponActiveEnd -= OnWeaponActiveEnd;
+        swingR2State.OnWeaponAttackInputBufferingEnabled -= OnAttackInputBufferingAllowed;
+        swingR2State.OnWeaponAttackInputBufferingDisabled -= OnSwing2AttackBufferingEnd;
     }
 
     private void SolveMovement(Vector2 movementInput)
@@ -207,5 +156,73 @@ public class PlayerController : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngularSpeed * Time.deltaTime);
+    }
+
+    public bool TryBufferAttack()
+    {
+        if (_newAttackCanBeBuffered)
+        {
+            _bufferedAttackInput = true;
+            return true;
+        }
+        else return false;
+    }
+
+    /// <summary>
+    /// NOTE: Always call this when entering new animation state.
+    /// </summary>
+    private void EnterNewStateAndInitialize(CustomAnimatorState newState)
+    {
+        _attackActive = false;
+        _newAttackCanBeBuffered = false;
+        _bufferedAttackInput = false;
+        _comboWindowEnded = false;
+        _characterVisualsAnimationController.RequestCrossfadeTo(newState);
+    }
+
+    public void OnWeaponActiveStart()
+    {
+        _weaponSensor.BeginAttack();
+        _attackActive = true;
+    }
+
+    public void OnWeaponActiveEnd()
+    {
+        _attackActive = false;
+    }
+
+    public void OnAttackInputBufferingAllowed()
+    {
+        _newAttackCanBeBuffered = true;
+    }
+
+    public void OnSwing1AttackBufferingEnd()
+    {
+        if (_bufferedAttackInput)
+        {
+            // TODO: Calling this causes an error, likely because it is called in some other time than Update().
+            // TODO: Animator seems to only register transition to a new state at a certain point during frame cycle. This is weird so you should write it down.
+            EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR2State);
+        }
+        else
+        {
+            _newAttackCanBeBuffered = false;
+            _comboWindowEnded = true;
+        }
+    }
+
+    public void OnSwing2AttackBufferingEnd()
+    {
+        if (_bufferedAttackInput)
+        {
+            // TODO: Calling this causes an error, likely because it is called in some other time than Update().
+            // TODO: Animator seems to only register transition to a new state at a certain point during frame cycle. This is weird so you should write it down.
+            EnterNewStateAndInitialize(_characterVisualsAnimationController.SwingR1State);
+        }
+        else
+        {
+            _newAttackCanBeBuffered = false;
+            _comboWindowEnded = true;
+        }
     }
 }

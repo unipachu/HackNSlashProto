@@ -72,17 +72,39 @@ public class CSVReader : MonoBehaviour
             // Indexes of the rows skip index 0, but the indexes of the enemies do not, therefore:
             int enemyIndex = i - 1;
 
+            // Create new enemy data and fill in its fields from the csv.
             enemiesListData.enemies.Add(new TestEnemyData());
-
-            enemiesListData.enemies[enemyIndex].Name = rowCells[0];
-            if(!int.TryParse(rowCells[1], out enemiesListData.enemies[enemyIndex].TestValue0))
-                Debug.LogError("Failed parsing TestValue0");
-            if(!int.TryParse(rowCells[2], out enemiesListData.enemies[enemyIndex].TestValue1))
-                Debug.LogError("Failed parsing TestValue1");
-            if(!float.TryParse(rowCells[3], NumberStyles.Float, CultureInfo.InvariantCulture, out enemiesListData.enemies[enemyIndex].TestValue2))
-                Debug.LogError("Failed parsing TestValue2");
-            if(!bool.TryParse(rowCells[4], out enemiesListData.enemies[enemyIndex].TestValue3))
-                Debug.LogError("Failed parsing TestValue3");
+            TryReadString(rowCells[0], out enemiesListData.enemies[enemyIndex].Name, nameof(TestEnemyData.Name));
+            TryReadInt(rowCells[1], out enemiesListData.enemies[enemyIndex].TestValue0, nameof(TestEnemyData.TestValue0));
+            TryReadInt(rowCells[2], out enemiesListData.enemies[enemyIndex].TestValue1, nameof(TestEnemyData.TestValue1));
+            TryReadFloat(rowCells[3], out enemiesListData.enemies[enemyIndex].TestValue2, nameof(TestEnemyData.TestValue2));
+            TryReadBool(rowCells[4], out enemiesListData.enemies[enemyIndex].TestValue3, nameof(TestEnemyData.TestValue3));
+            // TODO: Create enum type parameter.
         }
+    }
+
+    private void TryReadString(string cell, out string output, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(cell))
+            Debug.LogError("Failed reading string for " + fieldName + ".");
+        output = cell;
+    }
+
+    private void TryReadInt(string cell, out int output, string fieldName)
+    {
+        if (!int.TryParse(cell, out output))
+            Debug.LogError("Failed parsing int for " + fieldName + ".");
+    }
+
+    private void TryReadFloat(string cell, out float output, string fieldName)
+    {
+        if (!float.TryParse(cell, NumberStyles.Float, CultureInfo.InvariantCulture, out output))
+            Debug.LogError("Failed parsing float for " + fieldName + ".");
+    }
+
+    private void TryReadBool(string cell, out bool output, string fieldName)
+    {
+        if (!bool.TryParse(cell, out output))
+            Debug.LogError("Failed parsing bool for " + fieldName + ".");
     }
 }

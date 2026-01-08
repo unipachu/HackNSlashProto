@@ -12,7 +12,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
     [SerializeField] private int _maxHealth = 3;
 
     [Header("Refs")]
-    [SerializeField] private CharacterVisualsAnimationController _characterVisualsaAnimationController;
+    [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
     
     private int _currentHealth;
     private NavMeshAgent _agent;
@@ -69,7 +69,8 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         // NOTE: If the navmeshagent was stopped, it is set to not stopped in here.
         Agent.isStopped = false;
         Agent.SetDestination(_playerTransform.position);
-        if (!_characterVisualsaAnimationController.IsPlaying_Walk()) _characterVisualsaAnimationController.Play_Walk();
+        if (!_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
+            _customAnimator.RequestCrossfadeTo(_customAnimator.WalkState);
         return NodeState.Running;
     }
 
@@ -81,14 +82,15 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         }
 
         Agent.isStopped = true;
-        if(!_characterVisualsaAnimationController.IsPlaying_Idle()) _characterVisualsaAnimationController.Play_Idle();
+        if(!_customAnimator.IsActiveState(0, _customAnimator.IdleState.StateHash))
+            _customAnimator.RequestCrossfadeTo(_customAnimator.IdleState);
         return NodeState.Success;
     }
 
     public void GetHit(int dmgAmount, Vector3 attackerPos)
     {
         Agent.isStopped = true;
-        _characterVisualsaAnimationController.Play_KnockBackBackward();
+        _customAnimator.RequestCrossfadeTo(_customAnimator.KnockBackBackwardState);
         _currentHealth -= dmgAmount;
         Vector3 knockBackDir = (transform.position - attackerPos).normalized;
         _knockBack.StartKnockBack(knockBackDir, 0.2f, 50);
@@ -100,7 +102,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
     // TODO: Add death states and such.
     private bool IsStunned()
     {
-        return _characterVisualsaAnimationController.IsPlaying_KnockBackBackward()
+        return _customAnimator.IsActiveState(0, _customAnimator.KnockBackBackwardState.StateHash)
             || _knockBack.IsInKnockBack;
     }
 }

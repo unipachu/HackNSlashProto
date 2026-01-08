@@ -943,36 +943,29 @@ AnimationClip:
   m_HasGenericRootTransform: 1
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0
-    functionName: OnSwing1Start
-    data: 
-    objectReferenceParameter: {fileID: 0}
-    floatParameter: 0
-    intParameter: 0
-    messageOptions: 0
   - time: 0.15
-    functionName: OnSwing1ActiveStart
+    functionName: SwingHandR_1_OnWeaponActiveStart
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.21666667
-    functionName: OnSwing1Halfway
+  - time: 0.2
+    functionName: SwingHandR_1_OnAttackInputBufferingEnabled
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.38333333
-    functionName: OnSwing1ActiveEnd
+    functionName: SwingHandR_1_OnWeaponActiveEnd
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
   - time: 0.48333332
-    functionName: OnSwing1ComboWindowEnd
+    functionName: SwingHandR_1_OnAttackInputBufferingDisabled
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0
