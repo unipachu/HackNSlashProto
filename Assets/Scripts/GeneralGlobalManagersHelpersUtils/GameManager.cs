@@ -3,8 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Handles game mode changes.
 /// </summary>
-// TODO: Make this a persistent singleton.
-public class GameManager : MonoBehaviour
+public class GameManager : PersistentSingleton<GameManager>
 {
     [Tooltip("Drag an game object prefab here which contains the GameModeManager_TestMode. " +
         "When starting this game mode, the game manager will instantiate that game object as its child and save the " +
