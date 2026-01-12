@@ -39,9 +39,10 @@ public abstract class CustomAnimator : MonoBehaviour
         HandleFallbackCheckNTransition();
     }
 
-    private void OnAnimatorMove()
+    private void LateUpdate()
     {
         // Animations have been solved so set the flag back to false.
+        // NOTE: You could set this to OnAnimatorMove but that forces the Animator to give the control of the root motion to this script.
         _requestedStateChangeThisFrame = false;
     }
 
@@ -246,3 +247,6 @@ public abstract class CustomAnimator : MonoBehaviour
 
 // - OnAnimatorMove is called for each script attached to an game object with an Animator after Update and before LateUpdate callbacks,
 //   after animations for the particular game object's animations have been solved.
+
+// - If your script uses OnAnimatorMove, the Animator will automatically change ApplyRootMotion to "Handled by Script" which prevents
+//   root rotation and position changes by the animation curves - you need to apply them through code.

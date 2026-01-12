@@ -91,17 +91,4 @@ public abstract class CustomAnimatorState : MonoBehaviour
         Debug.Assert(GeneralUtils.IsInRange(fallbackTransitionPrecent, 0, 1), "Fallback transition precent was out of range!", this);
         Debug.Assert(!string.IsNullOrEmpty(stateName), "State name was null or empty!", this);
     }
-
-    //protected CustomAnimatorState(
-    //    string animationName,
-    //    float crossFadeDurationToThis = 0.1f,
-    //    CustomAnimatorState fallbackState = null,
-    //    float fallbackTransitionPrecent = 0.9f)
-    //{
-    //    StateName = animationName;
-    //    StateHash = Animator.StringToHash(animationName);
-    //    CrossFadeDurationToThis = crossFadeDurationToThis;
-    //    FallbackState = fallbackState;
-    //    FallbackTransitionPrecent = Mathf.Clamp01(fallbackTransitionPrecent);
-    //}
 }
