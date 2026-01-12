@@ -69,8 +69,8 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         // NOTE: If the navmeshagent was stopped, it is set to not stopped in here.
         Agent.isStopped = false;
         Agent.SetDestination(_playerTransform.position);
-        if (!_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
-            _customAnimator.RequestCrossfadeTo(_customAnimator.WalkState);
+        if (!_customAnimator.IsActiveState(_customAnimator.WalkState))
+            _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.WalkState);
         return NodeState.Running;
     }
 
@@ -82,15 +82,15 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         }
 
         Agent.isStopped = true;
-        if(!_customAnimator.IsActiveState(0, _customAnimator.IdleState.StateHash))
-            _customAnimator.RequestCrossfadeTo(_customAnimator.IdleState);
+        if(!_customAnimator.IsActiveState(_customAnimator.IdleState))
+            _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.IdleState);
         return NodeState.Success;
     }
 
     public void GetHit(int dmgAmount, Vector3 attackerPos)
     {
         Agent.isStopped = true;
-        _customAnimator.RequestCrossfadeTo(_customAnimator.KnockBackBackwardState);
+        _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.KnockBackBackwardState);
         _currentHealth -= dmgAmount;
         Vector3 knockBackDir = (transform.position - attackerPos).normalized;
         _knockBack.StartKnockBack(knockBackDir, 0.2f, 50);
@@ -102,7 +102,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
     // TODO: Add death states and such.
     private bool IsStunned()
     {
-        return _customAnimator.IsActiveState(0, _customAnimator.KnockBackBackwardState.StateHash)
+        return _customAnimator.IsActiveState(_customAnimator.KnockBackBackwardState)
             || _knockBack.IsInKnockBack;
     }
 }

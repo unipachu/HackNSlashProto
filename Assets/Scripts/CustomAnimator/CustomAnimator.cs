@@ -16,26 +16,44 @@ public abstract class CustomAnimator : MonoBehaviour
     /// NOTE: Animator component refers to its own current/next state -> this offends the SSOT principle. 
     /// </summary>
     private CustomAnimatorState _activeState;
+   
     /// <summary>
-    /// This custom animator never changes state until the very end of its Update(). Other scripts may request change in animator state,
-    /// which is saved here to wait for the end of the Update().
+    /// This is used to prevent fallback transition checker from trying to change to fallback animation based on Animator's active animation
+    /// when it doesn't match this scripts active state (since they don't match if animation transition was requested this frame).
     /// </summary>
-    private CustomAnimatorState _requestedState;
+    private bool _requestedStateChangeThisFrame = false;
 
     /// <summary>
     /// Currently active state (animation). If in transition, refers to the "next animator state".
     /// </summary>
     public CustomAnimatorState ActiveState => _activeState;
 
+    protected virtual void Start()
+    {
+        // Transition to initial state.
+        RequestInstantTransitionTo(_initialState);
+    }
+
     void Update()
     {
-        // NOTE: Animator's initial state will be its own default state. It will transition to 
-        if (_activeState == null)
-        {
-            InstantTransitionToAnimation(_initialState);
-            // NOTE: needs to return here, so that the animatior can transition to the initial animation after this Update().
-            return;
-        }
+        HandleFallbackCheckNTransition();
+    }
+
+    private void OnAnimatorMove()
+    {
+        // Animations have been solved so set the flag back to false.
+        _requestedStateChangeThisFrame = false;
+    }
+
+    /// <summary>
+    /// NOTE: Prevents transition to fallback animations if another transition was requested this frame. This is to
+    /// NOTE C: prevent problems caused by mismatch of this script's "active state" and the Animator's "active state" since the 
+    /// NOTE C: Animator only returns the requested new animation after Unity has entered into internal animation update.
+    /// </summary>
+    private void HandleFallbackCheckNTransition()
+    {
+        // If transition to next state has been requested, 
+        if (_requestedStateChangeThisFrame) return;
 
         // NOTE: currentAnim variable holds the animation we are currently in (if not transitioning) or
         // the animation we are currently transitioning into. We want the corresponsing state from the animator.
@@ -53,74 +71,30 @@ public abstract class CustomAnimator : MonoBehaviour
         }
         float normalizedTime = animatorState.normalizedTime;
 
-        // NOTE: The assert will fail if the an animator state transition is called before Unity's internal animation update
-        // NOTE CONTD: has the time to start the transition. The differenece between this class' current state hash and
-        // NOTE CONTD: the Unity's animator's current state hash can cause problems later. The animator's event calls also cause assert
-        // NOTE CONTD: to fail, because the transition is only applied during the next frame.
-        // TODO: Figure a solution to this problem. Maybe buffer animation transitions and only apply them after this
-        // TODO CONTD: assert (and other related logic).
-        Debug.Assert(IsActiveState(0, _activeState.StateHash),
-            "Active state of the custom animator was different than the active state of the Animator."
-            + AnimatorStateInfo(),
-            this);
-
         // Transition to fallback animation
         if (_activeState.FallbackState != null
-            && normalizedTime >= _activeState.FallbackTransitionPrecent)
+            && normalizedTime >= _activeState.FallbackTransitionPrecent
+            && !_requestedStateChangeThisFrame
+            )
         {
             //Debug.Log("Normalized time was: " + normalizedTime
             //    + ", and so it was time for " + _state.StateName + " to fallback to: " + _state.FallbackState.StateName);
 
-            // TODO: Start the next animation from a later point based on how much the normalized time is over the fallback precent.
-            // TODO CONTD: Be wary though that this might skip some animator events (I don't know if it does).
-            CrossFadeInFixedTimeToAnimation(_activeState.FallbackState);
-        }
-
-        // TODO: This is here because Unity's Animator component does not start transition until the internal animation update that happens
-        // TODO CONTD: in between Update and LateUpdate, so the "current state" of the Animator lags behind this, causing problems.
-        // TODO: This is problematic since if this update is called before other updates where new animation are requested,
-        // TODO CONTD: changes to animations will be one frame behind.
-        // TODO CONTD: And if you run this in LateUpdate, it will also skip the animation update of this frame (since animation update happens
-        // TODO CONTD: in between Update and LateUpdate).
-        // TODO CONTD: This is just a temporary solution. I might need to check out Unity Playables...
-        if(_requestedState != null)
-        {
-            StartCrossfadeTo(_requestedState);
-            _requestedState = null;
+            RequestFixedTimeCrossfadeTo(_activeState.FallbackState);
         }
     }
 
     /// <summary>
-    /// Starts crossfade to another animator state.
+    /// Call this to ask for a new animation.
     /// </summary>
-    /// <param name="startFromBeginning">
-    /// If the same animation is currently playing, should this start it from the beginning (instead of letting it play
-    /// from where it currently is)? True by default.
-    /// </param>
-    private void StartCrossfadeTo(CustomAnimatorState newAnimation, bool startFromBeginning = true)
+    public void RequestFixedTimeCrossfadeTo(CustomAnimatorState nextAnimation, float fixedTimeOffset = 0, bool startFromBeginning = true)
     {
-        // NOTE: Currently only works with layer 0.
-        if (IsActiveState(0, newAnimation.StateHash) && !startFromBeginning) return;
-        CrossFadeInFixedTimeToAnimation(newAnimation);
-    }
+        _requestedStateChangeThisFrame = true;
 
-    public void RequestCrossfadeTo(CustomAnimatorState newAnimation)
-    {
-        if(_requestedState != null)
-        {
-            Debug.LogWarning("During this animation update cycle, " +
-                "another state was already requested for " + gameObject.name + ": " + _requestedState.StateName, this);
-        }
-        _requestedState = newAnimation;
-    }
-
-    /// <summary>
-    /// Uses CrossFadeInFixedTime. <br/>
-    /// NOTE: Always call this when you want to transition to new animation. NEVER crossfade or play other animations through any other method.
-    /// </summary>
-    private void CrossFadeInFixedTimeToAnimation(CustomAnimatorState nextAnimation, float fixedTimeOffset = 0)
-    {
         //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
+
+        // NOTE: Currently only works with layer 0.
+        if (IsActiveState(nextAnimation) && !startFromBeginning) return;
 
         _activeState = nextAnimation;
         // NOTE: Currently only works with layer 0.
@@ -136,9 +110,14 @@ public abstract class CustomAnimator : MonoBehaviour
     /// Uses CrossFadeInFixedTime. <br/>
     /// NOTE: Always call this when you want to transition to new animation. NEVER crossfade or play other animations through any other method.
     /// </summary>
-    private void InstantTransitionToAnimation(CustomAnimatorState nextAnimation, float normalizedTimeOffset = 0)
+    private void RequestInstantTransitionTo(CustomAnimatorState nextAnimation, float normalizedTimeOffset = 0, bool startFromBeginning = true)
     {
+        _requestedStateChangeThisFrame = true;
+
         //Debug.Log("Transitioning to state: " + nextAnimation.StateName);
+
+        // NOTE: Currently only works with layer 0.
+        if (IsActiveState(nextAnimation) && !startFromBeginning) return;
 
         _activeState = nextAnimation;
         // NOTE: Currently only works with layer 0.
@@ -150,47 +129,11 @@ public abstract class CustomAnimator : MonoBehaviour
     }
 
     /// <returns>
-    /// The hash of the current animation state if not in transition, or the the hash of the next animation state if in transition.
+    /// NOTE: Checks the current state of the CustomAnimator which might differ from the Animator's state.
     /// </returns>
-    /// 
-    protected int HashOfActiveAnimation(int animatorLayer)
+    public bool IsActiveState(CustomAnimatorState state)
     {
-        if (_animator.IsInTransition(animatorLayer))
-        {
-            return _animator.GetCurrentAnimatorStateInfo(animatorLayer).shortNameHash;
-        }
-        else
-        {
-            return _animator.GetNextAnimatorStateInfo(animatorLayer).shortNameHash;
-        }
-    }
-
-    /// <returns>
-    /// True if currently in the specified state (if not in transition) or transitioning into the specified
-    /// state (if in transition) in the Animator.
-    /// </returns>
-    public bool IsActiveState(int animatorLayer, int stateHash)
-    {
-        if (_animator.IsInTransition(animatorLayer))
-        {
-            AnimatorStateInfo next =
-                _animator.GetNextAnimatorStateInfo(animatorLayer);
-
-            //Debug.Log("next hash: " + next.shortNameHash + ". saved hash: " + stateHash);
-            if (next.shortNameHash == stateHash)
-                return true;
-        }
-        else
-        {
-            AnimatorStateInfo current =
-            _animator.GetCurrentAnimatorStateInfo(animatorLayer);
-
-            //Debug.Log("current hash: " + current.shortNameHash + ". saved hash: " + stateHash);
-            if (current.shortNameHash == stateHash)
-                return true;
-        }
-
-        return false;
+        return _activeState == state;
     }
 
     /// <returns>
@@ -292,6 +235,14 @@ public abstract class CustomAnimator : MonoBehaviour
 // - Animation events can only reference monobehaviours' methods that are in the same object as the animator component. Also, if
 //   multiple component have animation event callback methods that have the same name, the animator might call the wrong method.
 
-// - TODO: TEST: If transition offset to new state "skips" the time of an animation event, will it still fire? Will animation events during
-//   a transition fire, on both the current and next animations? You might want to prevent animation events if they are triggered in the
-//   "current" animation during a transition.
+// - ANIMATION EVENTS will trigger in both the animation that we are currently transitioning into and currenty transtitioning out of.
+//   This is problematic if you e.g. only want the "next" animation's events to trigger.
+
+// - If transition offset (start time of the next animation) is used to start transition to animator at a different time than animation
+//   start, all the animation events that would've have triggered before the transion offset are (naturally) skipped. You could 
+//   check if the Animator is in transition in the animation event callbacks, but if transitioning to the same animation as before,
+//   it might be hard to separate between the current and next animation callbacks (if you want the "next" animation event callbacks to
+//   trigger but not the "current" animation event callbacks).
+
+// - OnAnimatorMove is called for each script attached to an game object with an Animator after Update and before LateUpdate callbacks,
+//   after animations for the particular game object's animations have been solved.

@@ -231,6 +231,49 @@ public static class GeneralUtils
         rectTransform.anchoredPosition = startPos + new Vector3(0f, yOffset, 0f);
     }
 
+    /// <returns>
+    /// The hash of the current animator state if not in transition, or the the hash of the next animator state if in transition.
+    /// </returns>
+    public static int HashOfActiveAnimatorState(Animator animator, int animatorLayer)
+    {
+        if (animator.IsInTransition(animatorLayer))
+        {
+            return animator.GetCurrentAnimatorStateInfo(animatorLayer).shortNameHash;
+        }
+        else
+        {
+            return animator.GetNextAnimatorStateInfo(animatorLayer).shortNameHash;
+        }
+    }
+
+    /// <returns>
+    /// True if currently in the specified state (if not in transition) or transitioning into the specified
+    /// state (if in transition) in the Animator.
+    /// </returns>
+    public static bool IsActiveAnimatorState(Animator animator, int animatorLayer, int stateHash)
+    {
+        if (animator.IsInTransition(animatorLayer))
+        {
+            AnimatorStateInfo next =
+                animator.GetNextAnimatorStateInfo(animatorLayer);
+
+            //Debug.Log("next hash: " + next.shortNameHash + ". saved hash: " + stateHash);
+            if (next.shortNameHash == stateHash)
+                return true;
+        }
+        else
+        {
+            AnimatorStateInfo current =
+            animator.GetCurrentAnimatorStateInfo(animatorLayer);
+
+            //Debug.Log("current hash: " + current.shortNameHash + ". saved hash: " + stateHash);
+            if (current.shortNameHash == stateHash)
+                return true;
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Draws a wireframe sphere at the given position with the specified radius.
     /// ? after Color parameter type means that Color struct is allowed to be null.

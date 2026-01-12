@@ -2892,9 +2892,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1470941913}
+  - component: {fileID: 1470941914}
   - component: {fileID: 1470941912}
   - component: {fileID: 1470941911}
-  - component: {fileID: 1470941914}
   m_Layer: 0
   m_Name: FPSTest
   m_TagString: Untagged
@@ -4181,6 +4181,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1247577649}
     m_Modifications:
+    - target: {fileID: 1042823414672464334, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 3810280138809237341}
+    - target: {fileID: 2056990495376228356, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+      propertyPath: animator
+      value: 
+      objectReference: {fileID: 3810280138809237341}
     - target: {fileID: 2077680040131786573, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
       propertyPath: m_Name
       value: PlayerCharacterVisuals
@@ -4286,6 +4294,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1e08ab4379f91c4080df5ba2c1fdbc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_SwingHandR_1
+--- !u!95 &3810280138809237341 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8617234715213431562, guid: 01a9bd30761e5ef41a7370a6ffe8d99a, type: 3}
+  m_PrefabInstance: {fileID: 3810280138809237336}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8630144973375816916
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -49,13 +49,4 @@ public class CustomAnimatorState_CharacterVisuals_SwingHandR_1 : CustomAnimatorS
     {
         OnWeaponAttackInputBufferingDisabled?.Invoke();
     }
-
-    //public CustomAnimatorState_CharacterVisuals_SwingHandR_1(
-    //    CustomAnimatorState_CharacterVisuals_Idle idleState)
-    //    : base(
-    //        animationName: "CharacterVisuals_SwingHandR_1",
-    //        crossFadeDurationToThis: 0.1f,
-    //        fallbackState: idleState)
-    //{
-    //}
 }

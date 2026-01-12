@@ -11,13 +11,4 @@ public class CustomAnimatorState_CharacterVisuals_KnockBack_Backward : CustomAni
             0.1f,
             _idleState);
     }
-
-    //public CustomAnimatorState_CharacterVisuals_KnockBack_Backward()
-    //    : base(
-    //        animationName: "CharacterVisuals_KnockBackBackward",
-    //        crossFadeDurationToThis: 0.1f,
-    //        fallbackState: null,
-    //        fallbackTransitionPrecent: 1f)
-    //{
-    //}
 }

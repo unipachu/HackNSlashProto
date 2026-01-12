@@ -3,8 +3,6 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-
-
     [Header("Attack Settings")]
     [Tooltip("In seconds.")]
     [SerializeField] private int swordSwingDmg = 1;
@@ -76,7 +74,7 @@ public class PlayerController : MonoBehaviour
                 if (_comboWindowEnded)
                 {
                     if (moveInput != Vector2.zero
-                        && !_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
+                        && !_customAnimator.IsActiveState(_customAnimator.WalkState))
                     {
                         ChangeAnimatorState(_customAnimator.WalkState);
                     }
@@ -93,7 +91,7 @@ public class PlayerController : MonoBehaviour
                 {
                     // Set correct animations.
                     if (moveInput != Vector2.zero
-                        && !_customAnimator.IsActiveState(0, _customAnimator.WalkState.StateHash))
+                        && !_customAnimator.IsActiveState(_customAnimator.WalkState))
                     {
                         ChangeAnimatorState(_customAnimator.WalkState);
                     }
@@ -105,8 +103,6 @@ public class PlayerController : MonoBehaviour
                 Debug.LogWarning("Switch defaulted.", this);
                 break;
         }
-
-
     }
 
     private void OnDisable()
@@ -166,7 +162,7 @@ public class PlayerController : MonoBehaviour
         _newAttackCanBeBuffered = false;
         _bufferedAttackInput = false;
         _comboWindowEnded = false;
-        _customAnimator.RequestCrossfadeTo(newState);
+        _customAnimator.RequestFixedTimeCrossfadeTo(newState);
     }
 
     //--------------------------------------------- Animation Event Callbacks
