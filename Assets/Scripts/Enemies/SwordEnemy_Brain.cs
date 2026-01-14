@@ -9,6 +9,7 @@ public class SwordEnemy_Brain : BT_Tree
     // TODO: Possibly set member variables in constructor and create this in the SwordEnemy controller script.
     [SerializeField] private float _chaseMinDist;
     [SerializeField] private float _chaseMaxDist;
+    // TODO: Change to "_targetTransform"
     [SerializeField] private Transform _playerTransform;
 
     protected override BT_Node SetupTree()
@@ -24,6 +25,11 @@ public class SwordEnemy_Brain : BT_Tree
                 {
                     new BT_IsInRange(_chaseMinDist, _chaseMaxDist, transform, _playerTransform),
                     new BT_ChasePlayer(GetComponent<IPlayerChaser>())
+                }),
+                new BT_Sequence(new List<BT_Node>
+                {
+                    new BT_IsInRange(0, _chaseMinDist, transform, _playerTransform),
+                    new BT_JumpAttack(GetComponent<IJumpAttacker>())
                 }),
                 new BT_Idle(GetComponent<IPlayerChaser>())
             })

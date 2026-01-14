@@ -2,6 +2,9 @@ using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Threading.Tasks;
+using UnityEngine.Events;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -38,6 +41,9 @@ public enum Directions3D
     Backward,
 }
 
+/// <summary>
+/// Icludes general helper and utility in the form of general methods and extension methods.
+/// </summary>
 public static class GeneralUtils
 {
     /// <summary>
@@ -45,12 +51,11 @@ public static class GeneralUtils
     /// </summary>
     public static Color DefaultColor = Color.white;
 
+    #region =========================================== MATH AND TRANSFORM AND RIGIDBODY TRANSFORMATIONS
 
     /// <summary>
     /// Normalizes angle to 0-360 degrees.
     /// </summary>
-    /// <param name="angle"></param>
-    /// <returns></returns>
     public static float Normalize360(float angle)
     {
         angle %= 360f;
@@ -58,15 +63,14 @@ public static class GeneralUtils
         return angle;
     }
 
-    public static bool IsInRange(float x, float greaterThanOrEqualTo, float lessThanOrEqualTo)
+    public static bool IsInRange(float value, float greaterThanOrEqualTo, float lessThanOrEqualTo)
     {
-        return x >= greaterThanOrEqualTo && x <= lessThanOrEqualTo;
+        return value >= greaterThanOrEqualTo && value <= lessThanOrEqualTo;
     }
 
     /// <summary>
     /// Checks if the two positions are within the allowed distance from each other.
     /// </summary>
-    /// <returns></returns>
     public static bool IsWithinAllowedDist(Vector3 a, Vector3 b, float minDist, float maxDist)
     {
         float distance = Vector3.Distance(a, b);
@@ -99,7 +103,7 @@ public static class GeneralUtils
     /// Transforms point from rigidbody's local space to world space using rb.position.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.TransformPoint.
     /// </summary>
-    public static Vector3 RigidbodyUnscaledTransformPoint(Rigidbody rb, Vector3 pointInRbSpace)
+    public static Vector3 RigidbodyUnscaledTransformPoint(this Rigidbody rb, Vector3 pointInRbSpace)
     {
         return rb.rotation * pointInRbSpace + rb.position;
     }
@@ -108,7 +112,7 @@ public static class GeneralUtils
     /// Transforms point from world space to rb's local space using rb.position.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.InverseTransformPoint.
     /// </summary>
-    public static Vector3 RigidbodyUnscaledInverseTransformPoint(Rigidbody rb, Vector3 pointInWorldSpace)
+    public static Vector3 RigidbodyUnscaledInverseTransformPoint(this Rigidbody rb, Vector3 pointInWorldSpace)
     {
         return Quaternion.Inverse(rb.rotation) * (pointInWorldSpace - rb.position);
     }
@@ -116,7 +120,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a world space rotation into the rigidbody's local space rotation.
     /// </summary>
-    public static Quaternion RotationFromWorldToRbSpace(Rigidbody rb, Quaternion rotationInWorldSpace)
+    public static Quaternion RotationFromWorldToRbSpace(this Rigidbody rb, Quaternion rotationInWorldSpace)
     {
         return Quaternion.Inverse(rb.rotation) * rotationInWorldSpace;
     }
@@ -124,7 +128,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a rigidbody's local space rotation into world space rotation.
     /// </summary>
-    public static Quaternion RotationFromRbSpaceToWorld(Rigidbody rb, Quaternion rotationInRbSpace)
+    public static Quaternion RotationFromRbSpaceToWorld(this Rigidbody rb, Quaternion rotationInRbSpace)
     {
         return rb.rotation * rotationInRbSpace;
     }
@@ -133,7 +137,7 @@ public static class GeneralUtils
     /// Transforms point from transform's local space to world space.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.TransformPoint.
     /// </summary>
-    public static Vector3 UnscaledTransformPoint(Transform transform, Vector3 pointInTransformSpace)
+    public static Vector3 UnscaledTransformPoint(this Transform transform, Vector3 pointInTransformSpace)
     {
         return transform.rotation * pointInTransformSpace + transform.position;
     }
@@ -142,7 +146,7 @@ public static class GeneralUtils
     /// Transforms point from world space to transform's local space.
     /// Does not scale the point, in other words: ignores transform.localScale unlike transform.InverseTransformPoint.
     /// </summary>
-    public static Vector3 UnscaledInverseTransformPoint(Transform transform, Vector3 pointInWorldSpace)
+    public static Vector3 UnscaledInverseTransformPoint(this Transform transform, Vector3 pointInWorldSpace)
     {
         return Quaternion.Inverse(transform.rotation) * (pointInWorldSpace - transform.position);
     }
@@ -150,7 +154,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a world space rotation into the transform's local space rotation.
     /// </summary>
-    public static Quaternion RotationFromWorldToTransformSpace(Transform transform, Quaternion rotationInWorldSpace)
+    public static Quaternion RotationFromWorldToTransformSpace(this Transform transform, Quaternion rotationInWorldSpace)
     {
         return Quaternion.Inverse(transform.rotation) * rotationInWorldSpace;
     }
@@ -158,7 +162,7 @@ public static class GeneralUtils
     /// <summary>
     /// Converts a transforms's local space rotation into world space rotation.
     /// </summary>
-    public static Quaternion RotationFromTransformSpaceToWorld(Transform transform, Quaternion rotationInRbSpace)
+    public static Quaternion RotationFromTransformSpaceToWorld(this Transform transform, Quaternion rotationInRbSpace)
     {
         return transform.rotation * rotationInRbSpace;
     }
@@ -190,14 +194,48 @@ public static class GeneralUtils
         onComplete?.Invoke();
     }
 
+    /// <returns>
+    /// Value mapped from range 1 to range 2.
+    /// </returns>
+    public static float Remap(float value, float from1, float to1, float from2, float to2)
+    {
+        return Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, value));
+    }
+
+    #endregion
+    #region =========================================== COLLECTION UTILS
+
+    /// <summary>
+    /// Copies a block from this array to another. Using a span is often faster than using an array copy.
+    /// </summary>
+    public static void BlockCopy<T>(this Span<T> src, int srcOffset, Span<T> dst, int dstOffset, int count)
+    {
+        if ((uint)(srcOffset + count) > (uint)src.Length)
+            throw new ArgumentException("Source span is to small.");
+        if ((uint)(dstOffset + count) > (uint)dst.Length)
+            throw new ArgumentException("Destination span is to small.");
+
+        src.Slice(srcOffset, count).CopyTo(dst.Slice(dstOffset));
+    }
+
+    /// <summary>
+    /// Copies a block from this array to another.
+    /// </summary>
+    public static void BlockCopy<T>(this T[] src, int srcOffset, T[] dst, int dstOffset, int count)
+    {
+        if(src == null) throw new ArgumentNullException(nameof(src));
+        if (dst == null) throw new ArgumentNullException(nameof(dst));
+
+        src.AsSpan().BlockCopy(srcOffset, dst.AsSpan(), dstOffset, count);
+    }
+
+    #endregion
+    #region =========================================== MESH / MATERIAL EFFECTS
+
     /// <summary>
     /// Flashes mesh between two materials based on Time.time. Has to be called each frame to work.
     /// </summary>
-    /// <param name="meshRenderer"></param>
-    /// <param name="materialA"></param>
-    /// <param name="materialB"></param>
-    /// <param name="flashInterval"></param>
-    public static void FlashMeshUpdate(MeshRenderer meshRenderer, Material materialA, Material materialB, float flashInterval = 0.2f)
+    public static void FlashMeshUpdate(this MeshRenderer meshRenderer, Material materialA, Material materialB, float flashInterval = 0.2f)
     {
         // Switch materials based on the flash interval.
         meshRenderer.material = (Time.time % flashInterval < flashInterval / 2)
@@ -205,11 +243,13 @@ public static class GeneralUtils
             : materialB;
     }
 
+    #endregion
+    #region =========================================== 2D VISUALS AND UI EFFECTS
 
     /// <summary>
     /// When wrap mode of image's sprite is repeat, this will cause a horizontal scrolling effect when called from Update.
     /// </summary>
-    public static void ScrollImage(RawImage image, float scrollSpeed)
+    public static void ScrollImage(this RawImage image, float scrollSpeed)
     {
         image.uvRect = new Rect(image.uvRect.position + new Vector2(scrollSpeed * Time.deltaTime, 0), image.uvRect.size);
     }
@@ -217,7 +257,7 @@ public static class GeneralUtils
     /// <summary>
     /// When wrap mode of image's sprite is repeat, this will cause a horizontal scrolling effect when called from Update.
     /// </summary>
-    public static void ScrollImages(RawImage[] images, float scrollSpeed)
+    public static void ScrollImages(this RawImage[] images, float scrollSpeed)
     {
         foreach (RawImage image in images)
         {
@@ -225,16 +265,19 @@ public static class GeneralUtils
         }
     }
 
-    public static void VerticalSineMovement(RectTransform rectTransform, Vector3 startPos, float speed, float amplitude)
+    public static void VerticalSineMovement(this RectTransform rectTransform, Vector3 startPos, float speed, float amplitude)
     {
         float yOffset = Mathf.Sin(Time.time * speed) * amplitude;
         rectTransform.anchoredPosition = startPos + new Vector3(0f, yOffset, 0f);
     }
 
+    #endregion
+    #region =========================================== ANIMATOR HELPERS
+
     /// <returns>
     /// The hash of the current animator state if not in transition, or the the hash of the next animator state if in transition.
     /// </returns>
-    public static int HashOfActiveAnimatorState(Animator animator, int animatorLayer)
+    public static int HashOfActiveAnimatorState(this Animator animator, int animatorLayer)
     {
         if (animator.IsInTransition(animatorLayer))
         {
@@ -250,7 +293,7 @@ public static class GeneralUtils
     /// True if currently in the specified state (if not in transition) or transitioning into the specified
     /// state (if in transition) in the Animator.
     /// </returns>
-    public static bool IsActiveAnimatorState(Animator animator, int animatorLayer, int stateHash)
+    public static bool IsActiveAnimatorState(this Animator animator, int animatorLayer, int stateHash)
     {
         if (animator.IsInTransition(animatorLayer))
         {
@@ -273,6 +316,164 @@ public static class GeneralUtils
 
         return false;
     }
+
+    #endregion
+    #region =========================================== TASK / AWAITABLE / UNITY EVENT EXTENSIONS
+
+    /// <summary>
+    /// Waits until the condition is true.<br/>
+    /// NOTE: Default poll interval of 33 ms ~= one frame at 30fps.
+    /// </summary>
+    /// <returns>
+    /// False if timeouted (amd timeoutMs was set to >0), otherwise true.
+    /// </returns>
+
+    public static async Task<bool> WaitUntil(this Func<bool> condition, int timeoutMs = -1, int pollIntervalMs = 33)
+    {
+        if (condition is null) throw new ArgumentNullException(nameof(condition));
+        if (pollIntervalMs <= 0) throw new ArgumentOutOfRangeException(nameof(pollIntervalMs), "Poll interval must be positive!");
+
+        var waitTask = RunWaitLoop(condition, pollIntervalMs);
+
+        if (timeoutMs < 0)
+        {
+            await waitTask;
+            return true;
+        }
+
+        var timeoutTask = Task.Delay(timeoutMs);
+        var finished = await Task.WhenAny(waitTask, timeoutTask);
+        return finished == waitTask;
+    }
+
+    /// <summary>
+    /// Helper for WaitUntil();
+    /// </summary>
+    private static async Task RunWaitLoop(Func<bool> condition, int pollIntervalMs)
+    {
+        while (!condition())
+            await Task.Delay(pollIntervalMs).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Waits until the condition is true.<br/>
+    /// NOTE: Default poll interval of 33 ms ~= one frame at 30fps.
+    /// </summary>
+    /// <returns>
+    public static Awaitable WaitUntil(this Func<bool> condition, int pollIntervalMs = 33)
+    {
+        if (condition is null) throw new ArgumentNullException(nameof(condition));
+        if (pollIntervalMs <= 0) throw new ArgumentOutOfRangeException(nameof(pollIntervalMs), "Poll interval must be positive!");
+
+        var source = new AwaitableCompletionSource();
+
+        if(condition())
+        {
+            source.SetResult();
+            return source.Awaitable;
+        }
+
+        var interval = TimeSpan.FromMilliseconds(pollIntervalMs);
+
+        async void Poll()
+        {
+            while (!condition())
+            {
+                await Awaitable.WaitForSecondsAsync((float)interval.TotalSeconds);
+            }
+            source.SetResult();
+        }
+
+        Poll();
+        return source.Awaitable;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="UnityEvent{T}"/> into a <see cref="Task{T}"/> that completes
+    /// the next time the event is invoked. The event listener is automatically removed
+    /// after the first invocation.
+    /// </summary>
+    public static Task<T> AsTask<T>(this UnityEvent<T> unityEvent)
+    {
+        if (unityEvent == null) throw new ArgumentNullException(nameof(unityEvent));
+
+        var tcs = new TaskCompletionSource<T>();
+        UnityAction<T> handler = null;
+        handler = value =>
+        {
+            unityEvent.RemoveListener(handler);
+            tcs.TrySetResult(value);
+        };
+
+        unityEvent.AddListener(handler);
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="UnityEvent"/> into a <see cref="Task"/> that completes
+    /// the next time the event is invoked. The event listener is automatically removed
+    /// after the first invocation.
+    /// </summary>
+    public static Task AsTask(this UnityEvent unityEvent)
+    {
+        if(unityEvent == null) throw new ArgumentNullException(nameof(unityEvent));
+
+        var tcs = new TaskCompletionSource<bool>();
+        UnityAction handler = null;
+        handler = () =>
+        {
+            unityEvent.RemoveListener(handler);
+            tcs.TrySetResult(true);
+        };
+
+        unityEvent.AddListener(handler);
+        return tcs.Task;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="UnityEvent"/> into an <see cref="Awaitable"/> that completes
+    /// the next time the event is invoked. The event listener is automatically removed
+    /// after the first invocation.
+    /// </summary>
+    public static Awaitable AsAwaitable(this UnityEvent unityEvent)
+    {
+        if (unityEvent is null) throw new ArgumentNullException(nameof(unityEvent));
+
+        var completionSource = new AwaitableCompletionSource();
+        UnityAction handler = null;
+        handler = () =>
+        {
+            unityEvent.RemoveListener(handler);
+            completionSource.TrySetResult();
+        };
+
+        unityEvent.AddListener(handler);
+        return completionSource.Awaitable;
+    }
+
+    /// <summary>
+    /// Converts a <see cref="UnityEvent{T}"/> into an <see cref="Awaitable{T}"/> that completes
+    /// the next time the event is invoked, yielding the event argument as the result.
+    /// The event listener is automatically removed after the first invocation.
+    /// </summary>
+    public static Awaitable<T> AsAwaitable<T>(this UnityEvent<T> unityEvent)
+    {
+        if (unityEvent is null) throw new ArgumentNullException(nameof(unityEvent));
+
+        var acs = new AwaitableCompletionSource<T>();
+        UnityAction<T> handler = null;
+        handler = value =>
+        {
+            unityEvent.RemoveListener(handler);
+            acs.TrySetResult(value);
+        };
+
+        unityEvent.AddListener(handler);
+        return acs.Awaitable;
+    }
+
+    #endregion
+    #region =========================================== DEBUGGING / EDITOR-ONLY
 
     /// <summary>
     /// Draws a wireframe sphere at the given position with the specified radius.
@@ -340,9 +541,6 @@ public static class GeneralUtils
     /// Draws text labels in Scene View. Call this in OnDrawGizmos or other methods that are run in the editor to make the labels appear.
     /// Is set to do nothing in builds, since Handles.Label is an editor-only function and would cause errors in builds. 
     /// </summary>
-    /// <param name="position"></param>
-    /// <param name="text"></param>
-    /// <param name="color"></param>
     public static void DrawLabel(Vector3 position, string text, Color color, int fontSize = 12, TextAnchor alignment = TextAnchor.MiddleCenter, FontStyle fontStyle = FontStyle.Bold, bool wordWrap = true, bool richText = false)
     {
 #if UNITY_EDITOR
@@ -358,5 +556,7 @@ public static class GeneralUtils
         Handles.Label(position, text, labelStyle);
 #endif
     }
+    #endregion
 
 }
+

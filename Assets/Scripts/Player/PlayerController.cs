@@ -18,8 +18,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("Animaton Related Refs")]
     [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
-    [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_1 swingR1State;
-    [SerializeField] private CustomAnimatorState_CharacterVisuals_SwingHandR_2 swingR2State;
 
     private Vector2 moveInput = Vector2.zero;
     private bool attackInput = false;
@@ -39,32 +37,32 @@ public class PlayerController : MonoBehaviour
     {
         ReadInputs();
 
-        CustomAnimatorState animatorState = _customAnimator.ActiveState;
+        string animatorState = _customAnimator.ActiveState.StateName;
 
         switch (animatorState)
         {
-            case CustomAnimatorState_CharacterVisuals_Idle:
+            case "CharacterVisuals_Idle":
                 if (attackInput)
                 {
-                    ChangeAnimatorState(_customAnimator.SwingR1State);
+                    ChangeAnimatorState(_customAnimator.SwingR0State);
                 }
                 else if (moveInput != Vector2.zero)
                 {
                     ChangeAnimatorState(_customAnimator.WalkState);
                 }
                 break;
-            case CustomAnimatorState_CharacterVisuals_Walk:
+            case "CharacterVisuals_Walk":
                 _movement.SolveMovement(moveInput);
                 if (attackInput)
                 {
-                    ChangeAnimatorState(_customAnimator.SwingR1State);
+                    ChangeAnimatorState(_customAnimator.SwingR0State);
                 }
                 else if (moveInput == Vector2.zero)
                 {
                     ChangeAnimatorState(_customAnimator.IdleState);
                 }
                 break;
-            case CustomAnimatorState_CharacterVisuals_SwingHandR_1:
+            case "CharacterVisuals_SwingHandR_0":
                 // TODO: Create input buffer for dodge/attack, choosing the last one.
                 if (attackInput) TryBufferAttack();
                 if (_attackActive)
@@ -80,7 +78,7 @@ public class PlayerController : MonoBehaviour
                     }
                 }
                 break;
-            case CustomAnimatorState_CharacterVisuals_SwingHandR_2:
+            case "CharacterVisuals_SwingHandR_1":
                 // TODO: Create input buffer for dodge/attack, choosing the last one.
                 if (attackInput) TryBufferAttack();
                 if (_attackActive)
@@ -100,9 +98,16 @@ public class PlayerController : MonoBehaviour
             default:
                 // TODO: Since the custom animator first initializes its initial state at the end of its first Update,
                 // TODO CONTD: this switch will likely default during first frame.
-                Debug.LogWarning("Switch defaulted.", this);
+                Debug.LogError("Switch defaulted.", this);
                 break;
         }
+    }
+
+    public void EquipWeapon(WeaponDefinition weapon)
+    {
+        // TODO:
+        //animator.runtimeAnimatorController = weapon.animatorOverride;
+        //actionDatabase.SetActions(weapon.availableActions);
     }
 
     private void OnDisable()
@@ -119,28 +124,20 @@ public class PlayerController : MonoBehaviour
 
     private void SubscribeToAnimationEvents()
     {
-        swingR1State.OnWeaponActiveStart += OnWeaponActiveStart;
-        swingR1State.OnWeaponActiveEnd += OnWeaponActiveEnd;
-        swingR1State.OnWeaponAttackInputBufferingEnabled += OnAttackInputBufferingAllowed;
-        swingR1State.OnWeaponAttackInputBufferingDisabled += OnSwing1AttackBufferingEnd;
-
-        swingR2State.OnWeaponActiveStart += OnWeaponActiveStart;
-        swingR2State.OnWeaponActiveEnd += OnWeaponActiveEnd;
-        swingR2State.OnWeaponAttackInputBufferingEnabled += OnAttackInputBufferingAllowed;
-        swingR2State.OnWeaponAttackInputBufferingDisabled += OnSwing2AttackBufferingEnd;
+        _customAnimator.OnWeaponActiveStart += OnWeaponActiveStart;
+        _customAnimator.OnWeaponActiveEnd += OnWeaponActiveEnd;
+        _customAnimator.OnWeaponAttackInputBufferingEnabled += OnAttackInputBufferingAllowed;
+        _customAnimator.OnSwing0WeaponAttackInputBufferingDisabled += OnSwing0AttackBufferingEnd;
+        _customAnimator.OnSwing1WeaponAttackInputBufferingDisabled += OnSwing1AttackBufferingEnd;
     }
 
     private void UnsubscribeToAnimationEvents()
     {
-        swingR1State.OnWeaponActiveStart -= OnWeaponActiveStart;
-        swingR1State.OnWeaponActiveEnd -= OnWeaponActiveEnd;
-        swingR1State.OnWeaponAttackInputBufferingEnabled -= OnAttackInputBufferingAllowed;
-        swingR1State.OnWeaponAttackInputBufferingDisabled -= OnSwing1AttackBufferingEnd;
-
-        swingR2State.OnWeaponActiveStart -= OnWeaponActiveStart;
-        swingR2State.OnWeaponActiveEnd -= OnWeaponActiveEnd;
-        swingR2State.OnWeaponAttackInputBufferingEnabled -= OnAttackInputBufferingAllowed;
-        swingR2State.OnWeaponAttackInputBufferingDisabled -= OnSwing2AttackBufferingEnd;
+        _customAnimator.OnWeaponActiveStart -= OnWeaponActiveStart;
+        _customAnimator.OnWeaponActiveEnd -= OnWeaponActiveEnd;
+        _customAnimator.OnWeaponAttackInputBufferingEnabled -= OnAttackInputBufferingAllowed;
+        _customAnimator.OnSwing0WeaponAttackInputBufferingDisabled -= OnSwing0AttackBufferingEnd;
+        _customAnimator.OnSwing1WeaponAttackInputBufferingDisabled -= OnSwing1AttackBufferingEnd;
     }
 
     public bool TryBufferAttack()
@@ -183,12 +180,12 @@ public class PlayerController : MonoBehaviour
         _newAttackCanBeBuffered = true;
     }
 
-    public void OnSwing1AttackBufferingEnd()
+    public void OnSwing0AttackBufferingEnd()
     {
         if (_bufferedAttackInput)
         {
             // NOTE: Animator seems to only register transition to a new state during the internal animation update.
-            ChangeAnimatorState(_customAnimator.SwingR2State);
+            ChangeAnimatorState(_customAnimator.SwingR1State);
         }
         else
         {
@@ -197,13 +194,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void OnSwing2AttackBufferingEnd()
+    public void OnSwing1AttackBufferingEnd()
     {
         if (_bufferedAttackInput)
         {
             // TODO: Calling this causes an error, likely because it is called in some other time than Update().
             // TODO: Animator seems to only register transition to a new state at a certain point during frame cycle. This is weird so you should write it down.
-            ChangeAnimatorState(_customAnimator.SwingR1State);
+            ChangeAnimatorState(_customAnimator.SwingR0State);
         }
         else
         {

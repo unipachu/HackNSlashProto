@@ -6,13 +6,14 @@ using UnityEngine.AI;
 /// as the ai or the "brains" of the enemy are controller by a separate class.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent), typeof(CharacterController), typeof(KnockBack))]
-public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
+public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJumpAttacker
 {
     [Header("Settings")]
     [SerializeField] private int _maxHealth = 3;
 
     [Header("Refs")]
     [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
+    [SerializeField] private CharacterController _characterController;
     
     private int _currentHealth;
     private NavMeshAgent _agent;
@@ -24,6 +25,11 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
     public int MaxHealth => _maxHealth;
     // TODO: Might make more sense to use enum/bool to check this to make sure that the "dying state" has been properly initialized.
     public bool IsDead => _currentHealth <= 0;
+
+    private void OnEnable()
+    {
+        SubscribeToEvents();
+    }
 
     private void Awake()
     {
@@ -49,6 +55,33 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         }
     }
 
+    private void OnDisable()
+    {
+        UnsubscribeToEvents();
+    }
+
+    private void SubscribeToEvents()
+    {
+        _customAnimator.OnRootXZMotion += OnRootXZMotion;
+    }
+
+    private void UnsubscribeToEvents()
+    {
+        _customAnimator.OnRootXZMotion -= OnRootXZMotion;
+    }
+
+    // TODO: Root motion rotation through code doesn't seem to work well with the CharacterVisuals.
+    // TODO C: Figure out a way to apply only linear xz root motion through code while animator handles y motion and rotation.
+    private void OnRootXZMotion(Vector2 deltaXZMotion)
+    {
+        //Vector3 horizontalMotion = new Vector3(
+        //    deltaXZMotion.x,
+        //    0f,
+        //    deltaXZMotion.y
+        //);
+        //_characterController.Move(horizontalMotion);
+    }
+
     /// <summary>
     /// Used by the behavior tree to ask the sword enemy to follow the player.
     /// </summary>
@@ -61,7 +94,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         // TODO: Think when to return failure.
 
         // NOTE: The knockback state is expected to be in the layer 0.
-        if (IsStunned())
+        if (IsStunned() || IsAttacking())
         {
             return NodeState.Failure;
         }
@@ -76,7 +109,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
 
     public NodeState RequestIdle()
     {
-        if (IsStunned())
+        if (IsStunned() || IsAttacking())
         {
             return NodeState.Failure;
         }
@@ -84,6 +117,19 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         Agent.isStopped = true;
         if(!_customAnimator.IsActiveState(_customAnimator.IdleState))
             _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.IdleState);
+        return NodeState.Success;
+    }
+
+    public NodeState RequestJumpAttack()
+    {
+        if (IsStunned())
+        {
+            return NodeState.Failure;
+        }
+
+        Agent.isStopped = true;
+        if (!_customAnimator.IsActiveState(_customAnimator.AttackJumpState))
+            _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.AttackJumpState);
         return NodeState.Success;
     }
 
@@ -105,4 +151,11 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable
         return _customAnimator.IsActiveState(_customAnimator.KnockBackBackwardState)
             || _knockBack.IsInKnockBack;
     }
+
+    private bool IsAttacking()
+    {
+        return _customAnimator.IsActiveState(_customAnimator.AttackJumpState);
+    }
+
+
 }

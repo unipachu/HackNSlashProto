@@ -1,15 +1,14 @@
 using UnityEngine;
 
 /// <summary>
-/// Custom animator class which uses Unity's animator for playing animations but handles state transitions fully by itself.
-/// Has the ability to enqueue animations. <br/>
+/// Custom animator class which uses Unity's animator for playing animations but handles state transitions fully by itself.<br/>
 /// NOTE: Do not use Unity Animator's transitions if you use this class.
-/// NOTE: Crossfades now use fixed time which does not scale if the animator speed is scaled.
 /// </summary>
 public abstract class CustomAnimator : MonoBehaviour
 {
-    [SerializeField] private Animator _animator;
-    [SerializeField] private CustomAnimatorState _initialState;
+    [SerializeField] protected Animator _animator;
+    
+    protected CustomAnimatorState _initialState;
 
     /// <summary>
     /// Currently active state (animation). If in transition, refers to the "next animator state".
@@ -28,6 +27,9 @@ public abstract class CustomAnimator : MonoBehaviour
     /// </summary>
     public CustomAnimatorState ActiveState => _activeState;
 
+    /// <summary>
+    /// Transition to Initial state. Should be called AFTER states have been initialized in the implemented class' Start().
+    /// </summary>
     protected virtual void Start()
     {
         // Transition to initial state.
@@ -138,6 +140,23 @@ public abstract class CustomAnimator : MonoBehaviour
     }
 
     /// <returns>
+    /// If the Animator is currently in transition and the current and next states are the same.
+    /// </returns>
+    public bool IsTransitioningToSameState()
+    {
+        // NOTE: Currently always uses 0 layer.
+        if (!_animator.IsInTransition(0)) return false;
+
+        // NOTE: Currently only works with layer 0.
+        AnimatorStateInfo currentState = _animator.GetNextAnimatorStateInfo(0);
+
+        // NOTE: Currently only works with layer 0.
+        AnimatorStateInfo nextState = _animator.GetCurrentAnimatorStateInfo(0);
+
+        return currentState.shortNameHash == nextState.shortNameHash;
+    }
+
+    /// <returns>
     /// Debug info about states of the animator.
     /// </returns>
     protected string AnimatorStateInfo()
@@ -166,7 +185,7 @@ public abstract class CustomAnimator : MonoBehaviour
             return;
         }
 
-        foreach (var animState in animStates)
+        foreach (CustomAnimatorState animState in animStates)
         {
             if (animState == null)
             {
@@ -178,75 +197,87 @@ public abstract class CustomAnimator : MonoBehaviour
 
             if (string.IsNullOrWhiteSpace(stateName))
             {
-                Debug.LogError("Animator state name is empty.", animState);
+                Debug.LogError("Animator state name is empty.", this);
                 continue;
             }
 
             int stateHash = Animator.StringToHash(stateName);
 
             // NOTE: Only checks layer 0. Extend if needed.
-            Debug.Assert(_animator.HasState(0, stateHash), "Animator didn't have state: " + stateName, animState);
+            Debug.Assert(_animator.HasState(0, stateHash), "Animator didn't have state: " + stateName, this);
+            Debug.Assert(GeneralUtils.IsInRange(animState.FallbackTransitionPrecent, 0, 1), "Fallback transition precent was out of range!", this);
+            Debug.Assert(!string.IsNullOrEmpty(stateName), "State name was null or empty!", this);
         }
     }
 }
 
 // ANIMATOR TESTING AND NOTES:
 
-// - PROBLEM: It seems like transition times are visibly longer than 0.5 seconds even though the transition time was set to 0.5f.
+// - INTERRUPTING A CROSSFADE:
+//   When starting a crossfade while the animator is in another crossfade, the animator freezes the current position of the animated object
+//   and uses that pose to crossfade to the next animation, while considering the very first animation of the three
+//   as the "current animation" still.
 
-// - When starting crossfade during another crossfade, the animator seems to know how to smoothly cross
-//   fade from the in-transition pose to the third one.
+// - TRANSITION CALL AND EXECUTION TIME:
+//   Newest animator.CrossFade call seems to always override the previous one, if called before Unity's internal animation update.
+//   Unity DOES NOT consider an animator to be in a transition (animator.IsInTransition) until that animator's next internal animation
+//   update after a transition (e.g. animator.Crossfade()) has been called. There seems to be no way to query the animator if an
+//   animator state transition has been buffered before the internal animation update actually starts the transition (which normally
+//   happens between Update() and LateUpdate()).
 
-// - Newest animator.CrossFade call seems to always override the previous one, no matter if they have been called the same frame or not.
-
-// - Animator never seems to reach the next animation. This might be caused by the fact that I call cross fade transition every frame.
-//   INDEED - if crossfade is called during an earlier unfinished transition, the transition is started again, though now it is transitioned
-//   from the pose it was during the two transitions. I'm not sure how Unity does these transitions from transitions but this doesn't seem
-//   to cause a memory leak or any other problems. This proves that you can transition to the same animation we are currently in.
+// - TRANSITIONING TO THE SAME ANIMATION:
+//   You can transition to the same animator state we are currently in. Crossfades will work as expected, so it seems that the animator
+//   state machine instantiates the same state two times.
+//   By default it seems that even when transitioning to the same animation, the new animation always starts from the beginning.
+//   I.e. it seems that Unity creates two instanses of the same animation and the "next" animation will start from the beginning,
+//   while the current animation continues from where its at, and the crossfade is done between these normally.
 //   IMPORTANT NOTE: If you call crossfade every frame, the animator will be in the transition FOR EVER, even if it looks like the
-//   transition had finished.
-//   When looking at the animator window in Unity, it seems that when a transition is interrupted, Unity pauses the first animation,
-//   and uses that paused pose to transition to the next animation (though the next animation will still play during transition).
+//   transition had finished. Make sure not to spam crossfade to the same animation we are currently in.
 
-// - It also seems that when transition is not interrupted by another transition, the transition will be completely smooth,
-//   whereas if you enter a transition while already in a transition, there seems to be a "jump" in the bun's" animation.
-//   This weird jump in the bun's animation seems to also happen when crossfading from walk to Test animation.
-//   No wait, this seems to happen also when transitioning in between test animations.
-//   I don't understand why this jump happens. Could it be related to the fact that the animation uses euler angles and jumps from 360 to 0?
-//   Probably.
+// - CROSSFADING BETWEEN ROTATIONS:
+//   In Animation files, the animation uses Euler angles to interpolate between rotation key frames BY DEFAULT.
+//   This works well for limbs that can move in a limited angle range. However when crossfade transition interpolates the rotations between
+//   the two animations, it seems to use Quaternion slerp as default AND THIS CANNOT BE CHANGED! This can mean that
+//   limbs rotate through a wrong direction (e.g. through a character's body) if that direction is the shortest path
+//   between the two interpolated rotations. Only way to prevent this is to make sure that animated limb rotations always stay in +-90 degrees range.
 
-// To animate rotations properly, you should probably create a custom method which reveals up and forward vectors to the animator and
-// and uses LookRotation to rotate the object. Or make sure no animated game object "rotates over +-180 degrees.
-// NO WAIT: I changed the bun rotations so that they stay in the range -120 to 120 degrees and the jumps still happen. What?
-// The body of the character seems to rotate smoothly so I have no idea what's going on.
-// Perhaps the animator tries to interpolate between angles by taking the shortest path, but since the shortest path changes to the other side
-// because the animation can rotate the object over 180 angle, the object jumps. I'll try to set the buns rotation between -89 to 89
-// in the animation.
-// YES, that seems to have fixed the problem.
+// - WHAT ANIMATOR CONSIDERS AS "CURRENT STATE":
+//   When starting a transition to a new state, the new state starts its animation from the beginning. Only after the transition has ended
+//   the animator changes the "current state" to reference to the animator state that we just transitioned into. If we start a new transition
+//   during a transition, the "current state" during the previous transition will still be considered "current state" during the new 
+//   transition.
 
-// - When starting a transition to a new state, the new state starts its animation from the beginning. So after the transition has ended and
-//   the animator changes the "current state", the animation actually has started playing before and might have already finished if
-//   the animation is shorted than the transition.
-//   This might cause problem if you expect the animator's "current animation" be the same one that just finished playing.
+// - ANIMATION EVENT'S CALLBACK METHOD REFERENCES:
+//   Animation events can only reference monobehaviours' methods that are in the same object as the animator component. Also, if
+//   multiple components have animation event callback methods that have the same name, the animator might call the wrong method.
 
-// - By default it seems that even when transitioning to the same animation, the new animation always starts from the beginning.
-//   I.e. it seems like Unity creates two instanses of the same animation and the "next" animation will start from the beginning,
-//   while the current one continues from where its at, and the crossfade is done between these normally.
-
-// - Animation events can only reference monobehaviours' methods that are in the same object as the animator component. Also, if
-//   multiple component have animation event callback methods that have the same name, the animator might call the wrong method.
-
-// - ANIMATION EVENTS will trigger in both the animation that we are currently transitioning into and currenty transtitioning out of.
+// - ANIMATION EVENTS DURING TRANSITIONS:
+//   Animation events will trigger in both the animation that we are currently transitioning into and currenty transtitioning out of.
 //   This is problematic if you e.g. only want the "next" animation's events to trigger.
+//   In code you could check if the Animator is in transition in the animation event callbacks, but if transitioning to the same animation (as
+//   the current one), there seems to be no way to check which animator state called the animation event callback since both
+//   share the same hash/name.
 
-// - If transition offset (start time of the next animation) is used to start transition to animator at a different time than animation
-//   start, all the animation events that would've have triggered before the transion offset are (naturally) skipped. You could 
-//   check if the Animator is in transition in the animation event callbacks, but if transitioning to the same animation as before,
-//   it might be hard to separate between the current and next animation callbacks (if you want the "next" animation event callbacks to
-//   trigger but not the "current" animation event callbacks).
+// - ANIMATION EVENT CALLBACK REFERENCES
+//   Changing animation event on one CharacterVisuals object changes it in the others too since the animation event find the first
+//   method based on a name stored in the animation event. No matter if the other CharacterVisuals lacks that method, or if it has a
+//   different animator controller. This can make reusing animations/animation events for different characters complicated.
 
-// - OnAnimatorMove is called for each script attached to an game object with an Animator after Update and before LateUpdate callbacks,
+// - SKIPPING ANIMATION EVENTS BY OFFSETTING ANIMATION START TIME:
+//   If transition offset (start time of the next animation) is used to start transition to animator at a different time than animation
+//   start, all the animation events that would've have triggered before the transion offset are (naturally) skipped. This should be taken
+//   into consideration if you're using animation events right in the beginning of the animation.
+
+// - OnAnimatorMove() EXECUTION ORDER AND ROOT MOTION CONTROLS:
+//   OnAnimatorMove is called for each script attached to an game object with an Animator after Update and before LateUpdate callbacks,
 //   after animations for the particular game object's animations have been solved.
-
-// - If your script uses OnAnimatorMove, the Animator will automatically change ApplyRootMotion to "Handled by Script" which prevents
+//   If your script uses OnAnimatorMove, the Animator will automatically change ApplyRootMotion to "Handled by Script" which prevents
 //   root rotation and position changes by the animation curves - you need to apply them through code.
+
+// - ANGULAR ROOT MOTION THROUGH CODE:
+//   When applying transform.localRotation *= deltaRot; in OnAnimatorMove to rotate the animated character root, the rotation of the object
+//   seems to be offset a little bit every time an animation with root rotation (e.g. knock back or jump attack) are played. For non-imported
+//   animated objects you don't have settings to choose which root motions are ignored, which are baked into the animation, and which are
+//   applied to the root/controlled by scripts. So for these types of objects it might make sense to create a separate root object for the
+//   root motions you want to control through a script and as its child use a "root child" object with motions that control the whole animated
+//   character/object, excluding the motions you want to control through root motion/control by a script.

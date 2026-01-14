@@ -222,11 +222,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4469584405981832785}
   - component: {fileID: 2077890477677646626}
-  - component: {fileID: 1042823414672464334}
-  - component: {fileID: 2056990495376228356}
-  - component: {fileID: 4105810980012230270}
-  - component: {fileID: 5051138272092719431}
-  - component: {fileID: 8664025438941833384}
   - component: {fileID: 8617234715213431562}
   m_Layer: 0
   m_Name: CharacterVisuals
@@ -266,75 +261,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterVisualsAnimationController
   _animator: {fileID: 8617234715213431562}
-  _initialState: {fileID: 1042823414672464334}
-  _idleState: {fileID: 1042823414672464334}
-  _walkState: {fileID: 2056990495376228356}
-  _knockBackBackwardState: {fileID: 4105810980012230270}
-  _swingR1State: {fileID: 5051138272092719431}
-  _swingR2State: {fileID: 8664025438941833384}
---- !u!114 &1042823414672464334
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2077680040131786573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04efef8dd87ef404592a09192aa79a0b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_Idle
---- !u!114 &2056990495376228356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2077680040131786573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db44bae28da9e5243be2577d616a4642, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_Walk
---- !u!114 &4105810980012230270
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2077680040131786573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b758d99d9280c704387db5cecbe49a39, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_KnockBack_Backward
-  _idleState: {fileID: 1042823414672464334}
---- !u!114 &5051138272092719431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2077680040131786573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1e08ab4379f91c4080df5ba2c1fdbc2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_SwingHandR_1
-  _idleState: {fileID: 1042823414672464334}
---- !u!114 &8664025438941833384
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2077680040131786573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e844451773f1fd34dbc0295963fedbc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CustomAnimatorState_CharacterVisuals_SwingHandR_2
-  _idleState: {fileID: 1042823414672464334}
 --- !u!95 &8617234715213431562
 Animator:
   serializedVersion: 7
