@@ -1,20 +1,22 @@
+using System;
 using UnityEngine;
 
 /// <summary>
 /// Custom animator class which uses Unity's animator for playing animations but handles state transitions fully by itself.<br/>
 /// NOTE: Do not use Unity Animator's transitions if you use this class.
 /// </summary>
-public abstract class CustomAnimator : MonoBehaviour
+[Obsolete("Use " + nameof(AL_NewCustomAnimatorLayer) + " instead.")]
+public abstract class OldCustomAnimator : MonoBehaviour
 {
     [SerializeField] protected Animator _animator;
     
-    protected CustomAnimatorState _initialState;
+    protected OldCustomAnimatorState _initialState;
 
     /// <summary>
     /// Currently active state (animation). If in transition, refers to the "next animator state".
     /// NOTE: Animator component refers to its own current/next state -> this offends the SSOT principle. 
     /// </summary>
-    private CustomAnimatorState _activeState;
+    private OldCustomAnimatorState _activeState;
    
     /// <summary>
     /// This is used to prevent fallback transition checker from trying to change to fallback animation based on Animator's active animation
@@ -25,7 +27,7 @@ public abstract class CustomAnimator : MonoBehaviour
     /// <summary>
     /// Currently active state (animation). If in transition, refers to the "next animator state".
     /// </summary>
-    public CustomAnimatorState ActiveState => _activeState;
+    public OldCustomAnimatorState ActiveState => _activeState;
 
     /// <summary>
     /// Transition to Initial state. Should be called AFTER states have been initialized in the implemented class' Start().
@@ -90,7 +92,7 @@ public abstract class CustomAnimator : MonoBehaviour
     /// <summary>
     /// Call this to ask for a new animation.
     /// </summary>
-    public void RequestFixedTimeCrossfadeTo(CustomAnimatorState nextAnimation, float fixedTimeOffset = 0, bool startFromBeginning = true)
+    public void RequestFixedTimeCrossfadeTo(OldCustomAnimatorState nextAnimation, float fixedTimeOffset = 0, bool startFromBeginning = true)
     {
         _requestedStateChangeThisFrame = true;
 
@@ -113,7 +115,7 @@ public abstract class CustomAnimator : MonoBehaviour
     /// Uses CrossFadeInFixedTime. <br/>
     /// NOTE: Always call this when you want to transition to new animation. NEVER crossfade or play other animations through any other method.
     /// </summary>
-    private void RequestInstantTransitionTo(CustomAnimatorState nextAnimation, float normalizedTimeOffset = 0, bool startFromBeginning = true)
+    private void RequestInstantTransitionTo(OldCustomAnimatorState nextAnimation, float normalizedTimeOffset = 0, bool startFromBeginning = true)
     {
         _requestedStateChangeThisFrame = true;
 
@@ -134,7 +136,7 @@ public abstract class CustomAnimator : MonoBehaviour
     /// <returns>
     /// NOTE: Checks the current state of the CustomAnimator which might differ from the Animator's state.
     /// </returns>
-    public bool IsActiveState(CustomAnimatorState state)
+    public bool IsActiveState(OldCustomAnimatorState state)
     {
         return _activeState == state;
     }
@@ -177,7 +179,7 @@ public abstract class CustomAnimator : MonoBehaviour
     /// <summary>
     /// Checks that all provided animation states exist in the animator.
     /// </summary>
-    protected void ValidateAnimationStates(params CustomAnimatorState[] animStates)
+    protected void ValidateAnimationStates(params OldCustomAnimatorState[] animStates)
     {
         if (animStates == null || animStates.Length == 0)
         {
@@ -185,7 +187,7 @@ public abstract class CustomAnimator : MonoBehaviour
             return;
         }
 
-        foreach (CustomAnimatorState animState in animStates)
+        foreach (OldCustomAnimatorState animState in animStates)
         {
             if (animState == null)
             {

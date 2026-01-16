@@ -8,7 +8,7 @@ public class ActionController : MonoBehaviour
 {
     public ActionState ActionState = new();
     public ActionBuffer ActionBuffer = new();
-    public NewAnimationDriver AnimationDriver;
+    public AL_NewCustomAnimatorLayer AnimationDriver;
 
     private ActionDefinition _currentAction;
 
@@ -25,7 +25,7 @@ public class ActionController : MonoBehaviour
     {
         if (_currentAction != null)
         {
-            ActionState.Tick(AnimationDriver.GetNormalizedTime());
+            ActionState.Tick(AnimationDriver.GetClampedNormalizedTime());
 
             TryConsumeBufferedAction();
 
@@ -85,13 +85,13 @@ public class ActionController : MonoBehaviour
     {
         _currentAction = action;
         ActionState.Start(action);
-        AnimationDriver.PlayAction(action);
+        //AnimationDriver.PlayAction(action);
     }
 
     void EndAction()
     {
         _currentAction = null;
-        AnimationDriver.EndAction();
+        //AnimationDriver.EndAction();
     }
 
     void ForceInterrupt(ActionDefinition action)

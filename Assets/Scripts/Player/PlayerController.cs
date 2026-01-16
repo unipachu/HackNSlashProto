@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private InputActionProperty _attackInputAction;
 
     [Header("Animaton Related Refs")]
-    [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
+    [SerializeField] private OldCustomAnimator_CharacterVisuals _customAnimator;
 
     private Vector2 moveInput = Vector2.zero;
     private bool attackInput = false;
@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
     /// <summary>
     /// NOTE: Always call this when entering new animation state.
     /// </summary>
-    private void ChangeAnimatorState(CustomAnimatorState newState)
+    private void ChangeAnimatorState(OldCustomAnimatorState newState)
     {
         _attackActive = false;
         _newAttackCanBeBuffered = false;

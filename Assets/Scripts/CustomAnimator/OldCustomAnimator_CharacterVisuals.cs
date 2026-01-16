@@ -9,7 +9,8 @@ using UnityEngine;
 // TODO CONTD: while the animation event callbacks and other methods were in a monobehavior referenced by the states.
 // TODO CONTD: Except how would the animator states reference the monobehaviors?
 // Ugh, Unity's Animator sucks.
-public class CustomAnimator_CharacterVisuals : CustomAnimator
+[Obsolete]
+public class OldCustomAnimator_CharacterVisuals : OldCustomAnimator
 {
     public event Action OnWeaponActiveStart;
     public event Action OnWeaponActiveEnd;
@@ -21,19 +22,19 @@ public class CustomAnimator_CharacterVisuals : CustomAnimator
     /// </summary>
     public event Action<Vector2> OnRootXZMotion;
 
-    private CustomAnimatorState _idleState = new();
-    private CustomAnimatorState _walkState = new();
-    private CustomAnimatorState _knockBackBackwardState = new();
-    private CustomAnimatorState _swingR0State = new();
-    private CustomAnimatorState _swingR1State = new();
-    private CustomAnimatorState _attackJumpState = new();
+    private OldCustomAnimatorState _idleState = new();
+    private OldCustomAnimatorState _walkState = new();
+    private OldCustomAnimatorState _knockBackBackwardState = new();
+    private OldCustomAnimatorState _swingR0State = new();
+    private OldCustomAnimatorState _swingR1State = new();
+    private OldCustomAnimatorState _attackJumpState = new();
 
-    public CustomAnimatorState IdleState => _idleState;
-    public CustomAnimatorState WalkState => _walkState;
-    public CustomAnimatorState KnockBackBackwardState => _knockBackBackwardState;
-    public CustomAnimatorState SwingR0State => _swingR0State;
-    public CustomAnimatorState SwingR1State => _swingR1State;
-    public CustomAnimatorState AttackJumpState => _attackJumpState;
+    public OldCustomAnimatorState IdleState => _idleState;
+    public OldCustomAnimatorState WalkState => _walkState;
+    public OldCustomAnimatorState KnockBackBackwardState => _knockBackBackwardState;
+    public OldCustomAnimatorState SwingR0State => _swingR0State;
+    public OldCustomAnimatorState SwingR1State => _swingR1State;
+    public OldCustomAnimatorState AttackJumpState => _attackJumpState;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()

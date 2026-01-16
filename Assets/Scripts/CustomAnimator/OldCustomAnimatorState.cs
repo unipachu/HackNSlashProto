@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // TODO MAYBE: Consider EnterState, StartedTransitionToOtherState, and ExitState methods. These could be used to invoke actions,
@@ -7,7 +8,8 @@ using UnityEngine;
 /// <summary>
 /// Represents a state of the Animator component.
 /// </summary>
-public class CustomAnimatorState
+[Obsolete]
+public class OldCustomAnimatorState
 {
     /// <summary>
     /// Name of the animation state in the Animator.
@@ -30,7 +32,7 @@ public class CustomAnimatorState
     /// </summary>
     // TODO: You could just have an overridable method, that returns null by default, and override this method in inherited classes,
     // TODO CONTD: that also hold a reference to a fallback state.
-    public CustomAnimatorState FallbackState { get; protected set; }
+    public OldCustomAnimatorState FallbackState { get; protected set; }
 
     /// <summary>
     /// Percentage (0–1) of the animation at which the fallback transition occurs.
@@ -58,7 +60,7 @@ public class CustomAnimatorState
     public void InitializeState(
         string stateName,
         float crossFadeDurationToThis,
-        CustomAnimatorState fallbackState,
+        OldCustomAnimatorState fallbackState,
         float fallbackTransitionPrecent = 0.9f
         )
     {

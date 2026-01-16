@@ -68,6 +68,17 @@ public static class GeneralUtils
         return value >= greaterThanOrEqualTo && value <= lessThanOrEqualTo;
     }
 
+    public static void ValidateNormalizedValue(this float value, string parameterName)
+    {
+        if (value < 0f || value > 1f)
+        {
+            throw new ArgumentOutOfRangeException(
+                parameterName,
+                value,
+                "Value must be between 0 and 1 (inclusive).");
+        }
+    }
+
     /// <summary>
     /// Checks if the two positions are within the allowed distance from each other.
     /// </summary>
@@ -315,6 +326,58 @@ public static class GeneralUtils
         }
 
         return false;
+    }
+
+    /// <summary>
+    /// Find normalized time (0-1) for a frame in an animation, e.g. for firing animation events. <br/>
+    /// NOTE: Animation frames start at index 0 so the last frame index is  "total frames" - 1.
+    /// Use the INDEX of the last frame, and not the total frames of the animation.
+    /// </summary>
+    public static float FrameToNormalizedTime(int absoluteFrameIndex, int lastFrameIndex)
+    {
+        if (lastFrameIndex <= 0)
+            return 0f;
+
+        // Clamp to valid range to avoid overshoot
+        absoluteFrameIndex = Math.Clamp(absoluteFrameIndex, 0, lastFrameIndex);
+
+        return absoluteFrameIndex / (float)(lastFrameIndex);
+    }
+
+    /// <summary>
+    /// Gets the number of samples (frames) in the AnimationClip of a state on a specified Animator layer.
+    /// Throws exceptions if the Animator, layer, or state is invalid.
+    /// </summary>
+    /// <param name="animator">The Animator to check.</param>
+    /// <param name="stateHash">The hash of the AnimatorState.</param>
+    /// <param name="layerIndex">The layer index where the state exists.</param>
+    /// <returns>The number of samples (frames) in the clip.</returns>
+    public static int GetNumberOfSamplesStrict(Animator animator, int stateHash, int layerIndex)
+    {
+        if (animator == null)
+            throw new ArgumentNullException(nameof(animator), "Animator cannot be null.");
+
+        if (layerIndex < 0 || layerIndex >= animator.layerCount)
+            throw new ArgumentOutOfRangeException(nameof(layerIndex),
+                $"Layer index {layerIndex} is out of range. Animator has {animator.layerCount} layers.");
+
+        // Get current state info for the layer
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(layerIndex);
+
+        // Check if the state hash matches
+        if (stateInfo.fullPathHash != stateHash)
+            throw new ArgumentException($"No active state with the hash {stateHash} on layer {layerIndex}.");
+
+        // Get all clips currently playing on the layer
+        AnimatorClipInfo[] clipInfos = animator.GetCurrentAnimatorClipInfo(layerIndex);
+        if (clipInfos.Length == 0 || clipInfos[0].clip == null)
+            throw new InvalidOperationException($"No AnimationClip found for state hash {stateHash} on layer {layerIndex}.");
+
+        AnimationClip clip = clipInfos[0].clip;
+
+        // Calculate number of frames / samples
+        int numSamples = Mathf.RoundToInt(clip.frameRate * clip.length);
+        return numSamples;
     }
 
     #endregion

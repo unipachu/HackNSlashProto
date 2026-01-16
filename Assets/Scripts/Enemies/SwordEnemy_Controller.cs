@@ -12,7 +12,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJ
     [SerializeField] private int _maxHealth = 3;
 
     [Header("Refs")]
-    [SerializeField] private CustomAnimator_CharacterVisuals _customAnimator;
+    [SerializeField] private OldCustomAnimator_CharacterVisuals _customAnimator;
     [SerializeField] private CharacterController _characterController;
     
     private int _currentHealth;
