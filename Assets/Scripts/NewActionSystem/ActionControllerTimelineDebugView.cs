@@ -10,30 +10,30 @@ public class ActionControllerTimelineDebugView : MonoBehaviour
 
     void OnGUI()
     {
-        if (!DebugViewEnabled)
-            return;
+        //if (!DebugViewEnabled)
+        //    return;
 
-        var action = actionController.CurrentAction;
-        if (action == null)
-            return;
+        //var action = actionController.CurrentAction;
+        //if (action == null)
+        //    return;
 
-        float t = actionController.NormalizedTime;
+        //float t = actionController.NormalizedTime;
 
-        Rect bar = new Rect(10, 220, 300, 20);
-        GUI.Box(bar, "");
+        //Rect bar = new Rect(10, 220, 300, 20);
+        //GUI.Box(bar, "");
 
-        GUI.Box(new Rect(bar.x, bar.y,
-            bar.width * t, bar.height), "");
+        //GUI.Box(new Rect(bar.x, bar.y,
+        //    bar.width * t, bar.height), "");
 
-        DrawMarker(action.CanChainFrom, bar, Color.green);
-        DrawMarker(action.CanCancelFrom, bar, Color.yellow);
-        DrawMarker(action.IFrameFrom, bar, Color.cyan);
-        DrawMarker(action.IFrameTo, bar, Color.cyan);
+        //DrawMarker(action.CanChainFrom, bar, Color.green);
+        //DrawMarker(action.CanCancelFrom, bar, Color.yellow);
+        //DrawMarker(action.IFrameFrom, bar, Color.cyan);
+        //DrawMarker(action.IFrameTo, bar, Color.cyan);
 
-        foreach (var w in action._hitWindows)
-        {
-            DrawWindow(w.WindowStart, w.WindowEnd, bar, Color.red);
-        }
+        //foreach (var w in action._hitWindows)
+        //{
+        //    DrawWindow(w.WindowStart, w.WindowEnd, bar, Color.red);
+        //}
     }
 
     void DrawMarker(float t, Rect bar, Color c)

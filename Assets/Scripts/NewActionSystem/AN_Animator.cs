@@ -1,30 +1,26 @@
+using System;
 using UnityEngine;
 
-public class NewCustomAnimator : MonoBehaviour
+/// <summary>
+/// Custom Animator system meant to work with Unity's native Animator.
+/// NOTE: Inherited classes should contain all animation layers as public read-only auto-implemented properties.
+/// </summary>
+public abstract class AN_Animator
 {
-    [SerializeField] Animator _animator;
-    
-    AL_CharacterVisuals_Base CharacterVisualsLayer_Base;
+    //Animator Animator { get; }
+
+    //public AN_Animator(Animator animator)
+    //{
+    //    if (animator == null)
+    //        throw new ArgumentNullException(nameof(animator), "Animator cannot be null.");
+
+    //    Animator = animator;
+    //}
 
     /// <summary>
-    /// Transition to Initial state. Should be called AFTER states have been initialized in the implemented class' Start().
+    /// Call this in OnAnimatorMove() to update all <see cref="ANL_AnimatorLayer"/> instances of this animator.
     /// </summary>
-    protected virtual void Start()
-    {
-        CharacterVisualsLayer_Base = new(0, _animator);
-
-        //foreach (var layer in layers)
-        //{
-        //    // Transition to initial states.
-        //    layer.RequestInstantTransitionTo(layer.InitialState);
-        //}
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // TODO: Go through every layer. Check if a
-    }
+    public abstract void AnimatorUpdate();
 }
 
 // ANIMATOR TESTING AND NOTES:

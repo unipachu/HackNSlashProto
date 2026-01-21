@@ -4,135 +4,120 @@ using UnityEngine;
 /// State machine for actions.
 /// </summary>
 // TODO: Make this abstract and create a CharacterActionController, which uses sub action states: body, hands, and fullbody override.
-public class ActionController : MonoBehaviour
+public class ActionController
 {
-    public ActionState ActionState = new();
-    public ActionBuffer ActionBuffer = new();
-    public AL_NewCustomAnimatorLayer AnimationDriver;
+    //public ActionState ActionState = new();
+    //public ActionBuffer ActionBuffer = new();
 
-    private ActionDefinition _currentAction;
+    private ACS_ActionState _previousAction;
+    private ACS_ActionState _currentAction;
 
-    public ActionDefinition CurrentAction => _currentAction;
+    //public ACS_ActionState CurrentAction => _currentAction;
 
-    public float NormalizedTime => ActionState.NormalizedTime;
+    // TODO: Move elsewhere.
+    //public bool IsInvulnerable =>
+    //    _currentAction != null &&
+    //    ActionState.NormalizedTime >= _currentAction.IFrameFrom &&
+    //    ActionState.NormalizedTime <= _currentAction.IFrameTo;
 
-    public bool IsInvulnerable =>
-        _currentAction != null &&
-        ActionState.NormalizedTime >= _currentAction.IFrameFrom &&
-        ActionState.NormalizedTime <= _currentAction.IFrameTo;
-
-    void Update()
+    /// <summary>
+    /// Updates current action.
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    public void UpdateActionController(float deltaTime)
     {
         if (_currentAction != null)
         {
-            ActionState.Tick(AnimationDriver.GetClampedNormalizedTime());
+            _currentAction.UpdateState(deltaTime);
+            //ActionState.Tick(AnimationDriver.GetActiveStateClampedNormalizedTime());
 
-            TryConsumeBufferedAction();
+            //TryConsumeBufferedAction();
 
-            if (ActionState.IsFinished())
-                EndAction();
         }
+        else Debug.LogWarning("Current state was null.");
         // TODO: When attack active, draw debug info.
     }
 
-    public void RequestAction(ActionDefinition action)
-    {
-        Debug.Log("Requested action: " + action.name, this);
-
-        if (_currentAction == null)
-        {
-            StartAction(action);
-            return;
-        }
-
-        if (CanInterrupt(action))
-        {
-            ForceInterrupt(action);
-            return;
-        }
-
-        if (CanStartAction(action))
-        {
-            StartAction(action);
-        }
-        else
-        {
-            ActionBuffer.Buffer(action);
-        }
-    }
-
-    void TryConsumeBufferedAction()
-    {
-        if (ActionState.IsLocked)
-            return;
-
-        var buffered = ActionBuffer.ConsumeIfValid();
-        if (buffered.HasValue && ActionState.CanChain(buffered.Value.RequestedAction))
-        {
-            StartAction(buffered.Value.RequestedAction);
-        }
-    }
-
-    bool CanStartAction(ActionDefinition action)
+    public bool RequestAction(ACS_ActionState newState)
     {
         if (_currentAction == null)
+        {
+            _currentAction = newState;
+            _currentAction.EnterState();
             return true;
+        }
 
-        return !ActionState.IsLocked && ActionState.CanChain(action);
-    }
+        if(_currentAction.CanTransitionTo(newState))
+        {
+            _currentAction.ExitState();
+            _previousAction = _currentAction;
 
-    void StartAction(ActionDefinition action)
-    {
-        _currentAction = action;
-        ActionState.Start(action);
-        //AnimationDriver.PlayAction(action);
-    }
-
-    void EndAction()
-    {
-        _currentAction = null;
-        //AnimationDriver.EndAction();
-    }
-
-    void ForceInterrupt(ActionDefinition action)
-    {
-        _currentAction = null;
-        ActionState.IsLocked = false;
-        ActionBuffer = new ActionBuffer();
-
-        StartAction(action);
-    }
-
-    bool CanInterrupt(ActionDefinition incoming)
-    {
-        if (_currentAction == null)
+            _currentAction = newState;
+            _currentAction.EnterState();
             return true;
-
-        if (_currentAction.Uninterruptible)
-            return false;
-
-        if (HasHyperArmor())
-            return false;
-
-        if ((int)incoming.Priority >= (int)_currentAction.MinPriorityToInterrupt)
-            return true;
-
+        }
         return false;
     }
 
-    public bool HasHyperArmor()
-    {
-        float t = ActionState.NormalizedTime;
-        return t >= _currentAction.HyperArmorFrom &&
-               t <= _currentAction.HyperArmorTo;
-    }
 
-    private string ActionControllerInfo()
-    {
-        return "Current Action: " + _currentAction.name + "\n"
-            + "Priority: " + _currentAction.Priority + "\n"
-            + "Uninterruptible: " + _currentAction.Uninterruptible + "\n"
-            + "Hyper Armor: " + HasHyperArmor();
-    }
+    // TODO: Move elsewhere.
+    //void TryConsumeBufferedAction()
+    //{
+    //    if (ActionState.IsLocked)
+    //        return;
+
+    //    var buffered = ActionBuffer.ConsumeIfValid();
+    //    if (buffered.HasValue && ActionState.CanChain(buffered.Value.RequestedAction))
+    //    {
+    //        StartAction(buffered.Value.RequestedAction);
+    //    }
+    //}
+
+    //void StartAction(ActionDefinition action)
+    //{
+    //    _currentAction = action;
+    //    ActionState.Start(action);
+    //    //AnimationDriver.PlayAction(action);
+    //}
+
+    //void EndAction()
+    //{
+    //    _currentAction = null;
+    //    //AnimationDriver.EndAction();
+    //}
+
+    //void ForceInterrupt(ActionDefinition action)
+    //{
+    //    _currentAction = null;
+    //    ActionState.IsLocked = false;
+    //    ActionBuffer = new ActionBuffer();
+
+    //    StartAction(action);
+    //}
+
+    //bool CanInterrupt(ActionDefinition incoming)
+    //{
+    //    if (_currentAction == null)
+    //        return true;
+
+    //    if (_currentAction.Uninterruptible)
+    //        return false;
+
+    //    //if (HasHyperArmor())
+    //    //    return false;
+
+    //    if ((int)incoming.Priority >= (int)_currentAction.MinPriorityToInterrupt)
+    //        return true;
+
+    //    return false;
+    //}
+
+
+    //private string ActionControllerInfo()
+    //{
+    //    return "Current Action: " + _currentAction.name + "\n"
+    //        + "Priority: " + _currentAction.Priority + "\n"
+    //        + "Uninterruptible: " + _currentAction.Uninterruptible;
+    //}
 
 }

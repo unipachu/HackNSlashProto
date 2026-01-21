@@ -24,7 +24,7 @@ public class WeaponColliderHitSensor : MonoBehaviour
         alreadyHit.Clear();
     }
 
-    public void CheckHits(int damage, Transform attacker)
+    public void CheckHits(Transform attacker, int damage, float knockBack)
     {
         Collider[] candidates = Physics.OverlapSphere(
             weaponCollider.bounds.center,
@@ -40,6 +40,8 @@ public class WeaponColliderHitSensor : MonoBehaviour
 
             if (alreadyHit.Contains(damageable)) continue;
 
+            Vector3 hitDir;
+
             if (Physics.ComputePenetration(
                 weaponCollider,
                 weaponCollider.transform.position,
@@ -47,11 +49,12 @@ public class WeaponColliderHitSensor : MonoBehaviour
                 otherCol,
                 otherCol.transform.position,
                 otherCol.transform.rotation,
-                out _,
+                out hitDir,
                 out _
             ))
             {
-                damageable.GetHit(damage, attacker.position);
+                NewHitData hitData = new NewHitData(attacker, damage, knockBack, hitDir);
+                damageable.GetHit(hitData);
                 alreadyHit.Add(damageable);
             }
         }

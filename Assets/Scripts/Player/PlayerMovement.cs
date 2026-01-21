@@ -9,13 +9,20 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float maxAngularSpeed = 800;
     [Tooltip("Units per second squared.")]
     [SerializeField] private float acceleration = 100;
+    [SerializeField] LayerMask groundMask;
 
     [Header("Refs")]
     [SerializeField] private CharacterController characterController;
 
     private Vector2 velocity = Vector2.zero;
 
-    private Vector2 Velocity => velocity;
+    public Vector2 Velocity => velocity;
+    public CharacterController CharacterController => characterController;
+
+    private void Update()
+    {
+        UpdateIsGrounded();
+    }
 
     public void SolveMovement(Vector2 movementInput)
     {
@@ -39,5 +46,41 @@ public class PlayerMovement : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngularSpeed * Time.deltaTime);
+    }
+
+    private bool UpdateIsGrounded()
+    {
+        float extraDistance = 0.05f;
+        float radius = characterController.radius;
+        float height = Mathf.Max(characterController.height, radius * 2f);
+
+        Vector3 center = characterController.transform.position + characterController.center;
+
+        Vector3 bottom = center + Vector3.down * (height / 2f - radius);
+        Vector3 top = center + Vector3.up * (height / 2f - radius);
+
+        float castDistance = extraDistance + characterController.skinWidth;
+
+        RaycastHit groundHit;
+        bool hitGround = Physics.CapsuleCast(
+            top,
+            bottom,
+            radius,
+            Vector3.down,
+            out groundHit,
+            castDistance,
+            groundMask,
+            QueryTriggerInteraction.Ignore
+        );
+
+        if (hitGround)
+        {
+            float slopeAngle = Vector3.Angle(groundHit.normal, Vector3.up);
+            if( slopeAngle <= characterController.slopeLimit)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

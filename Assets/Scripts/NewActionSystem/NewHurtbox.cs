@@ -10,8 +10,8 @@ public class NewHurtbox : MonoBehaviour
 
     public void ReceiveHit(NewHitData hit)
     {
-        Debug.Log("Took hit from: " + hit.attacker
-            + ", from action: " + hit.sourceAction.name);
+        // TODO: Add more info to debug log.
+        Debug.Log("Took hit from: " + hit.Attacker);
 
         //if (owner.IsInvulnerable)
         //    return;

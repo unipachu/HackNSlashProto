@@ -11,26 +11,26 @@ public class ActionControllerInfoDebugView : MonoBehaviour
 
     void OnGUI()
     {
-        if (!DebugViewEnabled)
-            return;
+        //if (!DebugViewEnabled)
+        //    return;
 
-        var action = actionController.CurrentAction;
+        //var action = actionController.CurrentAction;
 
-        GUILayout.BeginArea(new Rect(10, 10, 300, 200), GUI.skin.box);
+        //GUILayout.BeginArea(new Rect(10, 10, 300, 200), GUI.skin.box);
 
-        if (action == null)
-        {
-            GUILayout.Label("Action: NONE");
-        }
-        else
-        {
-            GUILayout.Label($"Action: {action.name}");
-            GUILayout.Label($"Priority: {action.Priority}");
-            GUILayout.Label($"Time: {actionController.NormalizedTime:F2}");
-            GUILayout.Label($"HyperArmor: {actionController.HasHyperArmor()}");
-            GUILayout.Label($"Invulnerable: {actionController.IsInvulnerable}");
-        }
+        //if (action == null)
+        //{
+        //    GUILayout.Label("Action: NONE");
+        //}
+        //else
+        //{
+        //    GUILayout.Label($"Action: {action.name}");
+        //    GUILayout.Label($"Priority: {action.Priority}");
+        //    GUILayout.Label($"Time: {actionController.NormalizedTime:F2}");
+        //    GUILayout.Label($"HyperArmor: {actionController.HasHyperArmor()}");
+        //    GUILayout.Label($"Invulnerable: {actionController.IsInvulnerable}");
+        //}
 
-        GUILayout.EndArea();
+        //GUILayout.EndArea();
     }
 }

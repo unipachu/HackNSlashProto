@@ -5,7 +5,7 @@ using UnityEngine;
 /// Custom animator class which uses Unity's animator for playing animations but handles state transitions fully by itself.<br/>
 /// NOTE: Do not use Unity Animator's transitions if you use this class.
 /// </summary>
-[Obsolete("Use " + nameof(AL_NewCustomAnimatorLayer) + " instead.")]
+[Obsolete("Use " + nameof(ANL_AnimatorLayer) + " instead.")]
 public abstract class OldCustomAnimator : MonoBehaviour
 {
     [SerializeField] protected Animator _animator;

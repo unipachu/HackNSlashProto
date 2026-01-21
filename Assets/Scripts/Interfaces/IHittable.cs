@@ -5,11 +5,17 @@ using UnityEngine;
 /// </summary>
 public interface IHittable
 {
-    void GetHit(int dmgAmount, Vector3 attackerPosition);
+    void GetHit(NewHitData hitData);
 
     int CurrentHealth { get; }
 
     int MaxHealth { get; }
 
     bool IsDead { get; }
+
+    // TODO: Remove.
+    public bool IsAlive(float something)
+    {
+        return true;
+    }
 }

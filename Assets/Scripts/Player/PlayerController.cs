@@ -1,31 +1,34 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[Obsolete("Use " + nameof(NewPlayerController) + " instead.")]
 public class PlayerController : MonoBehaviour
 {
     [Header("Attack Settings")]
     [Tooltip("In seconds.")]
-    [SerializeField] private int swordSwingDmg = 1;
+    [SerializeField] int swordSwingDmg = 1;
 
     [Header("Refs")]
-    [SerializeField] private WeaponColliderHitSensor _weaponSensor;
-    [SerializeField] private PlayerMovement _movement;
+    [SerializeField] WeaponColliderHitSensor _weaponSensor;
+    [SerializeField] PlayerMovement _movement;
 
     [Header("Input Related Refs")]
-    [SerializeField] private InputActionAsset inputActions;
-    [SerializeField] private InputActionProperty _moveInputAction;
-    [SerializeField] private InputActionProperty _attackInputAction;
+    [SerializeField] InputActionAsset inputActions;
+    [SerializeField] InputActionProperty _moveInputAction;
+    [SerializeField] InputActionProperty _attackInputAction;
 
     [Header("Animaton Related Refs")]
-    [SerializeField] private OldCustomAnimator_CharacterVisuals _customAnimator;
+    [SerializeField] OldCustomAnimator_CharacterVisuals _customAnimator;
 
-    private Vector2 moveInput = Vector2.zero;
-    private bool attackInput = false;
+    Vector2 moveInput = Vector2.zero;
+    bool attackInput = false;
 
-    private bool _attackActive = false;
-    private bool _newAttackCanBeBuffered = false;
-    private bool _bufferedAttackInput = false;
-    private bool _comboWindowEnded = false;
+    bool _attackActive;
+    bool _newAttackCanBeBuffered;
+    bool _bufferedAttackInput;
+    bool _comboWindowEnded;
+
 
     private void OnEnable()
     {
@@ -67,7 +70,7 @@ public class PlayerController : MonoBehaviour
                 if (attackInput) TryBufferAttack();
                 if (_attackActive)
                 {
-                    _weaponSensor.CheckHits(swordSwingDmg, transform);
+                    //_weaponSensor.CheckHits(swordSwingDmg, transform);
                 }
                 if (_comboWindowEnded)
                 {
@@ -83,7 +86,7 @@ public class PlayerController : MonoBehaviour
                 if (attackInput) TryBufferAttack();
                 if (_attackActive)
                 {
-                    _weaponSensor.CheckHits(swordSwingDmg, transform);
+                    _weaponSensor.CheckHits(transform, swordSwingDmg, 1);
                 }
                 if (_comboWindowEnded)
                 {

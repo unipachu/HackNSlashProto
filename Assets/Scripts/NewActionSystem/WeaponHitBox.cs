@@ -38,23 +38,23 @@ public class WeaponHitbox : MonoBehaviour
 
         if (other.TryGetComponent(out NewHurtbox hurtbox))
         {
-            var hit = BuildHitData(hurtbox);
-            hurtbox.ReceiveHit(hit);
+            //var hit = BuildHitData(hurtbox);
+            //hurtbox.ReceiveHit(hit);
         }
     }
 
-    NewHitData BuildHitData(NewHurtbox hurtbox)
-    {
-        return new NewHitData
-        {
-            attacker = gameObject,
-            sourceAction = ActionController.CurrentAction,
-            damage = CurrentDamage,
-            knockback = CurrentKnockback,
-            hitPoint = hurtbox.transform.position,
-            hitDirection = (hurtbox.transform.position - transform.position).normalized
-        };
-    }
+    //NewHitData BuildHitData(NewHurtbox hurtbox)
+    //{
+    //    return new NewHitData
+    //    {
+    //        Attacker = gameObject,
+    //        //sourceAction = ActionController.CurrentAction,
+    //        Damage = CurrentDamage,
+    //        KnockBack = CurrentKnockback,
+    //        HitPoint = hurtbox.transform.position,
+    //        HitDir = (hurtbox.transform.position - transform.position).normalized
+    //    };
+    //}
 
     void OnDrawGizmos()
     {

@@ -133,12 +133,13 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJ
         return NodeState.Success;
     }
 
-    public void GetHit(int dmgAmount, Vector3 attackerPos)
+    public void GetHit(NewHitData hitData)
     {
+        Debug.Log("Enemy got hit", this);
         Agent.isStopped = true;
         _customAnimator.RequestFixedTimeCrossfadeTo(_customAnimator.KnockBackBackwardState);
-        _currentHealth -= dmgAmount;
-        Vector3 knockBackDir = (transform.position - attackerPos).normalized;
+        _currentHealth -= hitData.Damage;
+        Vector3 knockBackDir = (transform.position - hitData.Attacker.transform.position).normalized;
         _knockBack.StartKnockBack(knockBackDir, 0.2f, 50);
     }
 
