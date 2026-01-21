@@ -8,19 +8,20 @@ public class ACS_FullBody_Walk : ACS_FullBody
 
     public override bool CanTransitionTo(ACS_ActionState newAction)
     {
-        switch (newAction)
-        {
-            case ACS_FullBody_Walk:
-                return true;
-            default:
-                Debug.LogError("Switch defaulted.");
-                return false;
-        }
+        //switch (newAction)
+        //{
+        //    case ACS_FullBody_Walk:
+        //        return true;
+        //    default:
+        //        Debug.LogError("Switch defaulted.");
+        //        return false;
+        //}
+        return true;
     }
 
     public override void EnterState()
     {
-        PC.CharacterVisuals.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CharacterVisuals.CharacterVisualsLayer_FullBody.Walk);
+        PC.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CustomAnimator.CharacterVisualsLayer_FullBody.Walk);
     }
 
     public override void ExitState()

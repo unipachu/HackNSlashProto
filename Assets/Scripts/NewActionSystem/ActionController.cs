@@ -40,6 +40,8 @@ public class ActionController
 
     public bool RequestAction(ACS_ActionState newState)
     {
+        Debug.Log("Requested state : " + newState.GetType().Name);
+        //if(_previousAction != null) Debug.Log("Previous state was: " + _previousAction.GetType().Name);
         if (_currentAction == null)
         {
             _currentAction = newState;

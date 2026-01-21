@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class ANS_CharacterVisuals_Attack_RVerSlam : ANS_AnimatorState
+public class ANS_CapsuleCharacter_Attack_RHorSwing_1 : ANS_AnimatorState
 {
     public readonly ANR_AnimationRange HitBoxActive;
 
-    public ANS_CharacterVisuals_Attack_RVerSlam(Animator animator, int animatorLayer)
-        : base(animator, nameof(ANS_CharacterVisuals_Attack_RVerSlam), animatorLayer, 106)
+    public ANS_CapsuleCharacter_Attack_RHorSwing_1(Animator animator, int animatorLayer)
+        : base(animator, nameof(ANS_CapsuleCharacter_Attack_RHorSwing_1), animatorLayer, 40)
     {
         HitBoxActive = new(
             GeneralUtils.FrameToNormalizedTime(9, LastFrameIndex),

@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
-    [SerializeField] int baseDmg;
-    [SerializeField] int baseKnockback;
+    [SerializeField] int baseDmg = 1;
+    [SerializeField] int baseKnockback = 1;
     //[SerializeField] WeaponHitbox _hitBox;
 
     //public WeaponHitbox HitBox => _hitBox;
 
-    WeaponColliderHitSensor _hitSensor;
+    [SerializeField]WeaponColliderHitSensor _hitSensor;
 
     public void Attack(Transform attacker)
     {

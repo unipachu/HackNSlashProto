@@ -21,6 +21,7 @@ public class NewPlayerController : MonoBehaviour
     [SerializeField] EquipmentController _equipment;
     public EquipmentController Equipment => _equipment;
     [SerializeField] Animator _animator;
+    [SerializeField] CapsuleCharacterVisualsController _visualsController;
 
     [Header("Input Related Refs")]
     [SerializeField] InputActionAsset inputActions;
@@ -33,8 +34,8 @@ public class NewPlayerController : MonoBehaviour
     ActionController _fullBodyActionController = new();
 
     // TODO: Rename to CustomAnimator.
-    AN_CharacterVisuals _characterVisuals;
-    public AN_CharacterVisuals CharacterVisuals => _characterVisuals;
+    AN_CharacterVisuals _customAnimator;
+    public AN_CharacterVisuals CustomAnimator => _customAnimator;
 
     // TODO: Do I need to create instances of all the actions in here, or could I just create them as a new state is requested?
     ACS_FullBody_Idle _aCS_FullBody_Idle;
@@ -49,10 +50,18 @@ public class NewPlayerController : MonoBehaviour
     bool attackInput = false;
     public bool AttackInput => attackInput;
 
+    Vector3 _animationDeltaXZMovement = Vector2.zero;
+    public Vector3 AnimationDeltaXZMovement => _animationDeltaXZMovement;
+
+    private void OnEnable()
+    {
+        inputActions.FindActionMap("Player").Enable();
+        _visualsController.OnRootMove += OnAnimatorXZMove;
+    }
 
     private void Start()
     {
-        _characterVisuals = new(_animator);
+        _customAnimator = new(_animator);
 
         _aCS_FullBody_Idle = new(this);
         _aCS_FullBody_Attack_JumpVerticalSlam = new(this);
@@ -69,6 +78,12 @@ public class NewPlayerController : MonoBehaviour
         _fullBodyActionController.UpdateActionController(Time.deltaTime);
     }
 
+    private void OnDisable()
+    {
+        inputActions.FindActionMap("Player").Disable();
+        _visualsController.OnRootMove -= OnAnimatorXZMove;
+    }
+
     private void ReadInputs()
     {
         moveInput = _moveInputAction.action.ReadValue<Vector2>();
@@ -79,6 +94,17 @@ public class NewPlayerController : MonoBehaviour
     {
         // TODO: Stop hand and body actions/blend them to "inactive" animations/actions.
         return _fullBodyActionController.RequestAction(newAction);
+    }
+
+    /// <summary>
+    /// Used to save latest animation delta movement. Makes y component 0.
+    /// </summary>
+    /// <param name="deltaLinearMovement">
+    /// Delta movement of animation root.
+    /// </param>
+    private void OnAnimatorXZMove(Vector3 deltaLinearMovement)
+    {
+        _animationDeltaXZMovement = new Vector3(deltaLinearMovement.x, 0, deltaLinearMovement.z);
     }
 
     //public bool CanReceiveHit(NewHitData hit)

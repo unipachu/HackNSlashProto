@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class HealthSystem : MonoBehaviour, IHittable
 {
-    [SerializeField] int _maxHP;
+    [SerializeField] int _maxHP = 1;
 
     int _currentHP;
 
@@ -12,8 +12,14 @@ public class HealthSystem : MonoBehaviour, IHittable
 
     public bool IsDead => _maxHP <= 0;
 
+    private void Awake()
+    {
+        _currentHP = _maxHP;
+    }
+
     public void GetHit(NewHitData hitData)
     {
+        // TODO
         throw new System.NotImplementedException();
     }
 }

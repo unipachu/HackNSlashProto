@@ -13,16 +13,16 @@ public class ACS_FullBody_Idle : ACS_FullBody
 
     public override void EnterState()
     {
-        PC.CharacterVisuals.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CharacterVisuals.CharacterVisualsLayer_FullBody.Idle);
+        PC.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CustomAnimator.CharacterVisualsLayer_FullBody.Idle);
     }
 
     public override void ExitState()
     {
-        throw new System.NotImplementedException();
     }
 
     public override void UpdateState(float deltaTime)
     {
+        PC.Movement.SolveMovement(Vector2.zero);
         if (PC.AttackInput)
             PC.RequestFullBodyAction(PC.ACS_FullBody_Attack_JumpVerticalSlam);
         else if (PC.MoveInput != Vector2.zero)

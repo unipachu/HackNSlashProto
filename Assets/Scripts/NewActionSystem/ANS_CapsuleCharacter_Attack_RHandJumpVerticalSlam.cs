@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class ANS_CharacterVisuals_Attack_JumpVerticalSlam : ANS_AnimatorState, IHitboxActivatingAnimation, IExitTimeAnimation
+public class ANS_CapsuleCharacter_Attack_RHandJumpVerticalSlam : ANS_AnimatorState, IHitboxActivatingAnimation, IExitTimeAnimation
 {
     ANR_AnimationRange _hitBoxActive;
-    // TODO: Rename
+    // TODO: Rename. Or figure a better way to do this.
     bool _hitBoxActuallyActiveBecauseThisIsSoStupid;
 
-    public ANS_CharacterVisuals_Attack_JumpVerticalSlam(Animator animator, int animatorLayer) 
-        : base(animator, nameof(ANS_CharacterVisuals_Attack_JumpVerticalSlam), animatorLayer, 122)
+    public ANS_CapsuleCharacter_Attack_RHandJumpVerticalSlam(Animator animator, int animatorLayer) 
+        : base(animator, nameof(ANS_CapsuleCharacter_Attack_RHandJumpVerticalSlam), animatorLayer, 122)
     {
         _hitBoxActive = new(
             GeneralUtils.FrameToNormalizedTime(76, LastFrameIndex),

@@ -16,7 +16,7 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
 
     public override void EnterState()
     {
-        PC.CharacterVisuals.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CharacterVisuals.CharacterVisualsLayer_FullBody.Attack_JumpVerticalSlam);
+        PC.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CustomAnimator.CharacterVisualsLayer_FullBody.Attack_JumpVerticalSlam);
         PC.Equipment.ReadyAttackRight();
         _attackBuffered = false;
     }
@@ -28,7 +28,9 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
     // TODO: You might want to create several methods out of this functionality.
     public override void UpdateState(float deltaTime)
     {
-        IHitboxActivatingAnimation hitBox = PC.CharacterVisuals.CharacterVisualsLayer_FullBody.ActiveState as IHitboxActivatingAnimation;
+        PC.Movement.MoveCharacterController(PC.AnimationDeltaXZMovement);
+
+        IHitboxActivatingAnimation hitBox = PC.CustomAnimator.CharacterVisualsLayer_FullBody.ActiveState as IHitboxActivatingAnimation;
         Debug.Assert(hitBox != null, nameof(ACS_FullBody_Attack_JumpVerticalSlam) + "'s related animation state wasn't a " + nameof(IHitboxActivatingAnimation));
         if (hitBox.IsHitboxActive())
         {
@@ -36,15 +38,15 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
         }
 
         // TODO: Attack should only buffer if the attack button was PRESSED DOWN DURING THIS FRAME - now this allows buffering if the button was held down this frame.
-        if (PC.CharacterVisuals.CharacterVisualsLayer_FullBody.GetFixedTimeUntilAnimationEnd() <= PC.InputBufferTime 
+        if (PC.CustomAnimator.CharacterVisualsLayer_FullBody.GetFixedTimeUntilAnimationEnd() <= PC.InputBufferTime 
             && PC.AttackInput)
         {
             _attackBuffered = true;
         }
 
-        IExitTimeAnimation exitTime = PC.CharacterVisuals.CharacterVisualsLayer_FullBody.ActiveState as IExitTimeAnimation;
+        IExitTimeAnimation exitTime = PC.CustomAnimator.CharacterVisualsLayer_FullBody.ActiveState as IExitTimeAnimation;
         if (exitTime != null
-            && PC.CharacterVisuals.CharacterVisualsLayer_FullBody.GetActiveStateNormalizedTime() >= exitTime.NormalizedExitTime())
+            && PC.CustomAnimator.CharacterVisualsLayer_FullBody.GetActiveStateNormalizedTime() >= exitTime.NormalizedExitTime())
         {
             if(_attackBuffered)
             {

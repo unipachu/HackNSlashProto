@@ -19,13 +19,14 @@ public class PlayerMovement : MonoBehaviour
     public Vector2 Velocity => velocity;
     public CharacterController CharacterController => characterController;
 
-    private void Update()
-    {
-        UpdateIsGrounded();
-    }
-
+    /// <summary>
+    /// NOTE: Movement input should have a max length of 1 and represents xz-movement!
+    /// </summary>
+    // TODO: Problem here is that is solve movement isn't called every frame, velocity isn't updated every frame, and
+    // TODO C: when SolveMovement is called again, it still uses the velocity from the last time it was called.
     public void SolveMovement(Vector2 movementInput)
     {
+        Debug.Log("SolveMovement called!");
         UpdateVelocity(movementInput);
         Vector3 XYVelocity = new Vector3(velocity.x, 0, velocity.y);
         characterController.SimpleMove(XYVelocity);
@@ -48,7 +49,22 @@ public class PlayerMovement : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngularSpeed * Time.deltaTime);
     }
 
-    private bool UpdateIsGrounded()
+    /// <summary>
+    /// Moves character controller and then applies gravity. Use with e.g. animations' delta movement.
+    /// </summary>
+    public void MoveCharacterController(Vector3 motion)
+    {
+        if(motion != Vector3.zero)
+            Debug.Log("animation motion: " + motion);
+        CharacterController.Move(motion);
+        CharacterController.SimpleMove(Vector3.zero);
+    }
+
+    /// <summary>
+    /// Uses Physics.CapsuelCast to do a ground check.
+    /// </summary>
+    // TODO: Make local variables into fields and reveal to inspector.
+    private bool IsGrounded()
     {
         float extraDistance = 0.05f;
         float radius = characterController.radius;
