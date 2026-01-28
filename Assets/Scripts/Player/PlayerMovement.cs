@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     // TODO C: when SolveMovement is called again, it still uses the velocity from the last time it was called.
     public void SolveMovement(Vector2 movementInput)
     {
-        Debug.Log("SolveMovement called!");
+        //Debug.Log("SolveMovement called!");
         UpdateVelocity(movementInput);
         Vector3 XYVelocity = new Vector3(velocity.x, 0, velocity.y);
         characterController.SimpleMove(XYVelocity);
@@ -54,10 +54,12 @@ public class PlayerMovement : MonoBehaviour
     /// </summary>
     public void MoveCharacterController(Vector3 motion)
     {
-        if(motion != Vector3.zero)
-            Debug.Log("animation motion: " + motion);
-        CharacterController.Move(motion);
-        CharacterController.SimpleMove(Vector3.zero);
+        // NOTE: I tried to use both CharacterController.Move and .SimpleMove at the same time (Move for xz-movement and simple
+        // move for gravity), but it caused the character to move even when motion parameter was zero. CharacterController
+        // documentation recommends to only use either Move or SimpleMove and that seems to have been the problem (though I do not
+        // understand why). When using both, the character seemed to move with the same speed and same direction as it moved
+        // the last time SimpleMove was called, even though in this method the SimpleMove was set to move Vector3.zero. Weird.
+        CharacterController.SimpleMove(motion/Time.deltaTime);
     }
 
     /// <summary>

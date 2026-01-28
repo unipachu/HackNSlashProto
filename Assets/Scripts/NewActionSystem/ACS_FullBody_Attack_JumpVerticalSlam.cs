@@ -25,7 +25,7 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
     {
     }
 
-    // TODO: You might want to create several methods out of this functionality.
+    // TODO: You might want to refactor logic into multiple methods.
     public override void UpdateState(float deltaTime)
     {
         PC.Movement.MoveCharacterController(PC.AnimationDeltaXZMovement);
