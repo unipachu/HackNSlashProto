@@ -8,9 +8,13 @@ public class WeaponController : MonoBehaviour
 
     //public WeaponHitbox HitBox => _hitBox;
 
-    [SerializeField]WeaponColliderHitSensor _hitSensor;
+    [SerializeField] WeaponColliderHitSensor _hitSensor;
 
-    public void Attack(Transform attacker)
+    /// <summary>
+    /// Pulses hitbox, i.e. uses Over
+    /// </summary>
+    /// <param name="attacker"></param>
+    public void ActivateAttack(Transform attacker)
     {
         _hitSensor.CheckHits(attacker, baseDmg, baseKnockback);
     }

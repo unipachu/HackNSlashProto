@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,7 +7,8 @@ using UnityEngine.AI;
 /// as the ai or the "brains" of the enemy are controller by a separate class.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent), typeof(CharacterController), typeof(KnockBack))]
-public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJumpAttacker
+[Obsolete("Use " + nameof(Enemy_Controller) + " instead.")]
+public class OldSwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJumpAttacker
 {
     [Header("Settings")]
     [SerializeField] private int _maxHealth = 3;
@@ -41,7 +43,7 @@ public class SwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJ
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        _playerTransform = FindFirstObjectByType<PlayerController>().transform;
+        _playerTransform = FindFirstObjectByType<OldPlayerController>().transform;
         Debug.Assert(_playerTransform != null, "_playerTransform of " + gameObject.name + "was null!", this);
     }
 

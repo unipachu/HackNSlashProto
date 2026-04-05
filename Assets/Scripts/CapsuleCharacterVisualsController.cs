@@ -14,7 +14,6 @@ public class CapsuleCharacterVisualsController : MonoBehaviour
     {
         Vector3 deltaPos = _animator.deltaPosition;
 
-        //Vector2 deltaPosXZ = new Vector2(deltaPos.x, deltaPos.z);
         OnRootMove?.Invoke(deltaPos);
     }
 }

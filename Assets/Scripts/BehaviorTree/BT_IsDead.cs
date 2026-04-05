@@ -1,18 +1,16 @@
+using UnityEngine;
+
 public class BT_IsDead : BT_Node
 {
-    private IHittable _hittable;
-
-    public BT_IsDead(IHittable hittable)
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        _hittable = hittable;
+        
     }
 
-    public override NodeState Evaluate()
+    // Update is called once per frame
+    void Update()
     {
-        if (_hittable.IsDead)
-        {
-            return NodeState.Success;
-        }
-        return NodeState.Failure;
+        
     }
 }

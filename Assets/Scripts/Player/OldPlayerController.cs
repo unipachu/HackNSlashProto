@@ -2,8 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[Obsolete("Use " + nameof(NewPlayerController) + " instead.")]
-public class PlayerController : MonoBehaviour
+[Obsolete("Use " + nameof(PlayerController) + " instead.")]
+public class OldPlayerController : MonoBehaviour
 {
     [Header("Attack Settings")]
     [Tooltip("In seconds.")]
@@ -11,7 +11,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Refs")]
     [SerializeField] WeaponColliderHitSensor _weaponSensor;
-    [SerializeField] PlayerMovement _movement;
+    [SerializeField] CharacterLocomotion _movement;
 
     [Header("Input Related Refs")]
     [SerializeField] InputActionAsset inputActions;
@@ -55,7 +55,7 @@ public class PlayerController : MonoBehaviour
                 }
                 break;
             case "CharacterVisuals_Walk":
-                _movement.SolveMovement(moveInput);
+                _movement.UpdateMovement(LocomotionType.VelocityByDirectionalInput, moveInput);
                 if (attackInput)
                 {
                     ChangeAnimatorState(_customAnimator.SwingR0State);

@@ -1,17 +1,16 @@
-/// <summary>
-/// Requests the player chaser to stop chasing and start idling.
-/// </summary>
+using UnityEngine;
+
 public class BT_Idle : BT_Node
 {
-    private IPlayerChaser _playerChaser;
-
-    public BT_Idle(IPlayerChaser playerChaser)
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
     {
-        _playerChaser = playerChaser;
+        
     }
 
-    public override NodeState Evaluate()
+    // Update is called once per frame
+    void Update()
     {
-        return _playerChaser.RequestIdle();
+        
     }
 }

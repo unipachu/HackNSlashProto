@@ -2,18 +2,28 @@ using UnityEngine;
 
 public class ACS_FullBody_Idle : ACS_FullBody
 {
-    public ACS_FullBody_Idle(NewPlayerController pC) : base(pC)
+    public ACS_FullBody_Idle(IPawn pawn) : base(pawn)
     {
     }
 
-    public override bool CanTransitionTo(ACS_ActionState newAction)
+    public override void BufferAction(ACS_ActionState newAction)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public override bool CanBuffer(ACS_ActionState newAction)
+    {
+        return false;
+    }
+
+    public override bool CanInstantlyTransitionTo(ACS_ActionState newAction)
     {
         return true;
     }
 
     public override void EnterState()
     {
-        PC.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(PC.CustomAnimator.CharacterVisualsLayer_FullBody.Idle);
+        Pawn.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(Pawn.CustomAnimator.CharacterVisualsLayer_FullBody.Idle);
     }
 
     public override void ExitState()
@@ -22,10 +32,10 @@ public class ACS_FullBody_Idle : ACS_FullBody
 
     public override void UpdateState(float deltaTime)
     {
-        PC.Movement.SolveMovement(Vector2.zero);
-        if (PC.AttackInput)
-            PC.RequestFullBodyAction(PC.ACS_FullBody_Attack_JumpVerticalSlam);
-        else if (PC.MoveInput != Vector2.zero)
-            PC.RequestFullBodyAction(PC.ACS_FullBody_Walk);
+        Pawn.Movement.UpdateMovement(LocomotionType.VelocityByDirectionalInput, Vector2.zero);
+        if (Pawn.AttackInput)
+            Pawn.RequestFullBodyAction(new ACS_FullBody_Attack_JumpVerticalSlam(Pawn));
+        else if (Pawn.MoveInput != Vector2.zero)
+            Pawn.RequestFullBodyAction(new ACS_FullBody_Walk(Pawn));
     }
 }

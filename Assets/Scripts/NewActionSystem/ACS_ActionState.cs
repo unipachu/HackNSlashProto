@@ -35,5 +35,8 @@ public abstract class ACS_ActionState
 
     public abstract void ExitState();
 
-    public abstract bool CanTransitionTo(ACS_ActionState newAction);
+    public abstract bool CanInstantlyTransitionTo(ACS_ActionState newAction);
+    
+    public abstract bool CanBuffer(ACS_ActionState newAction);
+    public abstract void BufferAction(ACS_ActionState newAction);
 }

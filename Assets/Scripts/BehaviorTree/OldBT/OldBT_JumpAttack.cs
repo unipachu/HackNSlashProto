@@ -1,8 +1,11 @@
-public class BT_JumpAttack : BT_Node
+using System;
+
+[Obsolete]
+public class OldBT_JumpAttack : BT_Node
 {
     private IJumpAttacker _jumpAttacker;
 
-    public BT_JumpAttack(IJumpAttacker jumpAttacker)
+    public OldBT_JumpAttack(IJumpAttacker jumpAttacker)
     {
         _jumpAttacker = jumpAttacker;
     }

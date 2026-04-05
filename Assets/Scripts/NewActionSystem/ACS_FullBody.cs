@@ -1,9 +1,9 @@
 public abstract class ACS_FullBody : ACS_ActionState
 {
-    protected NewPlayerController PC { get; }
+    protected IPawn Pawn { get; }
 
-    public ACS_FullBody(NewPlayerController playerController)
+    public ACS_FullBody(IPawn pawn)
     {
-        PC = playerController;
+        Pawn = pawn;
     }
 }

@@ -43,6 +43,16 @@ public enum Directions3D
     Backward,
 }
 
+public enum Faces
+{
+    Left,
+    Right,
+    Top,
+    Bottom,
+    Near,
+    Far,
+}
+
 /// <summary>
 /// Icludes general helper and utility in the form of general methods and extension methods.
 /// </summary>

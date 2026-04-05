@@ -10,7 +10,7 @@ public class EquipmentController : MonoBehaviour
 
     public void AttackRight(Transform attacker)
     {
-        _rightHandWeapon.Attack(attacker);
+        _rightHandWeapon.ActivateAttack(attacker);
     }
 
     public void ReadyAttackRight()

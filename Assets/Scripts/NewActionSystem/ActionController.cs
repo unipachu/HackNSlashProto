@@ -1,5 +1,12 @@
 using UnityEngine;
 
+public enum ActionStateRequestResult
+{
+    Success,
+    Failed,
+    ActionBuffered,
+}
+
 /// <summary>
 /// State machine for actions.
 /// </summary>
@@ -38,27 +45,35 @@ public class ActionController
         // TODO: When attack active, draw debug info.
     }
 
-    public bool RequestAction(ACS_ActionState newState)
+    /// <summary>
+    /// Tries to instantly transition to new state. If instant transition is unsuccessful, tries to buffer action.
+    /// </summary>
+    public ActionStateRequestResult RequestAction(ACS_ActionState newState)
     {
-        Debug.Log("Requested state : " + newState.GetType().Name);
+        //Debug.Log("Requested state : " + newState.GetType().Name);
         //if(_previousAction != null) Debug.Log("Previous state was: " + _previousAction.GetType().Name);
         if (_currentAction == null)
         {
             _currentAction = newState;
             _currentAction.EnterState();
-            return true;
+            return ActionStateRequestResult.Success;
         }
 
-        if(_currentAction.CanTransitionTo(newState))
+        if(_currentAction.CanInstantlyTransitionTo(newState))
         {
             _currentAction.ExitState();
             _previousAction = _currentAction;
 
             _currentAction = newState;
             _currentAction.EnterState();
-            return true;
+            return ActionStateRequestResult.Success;
         }
-        return false;
+        else if(_currentAction.CanBuffer(newState))
+        {
+            _currentAction.BufferAction(newState);
+            return ActionStateRequestResult.ActionBuffered;
+        }
+        return ActionStateRequestResult.Failed;
     }
 
 

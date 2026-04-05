@@ -1,6 +1,16 @@
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public enum LocomotionType
+{
+    VelocityByDirectionalInput,
+    DirectMotion,
+}
+
+/// <summary>
+/// Movement for characters.
+/// </summary>
+// TODO: Refactor
+public class CharacterLocomotion : MonoBehaviour
 {
     [Header("Movement Settings")]
     [Tooltip("Units per second.")]
@@ -14,35 +24,59 @@ public class PlayerMovement : MonoBehaviour
     [Header("Refs")]
     [SerializeField] private CharacterController characterController;
 
-    private Vector2 velocity = Vector2.zero;
+    private Vector2 _horizontalVelocity = Vector2.zero;
 
-    public Vector2 Velocity => velocity;
+    public Vector2 HorizontalVelocity => _horizontalVelocity;
     public CharacterController CharacterController => characterController;
+
+    /// <summary>
+    /// Call once per frame to move character.
+    /// NOTE: Calling this multiple times a frame can cause problems because character controller is not recommended to be called
+    /// two times a frame.
+    /// </summary>
+    // TODO: This class now takes care of velocity based movement as well as direct movement by e.g. animation delta movement.
+    // TODO C: Is this a good way to do this?
+    public void UpdateMovement(LocomotionType locomotionType, Vector3 movement)
+    {
+        switch (locomotionType)
+        {
+            case LocomotionType.VelocityByDirectionalInput:
+                SolveMovement(movement);
+                break;
+            case LocomotionType.DirectMotion:
+                MoveCharacterController(movement);
+                break;
+            default:
+                Debug.LogError("Switch defaulted.", this);
+                break;
+        }
+    }
 
     /// <summary>
     /// NOTE: Movement input should have a max length of 1 and represents xz-movement!
     /// </summary>
     // TODO: Problem here is that is solve movement isn't called every frame, velocity isn't updated every frame, and
     // TODO C: when SolveMovement is called again, it still uses the velocity from the last time it was called.
-    public void SolveMovement(Vector2 movementInput)
+    private void SolveMovement(Vector3 movementInput)
     {
         //Debug.Log("SolveMovement called!");
-        UpdateVelocity(movementInput);
-        Vector3 XYVelocity = new Vector3(velocity.x, 0, velocity.y);
+        Vector2 xzMovementInput = new Vector2(movementInput.x, movementInput.y);
+        UpdateVelocity(xzMovementInput);
+        Vector3 XYVelocity = new Vector3(_horizontalVelocity.x, 0, _horizontalVelocity.y);
         characterController.SimpleMove(XYVelocity);
         RotateForward();
     }
 
     private void UpdateVelocity(Vector2 movementInput)
     {
-        velocity = Vector2.MoveTowards(velocity, movementInput * maxLinearSpeed, acceleration * Time.deltaTime);
+        _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, movementInput * maxLinearSpeed, acceleration * Time.deltaTime);
     }
 
-    public void RotateForward()
+    private void RotateForward()
     {
-        if (velocity == Vector2.zero) return;
+        if (_horizontalVelocity == Vector2.zero) return;
 
-        Vector3 dir3D = new(velocity.x, 0, velocity.y);
+        Vector3 dir3D = new(_horizontalVelocity.x, 0, _horizontalVelocity.y);
 
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
 
@@ -52,8 +86,11 @@ public class PlayerMovement : MonoBehaviour
     /// <summary>
     /// Moves character controller and then applies gravity. Use with e.g. animations' delta movement.
     /// </summary>
-    public void MoveCharacterController(Vector3 motion)
+    private void MoveCharacterController(Vector3 motion)
     {
+        // We also update velocity here even though we don't use it, so that when we use it the next time, the game doesn't use the last
+        // velocity when velocity based movement was used.
+        _horizontalVelocity = Vector3.zero;
         // NOTE: I tried to use both CharacterController.Move and .SimpleMove at the same time (Move for xz-movement and simple
         // move for gravity), but it caused the character to move even when motion parameter was zero. CharacterController
         // documentation recommends to only use either Move or SimpleMove and that seems to have been the problem (though I do not
