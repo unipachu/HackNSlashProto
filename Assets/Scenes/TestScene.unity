@@ -615,7 +615,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &152869160
 Transform:
   m_ObjectHideFlags: 0
@@ -1655,7 +1655,7 @@ MonoBehaviour:
   _health: {fileID: 439737470}
   _equipment: {fileID: 439737469}
   _animator: {fileID: 4043496483517493682}
-  _visualsController: {fileID: 4043496483517493683}
+  _rootMoveBroadcaster: {fileID: 4043496483517493683}
 --- !u!4 &439737473
 Transform:
   m_ObjectHideFlags: 0

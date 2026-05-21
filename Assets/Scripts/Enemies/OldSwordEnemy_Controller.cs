@@ -7,7 +7,7 @@ using UnityEngine.AI;
 /// as the ai or the "brains" of the enemy are controller by a separate class.
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent), typeof(CharacterController), typeof(KnockBack))]
-[Obsolete("Use " + nameof(Enemy_Controller) + " instead.")]
+[Obsolete("Use " + nameof(Enemy_Pawn) + " instead.")]
 public class OldSwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable, IJumpAttacker
 {
     [Header("Settings")]
@@ -64,12 +64,12 @@ public class OldSwordEnemy_Controller : MonoBehaviour, IPlayerChaser, IHittable,
 
     private void SubscribeToEvents()
     {
-        _customAnimator.OnRootXZMotion += OnRootXZMotion;
+        //_customAnimator.OnRootXZMotion += OnRootXZMotion;
     }
 
     private void UnsubscribeToEvents()
     {
-        _customAnimator.OnRootXZMotion -= OnRootXZMotion;
+        //_customAnimator.OnRootXZMotion -= OnRootXZMotion;
     }
 
     // TODO: Root motion rotation through code doesn't seem to work well with the CharacterVisuals.

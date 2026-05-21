@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[Obsolete("Use " + nameof(PlayerController) + " instead.")]
+[Obsolete("Use " + nameof(Player_Pawn) + " instead.")]
 public class OldPlayerController : MonoBehaviour
 {
     [Header("Attack Settings")]

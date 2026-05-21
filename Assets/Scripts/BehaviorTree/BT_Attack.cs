@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class BT_Attack : BT_Node
 {
-    private Enemy_Controller _enemy;
+    private Enemy_Pawn _enemy;
 
-    public BT_Attack(Enemy_Controller enemy)
+    public BT_Attack(Enemy_Pawn enemy)
     {
         _enemy = enemy;
     }

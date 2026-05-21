@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // TODO:
-public class Enemy_Controller : MonoBehaviour, IPawn
+public class Enemy_Pawn : MonoBehaviour, IActionCharacter
 {
     [Header("Refs")]
     [SerializeField] CharacterLocomotion _movement;
@@ -11,7 +11,7 @@ public class Enemy_Controller : MonoBehaviour, IPawn
     [SerializeField] EquipmentController _equipment;
     public EquipmentController Equipment => _equipment;
     [SerializeField] Animator _animator;
-    [SerializeField] CapsuleCharacterVisualsController _visualsController;
+    [SerializeField] AnimatorRootMovementBroadcaster _visualsController;
     public Transform PlayerTransform; // TODO: A better player/target sensing system should be created.
     public NavMeshAgent agent;
 

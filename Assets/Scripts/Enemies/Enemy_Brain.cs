@@ -21,7 +21,7 @@ public class Enemy_Brain : BT_Tree
                 new BT_Sequence(new List<BT_Node>
                 {
                     //new BT_IsInRange(_chaseMinDist, _chaseMaxDist, transform, _playerTransform),
-                    new BT_ChasePlayer(GetComponent<Enemy_Controller>())
+                    new BT_ChasePlayer(GetComponent<Enemy_Pawn>())
                 }),
                 new BT_Sequence(new List<BT_Node>
                 {

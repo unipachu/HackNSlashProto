@@ -20,7 +20,7 @@ public class OldCustomAnimator_CharacterVisuals : OldCustomAnimator
     /// <summary>
     /// Passes the delta XZ root motion as Vector2.
     /// </summary>
-    public event Action<Vector2> OnRootXZMotion;
+    //public event Action<Vector2> OnRootXZMotion;
 
     private OldCustomAnimatorState _idleState = new();
     private OldCustomAnimatorState _walkState = new();

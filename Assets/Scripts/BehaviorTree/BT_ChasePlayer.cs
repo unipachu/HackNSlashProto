@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class BT_ChasePlayer : BT_Node
 {
-    private Enemy_Controller _enemyController;
+    private Enemy_Pawn _enemyController;
 
-    public BT_ChasePlayer(Enemy_Controller enemyController)
+    public BT_ChasePlayer(Enemy_Pawn enemyController)
     {
         _enemyController = enemyController;
     }

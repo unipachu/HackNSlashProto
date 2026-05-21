@@ -8,7 +8,7 @@ public class ACS_Fullbody_ChaseTarget : ACS_FullBody
     //private Enemy_Controller _enemyController;
     private Transform _target;
 
-    public ACS_Fullbody_ChaseTarget(IPawn pawn, Transform target, NavMeshAgent agent) : base(pawn)
+    public ACS_Fullbody_ChaseTarget(IActionCharacter pawn, Transform target, NavMeshAgent agent) : base(pawn)
     {
         //_enemyController = enemyController;
         _target = target;

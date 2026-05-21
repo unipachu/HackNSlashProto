@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ACS_FullBody_Walk : ACS_FullBody
 {
-    public ACS_FullBody_Walk(IPawn pawn) : base(pawn) 
+    public ACS_FullBody_Walk(IActionCharacter pawn) : base(pawn) 
     {
     }
 

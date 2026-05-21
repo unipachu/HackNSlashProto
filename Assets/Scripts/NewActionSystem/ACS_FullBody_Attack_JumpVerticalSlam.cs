@@ -5,7 +5,7 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
     // TODO: This should buffer actions, not just attacks. So this should save the type of action that has been buffered.
     bool _attackBuffered = false;
 
-    public ACS_FullBody_Attack_JumpVerticalSlam(IPawn pawn) : base(pawn)
+    public ACS_FullBody_Attack_JumpVerticalSlam(IActionCharacter pawn) : base(pawn)
     {
     }
 

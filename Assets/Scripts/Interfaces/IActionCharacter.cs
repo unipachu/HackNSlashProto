@@ -2,9 +2,8 @@ using UnityEngine;
 
 /// <summary>
 /// Used for a basic character that can do actions.
-/// TODO: This makes no sense. Pawn should simply be something that can be posessed by "IPawnController" similarly to Unreal Engine.
 /// </summary>
-public interface IPawn
+public interface IActionCharacter
 {
     CharacterLocomotion Movement { get; }
     EquipmentController Equipment { get; }
@@ -13,8 +12,7 @@ public interface IPawn
     bool AttackInput { get; }
     Vector2 MoveInput { get; }
     GameObject ThisObject { get; }
-    public Vector3 AnimationDeltaMovement { get; }
-
+    Vector3 AnimationDeltaMovement { get; }
 
     ActionStateRequestResult RequestFullBodyAction(ACS_FullBody newAction);
 

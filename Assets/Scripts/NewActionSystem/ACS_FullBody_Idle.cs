@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ACS_FullBody_Idle : ACS_FullBody
 {
-    public ACS_FullBody_Idle(IPawn pawn) : base(pawn)
+    public ACS_FullBody_Idle(IActionCharacter pawn) : base(pawn)
     {
     }
 
