@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
+/// <summary>
+/// Includes utility method for parsing a csv (as a string).
+/// </summary>
 public static class CsvParser
 {
+    /// <returns>List of all rows of the csv. Rows are a list of strings.</returns>
     public static List<List<string>> Parse(string csv)
     {
         List<List<string>> rows = new();
