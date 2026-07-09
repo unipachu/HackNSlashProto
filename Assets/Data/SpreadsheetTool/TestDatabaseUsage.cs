@@ -9,7 +9,7 @@ public class TestDatabaseUsage : MonoBehaviour
     [SerializeField] ExampleGameDatabase database;
     void Start()
     {
-        if (database.TryGetItem("asdasd", out ExampleItemData sword))
+        if (database.TryGet("asdasd", out ExampleItemData sword))
         {
             Debug.Log(sword.DisplayName);
         }

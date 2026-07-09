@@ -43,24 +43,6 @@ public sealed class SpreadsheetContainerEditor : Editor
                 }
             }
         }
-
-        // TODO: JSON exporter is useless for this project. Remove code.
-        //if (GUILayout.Button("Export To JSON"))
-        //{
-        //    try
-        //    {
-        //        SpreadsheetJsonExporter.ExportToJson(container);
-        //    }
-        //    catch (System.Exception exception)
-        //    {
-        //        Debug.LogException(exception);
-        //        EditorUtility.DisplayDialog(
-        //            "JSON Export Failed",
-        //            exception.Message,
-        //            "OK"
-        //        );
-        //    }
-        //}
     }
 }
 #endif

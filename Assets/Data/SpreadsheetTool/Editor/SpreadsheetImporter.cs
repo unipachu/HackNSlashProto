@@ -15,7 +15,7 @@ using UnityEngine;
 public static class SpreadsheetImporter
 {
     /// <summary>
-    /// Imports Google Sheets spreadsheet sheets into a <see cref="SheetContainerBase"/>.
+    /// Imports Google Sheets spreadsheet sheets into a <see cref="SheetContainerBase{T}"/>.
     /// </summary>
     public static void ImportInto(SheetContainerBase container)
     {
@@ -38,12 +38,10 @@ public static class SpreadsheetImporter
 
         foreach (FieldInfo field in fields)
         {
-            // Only use fields with a page attribute.
-            SheetAttribute pageAttribute =
-                field.GetCustomAttribute<SheetAttribute>();
+            // Only use fields with a sheet attribute.
+            SheetAttribute pageAttribute = field.GetCustomAttribute<SheetAttribute>();
 
-            if (pageAttribute == null)
-                continue;
+            if (pageAttribute == null) continue;
 
             ImportSheet(container, field, pageAttribute.PageName);
             importedPageCount++;
@@ -57,10 +55,7 @@ public static class SpreadsheetImporter
         }
 
         // Now that the row data has been imported to a list, we want to rebuild our dictionary lookup table so that we can instantly use the dictionary to try and get row values from the list.
-        if (container is SheetContainerBase lookupContainer)
-        {
-            lookupContainer.RebuildLookups();
-        }
+        container.RebuildLookups();
 
         // Marks scriptable object as having unsaved changes, since Unity doesn't automatically notice that assets have been changed by reflection, e.g.:
         // listField.SetValue(container, list);
@@ -99,7 +94,7 @@ public static class SpreadsheetImporter
         Type rowType = listType.GetGenericArguments()[0];
 
         string csv = GoogleSheetCsvDownloader.DownloadCsv(
-            container.SpreadsheetId,
+            container.GetSpreadsheetId(),
             sheetName
         );
 
@@ -142,7 +137,7 @@ public static class SpreadsheetImporter
                 bool hasColumn = headerToIndex.TryGetValue(columnName, out int columnIndex);
 
                 bool isRequired =
-                    rowField.GetCustomAttribute<SheetRequiredAttribute>() != null;
+                    rowField.GetCustomAttribute<SheetCellRequiredAttribute>() != null;
 
                 if (!hasColumn)
                 {

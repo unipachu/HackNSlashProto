@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
+using UnityEditor.UI;
 using UnityEngine;
 
 /// <summary>
@@ -7,20 +9,25 @@ using UnityEngine;
 /// This is needed to download data from google sheets.
 /// Inherited database classes also require a ISheetRowWithId to get the sheet data.
 /// </summary>
-// TODO: Should ISheetRowWithId be part of this class so that all inherited classes are required to have one? There must be better code design for this.
+// TODO: This can hold many sheets so rename it to be "Spreadsheet" instead of "Sheet".
 public abstract class SheetContainerBase : ScriptableObject
 {
     [Header("Google Sheet")]
     [Tooltip("In the spreadsheet URL: https://docs.google.com/spreadsheets/d/[this part here is the id]/edit?gid=0#gid=0")]
     [SerializeField] private string spreadsheetId;
+    //[Tooltip("Name of the sheet (tab) of the spreadsheets file.")]
+    //[SerializeField] private string sheetName;
+
 
     public string SpreadsheetId => spreadsheetId;
+    //public string SheetName => sheetName;
+
+    protected void OnEnable()
+    {
+        RebuildLookups();
+    }
 
     public abstract void RebuildLookups();
 
-    protected void EnsureLookupBuilt<T>(ref Dictionary<string, T> lookup, IReadOnlyList<T> rows) where T : ISheetRowWithId
-    {
-        if (lookup == null)
-            lookup = SheetLookup.BuildById(rows);
-    }
+    public string GetSpreadsheetId() => spreadsheetId;
 }

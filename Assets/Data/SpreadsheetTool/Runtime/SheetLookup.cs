@@ -1,13 +1,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Includes utility functions for sheet lookups.
-/// </summary>
-public static class SheetLookup
+public class SheetLookup<T> where T : class, ISheetRowWithId
 {
+    private Dictionary<string, T> lookup;
+
+    public SheetLookup(IReadOnlyList<T> rows)
+    {
+        Rebuild(rows);
+    }
+
+    public void Rebuild(IReadOnlyList<T> rows)
+    {
+        lookup = BuildById(rows);
+    }
+
+    // TODO: This is not needed.
+    public T Get(string id)
+    {
+        if (lookup.TryGetValue(id, out T row))
+            return row;
+
+        Debug.LogError($"Row with Id '{id}' was not found.");
+        return null;
+    }
+
+    public bool TryGet(string id, out T row)
+    {
+        return lookup.TryGetValue(id, out row);
+    }
+
     /// <returns>Dictionary of rows indexed by each row's Id (which should be unique).</returns>
-    public static Dictionary<string, T> BuildById<T>(IReadOnlyList<T> rows) where T : ISheetRowWithId
+    public static Dictionary<string, T> BuildById(IReadOnlyList<T> rows)
     {
         Dictionary<string, T> lookup = new();
 
@@ -43,4 +67,9 @@ public static class SheetLookup
 
         return lookup;
     }
+
+    //public static void EnsureLookupBuilt<T>(ref Dictionary<string, T> lookup, IReadOnlyList<T> rows) where T : ISheetRowWithId
+    //{
+    //    if (lookup == null) lookup = BuildById(rows);
+    //}
 }
