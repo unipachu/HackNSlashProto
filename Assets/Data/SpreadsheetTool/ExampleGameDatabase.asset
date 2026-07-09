@@ -20,7 +20,7 @@ MonoBehaviour:
     Price: 2
   - id: jeeee
     DisplayName: strinasd
-    Damage: 2
+    Damage: 42
     Price: 2
   - id: jeeeee
     DisplayName: 123
@@ -40,5 +40,5 @@ MonoBehaviour:
   - id: Slime
     DisplayName: Mr Hoppintops
     Damage: 8
-    HP: 4
+    HP: 42
     UiJuma: UiJuma

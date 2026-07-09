@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Lookup dictionary and related methods for a single sheet.
+/// </summary>
 public class SheetLookup<T> where T : class, ISheetRowWithId
 {
     private Dictionary<string, T> lookup;
@@ -69,9 +72,4 @@ public class SheetLookup<T> where T : class, ISheetRowWithId
 
         return lookup;
     }
-
-    //public static void EnsureLookupBuilt<T>(ref Dictionary<string, T> lookup, IReadOnlyList<T> rows) where T : ISheetRowWithId
-    //{
-    //    if (lookup == null) lookup = BuildById(rows);
-    //}
 }

@@ -137,7 +137,7 @@ public static class SpreadsheetImporter
                 bool hasColumn = headerToIndex.TryGetValue(columnName, out int columnIndex);
 
                 bool isRequired =
-                    rowField.GetCustomAttribute<SheetCellRequiredAttribute>() != null;
+                    rowField.GetCustomAttribute<SheetColumnRequiredAttribute>() != null;
 
                 if (!hasColumn)
                 {
@@ -251,7 +251,7 @@ public static class SpreadsheetImporter
         value = value?.Trim() ?? "";
 
         bool isAssetPath =
-            targetField.GetCustomAttribute<SheetAssetPathAttribute>() != null;
+            targetField.GetCustomAttribute<SheetColumnAssetPathAttribute>() != null;
 
         if (isAssetPath)
         {

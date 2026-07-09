@@ -7,7 +7,7 @@ using UnityEngine;
 [Serializable]
 public class ExampleItemData : ISheetRowWithId
 {
-    [SheetCellRequired]
+    [SheetColumnRequired]
     [SheetColumn("Id")]
     [SerializeField] string id;
 

@@ -7,7 +7,7 @@ using UnityEngine;
 [Serializable]
 public class ExampleEnemyData : ISheetRowWithId
 {
-    [SheetCellRequired]
+    [SheetColumnRequired]
     [SheetColumn("Id")]
     [SerializeField] string id;
 
