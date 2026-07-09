@@ -13,6 +13,7 @@ public interface IActionCharacter
     Vector2 MoveInput { get; }
     GameObject ThisObject { get; }
     Vector3 AnimationDeltaMovement { get; }
+    CapsuleCharacterVisualsComponents CCVisComponents { get; }
 
     ActionStateRequestResult RequestFullBodyAction(ACS_FullBody newAction);
 

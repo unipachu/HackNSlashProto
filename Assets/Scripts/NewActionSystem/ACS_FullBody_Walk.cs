@@ -40,7 +40,7 @@ public class ACS_FullBody_Walk : ACS_FullBody
 
     public override void UpdateState(float deltaTime)
     {
-        Pawn.Movement.UpdateMovement(LocomotionType.VelocityByDirectionalInput, Pawn.MoveInput);
+        Pawn.Movement.UpdateMovement(Pawn.MoveInput, Vector3.zero);
         if (Pawn.AttackInput)
             Pawn.RequestFullBodyAction(new ACS_FullBody_Attack_JumpVerticalSlam(Pawn));
         else if (Pawn.MoveInput == Vector2.zero)

@@ -11,7 +11,7 @@ public class Enemy_Pawn : MonoBehaviour, IActionCharacter
     [SerializeField] EquipmentController _equipment;
     public EquipmentController Equipment => _equipment;
     [SerializeField] Animator _animator;
-    [SerializeField] AnimatorRootMovementBroadcaster _visualsController;
+    [SerializeField] AnimRootMvmtBroadcaster _visualsController;
     public Transform PlayerTransform; // TODO: A better player/target sensing system should be created.
     public NavMeshAgent agent;
 
@@ -35,6 +35,8 @@ public class Enemy_Pawn : MonoBehaviour, IActionCharacter
     public GameObject ThisObject => throw new System.NotImplementedException();
 
     public Vector3 AnimationDeltaMovement => throw new System.NotImplementedException();
+
+    CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => throw new System.NotImplementedException();
 
     ActionController _fullBodyActionController = new();
 

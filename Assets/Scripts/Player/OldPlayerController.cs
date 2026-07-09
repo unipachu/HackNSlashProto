@@ -55,7 +55,7 @@ public class OldPlayerController : MonoBehaviour
                 }
                 break;
             case "CharacterVisuals_Walk":
-                _movement.UpdateMovement(LocomotionType.VelocityByDirectionalInput, moveInput);
+                _movement.UpdateMovement(moveInput, Vector3.zero);
                 if (attackInput)
                 {
                     ChangeAnimatorState(_customAnimator.SwingR0State);

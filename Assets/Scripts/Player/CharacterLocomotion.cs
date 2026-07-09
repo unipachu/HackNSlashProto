@@ -13,21 +13,22 @@ public enum LocomotionType
 public class CharacterLocomotion : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [Tooltip("Units per second.")]
-    [SerializeField] private float maxLinearSpeed = 5;
-    [Tooltip("Degrees per second.")]
-    [SerializeField] private float maxAngularSpeed = 800;
-    [Tooltip("Units per second squared.")]
-    [SerializeField] private float acceleration = 100;
+
     [SerializeField] LayerMask groundMask;
 
     [Header("Refs")]
     [SerializeField] private CharacterController characterController;
 
-    private Vector2 _horizontalVelocity = Vector2.zero;
+    [HideInInspector] public bool IsAffectedByGravity = true;
+    [HideInInspector] public float currentMaxLinearSpeed = 5;
+    [HideInInspector] public float currentMaxLinearAcc = 100;
+    [HideInInspector] public float currentMaxAngularSpeed = 800;
+    [HideInInspector] public bool snapToMaxSpeed = false;
 
-    public Vector2 HorizontalVelocity => _horizontalVelocity;
-    public CharacterController CharacterController => characterController;
+    
+    [HideInInspector] public Vector2 _horizontalVelocity = Vector2.zero;
+    [HideInInspector] public float _verticalVelocity = 0;
+
 
     /// <summary>
     /// Call once per frame to move character.
@@ -36,20 +37,68 @@ public class CharacterLocomotion : MonoBehaviour
     /// </summary>
     // TODO: This class now takes care of velocity based movement as well as direct movement by e.g. animation delta movement.
     // TODO C: Is this a good way to do this?
-    public void UpdateMovement(LocomotionType locomotionType, Vector3 movement)
+    public void UpdateMovement(Vector2 movementInput, Vector3 animRootMotion)
     {
-        switch (locomotionType)
+        Vector2 xzMovementInput = new Vector2(movementInput.x, movementInput.y);
+        if(snapToMaxSpeed)
         {
-            case LocomotionType.VelocityByDirectionalInput:
-                SolveMovement(movement);
-                break;
-            case LocomotionType.DirectMotion:
-                MoveCharacterController(movement);
-                break;
-            default:
-                Debug.LogError("Switch defaulted.", this);
-                break;
+            _horizontalVelocity = movementInput * currentMaxLinearSpeed;
         }
+        else
+        {
+            _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, movementInput * currentMaxLinearSpeed, currentMaxLinearAcc * Time.deltaTime);
+        }
+        //UpdateVelocity(xzMovementInput);
+        //Vector3 XYVelocity = new Vector3(_horizontalVelocity.x, 0, _horizontalVelocity.y);
+        //characterController.SimpleMove(XYVelocity);
+        RotateForward();
+
+
+
+        // We also update velocity here even though we don't use it, so that when we use it the next time, the game doesn't use the last
+        // velocity when velocity based movement was used.
+        //_horizontalVelocity = Vector2.zero;
+        // NOTE: I tried to use both CharacterController.Move and .SimpleMove at the same time (Move for xz-movement and simple
+        // move for gravity), but it caused the character to move even when motion parameter was zero. CharacterController
+        // documentation recommends to only use either Move or SimpleMove and that seems to have been the problem (though I do not
+        // understand why). When using both, the character seemed to move with the same speed and same direction as it moved
+        // the last time SimpleMove was called, even though in this method the SimpleMove was set to move Vector3.zero. Weird.
+        //CharacterController.SimpleMove(motion/Time.deltaTime);
+
+        if (IsAffectedByGravity)
+        {
+            if (IsGrounded())
+            {
+                //Debug.Log("Grounded");
+                _verticalVelocity = 0;
+            }
+            else
+            {
+                _verticalVelocity -= 9.81f * Time.deltaTime;
+            }
+        }
+        else
+        {
+            _verticalVelocity = 0;
+        }
+        animRootMotion.x += _horizontalVelocity.x * Time.deltaTime;
+        animRootMotion.y += _verticalVelocity * Time.deltaTime;
+        animRootMotion.z += _horizontalVelocity.y * Time.deltaTime;
+        characterController.Move(animRootMotion);
+
+
+        // TODO: Delete commented code.
+        //switch (locomotionType)
+        //{
+        //    case LocomotionType.VelocityByDirectionalInput:
+        //        SolveMovement(movementInput);
+        //        break;
+        //    case LocomotionType.DirectMotion:
+        //        break;
+        //    default:
+        //        Debug.LogError("Switch defaulted.", this);
+        //        break;
+        //}
     }
 
     /// <summary>
@@ -57,20 +106,20 @@ public class CharacterLocomotion : MonoBehaviour
     /// </summary>
     // TODO: Problem here is that is solve movement isn't called every frame, velocity isn't updated every frame, and
     // TODO C: when SolveMovement is called again, it still uses the velocity from the last time it was called.
-    private void SolveMovement(Vector3 movementInput)
-    {
-        //Debug.Log("SolveMovement called!");
-        Vector2 xzMovementInput = new Vector2(movementInput.x, movementInput.y);
-        UpdateVelocity(xzMovementInput);
-        Vector3 XYVelocity = new Vector3(_horizontalVelocity.x, 0, _horizontalVelocity.y);
-        characterController.SimpleMove(XYVelocity);
-        RotateForward();
-    }
+    //private void SolveMovement(Vector3 movementInput)
+    //{
+    //    //Debug.Log("SolveMovement called!");
+    //    Vector2 xzMovementInput = new Vector2(movementInput.x, movementInput.y);
+    //    UpdateVelocity(xzMovementInput);
+    //    Vector3 XYVelocity = new Vector3(_horizontalVelocity.x, 0, _horizontalVelocity.y);
+    //    characterController.SimpleMove(XYVelocity);
+    //    RotateForward();
+    //}
 
-    private void UpdateVelocity(Vector2 movementInput)
-    {
-        _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, movementInput * maxLinearSpeed, acceleration * Time.deltaTime);
-    }
+    //private void UpdateVelocity(Vector2 movementInput)
+    //{
+    //    _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, movementInput * currentMaxLinearSpeed, currentMaxLinearAcc * Time.deltaTime);
+    //}
 
     private void RotateForward()
     {
@@ -80,24 +129,17 @@ public class CharacterLocomotion : MonoBehaviour
 
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
 
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngularSpeed * Time.deltaTime);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, currentMaxAngularSpeed * Time.deltaTime);
     }
 
-    /// <summary>
-    /// Moves character controller and then applies gravity. Use with e.g. animations' delta movement.
-    /// </summary>
-    private void MoveCharacterController(Vector3 motion)
-    {
-        // We also update velocity here even though we don't use it, so that when we use it the next time, the game doesn't use the last
-        // velocity when velocity based movement was used.
-        _horizontalVelocity = Vector3.zero;
-        // NOTE: I tried to use both CharacterController.Move and .SimpleMove at the same time (Move for xz-movement and simple
-        // move for gravity), but it caused the character to move even when motion parameter was zero. CharacterController
-        // documentation recommends to only use either Move or SimpleMove and that seems to have been the problem (though I do not
-        // understand why). When using both, the character seemed to move with the same speed and same direction as it moved
-        // the last time SimpleMove was called, even though in this method the SimpleMove was set to move Vector3.zero. Weird.
-        CharacterController.SimpleMove(motion/Time.deltaTime);
-    }
+    // TODO: Delete commented code.
+    ///// <summary>
+    ///// Moves character controller and then applies gravity. Use with e.g. animations' delta movement.
+    ///// </summary>
+    //private void MoveCharacterController(Vector2 movementInput, Vector3 animRootMotion)
+    //{
+
+    //}
 
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check.

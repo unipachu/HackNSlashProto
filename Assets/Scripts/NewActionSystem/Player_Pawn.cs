@@ -20,8 +20,9 @@ public class Player_Pawn : MonoBehaviour, IActionCharacter
     [SerializeField] HealthSystem _health;
     [SerializeField] EquipmentController _equipment;
     public EquipmentController Equipment => _equipment;
-    [SerializeField] Animator _animator;
-    [SerializeField] AnimatorRootMovementBroadcaster _rootMoveBroadcaster;
+    public CapsuleCharacterVisualsComponents VisComponents;
+    //[SerializeField] Animator _animator;
+    //[SerializeField] AnimRootMvmtBroadcaster _rootMoveBroadcaster;
 
     // TODO: Separeate action controllers for hands and body corresponding to animator layers.
     //ActionController _handsActionController = new();
@@ -42,14 +43,18 @@ public class Player_Pawn : MonoBehaviour, IActionCharacter
 
     public GameObject ThisObject => gameObject;
 
+    CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => VisComponents;
+
+    //CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => CCVisComponents;
+
     private void OnEnable()
     {
-        _rootMoveBroadcaster.OnRootMove += OnAnimatorRootMove;
+        VisComponents.rootMvmtBroadcaster.OnRootMove += OnAnimatorRootMove;
     }
 
     private void Start()
     {
-        _customAnimator = new(_animator);
+        _customAnimator = new(VisComponents.animator);
 
         // Enter initial state:
         RequestFullBodyAction(new ACS_FullBody_Idle(this));
@@ -57,7 +62,7 @@ public class Player_Pawn : MonoBehaviour, IActionCharacter
 
     private void OnDisable()
     {
-        _rootMoveBroadcaster.OnRootMove -= OnAnimatorRootMove;
+        VisComponents.rootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
     }
 
     public void UpdateInput(Vector2 moveInput, bool attackInput)

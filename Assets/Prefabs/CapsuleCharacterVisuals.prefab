@@ -369,8 +369,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1476938815376081737}
+  - component: {fileID: 3315297761319011731}
   - component: {fileID: 4678657368601596990}
-  - component: {fileID: 301297783499090738}
+  - component: {fileID: 7246741477902032992}
+  - component: {fileID: 8253961309907905854}
   m_Layer: 0
   m_Name: CapsuleCharacterVisuals
   m_TagString: Untagged
@@ -394,6 +396,21 @@ Transform:
   - {fileID: 6727410631872082106}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3315297761319011731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200230796060022321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4afe7c1b9f825494097f3c96a54ef36f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
+  animator: {fileID: 4678657368601596990}
+  rootMvmtBroadcaster: {fileID: 7246741477902032992}
+  animEvents: {fileID: 8253961309907905854}
 --- !u!95 &4678657368601596990
 Animator:
   serializedVersion: 7
@@ -416,7 +433,7 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &301297783499090738
+--- !u!114 &7246741477902032992
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -425,10 +442,22 @@ MonoBehaviour:
   m_GameObject: {fileID: 1200230796060022321}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2833d300546e0324cafbf5f8a1071420, type: 3}
+  m_Script: {fileID: 11500000, guid: 5911bd2cb2cd11044b7781ff87a0d6a8, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsController
+  m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
   _animator: {fileID: 4678657368601596990}
+--- !u!114 &8253961309907905854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200230796060022321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 066e9d266c688c245b2e7625d3167a18, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsAnimEvents
 --- !u!1 &1831672344664421276
 GameObject:
   m_ObjectHideFlags: 0

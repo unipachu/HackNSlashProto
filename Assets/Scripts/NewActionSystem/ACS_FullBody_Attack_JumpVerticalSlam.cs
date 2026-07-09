@@ -29,16 +29,25 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
         Pawn.CustomAnimator.CharacterVisualsLayer_FullBody.RequestCrossfadeTo(Pawn.CustomAnimator.CharacterVisualsLayer_FullBody.Attack_JumpVerticalSlam);
         Pawn.Equipment.ReadyAttackRight();
         _attackBuffered = false;
+
+        Pawn.CCVisComponents.animEvents.AttackRHandJumpVerticalSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
+        Pawn.CCVisComponents.animEvents.AttackRHandJumpVerticalSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
+
     }
 
     public override void ExitState()
     {
+        Pawn.Movement.IsAffectedByGravity = true;
+
+        Pawn.CCVisComponents.animEvents.AttackRHandJumpVerticalSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
+        Pawn.CCVisComponents.animEvents.AttackRHandJumpVerticalSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
+
     }
 
     // TODO: You might want to refactor logic into multiple methods.
     public override void UpdateState(float deltaTime)
     {
-        Pawn.Movement.UpdateMovement(LocomotionType.DirectMotion, Pawn.AnimationDeltaMovement);
+        Pawn.Movement.UpdateMovement(Vector3.zero, Pawn.AnimationDeltaMovement);
 
         IHitboxActivatingAnimation hitBox = Pawn.CustomAnimator.CharacterVisualsLayer_FullBody.ActiveState as IHitboxActivatingAnimation;
         Debug.Assert(hitBox != null, nameof(ACS_FullBody_Attack_JumpVerticalSlam) + "'s related animation state wasn't a " + nameof(IHitboxActivatingAnimation));
@@ -75,4 +84,16 @@ public class ACS_FullBody_Attack_JumpVerticalSlam : ACS_FullBody
             }
         }
     }
+
+    private void OnAttackRHandJumpVerticalSlam_JumpStarted()
+    {
+        Pawn.Movement.IsAffectedByGravity = false;
+    }
+
+    private void OnAttackRHandJumpVerticalSlam_JumpFinished()
+    {
+        Pawn.Movement.IsAffectedByGravity = true;
+        Pawn.Movement._verticalVelocity = -10;
+    }
+
 }
