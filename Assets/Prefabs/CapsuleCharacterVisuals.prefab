@@ -903,7 +903,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6727410631872082106}
   m_Layer: 0
-  m_Name: LinearYAndAngularMovement
+  m_Name: HipBone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
