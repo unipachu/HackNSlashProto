@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e544168dbcd2955429158ecb4a3ee138, type: 3}
+  m_Name: ExampleGameDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::ExampleGameDatabase
+  spreadsheetId: 1NT3GKlolWvEObjCxJoa5BohUzY2cavFo-8E5HClOmYU
+  rows: []
+  items:
+  - id: asd
+    DisplayName: string
+    Damage: 2
+    Price: 2
+  - id: asdasd
+    DisplayName: strinasd
+    Damage: 2
+    Price: 2
+  - id: asdasdasd
+    DisplayName: 123
+    Damage: 2
+    Price: 2
+  enemies:
+  - id: Orc
+    DisplayName: Ocrinlily
+    Damage: 6
+    HP: 2
+    UiJuma: Flomaat
+  - id: Dragon
+    DisplayName: Smaug
+    Damage: 7
+    HP: 3
+    UiJuma: Tulkaa ny auttaa
+  - id: Slime
+    DisplayName: Mr Hoppintops
+    Damage: 8
+    HP: 4
+    UiJuma: UiJuma

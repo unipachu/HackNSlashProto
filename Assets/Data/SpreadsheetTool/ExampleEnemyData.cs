@@ -16,6 +16,7 @@ public class ExampleEnemyData : ISheetRowWithId
 
     public int Damage;
     public int HP;
+    public string UiJuma;
 
     public string Id => id;
 }

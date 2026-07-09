@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: This can contain multiple sheets so rename it to Spreadsheet container.
-public abstract class SheetContainerBaseGeneric<T> : SheetContainerBase where T : class, ISheetRowWithId
+/// <summary>
+/// This is the class you should inherit from when creating custom spreadsheet databases.
+/// </summary>
+public abstract class SpreadsheetContainerBaseGeneric<T> : SpreadsheetContainerBase where T : class, ISheetRowWithId
 {
     [SerializeField] protected List<T> rows;
 

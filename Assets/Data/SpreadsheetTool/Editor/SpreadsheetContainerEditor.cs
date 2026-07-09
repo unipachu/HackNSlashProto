@@ -4,11 +4,10 @@ using UnityEngine;
 
 /// <summary>
 /// Custom inspector view for a SpreadsheetContainerBase. Includes a button for importing <br/>
-/// NOTE: This is also used for child classes of <see cref="SheetContainerBase"/>
+/// NOTE: This is also used for child classes of <see cref="SpreadsheetContainerBase"/>
 /// </summary>
-[CustomEditor(typeof(SheetContainerBase), true)]
-// This is sealed for fun mostly.
-public sealed class SpreadsheetContainerEditor : Editor
+[CustomEditor(typeof(SpreadsheetContainerBase), true)]
+public class SpreadsheetContainerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
@@ -19,7 +18,7 @@ public sealed class SpreadsheetContainerEditor : Editor
         EditorGUILayout.Space(12);
 
         // Target is the object being inspected, but saved as an Object, so we need to cast it to SpreadsheetContainerBase.
-        SheetContainerBase container = (SheetContainerBase)target;
+        SpreadsheetContainerBase container = (SpreadsheetContainerBase)target;
 
         // If the string is empty, we grey out the button.
         using (new EditorGUI.DisabledScope(string.IsNullOrWhiteSpace(container.SpreadsheetId)))

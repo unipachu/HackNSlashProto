@@ -17,7 +17,7 @@ public static class SpreadsheetImporter
     /// <summary>
     /// Imports Google Sheets spreadsheet sheets into a <see cref="SheetContainerBase{T}"/>.
     /// </summary>
-    public static void ImportInto(SheetContainerBase container)
+    public static void ImportInto(SpreadsheetContainerBase container)
     {
         // Record object to support "undo", in case you want to undo the import.
         Undo.RecordObject(container, "Import Spreadsheet Data");
@@ -77,7 +77,7 @@ public static class SpreadsheetImporter
     /// <param name="listField">Reflection object representing container field (with <see cref="SheetAttribute"/>) that should recieve the imported data.</param>
     /// <param name="sheetName">Name of the sheet in the spreadsheet with the data to be imported to the container.</param>
     private static void ImportSheet(
-        SheetContainerBase container,
+        SpreadsheetContainerBase container,
         FieldInfo listField,
         string sheetName)
     {
@@ -177,6 +177,7 @@ public static class SpreadsheetImporter
             list.Add(rowObject);
         }
 
+        Debug.Log($"Setting field '{listField.Name}' on {container.name}");
         listField.SetValue(container, list);
 
         Debug.Log($"Imported {list.Count} row(s) from sheet '{sheetName}'.");
