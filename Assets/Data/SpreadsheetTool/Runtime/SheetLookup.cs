@@ -15,7 +15,9 @@ public class SheetLookup<T> where T : class, ISheetRowWithId
         lookup = BuildById(rows);
     }
 
-    // TODO: This is not needed.
+    /// <summary>
+    /// NOTE: Logs error if id does not exist. Use TryGet instead.
+    /// </summary>
     public T Get(string id)
     {
         if (lookup.TryGetValue(id, out T row))

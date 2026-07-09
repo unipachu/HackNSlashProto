@@ -39,18 +39,18 @@ public static class SpreadsheetImporter
         foreach (FieldInfo field in fields)
         {
             // Only use fields with a sheet attribute.
-            SheetAttribute pageAttribute = field.GetCustomAttribute<SheetAttribute>();
+            SheetAttribute sheetAttribute = field.GetCustomAttribute<SheetAttribute>();
 
-            if (pageAttribute == null) continue;
+            if (sheetAttribute == null) continue;
 
-            ImportSheet(container, field, pageAttribute.PageName);
+            ImportSheet(container, field, sheetAttribute.SheetName);
             importedPageCount++;
         }
 
         if (importedPageCount == 0)
         {
             Debug.LogWarning(
-                $"No fields with [SpreadsheetPageAttribute] were found on {container.GetType().Name}."
+                $"No fields with [SheetAttribute] were found on {container.GetType().Name}."
             );
         }
 
@@ -177,7 +177,7 @@ public static class SpreadsheetImporter
             list.Add(rowObject);
         }
 
-        Debug.Log($"Setting field '{listField.Name}' on {container.name}");
+        //Debug.Log($"Setting field '{listField.Name}' on {container.name}");
         listField.SetValue(container, list);
 
         Debug.Log($"Imported {list.Count} row(s) from sheet '{sheetName}'.");

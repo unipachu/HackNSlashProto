@@ -9,13 +9,6 @@ public class TestDatabaseUsage : MonoBehaviour
     [SerializeField] ExampleGameDatabase database;
     void Start()
     {
-        if (database.TryGet("asdasd", out ExampleItemData sword))
-        {
-            Debug.Log(sword.DisplayName);
-        }
-        else
-        {
-            Debug.LogWarning("Coudl not find: " + "asdasd");
-        }
+        Debug.Log(database.GetItem("jee").DisplayName);
     }
 }

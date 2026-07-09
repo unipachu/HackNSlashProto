@@ -13,17 +13,16 @@ MonoBehaviour:
   m_Name: ExampleGameDatabase
   m_EditorClassIdentifier: Assembly-CSharp::ExampleGameDatabase
   spreadsheetId: 1NT3GKlolWvEObjCxJoa5BohUzY2cavFo-8E5HClOmYU
-  rows: []
   items:
-  - id: asd
-    DisplayName: string
+  - id: jee
+    DisplayName: this is the display name
     Damage: 2
     Price: 2
-  - id: asdasd
+  - id: jeeee
     DisplayName: strinasd
     Damage: 2
     Price: 2
-  - id: asdasdasd
+  - id: jeeeee
     DisplayName: 123
     Damage: 2
     Price: 2
