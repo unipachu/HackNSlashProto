@@ -406,7 +406,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1200230796060022321}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4afe7c1b9f825494097f3c96a54ef36f, type: 3}
+  m_Script: {fileID: 11500000, guid: 6819d6229a2cca4428be218ac0af9655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
   animator: {fileID: 4678657368601596990}

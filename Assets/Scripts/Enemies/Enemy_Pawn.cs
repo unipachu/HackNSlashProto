@@ -7,9 +7,6 @@ public class Enemy_Pawn : MonoBehaviour
     [Header("Refs")]
     [SerializeField] CharacterLocomotion _movement;
     public CharacterLocomotion Movement => _movement;
-    [SerializeField] HealthSystem _health;
-    [SerializeField] EquipmentController _equipment;
-    public EquipmentController Equipment => _equipment;
     [SerializeField] Animator _animator;
     [SerializeField] AnimRootMvmtBroadcaster _visualsController;
     public Transform PlayerTransform; // TODO: A better player/target sensing system should be created.
@@ -38,22 +35,22 @@ public class Enemy_Pawn : MonoBehaviour
 
     //CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => throw new System.NotImplementedException();
 
-    ActionController _fullBodyActionController = new();
+    //ActionController _fullBodyActionController = new();
 
     private void Update()
     {
-        UpdateActionControllers();
+        //UpdateActionControllers();
     }
 
-    public ActionStateRequestResult RequestFullBodyAction(ACS_FullBody newAction)
-    {
-        return _fullBodyActionController.RequestAction(newAction);
-    }
+    //public ActionStateRequestResult RequestFullBodyAction(ACS_FullBody newAction)
+    //{
+    //    return _fullBodyActionController.RequestAction(newAction);
+    //}
 
-    public void UpdateActionControllers()
-    {
-        _fullBodyActionController.UpdateActionController(Time.deltaTime);
-    }
+    //public void UpdateActionControllers()
+    //{
+    //    _fullBodyActionController.UpdateActionController(Time.deltaTime);
+    //}
 
     public NodeState RequestAttack()
     {

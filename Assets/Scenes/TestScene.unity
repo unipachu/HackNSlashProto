@@ -636,8 +636,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Controller
   _movement: {fileID: 0}
-  _health: {fileID: 0}
-  _equipment: {fileID: 0}
   _animator: {fileID: 0}
   _visualsController: {fileID: 0}
   PlayerTransform: {fileID: 439737473}
@@ -1480,8 +1478,6 @@ GameObject:
   - component: {fileID: 439737473}
   - component: {fileID: 439737476}
   - component: {fileID: 439737471}
-  - component: {fileID: 439737470}
-  - component: {fileID: 439737469}
   - component: {fileID: 439737475}
   - component: {fileID: 439737468}
   m_Layer: 0
@@ -1516,34 +1512,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &439737469
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 439737467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc41f35a4799b4b499fb999dbfcd4505, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EquipmentController
-  _attacker: {fileID: 439737473}
-  _rightHandGrabPoint: {fileID: 4438790025161691303}
-  _rightHandWeapon: {fileID: 1199934671}
---- !u!114 &439737470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 439737467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b6c6b0ac38335641bea370be9557ae5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HealthSystem
-  _maxHP: 1
 --- !u!114 &439737471
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1609,8 +1577,6 @@ MonoBehaviour:
   _inputBufferTime: 0.25
   baseData: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
   Movement: {fileID: 439737471}
-  _health: {fileID: 439737470}
-  Equipment: {fileID: 439737469}
   VisComponents: {fileID: 4043496483517493685}
   fSM: {fileID: 164602221}
   fSMStates: {fileID: 164602226}
@@ -2644,17 +2610,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97fc28ff73ec7b048ab6dc28b66fe39b, type: 3}
---- !u!114 &1199934671 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: -3568252188755917502, guid: 97fc28ff73ec7b048ab6dc28b66fe39b, type: 3}
-  m_PrefabInstance: {fileID: 1199934670}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 866448fe264a0844cbfa025f4dc07c16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponController
 --- !u!4 &1199934672 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9155164228881544986, guid: 97fc28ff73ec7b048ab6dc28b66fe39b, type: 3}
@@ -4120,7 +4075,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4afe7c1b9f825494097f3c96a54ef36f, type: 3}
+  m_Script: {fileID: 11500000, guid: 6819d6229a2cca4428be218ac0af9655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
 --- !u!4 &4438790025161691303 stripped

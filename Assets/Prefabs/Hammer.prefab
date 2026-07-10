@@ -189,8 +189,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9155164228881544986}
-  - component: {fileID: -3568252188755917502}
-  - component: {fileID: 3301993738353112515}
   m_Layer: 0
   m_Name: Hammer
   m_TagString: Untagged
@@ -215,37 +213,6 @@ Transform:
   - {fileID: 6192255711978525613}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-3568252188755917502
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4537164938953140185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 866448fe264a0844cbfa025f4dc07c16, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponController
-  baseDmg: 1
-  baseKnockback: 1
-  _hitSensor: {fileID: 3301993738353112515}
---- !u!114 &3301993738353112515
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4537164938953140185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9634ec5f46c0f9049ae27763d270f462, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeaponColliderHitSensor
-  hitMask:
-    serializedVersion: 2
-    m_Bits: 256
-  weaponCollider: {fileID: 4717693439745022821}
 --- !u!1 &5333315532987243935
 GameObject:
   m_ObjectHideFlags: 0
