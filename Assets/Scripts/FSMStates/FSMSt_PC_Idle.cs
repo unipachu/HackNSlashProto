@@ -4,7 +4,7 @@ public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
 {
     [SerializeField] PC pc;
 
-    public void Enter()
+    public void Enter(IFSMSt previousState)
     {
         pc.VisComponents.anims.Play_Idle();
     }
@@ -20,7 +20,9 @@ public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
     public void Tick()
     {
         pc.Movement.UpdateMovement(Vector2.zero, Vector3.zero, 0, 0);
-        if (pc.AttackInput)
+        if (pc.Atk1Input)
+            pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
+        else if (pc.Atk2Input)
             pc.fSM.SwitchState(pc.fSMStates.atk_Jump);
         else if (pc.MoveInput != Vector2.zero)
             pc.fSM.SwitchState(pc.fSMStates.walk);

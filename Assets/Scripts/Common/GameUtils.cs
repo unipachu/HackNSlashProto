@@ -4,59 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Threading.Tasks;
 using UnityEngine.Events;
-using Unity.AppUI.UI;
-
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-public enum Side
-{
-    Left,
-    Right,
-}
-
-public enum Directions2DVertical
-{
-    Left,
-    Right,
-    Up,
-    Down,
-}
-
-public enum Directions2DHorizontal
-{
-    Left,
-    Right,
-    Forward,
-    Backward,
-}
-
-public enum Directions3D
-{
-    Left,
-    Right,
-    Up,
-    Down,
-    Forward,
-    Backward,
-}
-
-public enum Faces
-{
-    Left,
-    Right,
-    Top,
-    Bottom,
-    Near,
-    Far,
-}
-
 /// <summary>
 /// Icludes general helper and utility in the form of general methods and extension methods.
 /// </summary>
-public static class GeneralUtils
+public static class GameUtils
 {
     /// <summary>
     /// Default gizmo color if no override is provided.

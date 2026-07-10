@@ -47,46 +47,6 @@ public class PCAnims : MonoBehaviour
         );
     }
 
-    public void Play_Idle(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
-    {
-        CrossFade(
-            "ANS_CapsuleCharacter_Idle",
-            normalizedTransitionDuration,
-            layerIndex,
-            normalizedTimeOffset
-        );
-    }
-
-    public void Play_Walk(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
-    {
-        CrossFade(
-            "ANS_CapsuleCharacter_Walk",
-            normalizedTransitionDuration,
-            layerIndex,
-            normalizedTimeOffset
-        );
-    }
-
-    public void Play_Attack_RHandVerticalSlam(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
-    {
-        CrossFade(
-            "ANS_CapsuleCharacter_Attack_RHandVerticalSlam",
-            normalizedTransitionDuration,
-            layerIndex,
-            normalizedTimeOffset
-        );
-    }
-
-    public void Play_Attack_RHandJumpVerticalSlam(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
-    {
-        CrossFade(
-            "ANS_CapsuleCharacter_Attack_RHandJumpVerticalSlam",
-            normalizedTransitionDuration,
-            layerIndex,
-            normalizedTimeOffset
-        );
-    }
-
     /// <summary>
     /// NOTE: Currently everything is expected to work on animator layer 0.
     /// </summary>
@@ -103,4 +63,110 @@ public class PCAnims : MonoBehaviour
         }
         return animator.GetCurrentAnimatorStateInfo(0).shortNameHash == Animator.StringToHash(animShortName);
     }
+
+    // -----------------------
+    // Play animation methods
+    // -----------------------
+
+    public void Play_Attack_RHandVerticalSlam(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "ANS_CapsuleCharacter_Attack_RHandVerticalSlam",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Attack_RHandJumpVerticalSlam(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_JumpVerSlam",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_HorSlash1_Impact(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash1_Impact",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_HorSlash1_Recovery(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash1_Recovery",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_HorSlash1_Windup(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash1_Windup",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_HorSlash2_Impact(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash2_Impact",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_HorSlash2_Recovery(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash2_Recovery",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Idle(float normalizedTransitionDuration = 0.3f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Idle",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_TPose(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_TPose",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Walk(float normalizedTransitionDuration = 0.3f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Walk",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+
 }

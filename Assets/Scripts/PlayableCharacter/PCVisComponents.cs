@@ -6,6 +6,6 @@ public class PCVisComponents : MonoBehaviour
 {
     public Animator animator;
     public AnimRootMvmtBroadcaster rootMvmtBroadcaster;
-    public PCVisualsAnimEvents animEvents;
+    public PCVisAnimEvents animEvents;
     public PCAnims anims;
 }

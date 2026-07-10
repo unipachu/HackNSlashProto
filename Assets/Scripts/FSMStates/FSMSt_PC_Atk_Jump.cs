@@ -4,25 +4,25 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
 {
     [SerializeField] PC pc;
 
-    private void OnEnable()
+    void OnEnable()
     {
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_Finished += OnAttackRHandJumpVerticalSlam_Finished;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_HitboxActivated += OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_HitboxDeactivated += OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_Finished += OnAttackRHandJumpVerticalSlam_Finished;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxActivated += OnAttack_RHandJumpVerticalSlam_HitboxActivated;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated += OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
     }
 
-    private void OnDisable()
+    void OnDisable()
     {
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_Finished -= OnAttackRHandJumpVerticalSlam_Finished;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_HitboxActivated -= OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_HitboxDeactivated -= OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
-        pc.VisComponents.animEvents.Attack_RHandJumpVerticalSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_Finished -= OnAttackRHandJumpVerticalSlam_Finished;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxActivated -= OnAttack_RHandJumpVerticalSlam_HitboxActivated;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated -= OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
+        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
     }
 
-    public void Enter()
+    public void Enter(IFSMSt previousState)
     {
         pc.VisComponents.anims.Play_Attack_RHandJumpVerticalSlam();
     }
@@ -41,7 +41,7 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
         pc.Movement.UpdateMovement(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
     }
 
-    private void OnAttackRHandJumpVerticalSlam_Finished()
+    void OnAttackRHandJumpVerticalSlam_Finished()
     {
         if(pc.fSM.CurrentState != (IFSMSt)this) return;
 
@@ -57,21 +57,21 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
         }
     }
 
-    private void OnAttack_RHandJumpVerticalSlam_HitboxActivated()
+    void OnAttack_RHandJumpVerticalSlam_HitboxActivated()
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 
         // TODO
     }
 
-    private void OnAttack_RHandJumpVerticalSlam_HitboxDeactivated()
+    void OnAttack_RHandJumpVerticalSlam_HitboxDeactivated()
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 
         // TODO
     }
 
-    private void OnAttackRHandJumpVerticalSlam_JumpFinished()
+    void OnAttackRHandJumpVerticalSlam_JumpFinished()
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 
@@ -81,7 +81,7 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
         pc.Movement._verticalVelocity = -pc.baseData.St_AtkJump_DownSpeedAfterJumpFinished;
     }
 
-    private void OnAttackRHandJumpVerticalSlam_JumpStarted()
+    void OnAttackRHandJumpVerticalSlam_JumpStarted()
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 

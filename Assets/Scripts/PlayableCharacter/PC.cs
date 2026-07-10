@@ -5,40 +5,21 @@ using UnityEngine;
 /// </summary>
 public class PC : MonoBehaviour
 {
-    [Header("Settings")]
-    [Tooltip("Time window (in seconds) before the end of an action/animation when new actions can be buffered." +
-        " " +
-        "\nNOTE: Is set to work with certain animation sample rates/speed/time scales.")]
-    // TODO: Rename to action buffer time.
-    [SerializeField] float _inputBufferTime = 0.25f;
-
-    [Header("Refs")]
+    [Header("Data Refs")]
     public PC_BaseData baseData;
+
+    [Header("Component Refs")]
     public CharacterLocomotion Movement;
     public PCVisComponents VisComponents;
-    //public AN_CharacterVisuals _customAnimator;
-    //[SerializeField] Animator _animator;
-    //[SerializeField] AnimRootMvmtBroadcaster _rootMoveBroadcaster;
-
-    // TODO: Separeate action controllers for hands and body corresponding to animator layers.
-    //ActionController _handsActionController = new();
-    //ActionController _bodyActionController = new();
-    //public ActionController _fullBodyActionController = new();
     public FSM fSM;
     public FSM_PCStates fSMStates;
+    public PCInputBuffer inputBuffer;
 
-    // TODO: Rename to CustomAnimator.
-    //public AN_CharacterVisuals CustomAnimator => _customAnimator;
-
-    [HideInInspector] public Vector2 MoveInput = Vector2.zero;
-    [HideInInspector] public bool AttackInput = false;
-    [HideInInspector] public Vector3 AnimationDeltaMovement = Vector3.zero;
-
-    //public P
-
-    //CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => VisComponents;
-
-    //CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => CCVisComponents;
+    public Vector2 MoveInput { get; private set; }
+    public bool Atk1Input { get; private set; }
+    public bool Atk2Input { get; private set; }
+    public bool DodgeInput { get; private set; }
+    public Vector3 AnimationDeltaMovement { get; private set; }
 
     private void OnEnable()
     {
@@ -47,10 +28,7 @@ public class PC : MonoBehaviour
 
     private void Start()
     {
-        //_customAnimator = new(VisComponents.animator);
-
         // Enter initial state:
-        //RequestFullBodyAction(new ACS_FullBody_Idle(this));
         fSM.SwitchState(fSMStates.idle);
     }
 
@@ -69,23 +47,18 @@ public class PC : MonoBehaviour
         VisComponents.rootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
     }
 
-    // TODO: Create a PC_ControllerInput class with IPawn which can consume input from Controllers.
-    public void UpdateInput(Vector2 moveInput, bool attackInput)
+    // TODO: Maybe create a PC_ControllerInput class with IPawn that can consume input from Controllers.
+    public void UpdateInput(Vector2 newMoveInput, bool newAtk1Input, bool newAtk2Input, bool newDodgeInput)
     {
-        MoveInput = moveInput;
-        AttackInput = attackInput;
+        MoveInput = newMoveInput;
+        Atk1Input = newAtk1Input;
+        Atk2Input = newAtk2Input;
+        DodgeInput = newDodgeInput;
+
+        if (newAtk1Input) inputBuffer.BufferInput("atk1");
+        else if (newAtk2Input) inputBuffer.BufferInput("atk2");
+        else if (newDodgeInput) inputBuffer.BufferInput("dodge");
     }
-
-    //public void UpdateActionControllers()
-    //{
-    //    _fullBodyActionController.UpdateActionController(Time.deltaTime);
-    //}
-
-    //public ActionStateRequestResult RequestFullBodyAction(ACS_FullBody newAction)
-    //{
-    //    // TODO: Stop hand and body actions/blend them to "inactive" animations/actions.
-    //    return _fullBodyActionController.RequestAction(newAction);
-    //}
 
     /// <summary>
     /// Used to save latest animation delta movement. Makes y component 0.
@@ -97,36 +70,4 @@ public class PC : MonoBehaviour
     {
         AnimationDeltaMovement = deltaLinearMovement;
     }
-
-    //public bool CanReceiveHit(NewHitData hit)
-    //{
-    //    if (_isDead)
-    //        return false;
-
-    //    //if (_actionController.IsInvulnerable)
-    //    //    return false;
-
-    //    return true;
-    //}
-
-    //ActionDefinition ResolveReaction(NewHitData hit)
-    //{
-    //    // TODO:
-    //    //if (health <= 0)
-    //    //    return deathAction;
-
-    //    //if (hit.sourceAction.priority >= ActionPriority.Knockdown)
-    //    //    return knockdownAction;
-
-    //    //return hitReactionAction;
-    //    return null;
-    //}
-
-    // TODO: Move hyperarmor elsewhere
-    //public bool HasHyperArmor()
-    //{
-    //    float t = ActionState.NormalizedTime;
-    //    return t >= _currentAction.HyperArmorFrom &&
-    //           t <= _currentAction.HyperArmorTo;
-    //}
 }

@@ -3,19 +3,25 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Uses input to command CustomCharacterController
+/// NOTE: This class is set to run before default time, just
+/// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
 public class PlayerController : MonoBehaviour
 {
     [Header("Input Related Refs")]
     [SerializeField] InputActionAsset inputActions;
-    [SerializeField] InputActionProperty _moveInputAction;
-    [SerializeField] InputActionProperty _attackInputAction;
+    [SerializeField] InputActionProperty moveInputAction;
+    [SerializeField] InputActionProperty atkInputAction;
+    [SerializeField] InputActionProperty atk2InputAction;
+    [SerializeField] InputActionProperty dodgeInputAction;
 
     [Header("Refs")]
     [SerializeField] private PC pc;
 
     Vector2 moveInput = Vector2.zero;
     bool attackInput = false;
+    bool attack2Input = false;
+    bool dodgeInput = false;
 
     private void OnEnable()
     {
@@ -26,8 +32,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ReadInputs();
-        pc.UpdateInput(moveInput, attackInput);
-        //_customCC.UpdateActionControllers();
+        // TODO: If the player can control menus, etc. you could mark the inputs as "consumed" here.
+        pc.UpdateInput(moveInput, attackInput, attack2Input, dodgeInput);
     }
 
     private void OnDisable()
@@ -37,7 +43,9 @@ public class PlayerController : MonoBehaviour
 
     private void ReadInputs()
     {
-        moveInput = _moveInputAction.action.ReadValue<Vector2>();
-        attackInput = _attackInputAction.action.WasPressedThisFrame();
+        moveInput = moveInputAction.action.ReadValue<Vector2>();
+        attackInput = atkInputAction.action.WasPressedThisFrame();
+        attack2Input = atk2InputAction.action.WasPressedThisFrame();
+        dodgeInput = dodgeInputAction.action.WasPressedThisFrame();
     }
 }

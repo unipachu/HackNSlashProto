@@ -12,6 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e13deb06e3e1f4841a3aada277232a7e, type: 3}
   m_Name: PCData_Test
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
-  <MaxHP>k__BackingField: 100
-  <WalkSpeed>k__BackingField: 5
-  <Dmg>k__BackingField: 10
+  <GravitationalAcc>k__BackingField: 15
+  <St_AtkJump_DownSpeedAfterJumpFinished>k__BackingField: 10
+  <St_AtkHorSlash1_LinAcc>k__BackingField: 50
+  <St_AtkHorSlash1_MaxLinSpd>k__BackingField: 2
+  <St_AtkHorSlash1_MaxAngSpd>k__BackingField: 200
+  <St_Walk_LinAcc>k__BackingField: 100
+  <St_Walk_MaxLinSpd>k__BackingField: 5
+  <St_Walk_MaxAngSpd>k__BackingField: 800

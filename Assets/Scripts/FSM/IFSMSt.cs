@@ -3,7 +3,7 @@
 /// </summary>
 public interface IFSMSt
 {
-    void Enter();
+    void Enter(IFSMSt previousState);
     void Exit();
     void PhysicsTick();
     void Tick();
