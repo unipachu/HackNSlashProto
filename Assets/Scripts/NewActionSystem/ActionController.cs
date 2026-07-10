@@ -54,8 +54,8 @@ public class ActionController
         //if(_previousAction != null) Debug.Log("Previous state was: " + _previousAction.GetType().Name);
         if (_currentAction == null)
         {
+            newState.EnterState();
             _currentAction = newState;
-            _currentAction.EnterState();
             return ActionStateRequestResult.Success;
         }
 
@@ -64,8 +64,8 @@ public class ActionController
             _currentAction.ExitState();
             _previousAction = _currentAction;
 
+            newState.EnterState();
             _currentAction = newState;
-            _currentAction.EnterState();
             return ActionStateRequestResult.Success;
         }
         else if(_currentAction.CanBuffer(newState))

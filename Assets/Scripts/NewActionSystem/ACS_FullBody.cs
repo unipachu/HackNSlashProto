@@ -1,8 +1,8 @@
 public abstract class ACS_FullBody : ACS_ActionState
 {
-    protected IActionCharacter Pawn { get; }
+    protected PC Pawn { get; }
 
-    public ACS_FullBody(IActionCharacter pawn)
+    public ACS_FullBody(PC pawn)
     {
         Pawn = pawn;
     }

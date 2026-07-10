@@ -373,6 +373,7 @@ GameObject:
   - component: {fileID: 4678657368601596990}
   - component: {fileID: 7246741477902032992}
   - component: {fileID: 8253961309907905854}
+  - component: {fileID: 4476278571066268615}
   m_Layer: 0
   m_Name: CapsuleCharacterVisuals
   m_TagString: Untagged
@@ -411,6 +412,7 @@ MonoBehaviour:
   animator: {fileID: 4678657368601596990}
   rootMvmtBroadcaster: {fileID: 7246741477902032992}
   animEvents: {fileID: 8253961309907905854}
+  anims: {fileID: 4476278571066268615}
 --- !u!95 &4678657368601596990
 Animator:
   serializedVersion: 7
@@ -458,6 +460,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 066e9d266c688c245b2e7625d3167a18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsAnimEvents
+--- !u!114 &4476278571066268615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200230796060022321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc0946b14a2441d44aee408cc1d37ea0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterAnims
+  animator: {fileID: 4678657368601596990}
 --- !u!1 &1831672344664421276
 GameObject:
   m_ObjectHideFlags: 0

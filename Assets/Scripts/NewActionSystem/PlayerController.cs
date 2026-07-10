@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] InputActionProperty _attackInputAction;
 
     [Header("Refs")]
-    [SerializeField] private Player_Pawn _customCC;
+    [SerializeField] private PC pc;
 
     Vector2 moveInput = Vector2.zero;
     bool attackInput = false;
@@ -26,8 +26,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ReadInputs();
-        _customCC.UpdateInput(moveInput, attackInput);
-        _customCC.UpdateActionControllers();
+        pc.UpdateInput(moveInput, attackInput);
+        //_customCC.UpdateActionControllers();
     }
 
     private void OnDisable()

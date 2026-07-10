@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 // TODO:
-public class Enemy_Pawn : MonoBehaviour, IActionCharacter
+public class Enemy_Pawn : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] CharacterLocomotion _movement;
@@ -15,16 +15,16 @@ public class Enemy_Pawn : MonoBehaviour, IActionCharacter
     public Transform PlayerTransform; // TODO: A better player/target sensing system should be created.
     public NavMeshAgent agent;
 
-    ACS_FullBody_Idle _aCS_FullBody_Idle;
-    public ACS_FullBody_Idle ACS_FullBody_Idle => _aCS_FullBody_Idle;
-    ACS_FullBody_Attack_JumpVerticalSlam _aCS_FullBody_Attack_JumpVerticalSlam;
-    public ACS_FullBody_Attack_JumpVerticalSlam ACS_FullBody_Attack_JumpVerticalSlam => _aCS_FullBody_Attack_JumpVerticalSlam;
-    ACS_FullBody_Walk _aCS_FullBody_Walk;
-    public ACS_FullBody_Walk ACS_FullBody_Walk => _aCS_FullBody_Walk;
+    //ACS_FullBody_Idle _aCS_FullBody_Idle;
+    //public ACS_FullBody_Idle ACS_FullBody_Idle => _aCS_FullBody_Idle;
+    //ACS_FullBody_Attack_JumpVerticalSlam _aCS_FullBody_Attack_JumpVerticalSlam;
+    //public ACS_FullBody_Attack_JumpVerticalSlam ACS_FullBody_Attack_JumpVerticalSlam => _aCS_FullBody_Attack_JumpVerticalSlam;
+    //ACS_FullBody_Walk _aCS_FullBody_Walk;
+    //public ACS_FullBody_Walk ACS_FullBody_Walk => _aCS_FullBody_Walk;
 
 
 
-    public AN_CharacterVisuals CustomAnimator => throw new System.NotImplementedException();
+    //public AN_CharacterVisuals CustomAnimator => throw new System.NotImplementedException();
 
     public float InputBufferTime => throw new System.NotImplementedException();
 
@@ -36,7 +36,7 @@ public class Enemy_Pawn : MonoBehaviour, IActionCharacter
 
     public Vector3 AnimationDeltaMovement => throw new System.NotImplementedException();
 
-    CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => throw new System.NotImplementedException();
+    //CapsuleCharacterVisualsComponents IActionCharacter.CCVisComponents => throw new System.NotImplementedException();
 
     ActionController _fullBodyActionController = new();
 

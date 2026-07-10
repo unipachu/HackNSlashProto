@@ -2,30 +2,33 @@ using UnityEngine;
 
 public class BT_ChasePlayer : BT_Node
 {
-    private Enemy_Pawn _enemyController;
+    private Enemy_Brain enemyBrain;
 
-    public BT_ChasePlayer(Enemy_Pawn enemyController)
+    public BT_ChasePlayer(PC enemyController)
     {
-        _enemyController = enemyController;
+        //enemyBrain = enemyController;
     }
     public override NodeState Evaluate()
     {
 
-        // TODO: The action state request results dont really mach the node states. Think.
-        ActionStateRequestResult result = _enemyController.RequestFullBodyAction(new ACS_Fullbody_ChaseTarget(_enemyController, _enemyController.PlayerTransform, _enemyController.agent));
-        switch (result)
-        {
-            case ActionStateRequestResult.Success:
+        //// TODO: The action state request results dont really mach the node states. Think.
+        //ActionStateRequestResult result = enemyBrain.RequestFullBodyAction(
+        //    new ACS_Fullbody_ChaseTarget(enemyBrain, enemyBrain.PlayerTransform, enemyBrain.agent));
+        //switch (result)
+        //{
+        //    case ActionStateRequestResult.Success:
 
-                return NodeState.Running;
-            case ActionStateRequestResult.Failed:
-                return NodeState.Failure;
-            case ActionStateRequestResult.ActionBuffered:
-                // TODO: Does this make sense? Perhaps a new NodeState e.g. NodeState.Queuing would make sense?
-                return NodeState.Running;
-            default:
-                Debug.LogError("Switch case defaulted");
-                return NodeState.Failure;
-        }
+        //        return NodeState.Running;
+        //    case ActionStateRequestResult.Failed:
+        //        return NodeState.Failure;
+        //    case ActionStateRequestResult.ActionBuffered:
+        //        // TODO: Does this make sense? Perhaps a new NodeState e.g. NodeState.Queuing would make sense?
+        //        return NodeState.Running;
+        //    default:
+        //        Debug.LogError("Switch case defaulted");
+        //        return NodeState.Failure;
+        //}
+        Debug.LogError("Not implemented");
+        return NodeState.Failure;
     }
 }
