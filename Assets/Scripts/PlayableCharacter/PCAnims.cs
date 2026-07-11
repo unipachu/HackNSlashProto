@@ -138,6 +138,16 @@ public class PCAnims : MonoBehaviour
         );
     }
 
+    public void Play_Atk_HorSlash3_Impact(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_HorSlash3_Impact",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
     public void Play_Idle(float normalizedTransitionDuration = 0.3f, int layerIndex = 0, float normalizedTimeOffset = 0)
     {
         CrossFade(

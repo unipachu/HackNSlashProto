@@ -447,7 +447,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5911bd2cb2cd11044b7781ff87a0d6a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
-  _animator: {fileID: 4678657368601596990}
+  animator: {fileID: 4678657368601596990}
 --- !u!114 &4476278571066268615
 MonoBehaviour:
   m_ObjectHideFlags: 0

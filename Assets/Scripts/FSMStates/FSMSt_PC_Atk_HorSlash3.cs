@@ -1,60 +1,46 @@
 using UnityEngine;
 
-public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
+public class FSMSt_PC_Atk_HorSlash3 : MonoBehaviour, IFSMSt
 {
     [SerializeField] PC pc;
 
-    AttackPhase attackPhase = AttackPhase.Windup;
+    AttackPhase attackPhase = AttackPhase.Impact;
     bool comboAllowed = false;
     bool plrInitiatedStateSwitchAllowed = false;
 
     private void OnEnable()
     {
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_ComboAllowed += OnImpact_ComboAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_Finished += OnImpact_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_ComboAllowed += OnImpact_ComboAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_Finished += OnImpact_Finished;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_Finished += OnRecovery_Finished;
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_StateSwitchAllowed += OnRecovery_StateSwitchAllowed;
-
-        pc.VisComponents.animEvents.Atk_HorSlash1_Windup_Finished += OnWindup_Finished;
     }
 
     private void OnDisable()
     {
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_ComboAllowed -= OnImpact_ComboAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_Finished -= OnImpact_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_ComboAllowed -= OnImpact_ComboAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_Finished -= OnImpact_Finished;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
+        pc.VisComponents.animEvents.Atk_HorSlash3_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_Finished -= OnRecovery_Finished;
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_StateSwitchAllowed -= OnRecovery_StateSwitchAllowed;
-
-        pc.VisComponents.animEvents.Atk_HorSlash1_Windup_Finished -= OnWindup_Finished;
     }
 
     public void Enter(IFSMSt previousState)
     {
+        attackPhase = AttackPhase.Impact;
         comboAllowed = false;
         plrInitiatedStateSwitchAllowed = false;
 
         pc.inputBuffer.Clear();
 
-        switch (previousState)
-        {
-            case FSMSt_PC_Atk_HorSlash2:
-                pc.VisComponents.anims.Play_Atk_HorSlash1_Impact();
-                attackPhase = AttackPhase.Impact;
-                break;
-            default:
-                pc.VisComponents.anims.Play_Atk_HorSlash1_Windup();
-                attackPhase = AttackPhase.Windup;
-                break;
-        }
-
+        pc.VisComponents.anims.Play_Atk_HorSlash3_Impact();
     }
 
     public void Exit()
@@ -70,14 +56,6 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
     {
         switch (attackPhase)
         {
-            case AttackPhase.Windup:
-                pc.Movement.UpdateMovement(
-                    pc.MoveInput,
-                    Vector3.zero,
-                    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
-                    pc.baseData.St_AtkHorSlash1_LinAcc,
-                    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
-                return;
             case AttackPhase.Impact:
                 pc.Movement.UpdateMovement(
                     pc.MoveInput,
@@ -87,7 +65,7 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
                     pc.baseData.St_AtkHorSlash1_MaxAngSpd);
                 if (comboAllowed)
                 {
-                    if(pc.inputBuffer.ConsumeInput("atk1"))
+                    if (pc.inputBuffer.ConsumeInput("atk1"))
                     {
                         pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash2);
                     }
@@ -113,18 +91,6 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
                 Debug.LogError("Switch defaulted.", this);
                 return;
         }
-    }
-
-    // ----------------------
-    // Windup Animation callbacks
-    // ----------------------
-
-    private void OnWindup_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        pc.VisComponents.anims.Play_Atk_HorSlash1_Impact();
-        attackPhase = AttackPhase.Impact;
     }
 
     // ----------------------

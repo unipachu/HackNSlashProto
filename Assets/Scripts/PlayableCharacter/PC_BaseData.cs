@@ -11,7 +11,7 @@ public class PC_BaseData : ScriptableObject
     [field: Tooltip("In m/s^2. Should be around 9.81.")]
     [field: SerializeField] public float GravitationalAcc { get; private set; } = 15f;
     [field: Tooltip("How long should inputs stay in the buffer?")]
-    [field: SerializeField] public float InputBufferDuration { get; private set; } = 0.3f;
+    [field: SerializeField] public float InputBufferDuration { get; private set; } = 0.4f;
 
     [field: Header("St_AtkJump")]
     [field: Tooltip("In m/s. Should be positive.")]

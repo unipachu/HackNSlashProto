@@ -66,11 +66,10 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
                     pc.baseData.St_AtkHorSlash1_MaxAngSpd);
                 if (comboAllowed)
                 {
-                    // TODO: We do not allow combo because transitioning to HorSlash1_Impact looks ugly.
-                    //if (pc.inputBuffer.ConsumeInput("atk1"))
-                    //{
-                    //    pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
-                    //}
+                    if (pc.inputBuffer.ConsumeInput("atk1"))
+                    {
+                        pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash3);
+                    }
                 }
                 return;
             case AttackPhase.Recovery:
@@ -82,7 +81,6 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
                     pc.baseData.St_AtkHorSlash1_MaxAngSpd);
                 if (plrInitiatedStateSwitchAllowed)
                 {
-                    // TODO: Check if actions buffered.
                     if (pc.MoveInput != Vector2.zero)
                     {
                         pc.fSM.SwitchState(pc.fSMStates.walk);

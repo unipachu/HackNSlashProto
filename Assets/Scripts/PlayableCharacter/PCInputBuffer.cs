@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PCInputBuffer : MonoBehaviour
 {
+    [SerializeField] PC pc;
+
     string bufferedAction;
     float remainingTime;
 
@@ -10,12 +12,14 @@ public class PCInputBuffer : MonoBehaviour
     {
         if (remainingTime <= 0) return;
         remainingTime -= Time.deltaTime;
+        //Debug.Log("remaining time: " + remainingTime);
         if (remainingTime <= 0) Clear();
     }
 
     public void BufferInput(string actionName)
     {
         bufferedAction = actionName;
+        remainingTime = pc.baseData.InputBufferDuration;
     }
 
     public void Clear()

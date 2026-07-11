@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: PCData_Test
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
   <GravitationalAcc>k__BackingField: 15
+  <InputBufferDuration>k__BackingField: 0.4
   <St_AtkJump_DownSpeedAfterJumpFinished>k__BackingField: 10
   <St_AtkHorSlash1_LinAcc>k__BackingField: 50
   <St_AtkHorSlash1_MaxLinSpd>k__BackingField: 2

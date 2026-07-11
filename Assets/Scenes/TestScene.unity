@@ -663,6 +663,7 @@ GameObject:
   - component: {fileID: 164602226}
   - component: {fileID: 164602224}
   - component: {fileID: 164602227}
+  - component: {fileID: 164602228}
   - component: {fileID: 164602225}
   - component: {fileID: 164602223}
   - component: {fileID: 164602222}
@@ -766,6 +767,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FSM_PCStates
   atk_HorSlash1: {fileID: 164602224}
   atk_HorSlash2: {fileID: 164602227}
+  atk_HorSlash3: {fileID: 164602228}
   atk_Jump: {fileID: 164602225}
   idle: {fileID: 164602223}
   walk: {fileID: 164602222}
@@ -781,6 +783,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d55a2b7086fe915469987079c5b2f180, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash2
+  pc: {fileID: 439737476}
+--- !u!114 &164602228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99b79c0d5ecbaf249925ae39d4d78b58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash3
   pc: {fileID: 439737476}
 --- !u!1 &167132625
 GameObject:
@@ -1619,6 +1634,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d9d6319f83c1d04594ce4c3a529a290, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PCInputBuffer
+  pc: {fileID: 439737476}
 --- !u!1 &514178726
 GameObject:
   m_ObjectHideFlags: 0
