@@ -15,9 +15,8 @@ MonoBehaviour:
   <GravitationalAcc>k__BackingField: 15
   <InputBufferDuration>k__BackingField: 0.4
   <St_AtkJump_DownSpeedAfterJumpFinished>k__BackingField: 10
-  <St_AtkHorSlash1_LinAcc>k__BackingField: 50
-  <St_AtkHorSlash1_MaxLinSpd>k__BackingField: 2
-  <St_AtkHorSlash1_MaxAngSpd>k__BackingField: 200
+  <St_AtkHorSlash_RecoveryMotionInterpDur>k__BackingField: 0.2
+  <St_AtkHorSlash_Impact_AngSpd>k__BackingField: 800
   <St_Walk_LinAcc>k__BackingField: 100
   <St_Walk_MaxLinSpd>k__BackingField: 5
   <St_Walk_MaxAngSpd>k__BackingField: 800

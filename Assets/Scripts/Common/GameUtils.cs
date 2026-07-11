@@ -436,6 +436,19 @@ public static class GameUtils
         return numSamples;
     }
 
+    /// <returns>
+    /// Normalized time (0-1 for non looping animations) of the "current animation state", or "next animation state" if in transition.
+    /// </returns>
+    public static float GetMostRecentAnimationNormalizedTime(Animator animator, int layer = 0)
+    {
+        if (animator.IsInTransition(layer))
+        {
+            return animator.GetNextAnimatorStateInfo(layer).normalizedTime;
+        }
+
+        return animator.GetCurrentAnimatorStateInfo(layer).normalizedTime;
+    }
+
     #endregion
     #region =========================================== TASK / AWAITABLE / UNITY EVENT EXTENSIONS
 

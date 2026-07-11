@@ -1152,7 +1152,7 @@ AnimationClip:
   m_HasMotionFloatCurves: 0
   m_Events:
   - time: 0.1
-    functionName: E_Atk_HorSlash2_Recovery_StateSwitchAllowed
+    functionName: E_Atk_HorSlash2_Recovery_DodgeAllowed
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

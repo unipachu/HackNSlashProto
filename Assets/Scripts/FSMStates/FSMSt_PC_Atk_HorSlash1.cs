@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
@@ -6,7 +7,9 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
 
     AttackPhase attackPhase = AttackPhase.Windup;
     bool comboAllowed = false;
-    bool plrInitiatedStateSwitchAllowed = false;
+    bool dodgeAllowed = false;
+    bool impactInputRotationAllowed = false;
+    float recoveryMotionInterpTimer = 0;
 
     private void OnEnable()
     {
@@ -15,9 +18,11 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_Finished += OnImpact_Finished;
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_RotationAllowed += OnImpact_RotationAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_RotationDisallowed += OnImpact_RotationDisallowed;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_Finished += OnRecovery_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_StateSwitchAllowed += OnRecovery_StateSwitchAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_DodgeAllowed += OnRecovery_DodgeAllowed;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Windup_Finished += OnWindup_Finished;
     }
@@ -29,9 +34,11 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_Finished -= OnImpact_Finished;
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
         pc.VisComponents.animEvents.Atk_HorSlash1_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_RotationAllowed -= OnImpact_RotationAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Impact_RotationDisallowed -= OnImpact_RotationDisallowed;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_Finished -= OnRecovery_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_StateSwitchAllowed -= OnRecovery_StateSwitchAllowed;
+        pc.VisComponents.animEvents.Atk_HorSlash1_Recovery_DodgeAllowed -= OnRecovery_DodgeAllowed;
 
         pc.VisComponents.animEvents.Atk_HorSlash1_Windup_Finished -= OnWindup_Finished;
     }
@@ -39,7 +46,9 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
     public void Enter(IFSMSt previousState)
     {
         comboAllowed = false;
-        plrInitiatedStateSwitchAllowed = false;
+        dodgeAllowed = false;
+        impactInputRotationAllowed = false;
+        recoveryMotionInterpTimer = 0;
 
         pc.inputBuffer.Clear();
 
@@ -71,20 +80,21 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
         switch (attackPhase)
         {
             case AttackPhase.Windup:
-                pc.Movement.UpdateMovement(
-                    pc.MoveInput,
-                    Vector3.zero,
-                    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
-                    pc.baseData.St_AtkHorSlash1_LinAcc,
-                    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
+                //pc.Movement.UpdateMovement(
+                //    pc.MoveInput,
+                //    Vector3.zero,
+                //    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
+                //    pc.baseData.St_AtkHorSlash1_LinAcc,
+                //    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
                 return;
             case AttackPhase.Impact:
+                float angSpd = 0;
+                if(impactInputRotationAllowed) angSpd = pc.baseData.St_AtkHorSlash_Impact_AngSpd;
                 pc.Movement.UpdateMovement(
                     pc.MoveInput,
-                    Vector3.zero,
-                    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
-                    pc.baseData.St_AtkHorSlash1_LinAcc,
-                    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
+                    pc.AnimationDeltaMovement,
+                    0,
+                    angSpd);
                 if (comboAllowed)
                 {
                     if(pc.inputBuffer.ConsumeInput("atk1"))
@@ -94,19 +104,18 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
                 }
                 return;
             case AttackPhase.Recovery:
+                // interpolate to walking speed.
+                recoveryMotionInterpTimer += Time.deltaTime;
+                float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
                 pc.Movement.UpdateMovement(
                     pc.MoveInput,
                     Vector3.zero,
-                    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
-                    pc.baseData.St_AtkHorSlash1_LinAcc,
-                    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
-                if (plrInitiatedStateSwitchAllowed)
+                    pc.baseData.St_Walk_MaxLinSpd * interpValue,
+                    pc.baseData.St_Walk_LinAcc,
+                    pc.baseData.St_Walk_MaxAngSpd * interpValue);
+                if (dodgeAllowed)
                 {
-                    if (pc.MoveInput != Vector2.zero)
-                    {
-                        pc.fSM.SwitchState(pc.fSMStates.walk);
-                        return;
-                    }
+                    // If input buffer has dodge, then transition to dodge state.
                 }
                 return;
             default:
@@ -116,26 +125,14 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
     }
 
     // ----------------------
-    // Windup Animation callbacks
-    // ----------------------
-
-    private void OnWindup_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        pc.VisComponents.anims.Play_Atk_HorSlash1_Impact();
-        attackPhase = AttackPhase.Impact;
-    }
-
-    // ----------------------
     // Recovery Animation callbacks
     // ----------------------
 
-    private void OnRecovery_StateSwitchAllowed()
+    private void OnRecovery_DodgeAllowed()
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 
-        plrInitiatedStateSwitchAllowed = true;
+        dodgeAllowed = true;
     }
 
     private void OnRecovery_Finished()
@@ -184,4 +181,31 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
 
         comboAllowed = true;
     }
+
+    private void OnImpact_RotationAllowed()
+    {
+        if (pc.fSM.CurrentState != (IFSMSt)this) return;
+
+        impactInputRotationAllowed = true;
+    }
+
+    private void OnImpact_RotationDisallowed()
+    {
+        if (pc.fSM.CurrentState != (IFSMSt)this) return;
+
+        impactInputRotationAllowed = false;
+    }
+
+    // ----------------------
+    // Windup Animation callbacks
+    // ----------------------
+
+    private void OnWindup_Finished()
+    {
+        if (pc.fSM.CurrentState != (IFSMSt)this) return;
+
+        pc.VisComponents.anims.Play_Atk_HorSlash1_Impact();
+        attackPhase = AttackPhase.Impact;
+    }
+
 }

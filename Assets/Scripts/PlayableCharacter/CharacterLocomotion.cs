@@ -43,20 +43,12 @@ public class CharacterLocomotion : MonoBehaviour
 
         _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, horMovementInput * maxLinSpd, LinAcc * Time.deltaTime);
 
-        RotateForward(maxAngSpd);
+        RotateForward(maxAngSpd, xzMovementInput);
 ;
 
         if (IsAffectedByGravity)
         {
-            if (IsGrounded())
-            {
-                //Debug.Log("Grounded");
-                _verticalVelocity = 0;
-            }
-            else
-            {
-                _verticalVelocity -= 9.81f * Time.deltaTime;
-            }
+            ApplyGravity();
         }
         else
         {
@@ -76,19 +68,11 @@ public class CharacterLocomotion : MonoBehaviour
         Vector2 xzMovementInput = new Vector2(horMovementInput.x, horMovementInput.y);
         _horizontalVelocity = horMovementInput * LinSpd;
 
-        RotateForward(AngSpd);
+        RotateForward(AngSpd, xzMovementInput);
 
         if (IsAffectedByGravity)
         {
-            if (IsGrounded())
-            {
-                //Debug.Log("Grounded");
-                _verticalVelocity = 0;
-            }
-            else
-            {
-                _verticalVelocity -= 9.81f * Time.deltaTime;
-            }
+            ApplyGravity();
         }
         else
         {
@@ -100,45 +84,32 @@ public class CharacterLocomotion : MonoBehaviour
         characterController.Move(animRootMotion);
     }
 
-    /// <summary>
-    /// NOTE: Movement input should have a max length of 1 and represents xz-movement!
-    /// </summary>
-    // TODO: Problem here is that is solve movement isn't called every frame, velocity isn't updated every frame, and
-    // TODO C: when SolveMovement is called again, it still uses the velocity from the last time it was called.
-    //private void SolveMovement(Vector3 movementInput)
-    //{
-    //    //Debug.Log("SolveMovement called!");
-    //    Vector2 xzMovementInput = new Vector2(movementInput.x, movementInput.y);
-    //    UpdateVelocity(xzMovementInput);
-    //    Vector3 XYVelocity = new Vector3(_horizontalVelocity.x, 0, _horizontalVelocity.y);
-    //    characterController.SimpleMove(XYVelocity);
-    //    RotateForward();
-    //}
-
-    //private void UpdateVelocity(Vector2 movementInput)
-    //{
-    //    _horizontalVelocity = Vector2.MoveTowards(_horizontalVelocity, movementInput * currentMaxLinearSpeed, currentMaxLinearAcc * Time.deltaTime);
-    //}
-
-    private void RotateForward(float maxAngSpd)
+    void ApplyGravity()
     {
-        if (_horizontalVelocity == Vector2.zero) return;
+        if (IsGrounded())
+        {
+            _verticalVelocity = 0;
+        }
+        else
+        {
+            _verticalVelocity -= 9.81f * Time.deltaTime;
+        }
+    }
 
-        Vector3 dir3D = new(_horizontalVelocity.x, 0, _horizontalVelocity.y);
+    /// <summary>
+    /// Rotates character towards the forward vector in xz-plane.
+    /// </summary>
+    /// <param name="fWD">In XZ-plane.</param>
+    private void RotateForward(float maxAngSpd, Vector2 fWD)
+    {
+        if (fWD == Vector2.zero) return;
+
+        Vector3 dir3D = new Vector3(fWD.x, 0, fWD.y);
 
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
 
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngSpd * Time.deltaTime);
     }
-
-    // TODO: Delete commented code.
-    ///// <summary>
-    ///// Moves character controller and then applies gravity. Use with e.g. animations' delta movement.
-    ///// </summary>
-    //private void MoveCharacterController(Vector2 movementInput, Vector3 animRootMotion)
-    //{
-
-    //}
 
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check.

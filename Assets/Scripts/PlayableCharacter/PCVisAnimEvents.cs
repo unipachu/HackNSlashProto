@@ -15,9 +15,11 @@ public class PCVisAnimEvents : MonoBehaviour
     public event Action Atk_HorSlash1_Impact_Finished;
     public event Action Atk_HorSlash1_Impact_HitDealerActivated;
     public event Action Atk_HorSlash1_Impact_HitDealerDeactivated;
+    public event Action Atk_HorSlash1_Impact_RotationAllowed;
+    public event Action Atk_HorSlash1_Impact_RotationDisallowed;
 
     public event Action Atk_HorSlash1_Recovery_Finished;
-    public event Action Atk_HorSlash1_Recovery_StateSwitchAllowed;
+    public event Action Atk_HorSlash1_Recovery_DodgeAllowed;
 
     public event Action Atk_HorSlash1_Windup_Finished;
 
@@ -26,15 +28,19 @@ public class PCVisAnimEvents : MonoBehaviour
     public event Action Atk_HorSlash2_Impact_Finished;
     public event Action Atk_HorSlash2_Impact_HitDealerActivated;
     public event Action Atk_HorSlash2_Impact_HitDealerDeactivated;
+    public event Action Atk_HorSlash2_Impact_RotationAllowed;
+    public event Action Atk_HorSlash2_Impact_RotationDisallowed;
 
     public event Action Atk_HorSlash2_Recovery_Finished;
-    public event Action Atk_HorSlash2_Recovery_StateSwitchAllowed;
+    public event Action Atk_HorSlash2_Recovery_DodgeAllowed;
 
     public event Action Atk_HorSlash3_Impact_ComboAllowed;
     public event Action Atk_HorSlash3_Impact_ComboDisallowed;
     public event Action Atk_HorSlash3_Impact_Finished;
     public event Action Atk_HorSlash3_Impact_HitDealerActivated;
     public event Action Atk_HorSlash3_Impact_HitDealerDeactivated;
+    public event Action Atk_HorSlash3_Impact_RotationAllowed;
+    public event Action Atk_HorSlash3_Impact_RotationDisallowed;
 
     public event Action Atk_JumpVerSlam_Finished;
     public event Action Atk_JumpVerSlam_HitboxActivated;
@@ -72,6 +78,16 @@ public class PCVisAnimEvents : MonoBehaviour
         Atk_HorSlash1_Impact_HitDealerDeactivated?.Invoke();
     }
 
+    public void E_Atk_HorSlash1_Impact_RotationAllowed()
+    {
+        Atk_HorSlash1_Impact_RotationAllowed?.Invoke();
+    }
+
+    public void E_Atk_HorSlash1_Impact_RotationDisallowed()
+    {
+        Atk_HorSlash1_Impact_RotationDisallowed?.Invoke();
+    }
+
     // -----------------------------------------
     // Atk_HorSlash1_Recovery
     // -----------------------------------------
@@ -81,9 +97,9 @@ public class PCVisAnimEvents : MonoBehaviour
         Atk_HorSlash1_Recovery_Finished?.Invoke();
     }
 
-    public void E_Atk_HorSlash1_Recovery_StateSwitchAllowed()
+    public void E_Atk_HorSlash1_Recovery_DodgeAllowed()
     {
-        Atk_HorSlash1_Recovery_StateSwitchAllowed?.Invoke();
+        Atk_HorSlash1_Recovery_DodgeAllowed?.Invoke();
     }
 
     // -----------------------------------------
@@ -124,6 +140,16 @@ public class PCVisAnimEvents : MonoBehaviour
         Atk_HorSlash2_Impact_HitDealerDeactivated?.Invoke();
     }
 
+    public void E_Atk_HorSlash2_Impact_RotationAllowed()
+    {
+        Atk_HorSlash2_Impact_RotationAllowed?.Invoke();
+    }
+
+    public void E_Atk_HorSlash2_Impact_RotationDisallowed()
+    {
+        Atk_HorSlash2_Impact_RotationDisallowed?.Invoke();
+    }
+
     // -----------------------------------------
     // Atk_HorSlash2_Recovery
     // -----------------------------------------
@@ -133,9 +159,9 @@ public class PCVisAnimEvents : MonoBehaviour
         Atk_HorSlash2_Recovery_Finished?.Invoke();
     }
 
-    public void E_Atk_HorSlash2_Recovery_StateSwitchAllowed()
+    public void E_Atk_HorSlash2_Recovery_DodgeAllowed()
     {
-        Atk_HorSlash2_Recovery_StateSwitchAllowed?.Invoke();
+        Atk_HorSlash2_Recovery_DodgeAllowed?.Invoke();
     }
 
     // -----------------------------------------
@@ -165,6 +191,16 @@ public class PCVisAnimEvents : MonoBehaviour
     public void E_Atk_HorSlash3_Impact_HitDealerDeactivated()
     {
         Atk_HorSlash3_Impact_HitDealerDeactivated?.Invoke();
+    }
+
+    public void E_Atk_HorSlash3_Impact_RotationAllowed()
+    {
+        Atk_HorSlash3_Impact_RotationAllowed?.Invoke();
+    }
+    
+    public void E_Atk_HorSlash3_Impact_RotationDisallowed()
+    {
+        Atk_HorSlash3_Impact_RotationDisallowed?.Invoke();
     }
 
     // -----------------------------------------
