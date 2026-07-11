@@ -168,5 +168,28 @@ public class PCAnims : MonoBehaviour
         );
     }
 
+    // TODO: REmove test states:
+
+    public void Play_Test1(float normalizedTransitionDuration = 0.01f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Test1",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+
+    public void Play_Test2(float normalizedTransitionDuration = 1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Test2",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
 
 }

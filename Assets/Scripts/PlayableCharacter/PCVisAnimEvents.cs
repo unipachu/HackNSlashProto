@@ -33,6 +33,7 @@ public class PCVisAnimEvents : MonoBehaviour
     public event Action Atk_JumpVerSlam_JumpFinished;
     public event Action Atk_JumpVerSlam_JumpStarted;
 
+    int eventCounter = 0;
 
     // -----------------------------------------
     // Atk_HorSlash1_Impact
@@ -156,6 +157,15 @@ public class PCVisAnimEvents : MonoBehaviour
     public void E_Attack_RHandJumpVerticalSlam_JumpStarted()
     {
         Atk_JumpVerSlam_JumpStarted?.Invoke();
+    }
+
+    // TEST TEST
+    // TODO: REmove.
+
+    public void E_Test1_Spam()
+    {
+        Debug.Log("Spam: " + eventCounter);
+        eventCounter++;
     }
 
 

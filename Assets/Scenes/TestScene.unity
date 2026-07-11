@@ -666,6 +666,8 @@ GameObject:
   - component: {fileID: 164602225}
   - component: {fileID: 164602223}
   - component: {fileID: 164602222}
+  - component: {fileID: 164602229}
+  - component: {fileID: 164602228}
   m_Layer: 0
   m_Name: FSM
   m_TagString: Untagged
@@ -769,6 +771,8 @@ MonoBehaviour:
   atk_Jump: {fileID: 164602225}
   idle: {fileID: 164602223}
   walk: {fileID: 164602222}
+  test1: {fileID: 164602229}
+  test2: {fileID: 164602228}
 --- !u!114 &164602227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -781,6 +785,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d55a2b7086fe915469987079c5b2f180, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash2
+  pc: {fileID: 439737476}
+--- !u!114 &164602228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28c2fcd1a39075148a99c9ecfe88e003, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Test2
+  pc: {fileID: 439737476}
+--- !u!114 &164602229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1814f0b3f7464d84289410a72c107740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Test1
   pc: {fileID: 439737476}
 --- !u!1 &167132625
 GameObject:
