@@ -68,6 +68,36 @@ public class PCAnims : MonoBehaviour
     // Play animation methods
     // -----------------------
 
+    public void Play_Atk_FlyingAtk_Impact(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_FlyingAtk_Impact",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_FlyingAtk_Recovery(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_FlyingAtk_Recovery",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
+    public void Play_Atk_FlyingAtk_Windup(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
+    {
+        CrossFade(
+            "PC_Atk_FlyingAtk_Windup",
+            normalizedTransitionDuration,
+            layerIndex,
+            normalizedTimeOffset
+        );
+    }
+
     public void Play_Attack_RHandVerticalSlam(float normalizedTransitionDuration = 0.1f, int layerIndex = 0, float normalizedTimeOffset = 0)
     {
         CrossFade(

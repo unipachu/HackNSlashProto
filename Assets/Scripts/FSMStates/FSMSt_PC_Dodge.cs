@@ -10,10 +10,10 @@ public class FSMSt_PC_Dodge : MonoBehaviour, IFSMSt
 
     private void OnEnable()
     {
-        pc.VisComponents.animEvents.Dodge_BufferedInputStateSwitchAllowed += OnBufferedInputStateSwitchAllowed;
-        pc.VisComponents.animEvents.Dodge_Finished += OnFinished;
-        pc.VisComponents.animEvents.Dodge_InvulnerabilityEnd += OnInvulnerabilityEnd;
-        pc.VisComponents.animEvents.Dodge_YawAllowed += OnYawAllowed;
+        pc.visComponents.animEvents.Dodge_BufferedInputStateSwitchAllowed += OnBufferedInputStateSwitchAllowed;
+        pc.visComponents.animEvents.Dodge_Finished += OnFinished;
+        pc.visComponents.animEvents.Dodge_InvulnerabilityEnd += OnInvulnerabilityEnd;
+        pc.visComponents.animEvents.Dodge_YawAllowed += OnYawAllowed;
     }
 
     private void OnDisable()
@@ -27,7 +27,7 @@ public class FSMSt_PC_Dodge : MonoBehaviour, IFSMSt
         bufferedInputStateSwitchAllowed = false;
         // TODO: Turn on invulnerability.
 
-        pc.VisComponents.anims.Play_Dodge();
+        pc.visComponents.anims.Play_Dodge();
     }
 
     public void Exit()
@@ -43,7 +43,7 @@ public class FSMSt_PC_Dodge : MonoBehaviour, IFSMSt
     {
         float angSpd = 0;
         if (yawAllowed) angSpd = pc.baseData.St_Dodge_YawAngSpd;
-        pc.Movement.UpdateMovement(pc.MoveInput, pc.AnimationDeltaMovement, 0, angSpd);
+        pc.locomotion.UpdateMovement(pc.MoveInput, pc.AnimationDeltaMovement, 0, angSpd);
 
         if(bufferedInputStateSwitchAllowed)
         {

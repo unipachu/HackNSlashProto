@@ -6,7 +6,7 @@ public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
 
     public void Enter(IFSMSt previousState)
     {
-        pc.VisComponents.anims.Play_Idle();
+        pc.visComponents.anims.Play_Idle();
     }
 
     public void Exit()
@@ -19,7 +19,7 @@ public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
 
     public void Tick()
     {
-        pc.Movement.UpdateMovement(Vector2.zero, Vector3.zero, 0, 0);
+        pc.locomotion.UpdateMovement(Vector2.zero, Vector3.zero, 0, 0);
         
         if (pc.inputBuffer.TryConsumeInput("dodge"))
             pc.fSM.SwitchState(pc.fSMStates.dodge);
@@ -27,6 +27,8 @@ public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
             pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
         else if (pc.inputBuffer.TryConsumeInput("atk2"))
             pc.fSM.SwitchState(pc.fSMStates.atk_Jump);
+        else if (pc.inputBuffer.TryConsumeInput("atk3"))
+            pc.fSM.SwitchState(pc.fSMStates.atk_HorFlyingAtk);
         else if (pc.MoveInput != Vector2.zero)
             pc.fSM.SwitchState(pc.fSMStates.walk);
     }

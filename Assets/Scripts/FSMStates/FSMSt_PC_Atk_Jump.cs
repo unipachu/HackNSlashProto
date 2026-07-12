@@ -6,30 +6,30 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
 
     void OnEnable()
     {
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_Finished += OnAttackRHandJumpVerticalSlam_Finished;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxActivated += OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated += OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_Finished += OnAttackRHandJumpVerticalSlam_Finished;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxActivated += OnAttack_RHandJumpVerticalSlam_HitboxActivated;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated += OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
     }
 
     void OnDisable()
     {
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_Finished -= OnAttackRHandJumpVerticalSlam_Finished;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxActivated -= OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated -= OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
-        pc.VisComponents.animEvents.Atk_JumpVerSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_Finished -= OnAttackRHandJumpVerticalSlam_Finished;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxActivated -= OnAttack_RHandJumpVerticalSlam_HitboxActivated;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated -= OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
+        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
     }
 
     public void Enter(IFSMSt previousState)
     {
-        pc.VisComponents.anims.Play_Attack_RHandJumpVerticalSlam();
+        pc.visComponents.anims.Play_Attack_RHandJumpVerticalSlam();
     }
 
     public void Exit()
     {
-        pc.Movement.IsAffectedByGravity = true;
+        pc.locomotion.IsAffectedByGravity = true;
     }
 
     public void PhysicsTick()
@@ -38,7 +38,7 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
 
     public void Tick()
     {
-        pc.Movement.UpdateMovement(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
+        pc.locomotion.UpdateMovement(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
     }
 
     // -------------------------
@@ -81,8 +81,8 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
 
         // TODO: Only do if this is current state. TBH, you should probably figure out a
         // TODO C: general way to do these events to force events only when the state is active.
-        pc.Movement.IsAffectedByGravity = true;
-        pc.Movement._verticalVelocity = -pc.baseData.St_AtkJump_DownSpeedAfterJumpFinished;
+        pc.locomotion.IsAffectedByGravity = true;
+        pc.locomotion._verticalVelocity = -pc.baseData.St_AtkJump_DownSpeedAfterJumpFinished;
     }
 
     void OnAttackRHandJumpVerticalSlam_JumpStarted()
@@ -91,6 +91,6 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
 
         // TODO: Only do if this is current state. TBH, you should probably figure out a
         // TODO C: general way to do these events to force events only when the state is active.
-        pc.Movement.IsAffectedByGravity = false;
+        pc.locomotion.IsAffectedByGravity = false;
     }
 }

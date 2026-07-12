@@ -12,30 +12,30 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
 
     private void OnEnable()
     {
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed += OnImpact_ComboAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_Finished += OnImpact_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed += OnImpact_RotationAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed += OnImpact_RotationDisallowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed += OnImpact_ComboAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished += OnImpact_Finished;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed += OnImpact_RotationAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed += OnImpact_RotationDisallowed;
 
-        pc.VisComponents.animEvents.Atk_HorSlash2_Recovery_Finished += OnRecovery_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed += OnRecovery_DodgeAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished += OnRecovery_Finished;
+        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed += OnRecovery_DodgeAllowed;
     }
 
     private void OnDisable()
     {
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed -= OnImpact_ComboAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_Finished -= OnImpact_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed -= OnImpact_RotationAllowed;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed -= OnImpact_RotationDisallowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed -= OnImpact_ComboAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished -= OnImpact_Finished;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed -= OnImpact_RotationAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed -= OnImpact_RotationDisallowed;
 
-        pc.VisComponents.animEvents.Atk_HorSlash2_Recovery_Finished -= OnRecovery_Finished;
-        pc.VisComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed -= OnRecovery_DodgeAllowed;
+        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished -= OnRecovery_Finished;
+        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed -= OnRecovery_DodgeAllowed;
     }
 
     public void Enter(IFSMSt previousState)
@@ -48,7 +48,7 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
 
         pc.inputBuffer.Clear();
 
-        pc.VisComponents.anims.Play_Atk_HorSlash2_Impact();
+        pc.visComponents.anims.Play_Atk_HorSlash2_Impact();
     }
 
     public void Exit()
@@ -67,7 +67,7 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
             case AttackPhase.Impact:
                 float angSpd = 0;
                 if (impactInputRotationAllowed) angSpd = pc.baseData.St_AtkHorSlash_Impact_AngSpd;
-                pc.Movement.UpdateMovement(
+                pc.locomotion.UpdateMovement(
                     pc.MoveInput,
                     pc.AnimationDeltaMovement,
                     0,
@@ -84,7 +84,7 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
                 // interpolate to walking speed.
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
-                pc.Movement.UpdateMovement(
+                pc.locomotion.UpdateMovement(
                     pc.MoveInput,
                     Vector3.zero,
                     pc.baseData.St_Walk_MaxLinSpd * interpValue,
@@ -141,7 +141,7 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
     {
         if (pc.fSM.CurrentState != (IFSMSt)this) return;
 
-        pc.VisComponents.anims.Play_Atk_HorSlash2_Recovery();
+        pc.visComponents.anims.Play_Atk_HorSlash2_Recovery();
         attackPhase = AttackPhase.Recovery;
     }
 

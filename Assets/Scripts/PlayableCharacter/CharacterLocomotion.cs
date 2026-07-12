@@ -84,38 +84,11 @@ public class CharacterLocomotion : MonoBehaviour
         characterController.Move(animRootMotion);
     }
 
-    void ApplyGravity()
-    {
-        if (IsGrounded())
-        {
-            _verticalVelocity = 0;
-        }
-        else
-        {
-            _verticalVelocity -= 9.81f * Time.deltaTime;
-        }
-    }
-
-    /// <summary>
-    /// Rotates character towards the forward vector in xz-plane.
-    /// </summary>
-    /// <param name="fWD">In XZ-plane.</param>
-    private void RotateForward(float maxAngSpd, Vector2 fWD)
-    {
-        if (fWD == Vector2.zero) return;
-
-        Vector3 dir3D = new Vector3(fWD.x, 0, fWD.y);
-
-        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
-
-        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngSpd * Time.deltaTime);
-    }
-
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check.
     /// </summary>
     // TODO: Make local variables into fields and reveal to inspector.
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         float extraDistance = 0.05f;
         float radius = characterController.radius;
@@ -149,5 +122,32 @@ public class CharacterLocomotion : MonoBehaviour
             }
         }
         return false;
+    }
+
+    void ApplyGravity()
+    {
+        if (IsGrounded())
+        {
+            _verticalVelocity = 0;
+        }
+        else
+        {
+            _verticalVelocity -= 9.81f * Time.deltaTime;
+        }
+    }
+
+    /// <summary>
+    /// Rotates character towards the forward vector in xz-plane.
+    /// </summary>
+    /// <param name="fWD">In XZ-plane.</param>
+    void RotateForward(float maxAngSpd, Vector2 fWD)
+    {
+        if (fWD == Vector2.zero) return;
+
+        Vector3 dir3D = new Vector3(fWD.x, 0, fWD.y);
+
+        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
+
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, maxAngSpd * Time.deltaTime);
     }
 }

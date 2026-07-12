@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] InputActionProperty moveInputAction;
     [SerializeField] InputActionProperty atkInputAction;
     [SerializeField] InputActionProperty atk2InputAction;
+    [SerializeField] InputActionProperty atk3InputAction;
     [SerializeField] InputActionProperty dodgeInputAction;
 
     [Header("Refs")]
@@ -21,6 +22,7 @@ public class PlayerController : MonoBehaviour
     Vector2 moveInput = Vector2.zero;
     bool attackInput = false;
     bool attack2Input = false;
+    bool attack3Input = false;
     bool dodgeInput = false;
 
     private void OnEnable()
@@ -33,7 +35,7 @@ public class PlayerController : MonoBehaviour
     {
         ReadInputs();
         // TODO: If the player can control menus, etc. you could mark the inputs as "consumed" here.
-        pc.UpdateInput(moveInput, attackInput, attack2Input, dodgeInput);
+        pc.UpdateInput(moveInput, attackInput, attack2Input, attack3Input, dodgeInput);
     }
 
     private void OnDisable()
@@ -46,6 +48,7 @@ public class PlayerController : MonoBehaviour
         moveInput = moveInputAction.action.ReadValue<Vector2>();
         attackInput = atkInputAction.action.WasPressedThisFrame();
         attack2Input = atk2InputAction.action.WasPressedThisFrame();
+        attack3Input = atk3InputAction.action.WasPressedThisFrame();
         dodgeInput = dodgeInputAction.action.WasPressedThisFrame();
     }
 }

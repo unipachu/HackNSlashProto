@@ -10,6 +10,12 @@ using UnityEngine;
 /// </summary>
 public class PCVisAnimEvents : MonoBehaviour
 {
+    public event Action Atk_FlyingAtk_Impact_Finished;
+
+    public event Action Atk_FlyingAtk_Recovery_Finished;
+
+    public event Action Atk_FlyingAtk_Windup_Finished;
+
     public event Action Atk_HorSlash1_Impact_ComboAllowed;
     public event Action Atk_HorSlash1_Impact_ComboDisallowed;
     public event Action Atk_HorSlash1_Impact_Finished;
@@ -53,6 +59,34 @@ public class PCVisAnimEvents : MonoBehaviour
     public event Action Dodge_InvulnerabilityEnd;
     public event Action Dodge_YawAllowed;
 
+
+
+    // -----------------------------------------
+    // Atk_FlyingAtk_Impact
+    // -----------------------------------------
+
+    public void E_Atk_FlyingAtk_Impact_Finished()
+    {
+        Atk_FlyingAtk_Impact_Finished?.Invoke();
+    }
+
+    // -----------------------------------------
+    // Atk_FlyingAtk_Recovery
+    // -----------------------------------------
+
+    public void E_Atk_FlyingAtk_Recovery_Finished()
+    {
+        Atk_FlyingAtk_Recovery_Finished?.Invoke();
+    }
+
+    // -----------------------------------------
+    // Atk_FlyingAtk_Windup
+    // -----------------------------------------
+
+    public void E_Atk_FlyingAtk_Windup_Finished()
+    {
+        Atk_FlyingAtk_Windup_Finished?.Invoke();
+    }
 
     // -----------------------------------------
     // Atk_HorSlash1_Impact
