@@ -665,6 +665,7 @@ GameObject:
   - component: {fileID: 164602227}
   - component: {fileID: 164602228}
   - component: {fileID: 164602225}
+  - component: {fileID: 164602229}
   - component: {fileID: 164602223}
   - component: {fileID: 164602222}
   m_Layer: 0
@@ -769,6 +770,7 @@ MonoBehaviour:
   atk_HorSlash2: {fileID: 164602227}
   atk_HorSlash3: {fileID: 164602228}
   atk_Jump: {fileID: 164602225}
+  dodge: {fileID: 164602229}
   idle: {fileID: 164602223}
   walk: {fileID: 164602222}
 --- !u!114 &164602227
@@ -796,6 +798,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99b79c0d5ecbaf249925ae39d4d78b58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash3
+  pc: {fileID: 439737476}
+--- !u!114 &164602229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975bea07fd7783a48923877c52e717e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Dodge
   pc: {fileID: 439737476}
 --- !u!1 &167132625
 GameObject:

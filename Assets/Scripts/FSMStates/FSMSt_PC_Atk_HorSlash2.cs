@@ -74,7 +74,7 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
                     angSpd);
                 if (comboAllowed)
                 {
-                    if (pc.inputBuffer.ConsumeInput("atk1"))
+                    if (pc.inputBuffer.TryConsumeInput("atk1"))
                     {
                         pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash3);
                     }

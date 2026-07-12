@@ -33,9 +33,12 @@ public class FSMSt_PC_Walk : MonoBehaviour, IFSMSt
     public void Tick()
     {
         pc.Movement.UpdateMovement(pc.MoveInput, Vector3.zero, pc.baseData.St_Walk_MaxLinSpd, pc.baseData.St_Walk_LinAcc, pc.baseData.St_Walk_MaxAngSpd);
-        if (pc.Atk1Input)
+        
+        if (pc.inputBuffer.TryConsumeInput("dodge"))
+            pc.fSM.SwitchState(pc.fSMStates.dodge);
+        else if (pc.inputBuffer.TryConsumeInput("atk1"))
             pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
-        else if (pc.Atk2Input)
+        else if (pc.inputBuffer.TryConsumeInput("atk2"))
             pc.fSM.SwitchState(pc.fSMStates.atk_Jump);
         else if (pc.MoveInput == Vector2.zero)
             pc.fSM.SwitchState(pc.fSMStates.idle);

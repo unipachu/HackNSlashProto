@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
@@ -45,6 +44,7 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
 
     public void Enter(IFSMSt previousState)
     {
+        attackPhase = AttackPhase.Windup;
         comboAllowed = false;
         dodgeAllowed = false;
         impactInputRotationAllowed = false;
@@ -52,18 +52,7 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
 
         pc.inputBuffer.Clear();
 
-        switch (previousState)
-        {
-            case FSMSt_PC_Atk_HorSlash2:
-                pc.VisComponents.anims.Play_Atk_HorSlash1_Impact();
-                attackPhase = AttackPhase.Impact;
-                break;
-            default:
-                pc.VisComponents.anims.Play_Atk_HorSlash1_Windup();
-                attackPhase = AttackPhase.Windup;
-                break;
-        }
-
+        pc.VisComponents.anims.Play_Atk_HorSlash1_Windup();
     }
 
     public void Exit()
@@ -97,7 +86,7 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
                     angSpd);
                 if (comboAllowed)
                 {
-                    if(pc.inputBuffer.ConsumeInput("atk1"))
+                    if(pc.inputBuffer.TryConsumeInput("atk1"))
                     {
                         pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash2);
                     }
@@ -115,7 +104,10 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
                     pc.baseData.St_Walk_MaxAngSpd * interpValue);
                 if (dodgeAllowed)
                 {
-                    // If input buffer has dodge, then transition to dodge state.
+                    if (pc.inputBuffer.TryConsumeInput("dodge"))
+                    {
+                        pc.fSM.SwitchState(pc.fSMStates.dodge);
+                    }
                 }
                 return;
             default:

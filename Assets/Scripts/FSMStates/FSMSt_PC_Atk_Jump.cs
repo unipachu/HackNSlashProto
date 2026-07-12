@@ -41,6 +41,10 @@ public class FSMSt_PC_Atk_Jump : MonoBehaviour, IFSMSt
         pc.Movement.UpdateMovement(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
     }
 
+    // -------------------------
+    // Anim Event Callbacks
+    // -------------------------
+
     void OnAttackRHandJumpVerticalSlam_Finished()
     {
         if(pc.fSM.CurrentState != (IFSMSt)this) return;

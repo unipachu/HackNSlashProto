@@ -48,6 +48,11 @@ public class PCVisAnimEvents : MonoBehaviour
     public event Action Atk_JumpVerSlam_JumpFinished;
     public event Action Atk_JumpVerSlam_JumpStarted;
 
+    public event Action Dodge_BufferedInputStateSwitchAllowed;
+    public event Action Dodge_Finished;
+    public event Action Dodge_InvulnerabilityEnd;
+    public event Action Dodge_YawAllowed;
+
 
     // -----------------------------------------
     // Atk_HorSlash1_Impact
@@ -232,5 +237,27 @@ public class PCVisAnimEvents : MonoBehaviour
         Atk_JumpVerSlam_JumpStarted?.Invoke();
     }
 
+    // -----------------------------------------
+    // Dodge
+    // -----------------------------------------
 
+    public void E_Dodge_BufferedInputStateSwitchAllowed()
+    {
+        Dodge_BufferedInputStateSwitchAllowed?.Invoke();
+    }
+
+    public void E_Dodge_Finished()
+    {
+        Dodge_Finished?.Invoke();
+    }
+
+    public void E_Dodge_InvulnerabilityEnd()
+    {
+        Dodge_InvulnerabilityEnd?.Invoke();
+    }
+
+    public void E_Dodge_YawAllowed()
+    {
+        Dodge_YawAllowed?.Invoke();
+    }
 }

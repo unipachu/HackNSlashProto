@@ -21,7 +21,7 @@ public class FSM : MonoBehaviour
         }
         newSt.Enter(CurrentState);
         CurrentState = newSt;
-        //Debug.Log("Switched to state: " + newSt.GetType().Name, this);
+        Debug.Log("Switched to state: " + newSt.GetType().Name, this);
 
         IsSwitchingState = false;
     }

@@ -11,7 +11,7 @@ public class PC_BaseData : ScriptableObject
     [field: Tooltip("In m/s^2. Should be around 9.81.")]
     [field: SerializeField] public float GravitationalAcc { get; private set; } = 15f;
     [field: Tooltip("How long should inputs stay in the buffer?")]
-    [field: SerializeField] public float InputBufferDuration { get; private set; } = 0.4f;
+    [field: SerializeField] public float InputBufferDuration { get; private set; } = 0.3f;
 
     [field: Header("St_AtkJump")]
     [field: Tooltip("In m/s. Should be positive.")]
@@ -25,6 +25,9 @@ public class PC_BaseData : ScriptableObject
     [field: Tooltip("NOTE: This should be shorter than the recovery animation dur.")]
     [field: SerializeField] public float St_AtkHorSlash_RecoveryMotionInterpDur { get; private set; } = 0.2f;
     [field: SerializeField] public float St_AtkHorSlash_Impact_AngSpd { get; private set; } = 1000f;
+
+    [field: Header("St_Dodge")]
+    [field: SerializeField] public float St_Dodge_YawAngSpd { get; private set; } = 400f;
 
 
     [field: Header("St_Walk")]

@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// TODO: This is not type safe. 
 public class PCInputBuffer : MonoBehaviour
 {
     [SerializeField] PC pc;
@@ -28,7 +29,10 @@ public class PCInputBuffer : MonoBehaviour
         remainingTime = 0;
     }
 
-    public bool ConsumeInput(string actionName)
+    /// <returns>
+    /// True if action was in the input buffer and was consumed.
+    /// </returns>
+    public bool TryConsumeInput(string actionName)
     {
         if(HasInput(actionName))
         {
