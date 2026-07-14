@@ -88,6 +88,7 @@ public class CharacterLocomotion : MonoBehaviour
     /// Uses Physics.CapsuelCast to do a ground check.
     /// </summary>
     // TODO: Make local variables into fields and reveal to inspector.
+    // TODO: Idk if this is good. Maybe just do a sphere cast from capusle bottom to avoid hits with walls/ceilings?
     public bool IsGrounded()
     {
         float extraDistance = 0.05f;

@@ -69,12 +69,11 @@ public class FSMSt_PC_Atk_HorSlash1 : MonoBehaviour, IFSMSt
         switch (attackPhase)
         {
             case AttackPhase.Windup:
-                //pc.Movement.UpdateMovement(
-                //    pc.MoveInput,
-                //    Vector3.zero,
-                //    pc.baseData.St_AtkHorSlash1_MaxLinSpd,
-                //    pc.baseData.St_AtkHorSlash1_LinAcc,
-                //    pc.baseData.St_AtkHorSlash1_MaxAngSpd);
+                pc.locomotion.UpdateMovement(
+                    Vector2.zero,
+                    pc.AnimationDeltaMovement,
+                    0,
+                    0);
                 return;
             case AttackPhase.Impact:
                 float angSpd = 0;
