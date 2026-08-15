@@ -3,9 +3,23 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-///  Utility and extension methods for Animator, Mesh, Material, and other visual-only types.
+///  Utility and extension methods for Animator, Mesh, Material, and other visual-only types (excluding UI).
 /// </summary>
 public static class VisUtils {
+    /// <summary>
+    /// Creates an array of animation events with their normalized times calculated from their frame indices.
+    /// </summary>
+    /// <param name="lastFrame">
+    /// Index of the last frame of the animation (the one in the Animation timeline where the color changes).
+    /// </param>
+    /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
+    public static ActAnimEvent[] CreateAnimEvents(int lastFrame, params (int frame, string id)[] events) {
+        ActAnimEvent[] result = new ActAnimEvent[events.Length];
+        for (int i = 0; i < events.Length; i++)
+            result[i] = new ActAnimEvent(events[i].frame, lastFrame, events[i].id);
+        return result;
+    }
+
     /// <summary>
     /// Flashes the given mesh renderer between two materials for a specified duration.
     /// </summary>
@@ -23,7 +37,6 @@ public static class VisUtils {
             meshRenderer.material = (elapsedTime % flashInterval < flashInterval / 2)
                 ? matA
                 : matB;
-
             elapsedTime += Time.deltaTime;
             yield return null;
         }
@@ -39,21 +52,26 @@ public static class VisUtils {
         Material matA,
         Material matB,
         float flashInterval = 0.2f
-    ) {
-        // Switch materials based on the flash interval.
-        meshRenderer.material = (Time.time % flashInterval < flashInterval / 2)
+    )
+        => meshRenderer.material = (Time.time % flashInterval < flashInterval / 2)
             ? matA
             : matB;
-    }
 
     /// <returns>
     /// Normalized time (0-1 for non looping animations) of the "current animation state", or "next animation state" if in transition.
     /// </returns>
-    public static float GetMostRecentAnimationNormalizedTime(Animator animator, int layer = 0) {
-        return animator.IsInTransition(layer)
-            ? animator.GetNextAnimatorStateInfo(layer).normalizedTime
-            : animator.GetCurrentAnimatorStateInfo(layer).normalizedTime;
-    }
+    public static float GetNewestStNrmTime(Animator anim, int animLayer)
+        => anim.IsInTransition(animLayer)
+            ? anim.GetNextAnimatorStateInfo(animLayer).normalizedTime
+            : anim.GetCurrentAnimatorStateInfo(animLayer).normalizedTime;
+
+    /// <summary>
+    /// Returns current state info or next state info if in transition.
+    /// </summary>
+    public static AnimatorStateInfo GetNewestStInfo(Animator anim, int animLayer)
+        => anim.IsInTransition(animLayer)
+            ? anim.GetNextAnimatorStateInfo(animLayer)
+            : anim.GetCurrentAnimatorStateInfo(animLayer);
 
     /// <summary>
     /// Gets the number of samples (frames) in the AnimationClip of the current state on a specified Animator layer.
@@ -109,5 +127,41 @@ public static class VisUtils {
                 return true;
         }
         return false;
+    }
+
+    /// <summary>
+    /// Starts crossfade and initializes animation event player.
+    /// </summary>
+    public static void CrossfadeNInitAnimEventPlr(
+        ref AnimEventPlr animEventPlr,
+        Animator anim,
+        string stateName,
+        int shortNameHash,
+        int animLayer,
+        ActAnimEvent[] sortedAnimEvents,
+        bool looping,
+        Action<string> onEvent,
+        float nrmTransDur = 0.1f,
+        float startOffset = 0
+    ) {
+        anim.CrossFade(stateName, nrmTransDur, animLayer, startOffset);
+        animEventPlr = new AnimEventPlr(
+            anim,
+            shortNameHash,
+            animLayer,
+            sortedAnimEvents,
+            looping,
+            onEvent,
+            startOffset
+        );
+    }
+
+    /// <summary>
+    /// Gets newest animator state info and returns true if matches with shortNameHash.
+    /// </summary>
+    /// <param name="shortNameHash">State hash of the expected newest animator state.</param>
+    public static bool TryGetNewestStateInfo(Animator anim, int animLayer, int shortNameHash, out AnimatorStateInfo info) {
+        info = GetNewestStInfo(anim, animLayer);
+        return info.shortNameHash == shortNameHash;
     }
 }

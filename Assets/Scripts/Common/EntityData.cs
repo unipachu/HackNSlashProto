@@ -8,7 +8,7 @@ using UnityEngine;
 public class EntityData : Singleton<EntityData> {
     [SerializeField] int capacity = 2;
 
-    public NativeArray<CapsuleCharacterConfig> configs;
+    public NativeArray<CapsuleCharacterData> configs;
     // Structs can't be null, so we need a way to keep track of structs that are actually used.
     private NativeArray<bool> occupied;
     
@@ -19,7 +19,7 @@ public class EntityData : Singleton<EntityData> {
 
     protected override void Awake() {
         base.Awake();
-        configs = new NativeArray<CapsuleCharacterConfig>(capacity, Allocator.Persistent);
+        configs = new NativeArray<CapsuleCharacterData>(capacity, Allocator.Persistent);
         occupied = new NativeArray<bool>(capacity, Allocator.Persistent);
     }
 
@@ -32,9 +32,9 @@ public class EntityData : Singleton<EntityData> {
     // Public Methods
     // ------------------------------------------------------------------------------
 
-    public CapsuleCharacterConfig GetData(int id) => configs[id];
+    public CapsuleCharacterData GetData(int id) => configs[id];
 
-    public void SetData(int id, CapsuleCharacterConfig value) => configs[id] = value;
+    public void SetData(int id, CapsuleCharacterData value) => configs[id] = value;
 
     /// <summary>
     /// Registers data mapped to a game object.<br/>

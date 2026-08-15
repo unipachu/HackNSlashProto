@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 // TODO: Use animation hashes instead?
@@ -5,6 +6,7 @@ using UnityEngine;
 /// <summary>
 /// USe this to play capsule character animations.
 /// </summary>
+[Obsolete]
 public class PcAnims : MonoBehaviour{
     [SerializeField] Animator animator;
 
@@ -119,14 +121,14 @@ public class PcAnims : MonoBehaviour{
         );
     }
 
-    public void Play_Atk_HorSlash1_Windup(float nrmTransDur = 0.1f, int layerI = 0, float nrmTimeOfs = 0){
-        CrossFade(
-            "PC_Atk_HorSlash1_Windup",
-            nrmTransDur,
-            layerI,
-            nrmTimeOfs
-        );
-    }
+    //public void Play_Atk_HorSlash1_Windup(float nrmTransDur = 0.1f, int layerI = 0, float nrmTimeOfs = 0){
+    //    CrossFade(
+    //        "PC_Atk_HorSlash1_Windup",
+    //        nrmTransDur,
+    //        layerI,
+    //        nrmTimeOfs
+    //    );
+    //}
 
     public void Play_Atk_HorSlash2_Impact(float nrmTransDur = 0.1f, int layerI = 0, float nrmTimeOfs = 0){
         CrossFade(

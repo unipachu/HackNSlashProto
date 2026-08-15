@@ -8,6 +8,7 @@ using UnityEngine;
 /// All playable character's animation events are in here.
 /// NOTE: Atm all events must be unique and named after their animation!
 /// </summary>
+[Obsolete]
 public class PcVisAnimEvents : MonoBehaviour {
     public event Action Atk_FlyingAtk_Impact_Finished;
 

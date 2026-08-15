@@ -15,12 +15,7 @@ public class SO_CapsuleCharacterData : ScriptableObject{
     [Tooltip("In m/s. Should be positive.")]
     [SerializeField] public float st_AtkJump_DownSpeedAfterJumpFinished = 10f;
 
-    // TODO: Do you even use the movement settings for the attacks? Also these are the input based
-    // TODO C: speeds, not anim root motion speeds.
     [Header("St_AtkHorSlash")]
-    //[field: SerializeField] public float St_AtkHorSlash1_LinAcc { get; private set; } = 50f;
-    //[field: SerializeField] public int St_AtkHorSlash1_MaxLinSpd { get; private set; } = 2;
-    //[field: SerializeField] public float St_AtkHorSlash1_MaxAngSpd { get; private set; } = 200f;
     [Tooltip("NOTE: This should be shorter than the recovery animation dur.")]
     [SerializeField] public float st_AtkHorSlash_RecoveryMotionInterpDur = 0.2f;
     [SerializeField] public float st_AtkHorSlash_Impact_AngSpd = 800f;
@@ -33,7 +28,10 @@ public class SO_CapsuleCharacterData : ScriptableObject{
     [SerializeField] public int st_Walk_MaxLinSpd = 5;
     [SerializeField] public float st_Walk_MaxAngSpd = 800f;
 
-    public CapsuleCharacterConfig ToStruct() => new CapsuleCharacterConfig {
+    // NOTE: This dumb conversion seems to be only way to have default inspector values since
+    // NOTE C: C# 9 doesn't support default struct values. Otherwise I'd just have a serialized
+    // NOTE C: struct directly in the scriptable object.
+    public CapsuleCharacterData ToStruct() => new CapsuleCharacterData {
         gravitationalAcc = gravitationalAcc,
         inputBufferDuration = inputBufferDuration,
         st_AtkJump_DownSpeedAfterJumpFinished = st_AtkJump_DownSpeedAfterJumpFinished,
@@ -44,16 +42,4 @@ public class SO_CapsuleCharacterData : ScriptableObject{
         st_Walk_MaxLinSpd = st_Walk_MaxLinSpd,
         st_Walk_MaxAngSpd = st_Walk_MaxAngSpd
     };
-}
-
-public struct CapsuleCharacterConfig {
-    public float gravitationalAcc;
-    public float inputBufferDuration;
-    public float st_AtkJump_DownSpeedAfterJumpFinished;
-    public float st_AtkHorSlash_RecoveryMotionInterpDur;
-    public float st_AtkHorSlash_Impact_AngSpd;
-    public float st_Dodge_YawAngSpd;
-    public float st_Walk_LinAcc;
-    public float st_Walk_MaxLinSpd;
-    public float st_Walk_MaxAngSpd;
 }

@@ -1,6 +1,8 @@
 using UnityEngine;
 
-// TODO BEFORE BUILD: If you comment out this class, you can easily find 
+// TODO BEFORE BUILD: If you comment out this class, you can easily find these in other files
+// TODO BEFORE BUILD C: and comment them out as well. However you should check asserts and error
+// TODO BEFORE BUILD C: logs carefully since you never want those asserts to fail in a published game!
 public class Dbg : Singleton<Dbg>{
     [SerializeField] bool showDebugMessages = true;
     [SerializeField] bool showDebugWarnings = true;

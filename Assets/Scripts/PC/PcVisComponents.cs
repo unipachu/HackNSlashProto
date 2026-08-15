@@ -4,6 +4,9 @@ using UnityEngine;
 // TODO C: Move these component references to the higher class.
 public class PcVisComponents : MonoBehaviour{
     public AnimRootMovBroadcaster rootMvmtBroadcaster;
+    public Animator anim;
+    // TODO: Remove
     public PcVisAnimEvents animEvents;
+    // TODO: Remove
     public PcAnims anims;
 }

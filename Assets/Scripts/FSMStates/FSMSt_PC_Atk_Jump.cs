@@ -24,14 +24,17 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
-        pc.locomotion.IsAffectedByGravity = true;
+        pc.charCtrlMov.IsAffectedByGravity = true;
     }
 
     public void PhysicsTick(){
     }
 
     public void Tick(){
-        pc.locomotion.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
+        pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
+    }
+
+    public void LateTick() {
     }
 
     // -------------------------
@@ -39,44 +42,44 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     // -------------------------
 
     void OnAttackRHandJumpVerticalSlam_Finished(){
-        if(pc.fSM.CurSt != (IFsmSt)this)
+        if(pc.fsm.CurSt != (IFsmSt)this)
             return;
         if (pc.MoveInput != Vector2.zero){
-            pc.fSM.SwitchSt(pc.fSMStates.walk);
+            pc.fsm.SwitchSt(pc.fsmSts.walk);
             return;
         }
         else{
-            pc.fSM.SwitchSt(pc.fSMStates.idle);
+            pc.fsm.SwitchSt(pc.fsmSts.idle);
             return;
         }
     }
 
     void OnAttack_RHandJumpVerticalSlam_HitboxActivated(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
         // TODO
     }
 
     void OnAttack_RHandJumpVerticalSlam_HitboxDeactivated(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
         // TODO
     }
 
     void OnAttackRHandJumpVerticalSlam_JumpFinished(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
         // TODO: Only do if this is current state. TBH, you should probably figure out a
         // TODO C: general way to do these events to force events only when the state is active.
-        pc.locomotion.IsAffectedByGravity = true;
-        pc.locomotion.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+        pc.charCtrlMov.IsAffectedByGravity = true;
+        pc.charCtrlMov.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
     }
 
     void OnAttackRHandJumpVerticalSlam_JumpStarted(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
         // TODO: Only do if this is current state. TBH, you should probably figure out a
         // TODO C: general way to do these events to force events only when the state is active.
-        pc.locomotion.IsAffectedByGravity = false;
+        pc.charCtrlMov.IsAffectedByGravity = false;
     }
 }

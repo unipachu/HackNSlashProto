@@ -9,4 +9,6 @@ public interface IFsmSt{
     void PhysicsTick();
     
     void Tick();
+
+    void LateTick();
 }

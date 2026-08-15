@@ -410,6 +410,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
   rootMvmtBroadcaster: {fileID: 7246741477902032992}
+  anim: {fileID: 4678657368601596990}
   animEvents: {fileID: 7098403653025204774}
   anims: {fileID: 4476278571066268615}
 --- !u!114 &7246741477902032992

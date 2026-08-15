@@ -26,7 +26,7 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
     }
 
     public void Tick(){
-        pc.locomotion.UpdateMov(
+        pc.charCtrlMov.UpdateMov(
             pc.MoveInput,
             Vector3.zero,
             pc.Data.st_Walk_MaxLinSpd,
@@ -34,14 +34,17 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
             pc.Data.st_Walk_MaxAngSpd
         );
         if (pc.inputBuffer.TryConsumeInput("dodge"))
-            pc.fSM.SwitchSt(pc.fSMStates.dodge);
+            pc.fsm.SwitchSt(pc.fsmSts.dodge);
         else if (pc.inputBuffer.TryConsumeInput("atk1"))
-            pc.fSM.SwitchSt(pc.fSMStates.atk_HorSlash1);
+            pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash1);
         else if (pc.inputBuffer.TryConsumeInput("atk2"))
-            pc.fSM.SwitchSt(pc.fSMStates.atk_Jump);
+            pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput("atk3"))
-            pc.fSM.SwitchSt(pc.fSMStates.atk_HorFlyingAtk);
+            pc.fsm.SwitchSt(pc.fsmSts.atk_HorFlyingAtk);
         else if (pc.MoveInput == Vector2.zero)
-            pc.fSM.SwitchSt(pc.fSMStates.idle);
+            pc.fsm.SwitchSt(pc.fsmSts.idle);
+    }
+
+    public void LateTick() {
     }
 }

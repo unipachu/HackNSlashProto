@@ -1896,10 +1896,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PC
   entityRegisterer: {fileID: 439737478}
-  locomotion: {fileID: 439737471}
+  charCtrlMov: {fileID: 439737471}
   visComponents: {fileID: 4043496483517493685}
-  fSM: {fileID: 164602221}
-  fSMStates: {fileID: 164602226}
+  fsm: {fileID: 164602221}
+  fsmSts: {fileID: 164602226}
   inputBuffer: {fileID: 439737477}
 --- !u!114 &439737477
 MonoBehaviour:

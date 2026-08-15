@@ -22,12 +22,12 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
     public void Enter(IFsmSt previousState){
         attackPhase = AtkPhase.Windup;
         impactFinished = false;
-        pc.locomotion.IsAffectedByGravity = false;
+        pc.charCtrlMov.IsAffectedByGravity = false;
         pc.visComponents.anims.Play_Atk_FlyingAtk_Windup();
     }
 
     public void Exit(){
-        pc.locomotion.IsAffectedByGravity = true;
+        pc.charCtrlMov.IsAffectedByGravity = true;
     }
 
     public void PhysicsTick(){
@@ -36,7 +36,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
     public void Tick(){
         switch (attackPhase){
             case AtkPhase.Windup:
-                pc.locomotion.UpdateMov(
+                pc.charCtrlMov.UpdateMov(
                     pc.MoveInput,
                     pc.AnimationDeltaMovement,
                     2,
@@ -45,15 +45,15 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 break;
             case AtkPhase.Impact:
                 // TODO: Set values in base data.
-                pc.locomotion.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
-                if(pc.locomotion.IsGrounded() && impactFinished){
+                pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
+                if(pc.charCtrlMov.IsGrounded() && impactFinished){
                     attackPhase = AtkPhase.Recovery;
                     pc.visComponents.anims.Play_Atk_FlyingAtk_Recovery();
                 }
                 break;
             case AtkPhase.Recovery:
                 // TODO: Set values in base data.
-                pc.locomotion.UpdateMov(
+                pc.charCtrlMov.UpdateMov(
                     pc.MoveInput,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd,
@@ -67,27 +67,30 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         }
     }
 
+    public void LateTick() {
+    }
+
     // -------------------------
     // Anim Event Callbacks
     // -------------------------
 
     void OnAtk_FlyingAtk_Impact_Finished(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
-        pc.locomotion.IsAffectedByGravity = true;
+        pc.charCtrlMov.IsAffectedByGravity = true;
         impactFinished = true;
         // TODO: Set values in base data.
-        pc.locomotion.verVel = -40;
+        pc.charCtrlMov.verVel = -40;
     }
 
     void OnAtk_FlyingAtk_Recovery_Finished(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
-        pc.fSM.SwitchSt(pc.fSMStates.idle);
+        pc.fsm.SwitchSt(pc.fsmSts.idle);
     }
 
     void OnAtk_FlyingAtk_Windup_Finished(){
-        if (pc.fSM.CurSt != (IFsmSt)this)
+        if (pc.fsm.CurSt != (IFsmSt)this)
             return;
         attackPhase = AtkPhase.Impact;
         pc.visComponents.anims.Play_Atk_FlyingAtk_Impact();

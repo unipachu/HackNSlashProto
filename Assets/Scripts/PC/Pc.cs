@@ -8,17 +8,22 @@ public class Pc : MonoBehaviour{
     [SerializeField] EntityRegisterer entityRegisterer;
 
     [Header("Component Refs")]
-    public CharCtrlMov locomotion;
+    public CharCtrlMov charCtrlMov;
     public PcVisComponents visComponents;
-    public Fsm fSM;
-    public Fsm_PcSts fSMStates;
+    public Fsm fsm;
+    public Fsm_PcSts fsmSts;
     public PcInputBuffer inputBuffer;
+
+    /// <summary>
+    /// Used to create animation events decoupled from the Animator.
+    /// </summary>
+    [HideInInspector] public AnimEventPlr animEventPlr;
 
     public Vector2 MoveInput { get; private set; }
     public bool Atk1Input { get; private set; }
     public bool Atk2Input { get; private set; }
     public bool Atk3Input { get; private set; }
-    public CapsuleCharacterConfig Data {
+    public CapsuleCharacterData Data {
         get => entityRegisterer.Data;
         set => entityRegisterer.Data = value;
     }
@@ -31,15 +36,19 @@ public class Pc : MonoBehaviour{
 
     void Start(){
         // Enter initial state:
-        fSM.SwitchSt(fSMStates.idle);
+        fsm.SwitchSt(fsmSts.idle);
     }
 
     void FixedUpdate(){
-        fSM.CurSt.PhysicsTick();
+        fsm.CurSt.PhysicsTick();
     }
 
     void Update() {
-        fSM.CurSt.Tick();
+        fsm.CurSt.Tick();
+    }
+
+    private void LateUpdate() {
+        fsm.CurSt.LateTick();
     }
 
     void OnDisable(){

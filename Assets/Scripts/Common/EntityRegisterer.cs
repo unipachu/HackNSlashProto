@@ -3,7 +3,7 @@ using UnityEngine;
 public class EntityRegisterer : MonoBehaviour {
     [SerializeField] SO_CapsuleCharacterData configSo;
 
-    public CapsuleCharacterConfig Data {
+    public CapsuleCharacterData Data {
         get => EntityData.inst.GetData(Id);
         set => EntityData.inst.SetData(Id, value);
     }
