@@ -1,17 +1,15 @@
 using UnityEngine;
 
-public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
-{
-    [SerializeField] PC pc;
+public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
+    [SerializeField] Pc pc;
 
-    AttackPhase attackPhase = AttackPhase.Impact;
+    AtkPhase attackPhase = AtkPhase.Impact;
     bool comboAllowed = false;
     bool dodgeAllowed = false;
     bool impactInputRotationAllowed = false;
     float recoveryMotionInterpTimer = 0;
 
-    private void OnEnable()
-    {
+    void OnEnable() {
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed += OnImpact_ComboAllowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished += OnImpact_Finished;
@@ -19,13 +17,12 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed += OnImpact_RotationAllowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed += OnImpact_RotationDisallowed;
-
+        // Recovery
         pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished += OnRecovery_Finished;
         pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed += OnRecovery_DodgeAllowed;
     }
 
-    private void OnDisable()
-    {
+    void OnDisable(){
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed -= OnImpact_ComboAllowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished -= OnImpact_Finished;
@@ -33,65 +30,56 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed -= OnImpact_RotationAllowed;
         pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed -= OnImpact_RotationDisallowed;
-
+        //Recovery
         pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished -= OnRecovery_Finished;
         pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed -= OnRecovery_DodgeAllowed;
     }
 
-    public void Enter(IFSMSt previousState)
-    {
-        attackPhase = AttackPhase.Impact;
+    public void Enter(IFsmSt previousState) {
+        attackPhase = AtkPhase.Impact;
         comboAllowed = false;
         dodgeAllowed = false;
         impactInputRotationAllowed = false;
         recoveryMotionInterpTimer = 0;
-
         pc.inputBuffer.Clear();
-
         pc.visComponents.anims.Play_Atk_HorSlash2_Impact();
     }
 
-    public void Exit()
-    {
+    public void Exit() {
         // TODO: Deactivate HitDealers.
     }
 
-    public void PhysicsTick()
-    {
+    public void PhysicsTick() {
     }
 
-    public void Tick()
-    {
-        switch (attackPhase)
-        {
-            case AttackPhase.Impact:
+    public void Tick() {
+        switch (attackPhase) {
+            case AtkPhase.Impact:
                 float angSpd = 0;
-                if (impactInputRotationAllowed) angSpd = pc.baseData.St_AtkHorSlash_Impact_AngSpd;
-                pc.locomotion.UpdateMovement(
+                if (impactInputRotationAllowed) angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
+                pc.locomotion.UpdateMov(
                     pc.MoveInput,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
-                if (comboAllowed)
-                {
-                    if (pc.inputBuffer.TryConsumeInput("atk1"))
-                    {
-                        pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash3);
+                if (comboAllowed) {
+                    if (pc.inputBuffer.TryConsumeInput("atk1")) {
+                        pc.fSM.SwitchSt(pc.fSMStates.atk_HorSlash3);
                     }
                 }
                 return;
-            case AttackPhase.Recovery:
+            case AtkPhase.Recovery:
                 // interpolate to walking speed.
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
-                pc.locomotion.UpdateMovement(
+                pc.locomotion.UpdateMov(
                     pc.MoveInput,
                     Vector3.zero,
-                    pc.baseData.St_Walk_MaxLinSpd * interpValue,
-                    pc.baseData.St_Walk_LinAcc,
-                    pc.baseData.St_Walk_MaxAngSpd * interpValue);
-                if (dodgeAllowed)
-                {
+                    pc.Data.st_Walk_MaxLinSpd * interpValue,
+                    pc.Data.st_Walk_LinAcc,
+                    pc.Data.st_Walk_MaxAngSpd * interpValue
+                );
+                if (dodgeAllowed) {
                     // If input buffer has dodge, then transition to dodge state.
                 }
                 return;
@@ -105,71 +93,62 @@ public class FSMSt_PC_Atk_HorSlash2 : MonoBehaviour, IFSMSt
     // Recovery Animation callbacks
     // ----------------------
 
-    private void OnRecovery_DodgeAllowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnRecovery_DodgeAllowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         dodgeAllowed = true;
     }
 
-    private void OnRecovery_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        pc.fSM.SwitchState(pc.fSMStates.idle);
+    private void OnRecovery_Finished() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
+        pc.fSM.SwitchSt(pc.fSMStates.idle);
     }
 
     // ----------------------
     // Impact Animation callbacks
     // ----------------------
 
-    private void OnImpact_HitDealerDeactivated()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_HitDealerDeactivated(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         // TODO
     }
 
-    private void OnImpact_HitDealerActivated()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_HitDealerActivated() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         // TODO
     }
 
-    private void OnImpact_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_Finished() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         pc.visComponents.anims.Play_Atk_HorSlash2_Recovery();
-        attackPhase = AttackPhase.Recovery;
+        attackPhase = AtkPhase.Recovery;
     }
 
-    private void OnImpact_ComboDisallowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_ComboDisallowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         comboAllowed = false;
     }
 
-    private void OnImpact_ComboAllowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_ComboAllowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         comboAllowed = true;
     }
 
-    private void OnImpact_RotationAllowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_RotationAllowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         impactInputRotationAllowed = true;
     }
 
-    private void OnImpact_RotationDisallowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    private void OnImpact_RotationDisallowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         impactInputRotationAllowed = false;
     }
 }

@@ -1,48 +1,49 @@
-public enum Side
-{
-    Left,
-    Right,
+// Add all public enums here.
+
+public enum AtkPhase{
+    Windup,
+    Impact,
+    Recovery
 }
 
-public enum Directions2DVertical
-{
+public enum Directions2DVertical{
     Left,
     Right,
-    Up,
     Down,
-}
-
-public enum Directions2DHorizontal
-{
-    Left,
-    Right,
-    Forward,
-    Backward,
-}
-
-public enum Directions3D
-{
-    Left,
-    Right,
     Up,
-    Down,
-    Forward,
-    Backward,
 }
 
-public enum Faces
-{
+public enum Directions2DHorizontal{
     Left,
     Right,
-    Top,
+    Backward,
+    Forward,
+}
+
+public enum Directions3D{
+    Left,
+    Right,
+    Down,
+    Up,
+    Backward,
+    Forward,
+}
+
+public enum Faces{
+    Left,
+    Right,
     Bottom,
+    Top,
     Near,
     Far,
 }
 
-public enum AttackPhase
-{
-    Windup,
-    Impact,
-    Recovery
+public enum LocomotionType {
+    VelocityByDirectionalInput,
+    DirectMotion,
+}
+
+public enum Side{
+    Left,
+    Right,
 }

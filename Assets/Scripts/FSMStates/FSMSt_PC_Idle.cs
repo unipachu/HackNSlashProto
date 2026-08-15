@@ -1,35 +1,29 @@
 using UnityEngine;
 
-public class FSMSt_PC_Idle : MonoBehaviour, IFSMSt
-{
-    [SerializeField] PC pc;
+public class FsmSt_Pc_Idle : MonoBehaviour, IFsmSt{
+    [SerializeField] Pc pc;
 
-    public void Enter(IFSMSt previousState)
-    {
+    public void Enter(IFsmSt previousState){
         pc.visComponents.anims.Play_Idle();
     }
 
-    public void Exit()
-    {
+    public void Exit(){
     }
 
-    public void PhysicsTick()
-    {
+    public void PhysicsTick(){
     }
 
-    public void Tick()
-    {
-        pc.locomotion.UpdateMovement(Vector2.zero, Vector3.zero, 0, 0);
-        
+    public void Tick(){
+        pc.locomotion.UpdateMov(Vector2.zero, Vector3.zero, 0, 0);
         if (pc.inputBuffer.TryConsumeInput("dodge"))
-            pc.fSM.SwitchState(pc.fSMStates.dodge);
+            pc.fSM.SwitchSt(pc.fSMStates.dodge);
         else if (pc.inputBuffer.TryConsumeInput("atk1"))
-            pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
+            pc.fSM.SwitchSt(pc.fSMStates.atk_HorSlash1);
         else if (pc.inputBuffer.TryConsumeInput("atk2"))
-            pc.fSM.SwitchState(pc.fSMStates.atk_Jump);
+            pc.fSM.SwitchSt(pc.fSMStates.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput("atk3"))
-            pc.fSM.SwitchState(pc.fSMStates.atk_HorFlyingAtk);
+            pc.fSM.SwitchSt(pc.fSMStates.atk_HorFlyingAtk);
         else if (pc.MoveInput != Vector2.zero)
-            pc.fSM.SwitchState(pc.fSMStates.walk);
+            pc.fSM.SwitchSt(pc.fSMStates.walk);
     }
 }

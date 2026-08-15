@@ -1,6 +1,8 @@
+using System;
 using UnityEngine;
 
 // TODO
+[Obsolete]
 public class EnemyManager : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created

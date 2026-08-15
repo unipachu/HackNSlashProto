@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+[Obsolete]
 public class Enemy_Brain : BT_Tree
 {
         // TODO: Possibly set member variables in constructor and create this in the SwordEnemy controller script.
@@ -21,7 +23,7 @@ public class Enemy_Brain : BT_Tree
                 new BT_Sequence(new List<BT_Node>
                 {
                     //new BT_IsInRange(_chaseMinDist, _chaseMaxDist, transform, _playerTransform),
-                    new BT_ChasePlayer(GetComponent<PC>())
+                    new BT_ChasePlayer(GetComponent<Pc>())
                 }),
                 new BT_Sequence(new List<BT_Node>
                 {

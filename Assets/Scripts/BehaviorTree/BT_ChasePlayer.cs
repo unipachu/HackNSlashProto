@@ -1,10 +1,12 @@
+using System;
 using UnityEngine;
 
+[Obsolete]
 public class BT_ChasePlayer : BT_Node
 {
     private Enemy_Brain enemyBrain;
 
-    public BT_ChasePlayer(PC enemyController)
+    public BT_ChasePlayer(Pc enemyController)
     {
         //enemyBrain = enemyController;
     }

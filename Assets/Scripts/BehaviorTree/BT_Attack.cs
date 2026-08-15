@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Obsolete]
 public class BT_Attack : BT_Node
 {
     private Enemy_Pawn _enemy;

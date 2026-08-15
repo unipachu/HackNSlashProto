@@ -1,56 +1,45 @@
-using System;
 using UnityEngine;
 
-public class FSMSt_PC_Dodge : MonoBehaviour, IFSMSt
-{
-    [SerializeField] PC pc;
+public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
+    [SerializeField] Pc pc;
 
     bool yawAllowed = false;
     bool bufferedInputStateSwitchAllowed = false;
 
-    private void OnEnable()
-    {
+    void OnEnable(){
         pc.visComponents.animEvents.Dodge_BufferedInputStateSwitchAllowed += OnBufferedInputStateSwitchAllowed;
         pc.visComponents.animEvents.Dodge_Finished += OnFinished;
         pc.visComponents.animEvents.Dodge_InvulnerabilityEnd += OnInvulnerabilityEnd;
         pc.visComponents.animEvents.Dodge_YawAllowed += OnYawAllowed;
     }
 
-    private void OnDisable()
-    {
+    void OnDisable(){
         
     }
 
-    public void Enter(IFSMSt previousState)
-    {
+    public void Enter(IFsmSt previousState){
         yawAllowed = false;
         bufferedInputStateSwitchAllowed = false;
         // TODO: Turn on invulnerability.
-
         pc.visComponents.anims.Play_Dodge();
     }
 
-    public void Exit()
-    {
+    public void Exit(){
         // TODO: Turn off invulnerability
     }
 
-    public void PhysicsTick()
-    {
+    public void PhysicsTick(){
     }
 
-    public void Tick()
-    {
+    public void Tick(){
         float angSpd = 0;
-        if (yawAllowed) angSpd = pc.baseData.St_Dodge_YawAngSpd;
-        pc.locomotion.UpdateMovement(pc.MoveInput, pc.AnimationDeltaMovement, 0, angSpd);
-
-        if(bufferedInputStateSwitchAllowed)
-        {
+        if (yawAllowed) angSpd = pc.Data.st_Dodge_YawAngSpd;
+        pc.locomotion.UpdateMov(pc.MoveInput, pc.AnimationDeltaMovement, 0, angSpd);
+        if(bufferedInputStateSwitchAllowed){
             if (pc.inputBuffer.TryConsumeInput("atk1"))
-                pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash1);
+                pc.fSM.SwitchSt(pc.fSMStates.atk_HorSlash1);
             else if (pc.inputBuffer.TryConsumeInput("atk2"))
-                pc.fSM.SwitchState(pc.fSMStates.atk_Jump);
+                pc.fSM.SwitchSt(pc.fSMStates.atk_Jump);
             // TODO: The problem this: switching to same state is currently not allowed because of the bs animation event behavior.
             //else if (pc.inputBuffer.TryConsumeInput("dodge"))
             //    pc.fSM.SwitchState(pc.fSMStates.dodge);
@@ -61,32 +50,30 @@ public class FSMSt_PC_Dodge : MonoBehaviour, IFSMSt
     // Anim Event Callbacks
     // -------------------------
 
-    private void OnBufferedInputStateSwitchAllowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    void OnBufferedInputStateSwitchAllowed(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         bufferedInputStateSwitchAllowed = true;
     }
 
-    private void OnFinished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        if (pc.MoveInput != Vector2.zero) pc.fSM.SwitchState(pc.fSMStates.walk);
-        else pc.fSM.SwitchState(pc.fSMStates.idle);
+    void OnFinished(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
+        if (pc.MoveInput != Vector2.zero)
+            pc.fSM.SwitchSt(pc.fSMStates.walk);
+        else
+            pc.fSM.SwitchSt(pc.fSMStates.idle);
     }
 
-    private void OnInvulnerabilityEnd()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    void OnInvulnerabilityEnd(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         // TODO: Turn off invulnerability.
     }
 
-    private void OnYawAllowed()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    void OnYawAllowed() {
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         yawAllowed = true;
     }
 }

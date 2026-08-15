@@ -6,15 +6,12 @@ using UnityEngine;
 /// and saves you doing it manually.
 /// Used samyam video tutorial: https://youtu.be/Ova7l0UB26U?si=3rCKTdtDDfixT7H9
 /// </summary>
-/// <typeparam name="T"></typeparam>
-public abstract class StaticInstance<T> : MonoBehaviour where T : MonoBehaviour
-{
-    public static T Instance { get; private set; }
-    protected virtual void Awake() => Instance = this as T;
+public abstract class StaticInstance<T> : MonoBehaviour where T : MonoBehaviour{
+    public static T inst { get; private set; }
+    protected virtual void Awake() => inst = this as T;
 
-    protected virtual void OnApplicationQuit()
-    {
-        Instance = null;
+    protected virtual void OnApplicationQuit(){
+        inst = null;
         Destroy(gameObject);
     }
 }
@@ -24,14 +21,10 @@ public abstract class StaticInstance<T> : MonoBehaviour where T : MonoBehaviour
 /// versions created, leaving the original instance intact.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class Singleton<T> : StaticInstance<T> where T : MonoBehaviour
-{
-    protected override void Awake()
-    {
-        if (Instance != null)
-        {
+public abstract class Singleton<T> : StaticInstance<T> where T : MonoBehaviour{
+    protected override void Awake(){
+        if (inst != null)
             Destroy(gameObject);
-        }
         base.Awake();
     }
 }
@@ -42,10 +35,8 @@ public abstract class Singleton<T> : StaticInstance<T> where T : MonoBehaviour
 /// where music plays through loading screens etc.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour
-{
-    protected override void Awake()
-    {
+public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour{
+    protected override void Awake(){
         base.Awake();
         //If the game object has a parent, it won't don't go to DontDestroyOnLoad. Therefore detach transform from parent.
         transform.parent = null;

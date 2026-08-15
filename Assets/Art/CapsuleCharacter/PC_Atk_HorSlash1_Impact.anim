@@ -1213,6 +1213,13 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.06666667
+    functionName: E_Atk_HorSlash1_Impact_RotationDisallowed
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.15
     functionName: E_Atk_HorSlash1_Impact_HitDealerActivated
     data: 
     objectReferenceParameter: {fileID: 0}

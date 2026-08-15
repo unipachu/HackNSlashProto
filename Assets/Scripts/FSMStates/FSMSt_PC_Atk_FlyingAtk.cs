@@ -1,84 +1,68 @@
-using System;
 using UnityEngine;
 
 // TODO: This should probably be called FlyingSlam or something more descriptive than "Atk".
-public class FSMSt_PC_Atk_FlyingAtk : MonoBehaviour, IFSMSt
-{
-    [SerializeField] PC pc;
+public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
+    [SerializeField] Pc pc;
 
-    AttackPhase attackPhase = AttackPhase.Windup;
+    AtkPhase attackPhase = AtkPhase.Windup;
     bool impactFinished = false;
 
-    private void OnEnable()
-    {
+    void OnEnable() {
         pc.visComponents.animEvents.Atk_FlyingAtk_Impact_Finished += OnAtk_FlyingAtk_Impact_Finished;
-
         pc.visComponents.animEvents.Atk_FlyingAtk_Recovery_Finished += OnAtk_FlyingAtk_Recovery_Finished;
-
         pc.visComponents.animEvents.Atk_FlyingAtk_Windup_Finished += OnAtk_FlyingAtk_Windup_Finished;
     }
 
-
-
-
-    private void OnDisable()
-    {
+    void OnDisable(){
         pc.visComponents.animEvents.Atk_FlyingAtk_Impact_Finished -= OnAtk_FlyingAtk_Impact_Finished;
-
         pc.visComponents.animEvents.Atk_FlyingAtk_Recovery_Finished -= OnAtk_FlyingAtk_Recovery_Finished;
-
         pc.visComponents.animEvents.Atk_FlyingAtk_Windup_Finished -= OnAtk_FlyingAtk_Windup_Finished;
     }
 
-    public void Enter(IFSMSt previousState)
-    {
-        attackPhase = AttackPhase.Windup;
+    public void Enter(IFsmSt previousState){
+        attackPhase = AtkPhase.Windup;
         impactFinished = false;
         pc.locomotion.IsAffectedByGravity = false;
-
-
         pc.visComponents.anims.Play_Atk_FlyingAtk_Windup();
     }
 
-    public void Exit()
-    {
+    public void Exit(){
         pc.locomotion.IsAffectedByGravity = true;
     }
 
-    public void PhysicsTick()
-    {
+    public void PhysicsTick(){
     }
 
-    public void Tick()
-    {
-        switch (attackPhase)
-        {
-            case AttackPhase.Windup:
-                pc.locomotion.UpdateMovement(
+    public void Tick(){
+        switch (attackPhase){
+            case AtkPhase.Windup:
+                pc.locomotion.UpdateMov(
                     pc.MoveInput,
                     pc.AnimationDeltaMovement,
                     2,
-                    0);
+                    0
+                );
                 break;
-            case AttackPhase.Impact:
+            case AtkPhase.Impact:
                 // TODO: Set values in base data.
-                pc.locomotion.UpdateMovement(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
-                if(pc.locomotion.IsGrounded() && impactFinished)
-                {
-                    attackPhase = AttackPhase.Recovery;
+                pc.locomotion.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
+                if(pc.locomotion.IsGrounded() && impactFinished){
+                    attackPhase = AtkPhase.Recovery;
                     pc.visComponents.anims.Play_Atk_FlyingAtk_Recovery();
                 }
                 break;
-            case AttackPhase.Recovery:
+            case AtkPhase.Recovery:
                 // TODO: Set values in base data.
-                pc.locomotion.UpdateMovement(
+                pc.locomotion.UpdateMov(
                     pc.MoveInput,
                     Vector3.zero,
-                    pc.baseData.St_Walk_MaxLinSpd,
+                    pc.Data.st_Walk_MaxLinSpd,
                     0,
-                    0);
+                    0
+                );
                 break;
             default:
+                Debug.LogError("Switch defaulted.", this);
                 break;
         }
     }
@@ -87,28 +71,25 @@ public class FSMSt_PC_Atk_FlyingAtk : MonoBehaviour, IFSMSt
     // Anim Event Callbacks
     // -------------------------
 
-    private void OnAtk_FlyingAtk_Impact_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
+    void OnAtk_FlyingAtk_Impact_Finished(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
         pc.locomotion.IsAffectedByGravity = true;
         impactFinished = true;
         // TODO: Set values in base data.
-        pc.locomotion._verticalVelocity = -40;
+        pc.locomotion.verVel = -40;
     }
 
-    private void OnAtk_FlyingAtk_Recovery_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        pc.fSM.SwitchState(pc.fSMStates.idle);
+    void OnAtk_FlyingAtk_Recovery_Finished(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
+        pc.fSM.SwitchSt(pc.fSMStates.idle);
     }
 
-    private void OnAtk_FlyingAtk_Windup_Finished()
-    {
-        if (pc.fSM.CurrentState != (IFSMSt)this) return;
-
-        attackPhase = AttackPhase.Impact;
+    void OnAtk_FlyingAtk_Windup_Finished(){
+        if (pc.fSM.CurSt != (IFsmSt)this)
+            return;
+        attackPhase = AtkPhase.Impact;
         pc.visComponents.anims.Play_Atk_FlyingAtk_Impact();
     }
 }

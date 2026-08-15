@@ -370,10 +370,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1476938815376081737}
   - component: {fileID: 3315297761319011731}
-  - component: {fileID: 4678657368601596990}
   - component: {fileID: 7246741477902032992}
   - component: {fileID: 4476278571066268615}
   - component: {fileID: 7098403653025204774}
+  - component: {fileID: 4678657368601596990}
   m_Layer: 0
   m_Name: CapsuleCharacterVisuals
   m_TagString: Untagged
@@ -409,32 +409,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6819d6229a2cca4428be218ac0af9655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
-  animator: {fileID: 4678657368601596990}
   rootMvmtBroadcaster: {fileID: 7246741477902032992}
   animEvents: {fileID: 7098403653025204774}
   anims: {fileID: 4476278571066268615}
---- !u!95 &4678657368601596990
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200230796060022321}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 8ba815981ee0bf34d989632b31e2e32a, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &7246741477902032992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -444,7 +421,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1200230796060022321}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5911bd2cb2cd11044b7781ff87a0d6a8, type: 3}
+  m_Script: {fileID: 11500000, guid: fa4eacad3590d05429cfb69aba95762b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
   animator: {fileID: 4678657368601596990}
@@ -473,6 +450,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3a77b8b19157ae4195a9ae0095c1570, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PCVisAnimEvents
+--- !u!95 &4678657368601596990
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1200230796060022321}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 8ba815981ee0bf34d989632b31e2e32a, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1831672344664421276
 GameObject:
   m_ObjectHideFlags: 0

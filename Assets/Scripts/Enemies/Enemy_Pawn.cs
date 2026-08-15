@@ -1,14 +1,16 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
 // TODO:
+[Obsolete]
 public class Enemy_Pawn : MonoBehaviour
 {
     [Header("Refs")]
-    [SerializeField] CharacterLocomotion _movement;
-    public CharacterLocomotion Movement => _movement;
+    [SerializeField] CharCtrlMov _movement;
+    public CharCtrlMov Movement => _movement;
     [SerializeField] Animator _animator;
-    [SerializeField] AnimRootMvmtBroadcaster _visualsController;
+    [SerializeField] AnimRootMovBroadcaster _visualsController;
     public Transform PlayerTransform; // TODO: A better player/target sensing system should be created.
     public NavMeshAgent agent;
 
