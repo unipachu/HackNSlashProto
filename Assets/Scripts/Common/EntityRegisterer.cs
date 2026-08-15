@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class EntityRegisterer : MonoBehaviour {
-    [SerializeField] SO_CapsuleCharacterData configSo;
+    [SerializeField] SO_CapsuleCharData configSo;
 
     public CapsuleCharacterData Data {
         get => EntityData.inst.GetData(Id);

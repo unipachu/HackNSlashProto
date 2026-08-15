@@ -1,26 +1,43 @@
+using System;
 using UnityEngine;
 
 public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
+    event Action<string> animEvent;
+    
     [SerializeField] Pc pc;
 
+    // Animation event ids
+    const string Finished = "Finished";
+    const string HitboxActivated = "HitboxActivated";
+    const string HitboxDeactivated = "HitboxDeactivated";
+    const string JumpFinished = "JumpFinished";
+    const string JumpStarted = "JumpStarted";
+
+    ActAnimEvent[] animEvents_Jump = VisUtils.CreateAnimEvents(
+        CapsuleCharAnimInfo.atk_JumpVerSlam,
+        (40, JumpStarted),
+        (69, HitboxActivated),
+        (81, JumpFinished),
+        (88, HitboxDeactivated),
+        (120, Finished)
+    );
+
     void OnEnable(){
-        pc.visComponents.animEvents.Atk_JumpVerSlam_Finished += OnAttackRHandJumpVerticalSlam_Finished;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxActivated += OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated += OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpFinished += OnAttackRHandJumpVerticalSlam_JumpFinished;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpStarted += OnAttackRHandJumpVerticalSlam_JumpStarted;
+        animEvent += OnAnimEvent;
     }
 
     void OnDisable(){
-        pc.visComponents.animEvents.Atk_JumpVerSlam_Finished -= OnAttackRHandJumpVerticalSlam_Finished;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxActivated -= OnAttack_RHandJumpVerticalSlam_HitboxActivated;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_HitboxDeactivated -= OnAttack_RHandJumpVerticalSlam_HitboxDeactivated;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpStarted -= OnAttackRHandJumpVerticalSlam_JumpStarted;
-        pc.visComponents.animEvents.Atk_JumpVerSlam_JumpFinished -= OnAttackRHandJumpVerticalSlam_JumpFinished;
+        animEvent -= OnAnimEvent;
     }
 
     public void Enter(IFsmSt previousState){
-        pc.visComponents.anims.Play_Atk_RHandJumpVerSlam();
+        VisUtils.CrossfadeNInitAnimEventPlr(
+            ref pc.animEventPlr,
+            pc.capsuleCharAnim,
+            CapsuleCharAnimInfo.atk_JumpVerSlam,
+            animEvents_Jump,
+            animEvent
+        );
     }
 
     public void Exit(){
@@ -35,51 +52,35 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     }
 
     public void LateTick() {
+        pc.animEventPlr.Tick();
     }
 
-    // -------------------------
-    // Anim Event Callbacks
-    // -------------------------
+    // ----------------------
+    // Animation Event
+    // ----------------------
 
-    void OnAttackRHandJumpVerticalSlam_Finished(){
-        if(pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        if (pc.MoveInput != Vector2.zero){
-            pc.fsm.SwitchSt(pc.fsmSts.walk);
-            return;
+    private void OnAnimEvent(string id) {
+        switch (id) {
+            case Finished:
+                if (pc.MoveInput != Vector2.zero)
+                    pc.fsm.SwitchSt(pc.fsmSts.walk);
+                else
+                    pc.fsm.SwitchSt(pc.fsmSts.idle);
+                break;
+            case HitboxActivated:
+                // TODO: Activate hitbox.
+                break;
+            case HitboxDeactivated:
+                // TODO: Deactivate hitbox.
+                break;
+            case JumpFinished:
+                pc.charCtrlMov.IsAffectedByGravity = true;
+                pc.charCtrlMov.verVel =
+                    -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+                break;
+            case JumpStarted:
+                pc.charCtrlMov.IsAffectedByGravity = false;
+                break;
         }
-        else{
-            pc.fsm.SwitchSt(pc.fsmSts.idle);
-            return;
-        }
-    }
-
-    void OnAttack_RHandJumpVerticalSlam_HitboxActivated(){
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO
-    }
-
-    void OnAttack_RHandJumpVerticalSlam_HitboxDeactivated(){
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO
-    }
-
-    void OnAttackRHandJumpVerticalSlam_JumpFinished(){
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO: Only do if this is current state. TBH, you should probably figure out a
-        // TODO C: general way to do these events to force events only when the state is active.
-        pc.charCtrlMov.IsAffectedByGravity = true;
-        pc.charCtrlMov.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
-    }
-
-    void OnAttackRHandJumpVerticalSlam_JumpStarted(){
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO: Only do if this is current state. TBH, you should probably figure out a
-        // TODO C: general way to do these events to force events only when the state is active.
-        pc.charCtrlMov.IsAffectedByGravity = false;
     }
 }

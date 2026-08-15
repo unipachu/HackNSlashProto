@@ -40,7 +40,7 @@ public class EntityData : Singleton<EntityData> {
     /// Registers data mapped to a game object.<br/>
     /// Returns the index of the game object data, or -1 on failure.
     /// </summary>
-    public int Register(GameObject owner, SO_CapsuleCharacterData configSo) {
+    public int Register(GameObject owner, SO_CapsuleCharData configSo) {
         if (ownerToId.ContainsKey(owner)) {
             Debug.LogError($"EntityData: {owner.name} is already registered "
                 + $"(id {ownerToId[owner]}).", owner);

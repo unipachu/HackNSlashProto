@@ -9,15 +9,15 @@ public class Fsm : MonoBehaviour {
     public IFsmSt CurSt { get; private set; }
 
     public void SwitchSt(IFsmSt newSt){
-        Dbg.inst.Assert(!IsSwitchingSt, "Already switching state!", this);
-        Dbg.inst.Assert(CurSt != newSt, "Tried to change to same state we are already in. " +
-            "This can cause errors related to animation events overlapping during animation transition.", this);
+        Debug.Assert(!IsSwitchingSt, "Can't start a new state transition during another state transition!", this);
+        //Debug.Assert(CurSt != newSt, "Tried to change to same state we are already in. " +
+        //    "This can cause errors related to animation events overlapping during animation transition.", this);
         IsSwitchingSt = true;
         if (CurSt != null)
             CurSt.Exit();
         newSt.Enter(CurSt);
         CurSt = newSt;
-        Dbg.inst.Log("Switched to state: " + newSt.GetType().Name, this);
+        //Debug.Log("Switched to state: " + newSt.GetType().Name, this);
         IsSwitchingSt = false;
     }
 }

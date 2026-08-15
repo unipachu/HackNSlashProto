@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 
 public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
+    event Action<string> animEvent;
+
     [SerializeField] Pc pc;
 
     AtkPhase attackPhase = AtkPhase.Impact;
@@ -9,30 +12,42 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
     bool impactInputRotationAllowed = false;
     float recoveryMotionInterpTimer = 0;
 
+    // Animation event ids
+    const string Impact_ComboAllowed = "Impact_ComboAllowed";
+    const string Impact_ComboDisallowed = "Impact_ComboDisallowed";
+    const string Impact_Finished = "Impact_Finished";
+    const string Impact_HitDealerActivated = "Impact_HitDealerActivated";
+    const string Impact_HitDealerDeactivated = "Impact_HitDealerDeactivated";
+    const string Impact_RotationAllowed = "Impact_RotationAllowed";
+    const string Impact_RotationDisallowed = "Impact_RotationDisallowed";
+    const string Recovery_DodgeAllowed = "Recovery_DodgeAllowed";
+    const string Recovery_Finished = "Recovery_Finished";
+
+    // TODO: Set the correct frame count / event frames.
+    ActAnimEvent[] animEvents_Impact = VisUtils.CreateAnimEvents(
+        CapsuleCharAnimInfo.atk_HorSlash2_Impact,
+        (0, Impact_RotationAllowed),
+        (4, Impact_RotationDisallowed),
+        (9, Impact_HitDealerActivated),
+        (18, Impact_HitDealerDeactivated),
+        (22, Impact_ComboAllowed),
+        (24, Impact_ComboDisallowed),
+        (26, Impact_Finished)
+    );
+
+    // TODO: Set the correct frame count / event frames.
+    ActAnimEvent[] animEvents_Recovery = VisUtils.CreateAnimEvents(
+        CapsuleCharAnimInfo.atk_HorSlash2_Recovery,
+        (6, Recovery_DodgeAllowed),
+        (18, Recovery_Finished)
+    );
+
     void OnEnable() {
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed += OnImpact_ComboAllowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed += OnImpact_ComboDisallowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished += OnImpact_Finished;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated += OnImpact_HitDealerActivated;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated += OnImpact_HitDealerDeactivated;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed += OnImpact_RotationAllowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed += OnImpact_RotationDisallowed;
-        // Recovery
-        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished += OnRecovery_Finished;
-        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed += OnRecovery_DodgeAllowed;
+        animEvent += OnAnimEvent;
     }
 
-    void OnDisable(){
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboAllowed -= OnImpact_ComboAllowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_ComboDisallowed -= OnImpact_ComboDisallowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_Finished -= OnImpact_Finished;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerActivated -= OnImpact_HitDealerActivated;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_HitDealerDeactivated -= OnImpact_HitDealerDeactivated;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationAllowed -= OnImpact_RotationAllowed;
-        pc.visComponents.animEvents.Atk_HorSlash2_Impact_RotationDisallowed -= OnImpact_RotationDisallowed;
-        //Recovery
-        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_Finished -= OnRecovery_Finished;
-        pc.visComponents.animEvents.Atk_HorSlash2_Recovery_DodgeAllowed -= OnRecovery_DodgeAllowed;
+    void OnDisable() {
+        animEvent -= OnAnimEvent;
     }
 
     public void Enter(IFsmSt previousState) {
@@ -42,7 +57,13 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
         impactInputRotationAllowed = false;
         recoveryMotionInterpTimer = 0;
         pc.inputBuffer.Clear();
-        pc.visComponents.anims.Play_Atk_HorSlash2_Impact();
+        VisUtils.CrossfadeNInitAnimEventPlr(
+            ref pc.animEventPlr,
+            pc.capsuleCharAnim,
+            CapsuleCharAnimInfo.atk_HorSlash2_Impact,
+            animEvents_Impact,
+            animEvent
+        );
     }
 
     public void Exit() {
@@ -90,68 +111,49 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
     }
 
     public void LateTick() {
+        pc.animEventPlr.Tick();
     }
 
     // ----------------------
-    // Recovery Animation callbacks
+    // Animation Event
     // ----------------------
 
-    private void OnRecovery_DodgeAllowed() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        dodgeAllowed = true;
-    }
-
-    private void OnRecovery_Finished() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        pc.fsm.SwitchSt(pc.fsmSts.idle);
-    }
-
-    // ----------------------
-    // Impact Animation callbacks
-    // ----------------------
-
-    private void OnImpact_HitDealerDeactivated(){
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO
-    }
-
-    private void OnImpact_HitDealerActivated() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        // TODO
-    }
-
-    private void OnImpact_Finished() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        pc.visComponents.anims.Play_Atk_HorSlash2_Recovery();
-        attackPhase = AtkPhase.Recovery;
-    }
-
-    private void OnImpact_ComboDisallowed() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        comboAllowed = false;
-    }
-
-    private void OnImpact_ComboAllowed() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        comboAllowed = true;
-    }
-
-    private void OnImpact_RotationAllowed() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        impactInputRotationAllowed = true;
-    }
-
-    private void OnImpact_RotationDisallowed() {
-        if (pc.fsm.CurSt != (IFsmSt)this)
-            return;
-        impactInputRotationAllowed = false;
+    private void OnAnimEvent(string id) {
+        switch (id) {
+            case Impact_RotationAllowed:
+                impactInputRotationAllowed = true;
+                break;
+            case Impact_RotationDisallowed:
+                impactInputRotationAllowed = false;
+                break;
+            case Impact_HitDealerActivated:
+                // TODO
+                break;
+            case Impact_HitDealerDeactivated:
+                // TODO
+                break;
+            case Impact_ComboAllowed:
+                comboAllowed = true;
+                break;
+            case Impact_ComboDisallowed:
+                comboAllowed = false;
+                break;
+            case Impact_Finished:
+                VisUtils.CrossfadeNInitAnimEventPlr(
+                    ref pc.animEventPlr,
+                    pc.capsuleCharAnim,
+                    CapsuleCharAnimInfo.atk_HorSlash2_Recovery,
+                    animEvents_Recovery,
+                    animEvent
+                );
+                attackPhase = AtkPhase.Recovery;
+                break;
+            case Recovery_DodgeAllowed:
+                dodgeAllowed = true;
+                break;
+            case Recovery_Finished:
+                pc.fsm.SwitchSt(pc.fsmSts.idle);
+                break;
+        }
     }
 }

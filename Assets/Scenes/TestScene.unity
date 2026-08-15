@@ -1897,10 +1897,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PC
   entityRegisterer: {fileID: 439737478}
   charCtrlMov: {fileID: 439737471}
-  visComponents: {fileID: 4043496483517493685}
   fsm: {fileID: 164602221}
   fsmSts: {fileID: 164602226}
   inputBuffer: {fileID: 439737477}
+  capsuleCharRootMvmtBroadcaster: {fileID: 4043496483517493682}
+  capsuleCharAnim: {fileID: 4043496483517493688}
 --- !u!114 &439737477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4727,17 +4728,22 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1476938815376081737, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
   m_PrefabInstance: {fileID: 4043496483517493680}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &4043496483517493685 stripped
+--- !u!114 &4043496483517493682 stripped
 MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3315297761319011731, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+  m_CorrespondingSourceObject: {fileID: 7246741477902032992, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
   m_PrefabInstance: {fileID: 4043496483517493680}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6819d6229a2cca4428be218ac0af9655, type: 3}
+  m_Script: {fileID: 11500000, guid: fa4eacad3590d05429cfb69aba95762b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
+  m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
+--- !u!95 &4043496483517493688 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4678657368601596990, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+  m_PrefabInstance: {fileID: 4043496483517493680}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4438790025161691303 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1613588697446343649, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}

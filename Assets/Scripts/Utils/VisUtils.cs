@@ -13,11 +13,35 @@ public static class VisUtils {
     /// Index of the last frame of the animation (the one in the Animation timeline where the color changes).
     /// </param>
     /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
-    public static ActAnimEvent[] CreateAnimEvents(int lastFrame, params (int frame, string id)[] events) {
+    public static ActAnimEvent[] CreateAnimEvents(
+        AnimInfo animInfo,
+        params (int frame, string id)[] events
+    ) {
         ActAnimEvent[] result = new ActAnimEvent[events.Length];
         for (int i = 0; i < events.Length; i++)
-            result[i] = new ActAnimEvent(events[i].frame, lastFrame, events[i].id);
+            result[i] = new ActAnimEvent(events[i].frame, animInfo.lastFrame, events[i].id);
         return result;
+    }
+
+    /// <summary>
+    /// Starts a crossfade to an animation state.
+    /// </summary>
+    /// <param name="anim">Animator whose state is changed.</param>
+    /// <param name="animInfo">Information about the animation state to crossfade to.</param>
+    /// <param name="nrmTransDur">Duration of the crossfade in the next animation normalized time.</param>
+    /// <param name="startOffset">Normalized starting time within the next animation.</param>
+    public static void CrossfadeAnim(
+        Animator anim,
+        AnimInfo animInfo,
+        float nrmTransDur = 0.1f,
+        float startOffset = 0
+    ) {
+        anim.CrossFade(
+            animInfo.shortNameHash,
+            nrmTransDur,
+            animInfo.animLayer,
+            startOffset
+        );
     }
 
     /// <summary>
@@ -132,25 +156,48 @@ public static class VisUtils {
     /// <summary>
     /// Starts crossfade and initializes animation event player.
     /// </summary>
+    /// <param name="animEventPlr">
+    /// Animation event player to initialize.
+    /// </param>
+    /// <param name="anim">
+    /// Animator whose animation state is being changed.
+    /// </param>
+    /// <param name="animInfo">
+    /// Information about the animation state to crossfade to.
+    /// </param>
+    /// <param name="sortedAnimEvents">
+    /// Animation events for the animation, sorted in ascending order by normalized time.
+    /// </param>
+    /// <param name="onEvent">
+    /// Callback invoked when an animation event is triggered. The string parameter is the
+    /// unique ID/name of the triggered animation event e.g. "TurnOnInvulnerability".
+    /// </param>
+    /// <param name="nrmTransDur">
+    /// Duration of the crossfade in normalized time of the next animation.
+    /// </param>
+    /// <param name="startOffset">
+    /// Normalized starting time within the next animation.
+    /// </param>
     public static void CrossfadeNInitAnimEventPlr(
         ref AnimEventPlr animEventPlr,
         Animator anim,
-        string stateName,
-        int shortNameHash,
-        int animLayer,
+        AnimInfo animInfo,
         ActAnimEvent[] sortedAnimEvents,
-        bool looping,
         Action<string> onEvent,
         float nrmTransDur = 0.1f,
         float startOffset = 0
     ) {
-        anim.CrossFade(stateName, nrmTransDur, animLayer, startOffset);
+        anim.CrossFade(
+            animInfo.shortNameHash,
+            nrmTransDur,
+            animInfo.animLayer,
+            startOffset
+        );
+
         animEventPlr = new AnimEventPlr(
             anim,
-            shortNameHash,
-            animLayer,
+            animInfo,
             sortedAnimEvents,
-            looping,
             onEvent,
             startOffset
         );

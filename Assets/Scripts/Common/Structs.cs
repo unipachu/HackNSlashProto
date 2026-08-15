@@ -1,6 +1,31 @@
 using System;
 
 /// <summary>
+/// Grouped Animator state info used by <see cref="AnimEventPlr"/>
+/// </summary>
+public struct AnimInfo {
+    public int shortNameHash;
+    public int animLayer;
+    /// <summary>
+    /// Does the animation loop?
+    /// </summary>
+    public bool looping;
+    public int lastFrame;
+
+    public AnimInfo(
+        int shortNameHash,
+        int animLayer,
+        bool looping,
+        int lastFrame
+    ) {
+        this.shortNameHash = shortNameHash;
+        this.animLayer = animLayer;
+        this.looping = looping;
+        this.lastFrame = lastFrame;
+    }
+}
+
+/// <summary>
 /// Animation event decoupled from the Animator.
 /// </summary>
 [Serializable]

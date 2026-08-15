@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PCData", menuName = "Character Data/PC Data")]
-public class SO_CapsuleCharacterData : ScriptableObject{
+public class SO_CapsuleCharData : ScriptableObject{
     [Header("Playable character read-only base data."
         + "\nNOTE: State specific data starts with \"St_[state name]_\".")]
 

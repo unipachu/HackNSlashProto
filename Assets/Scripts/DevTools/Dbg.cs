@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 
 // TODO BEFORE BUILD: If you comment out this class, you can easily find these in other files
 // TODO BEFORE BUILD C: and comment them out as well. However you should check asserts and error
 // TODO BEFORE BUILD C: logs carefully since you never want those asserts to fail in a published game!
+[Obsolete("Ugh, it's easier to just comment out Debug calls than to use this.")]
 public class Dbg : Singleton<Dbg>{
     [SerializeField] bool showDebugMessages = true;
     [SerializeField] bool showDebugWarnings = true;
@@ -20,7 +22,7 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Uses Debug.Assert(condition, errMsg, ctx);
     /// </summary>
-    public void Assert(bool condition, string errMsg, Object ctx) {
+    public void Assert(bool condition, string errMsg, UnityEngine.Object ctx) {
         if(useAsserts)
             Debug.Assert(condition, errMsg, ctx);
     }
@@ -36,7 +38,7 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Logs a message useing Debug.Log(msg, ctx);
     /// </summary>
-    public void Log(string msg, Object ctx){
+    public void Log(string msg, UnityEngine.Object ctx){
         if(showDebugMessages)
             Debug.Log(msg, ctx);
     }
@@ -52,7 +54,7 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Logs an error message useing Debug.LogError(msg, ctx);
     /// </summary>
-    public void LogErr(string msg, Object ctx){
+    public void LogErr(string msg, UnityEngine.Object ctx){
         if(showDebugErrors)
             Debug.LogError(msg, ctx);
     }
@@ -68,7 +70,7 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Logs a warning message using Debug.LogWarning(msg, ctx);
     /// </summary>
-    public void LogWrn(string msg, Object ctx){
+    public void LogWrn(string msg, UnityEngine.Object ctx){
         if(showDebugWarnings)
             Debug.LogWarning(msg, ctx);
     }

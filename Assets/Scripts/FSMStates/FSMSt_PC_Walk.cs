@@ -7,14 +7,14 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
         switch(previousState){
             case FsmSt_Pc_Atk_HorSlash1:
                 // We use a little more time to fade to the walk animation.
-                pc.visComponents.anims.Play_Walk(1);
+                VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.walk, 1);
                 break;
             case FsmSt_Pc_Atk_HorSlash2:
                 // We use a little more time to fade to the walk animation.
-                pc.visComponents.anims.Play_Walk(1);
+                VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.walk, 1);
                 break;
             default:
-                pc.visComponents.anims.Play_Walk();
+                VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.walk, 0.1f);
                 break;
         }
     }

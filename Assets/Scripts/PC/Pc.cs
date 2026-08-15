@@ -9,10 +9,11 @@ public class Pc : MonoBehaviour{
 
     [Header("Component Refs")]
     public CharCtrlMov charCtrlMov;
-    public PcVisComponents visComponents;
     public Fsm fsm;
     public Fsm_PcSts fsmSts;
     public PcInputBuffer inputBuffer;
+    public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
+    public Animator capsuleCharAnim;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.
@@ -31,7 +32,7 @@ public class Pc : MonoBehaviour{
     public Vector3 AnimationDeltaMovement { get; private set; }
 
     void OnEnable(){
-        visComponents.rootMvmtBroadcaster.OnRootMove += OnAnimatorRootMove;
+        capsuleCharRootMvmtBroadcaster.OnRootMove += OnAnimatorRootMove;
     }
 
     void Start(){
@@ -52,7 +53,7 @@ public class Pc : MonoBehaviour{
     }
 
     void OnDisable(){
-        visComponents.rootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
+        capsuleCharRootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
     }
 
     // TODO: Maybe create a PC_ControllerInput class with IPawn that can consume input from Controllers.

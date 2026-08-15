@@ -4,7 +4,7 @@ public class FsmSt_Pc_Idle : MonoBehaviour, IFsmSt{
     [SerializeField] Pc pc;
 
     public void Enter(IFsmSt previousState){
-        pc.visComponents.anims.Play_Idle();
+        VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.idle, 0.1f);
     }
 
     public void Exit(){

@@ -369,10 +369,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1476938815376081737}
-  - component: {fileID: 3315297761319011731}
   - component: {fileID: 7246741477902032992}
-  - component: {fileID: 4476278571066268615}
-  - component: {fileID: 7098403653025204774}
   - component: {fileID: 4678657368601596990}
   m_Layer: 0
   m_Name: CapsuleCharacterVisuals
@@ -397,22 +394,6 @@ Transform:
   - {fileID: 6727410631872082106}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3315297761319011731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200230796060022321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6819d6229a2cca4428be218ac0af9655, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterVisualsComponents
-  rootMvmtBroadcaster: {fileID: 7246741477902032992}
-  anim: {fileID: 4678657368601596990}
-  animEvents: {fileID: 7098403653025204774}
-  anims: {fileID: 4476278571066268615}
 --- !u!114 &7246741477902032992
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -426,31 +407,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
   animator: {fileID: 4678657368601596990}
---- !u!114 &4476278571066268615
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200230796060022321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc0946b14a2441d44aee408cc1d37ea0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharacterAnims
-  animator: {fileID: 4678657368601596990}
---- !u!114 &7098403653025204774
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1200230796060022321}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f3a77b8b19157ae4195a9ae0095c1570, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PCVisAnimEvents
 --- !u!95 &4678657368601596990
 Animator:
   serializedVersion: 7

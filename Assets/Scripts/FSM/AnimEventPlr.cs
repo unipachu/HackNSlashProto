@@ -2,9 +2,9 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Animation event player. Since during Animator's transitions both the events of the current and the
-/// next animation state are triggered (leading to erroneus behavior), we instead tie the animation
-/// events to the action states.
+/// Custom animation event controller. Since during Animator's transitions both the events of the current and the
+/// next animation state are triggered (which causes erroneus behavior), we instead tie the animation
+/// events to the action FSM states and use this for the animation events instead.
 /// </summary>
 public class AnimEventPlr{
     /// <summary>
@@ -17,23 +17,18 @@ public class AnimEventPlr{
     const int maxLoopStepsPerTick = 500;
 
     readonly Animator anim;
+    readonly AnimInfo animInfo;
     /// <summary>
     /// This Action will be invoked for all animation events.
     /// NOTE: string parameter details what particular animation event this represents.
     /// </summary>
-    Action<string> onEvent;
-    
-    int shortNameHash;
-    int animLayer;
+    readonly Action<string> onEvent;
     /// <summary>
     /// NOTE: Must be sorted ascending by normalized time, otherwise they are not necessarily
     /// called in the right order if multiple event trigger during one tick!
     /// </summary>
-    ActAnimEvent[] sortedAnimEvents;
-    /// <summary>
-    /// Does the animation loop?
-    /// </summary>
-    bool looping;
+    readonly ActAnimEvent[] sortedAnimEvents;
+
     /// <summary>
     /// Last frame's normalized time from the animator.
     /// NOTE: This will go over 1.
@@ -66,19 +61,15 @@ public class AnimEventPlr{
     /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
     /// </summary>
     public AnimEventPlr(
-        Animator anim,
-        int shortNameHash,
-        int animLayer,
-        ActAnimEvent[] sortedAnimEvents,
-        bool looping,
-        Action<string> onEvent,
-        float startOffset = 0
-    ) {
+         Animator anim,
+         AnimInfo animInfo,
+         ActAnimEvent[] sortedAnimEvents,
+         Action<string> onEvent,
+         float startOffset = 0
+     ) {
         this.anim = anim;
-        this.shortNameHash = shortNameHash;
-        this.animLayer = animLayer;
+        this.animInfo = animInfo;
         this.sortedAnimEvents = sortedAnimEvents;
-        this.looping = looping;
         this.onEvent = onEvent;
         cursor = startOffset;
         loopCount = 0;
@@ -86,8 +77,6 @@ public class AnimEventPlr{
         finished = false;
         firstTick = true;
     }
-
-
 
     /// <summary>
     /// NOTE: Tick this in LateUpdate to make sure that the queued animator changes during this
@@ -98,15 +87,22 @@ public class AnimEventPlr{
             firstTick = false;
             return;
         }
-        if (!VisUtils.TryGetNewestStateInfo(anim, animLayer, shortNameHash, out AnimatorStateInfo info)) {
-            Dbg.inst.LogWrn($"Short name hash ({shortNameHash}) did not match current animation "
+        if (!VisUtils.TryGetNewestStateInfo(
+            anim,
+            animInfo.animLayer,
+            animInfo.shortNameHash,
+            out AnimatorStateInfo info
+        )) {
+            Debug.LogWarning(
+                $"Short name hash ({animInfo.shortNameHash}) did not match current animation "
                 + $"({info.shortNameHash}).\nPerhaps action state was "
-                + "changed but animator transition hasn't have the time to start yet?");
+                + "changed but animator transition hasn't have the time to start yet?"
+            );
             firstTick = false;
             return;
         }
         float curTotalNrmT = info.normalizedTime;
-        if (!looping) {
+        if (!animInfo.looping) {
             FireEventsInNrmRange(cursor, Mathf.Min(curTotalNrmT, 1), firstTick);
             if (curTotalNrmT >= 1)
                 finished = true;
@@ -132,7 +128,7 @@ public class AnimEventPlr{
                 loopsSinceRebase++;
                 // If animation looped too many times this tick, 
                 if (++stepsTaken >= maxLoopStepsPerTick) {
-                    Dbg.inst.LogErr($"Animation looped {stepsTaken} times during one tick! " 
+                    Debug.LogError($"Animation looped {stepsTaken} times during one tick! " 
                         + $"Max allowed loops: {maxLoopStepsPerTick}");
                     firstTick = false;
                     return;
@@ -140,7 +136,7 @@ public class AnimEventPlr{
                 // If we have looped too many times and the cursor is at the beginning of the loop,
                 // start animation from the beginning.
                 if (loopsSinceRebase >= loopRebaseThreshold && cursor == 0) {
-                    anim.Play(shortNameHash, animLayer, 0);
+                    anim.Play(animInfo.shortNameHash, animInfo.animLayer, 0);
                     prevTotalNrmT = 0;
                     loopsSinceRebase = 0;
                 }
@@ -163,6 +159,7 @@ public class AnimEventPlr{
         for (int i = startIndex; i < sortedAnimEvents.Length; i++) {
             float t = sortedAnimEvents[i].nrmT;
             if (t > to) break;
+            //Debug.Log($"Event called: {sortedAnimEvents[i].id}.");
             onEvent?.Invoke(sortedAnimEvents[i].id);
         }
     }
