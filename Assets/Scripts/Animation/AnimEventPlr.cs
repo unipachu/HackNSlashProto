@@ -20,14 +20,9 @@ public class AnimEventPlr{
     readonly AnimInfo animInfo;
     /// <summary>
     /// This Action will be invoked for all animation events.
-    /// NOTE: string parameter details what particular animation event this represents.
     /// </summary>
-    readonly Action<string> onEvent;
-    /// <summary>
-    /// NOTE: Must be sorted ascending by normalized time, otherwise they are not necessarily
-    /// called in the right order if multiple event trigger during one tick!
-    /// </summary>
-    readonly ActAnimEvent[] sortedAnimEvents;
+    // TODO MINOR: Make this generic so that it can be used with any Animator.
+    readonly Action<CapsuleCharAnimEvent> onEvent;
 
     /// <summary>
     /// Last frame's normalized time from the animator.
@@ -63,14 +58,13 @@ public class AnimEventPlr{
     public AnimEventPlr(
          Animator anim,
          AnimInfo animInfo,
-         ActAnimEvent[] sortedAnimEvents,
-         Action<string> onEvent,
+         Action<CapsuleCharAnimEvent> onEvent,
          float startOffset = 0
-     ) {
+    ) {
         this.anim = anim;
         this.animInfo = animInfo;
-        this.sortedAnimEvents = sortedAnimEvents;
         this.onEvent = onEvent;
+        prevTotalNrmT = startOffset;
         cursor = startOffset;
         loopCount = 0;
         loopsSinceRebase = 0;
@@ -87,7 +81,7 @@ public class AnimEventPlr{
             firstTick = false;
             return;
         }
-        if (!VisUtils.TryGetNewestStateInfo(
+        if (!VisUtils.TryGetNewestStInfo(
             anim,
             animInfo.animLayer,
             animInfo.shortNameHash,
@@ -154,20 +148,20 @@ public class AnimEventPlr{
         // "to". This way events do not fire twice. That also means we need a separate check for
         // first tick to fire any possible events at 0 normalized time.
         int startIndex = includeFrom
-            ? LowerBoundInclusive(sortedAnimEvents, from)
-            : LowerBound(sortedAnimEvents, from);
-        for (int i = startIndex; i < sortedAnimEvents.Length; i++) {
-            float t = sortedAnimEvents[i].nrmT;
+            ? LowerBoundInclusive(animInfo.sortedAnimEvents, from)
+            : LowerBound(animInfo.sortedAnimEvents, from);
+        for (int i = startIndex; i < animInfo.sortedAnimEvents.Length; i++) {
+            float t = animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
-            //Debug.Log($"Event called: {sortedAnimEvents[i].id}.");
-            onEvent?.Invoke(sortedAnimEvents[i].id);
+            //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
+            onEvent?.Invoke(animInfo.sortedAnimEvents[i].id);
         }
     }
 
     /// <summary>
     /// Finds the index of the first event that has its normalized time above the threshold.
     /// </summary>
-    int LowerBound(ActAnimEvent[] events, float nrmTThreshold) {
+    int LowerBound(AnimEvent[] events, float nrmTThreshold) {
         int lo = 0;
         int hi = events.Length;
         while (lo < hi) {
@@ -181,7 +175,7 @@ public class AnimEventPlr{
     /// <summary>
     /// Finds the index of the first event that has its normalized time above or exactly at the threshold.
     /// </summary>
-    int LowerBoundInclusive(ActAnimEvent[] events, float nrmTThreshold) {
+    int LowerBoundInclusive(AnimEvent[] events, float nrmTThreshold) {
         int lo = 0;
         int hi = events.Length;
         while (lo < hi) {

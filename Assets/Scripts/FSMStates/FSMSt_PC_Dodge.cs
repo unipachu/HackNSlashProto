@@ -2,28 +2,12 @@ using System;
 using UnityEngine;
 
 public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
-    event Action<string> animEvent;
+    event Action<CapsuleCharAnimEvent> animEvent;
 
     [SerializeField] Pc pc;
 
     bool yawAllowed = false;
     bool bufferedInputStateSwitchAllowed = false;
-
-    // Animation event ids
-    const string YawAllowed = "YawAllowed";
-    const string InvulnerabilityEnd = "InvulnerabilityEnd";
-    const string BufferedInputStateSwitchAllowed =
-        "BufferedInputStateSwitchAllowed";
-    const string Finished = "Finished";
-
-    // TODO: Set the correct frame count / event frames.
-    ActAnimEvent[] animEvents_Dodge = VisUtils.CreateAnimEvents(
-        CapsuleCharAnimInfo.dodge,
-        (6, YawAllowed),
-        (18, InvulnerabilityEnd),
-        (24, BufferedInputStateSwitchAllowed),
-        (30, Finished)
-    );
 
     void OnEnable(){
         animEvent += OnAnimEvent;
@@ -41,7 +25,6 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
             ref pc.animEventPlr,
             pc.capsuleCharAnim,
             CapsuleCharAnimInfo.dodge,
-            animEvents_Dodge,
             animEvent,
             0.1f
         );
@@ -76,18 +59,18 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
     // Animation event
     // ----------------------
 
-    private void OnAnimEvent(string id) {
+    private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
-            case YawAllowed:
+            case CapsuleCharAnimEvent.Dodge_YawAllowed:
                 yawAllowed = true;
                 break;
-            case InvulnerabilityEnd:
+            case CapsuleCharAnimEvent.Dodge_InvulEnd:
                 // TODO: Turn off invulnerability.
                 break;
-            case BufferedInputStateSwitchAllowed:
+            case CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed:
                 bufferedInputStateSwitchAllowed = true;
                 break;
-            case Finished:
+            case CapsuleCharAnimEvent.Dodge_Finished:
                 if (pc.MoveInput != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else

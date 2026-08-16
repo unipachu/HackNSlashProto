@@ -1,7 +1,8 @@
 using System;
 
 /// <summary>
-/// Grouped Animator state info used by <see cref="AnimEventPlr"/>
+/// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
+/// NOTE: <see cref=""/> 
 /// </summary>
 public struct AnimInfo {
     public int shortNameHash;
@@ -11,17 +12,30 @@ public struct AnimInfo {
     /// </summary>
     public bool looping;
     public int lastFrame;
+    public AnimEvent[] sortedAnimEvents;
 
+    /// <param name="sortedEvents">
+    /// NOTE: Must be sorted ascending by normalized time, otherwise they are not necessarily
+    /// called in the right order if multiple event trigger during one tick!
+    /// </param>
     public AnimInfo(
         int shortNameHash,
         int animLayer,
         bool looping,
-        int lastFrame
+        int lastFrame,
+        params (int frame, CapsuleCharAnimEvent id)[] sortedEvents
     ) {
         this.shortNameHash = shortNameHash;
         this.animLayer = animLayer;
         this.looping = looping;
         this.lastFrame = lastFrame;
+        // NOTE: We cannot automaticize sorting since some events might happen on the same frame and yet
+        // their order matters.
+        // TODO: However we could make an Assert etc to make sure they are at least in ascending order.
+        // TODO: 
+        sortedAnimEvents = new AnimEvent[sortedEvents.Length];
+        for (int i = 0; i < sortedEvents.Length; i++)
+            sortedAnimEvents[i] = new AnimEvent(sortedEvents[i].frame, lastFrame, sortedEvents[i].id);
     }
 }
 
@@ -29,15 +43,15 @@ public struct AnimInfo {
 /// Animation event decoupled from the Animator.
 /// </summary>
 [Serializable]
-public struct ActAnimEvent {
+public struct AnimEvent {
     /// <summary>
     /// Normalized time of the event during one animation loop.
     /// </summary>
     public float nrmT;
     /// <summary>
-    /// Unique name for the action event, used to check against a switch case.
+    /// Unique id for the animation event.
     /// </summary>
-    public string id;
+    public CapsuleCharAnimEvent id;
 
     /// <param name="frame">
     /// Frame of the animation event.<br/>
@@ -48,7 +62,7 @@ public struct ActAnimEvent {
     /// on the timeline where the animation bar changes to dark grey.
     /// </param>
     /// <param name="id">Unique name for the action event, used to check against a switch case.</param>
-    public ActAnimEvent(int frame, int lastFrame, string id) {
+    public AnimEvent(int frame, int lastFrame, CapsuleCharAnimEvent id) {
         nrmT = frame / (float)lastFrame;
         this.id = id;
     }

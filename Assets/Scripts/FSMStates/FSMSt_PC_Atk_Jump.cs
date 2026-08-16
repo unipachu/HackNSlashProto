@@ -2,25 +2,9 @@ using System;
 using UnityEngine;
 
 public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
-    event Action<string> animEvent;
+    event Action<CapsuleCharAnimEvent> animEvent;
     
     [SerializeField] Pc pc;
-
-    // Animation event ids
-    const string Finished = "Finished";
-    const string HitboxActivated = "HitboxActivated";
-    const string HitboxDeactivated = "HitboxDeactivated";
-    const string JumpFinished = "JumpFinished";
-    const string JumpStarted = "JumpStarted";
-
-    ActAnimEvent[] animEvents_Jump = VisUtils.CreateAnimEvents(
-        CapsuleCharAnimInfo.atk_JumpVerSlam,
-        (40, JumpStarted),
-        (69, HitboxActivated),
-        (81, JumpFinished),
-        (88, HitboxDeactivated),
-        (120, Finished)
-    );
 
     void OnEnable(){
         animEvent += OnAnimEvent;
@@ -35,7 +19,6 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
             ref pc.animEventPlr,
             pc.capsuleCharAnim,
             CapsuleCharAnimInfo.atk_JumpVerSlam,
-            animEvents_Jump,
             animEvent
         );
     }
@@ -59,27 +42,26 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     // Animation Event
     // ----------------------
 
-    private void OnAnimEvent(string id) {
+    private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
-            case Finished:
+            case CapsuleCharAnimEvent.JumpVerSlam_JumpStarted:
+                pc.charCtrlMov.IsAffectedByGravity = false;
+                break;
+            case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
+                // TODO: Activate hitbox.
+                break;
+            case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
+                pc.charCtrlMov.IsAffectedByGravity = true;
+                pc.charCtrlMov.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+                break;
+            case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:
+                // TODO: Deactivate hitbox.
+                break;
+            case CapsuleCharAnimEvent.JumpVerSlam_Finished:
                 if (pc.MoveInput != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
-            case HitboxActivated:
-                // TODO: Activate hitbox.
-                break;
-            case HitboxDeactivated:
-                // TODO: Deactivate hitbox.
-                break;
-            case JumpFinished:
-                pc.charCtrlMov.IsAffectedByGravity = true;
-                pc.charCtrlMov.verVel =
-                    -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
-                break;
-            case JumpStarted:
-                pc.charCtrlMov.IsAffectedByGravity = false;
                 break;
         }
     }

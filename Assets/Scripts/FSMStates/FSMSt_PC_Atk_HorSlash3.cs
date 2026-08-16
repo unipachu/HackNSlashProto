@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
-    event Action<string> animEvent;
+    event Action<CapsuleCharAnimEvent> animEvent;
 
     [SerializeField] Pc pc;
 
@@ -11,34 +11,6 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
     bool dodgeAllowed = false;
     bool impactInputRotationAllowed = false;
     float recoveryMotionInterpTimer = 0;
-
-    // Animation event ids
-    const string Impact_ComboAllowed = "Impact_ComboAllowed";
-    const string Impact_ComboDisallowed = "Impact_ComboDisallowed";
-    const string Impact_Finished = "Impact_Finished";
-    const string Impact_HitDealerActivated = "Impact_HitDealerActivated";
-    const string Impact_HitDealerDeactivated = "Impact_HitDealerDeactivated";
-    const string Impact_RotationAllowed = "Impact_RotationAllowed";
-    const string Impact_RotationDisallowed = "Impact_RotationDisallowed";
-    const string Recovery_DodgeAllowed = "Recovery_DodgeAllowed";
-    const string Recovery_Finished = "Recovery_Finished";
-
-    ActAnimEvent[] animEvents_Impact = VisUtils.CreateAnimEvents(
-        CapsuleCharAnimInfo.atk_HorSlash3_Impact,
-        (0, Impact_RotationAllowed),
-        (4, Impact_RotationDisallowed),
-        (8, Impact_HitDealerActivated),
-        (18, Impact_HitDealerDeactivated),
-        (22, Impact_ComboAllowed),
-        (25, Impact_ComboDisallowed),
-        (26, Impact_Finished)
-    );
-    // TODO: Set the correct event frames.
-    ActAnimEvent[] animEvents_Recovery = VisUtils.CreateAnimEvents(
-        CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
-        (6, Recovery_DodgeAllowed),
-        (18, Recovery_Finished)
-    );
 
     void OnEnable() {
         animEvent += OnAnimEvent;
@@ -59,7 +31,6 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
             ref pc.animEventPlr,
             pc.capsuleCharAnim,
             CapsuleCharAnimInfo.atk_HorSlash3_Impact,
-            animEvents_Impact,
             animEvent
         );
     }
@@ -117,40 +88,39 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
     // Animation Event
     // ----------------------
 
-    private void OnAnimEvent(string id) {
+    private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
-            case Impact_ComboAllowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboAllowed:
                 comboAllowed = true;
                 break;
-            case Impact_ComboDisallowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboDisallowed:
                 comboAllowed = false;
                 break;
-            case Impact_Finished:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_Finished:
                 VisUtils.CrossfadeNInitAnimEventPlr(
                     ref pc.animEventPlr,
                     pc.capsuleCharAnim,
                     CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
-                    animEvents_Recovery,
                     animEvent
                 );
                 attackPhase = AtkPhase.Recovery;
                 break;
-            case Impact_HitDealerActivated:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerActivated:
                 // TODO: Activate HitDealer.
                 break;
-            case Impact_HitDealerDeactivated:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerDeactivated:
                 // TODO: Deactivate HitDealer.
                 break;
-            case Impact_RotationAllowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationAllowed:
                 impactInputRotationAllowed = true;
                 break;
-            case Impact_RotationDisallowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationDisallowed:
                 impactInputRotationAllowed = false;
                 break;
-            case Recovery_DodgeAllowed:
+            case CapsuleCharAnimEvent.HorSlash1_Recovery_DodgeAllowed:
                 dodgeAllowed = true;
                 break;
-            case Recovery_Finished:
+            case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
                 pc.fsm.SwitchSt(pc.fsmSts.idle);
                 break;
         }
