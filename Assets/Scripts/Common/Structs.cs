@@ -115,3 +115,17 @@ public struct HitResult {
         this.wasBlocked = wasBlocked;
     }
 }
+
+public struct HomingProjData {
+    public int dmg;
+    public float spd;
+    public float maxLifetime;
+    public float homingStr;
+
+    public HomingProjData(int dmg, float spd, float maxLifetime, float homingStr) {
+        this.dmg = dmg;
+        this.spd = spd;
+        this.maxLifetime = maxLifetime;
+        this.homingStr = homingStr;
+    }
+}

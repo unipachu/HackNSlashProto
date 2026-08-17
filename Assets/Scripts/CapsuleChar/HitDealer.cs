@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class HitDealer : MonoBehaviour {
-    event Action<HitResult> hitReceiverHit;
+    public event Action<HitResult> hitReceiverHit;
 
     [SerializeField] CapsuleShape[] capsules = { };
     [SerializeField] LayerMask capsuleLayerMask = Physics.AllLayers;
