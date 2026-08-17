@@ -2137,6 +2137,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f71f0eb7415def04aa61351f44747c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterControllerGizmo
+  drawGizmo: 1
   gizmoColor: {r: 1, g: 0, b: 0.92679024, a: 1}
   characterController: {fileID: 439737468}
 --- !u!114 &439737476
@@ -2200,6 +2201,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieveHandler
   pc: {fileID: 439737476}
   bodyHitReciever: {fileID: 4043496483517493683}
+--- !u!1 &453218900 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6413266446938913594, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+  m_PrefabInstance: {fileID: 4043496483517493680}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &465066623
 GameObject:
   m_ObjectHideFlags: 0
@@ -2242,7 +2248,7 @@ Transform:
   m_GameObject: {fileID: 465066623}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 21.32513, y: 21.733, z: -0.70189}
+  m_LocalPosition: {x: 21.32513, y: 21.733, z: 1.36}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5275,7 +5281,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1613588697446343649, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1199934672}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6413266446938913594, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+      insertIndex: 2
+      addedObject: {fileID: 4043496483517493687}
   m_SourcePrefab: {fileID: 100100000, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
 --- !u!4 &4043496483517493681 stripped
 Transform:
@@ -5298,12 +5307,34 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2732198706603240118, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
   m_PrefabInstance: {fileID: 4043496483517493680}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 453218900}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
+--- !u!136 &4043496483517493684 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 1930875150031484807, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+  m_PrefabInstance: {fileID: 4043496483517493680}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4043496483517493687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 453218900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b83babda1a15dc4a91c6383f24868f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieverGizmo
+  drawGizmo: 1
+  vulnerableColor: {r: 0.5803922, g: 0, b: 0.8274511, a: 1}
+  invulnerableColor: {r: 0, g: 1, b: 1, a: 1}
+  pc: {fileID: 439737476}
+  col: {fileID: 4043496483517493684}
 --- !u!95 &4043496483517493688 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4678657368601596990, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}

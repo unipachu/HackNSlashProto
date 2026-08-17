@@ -20,7 +20,9 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
     public void Enter(IFsmSt previousState){
         yawAllowed = false;
         bufferedInputStateSwitchAllowed = false;
-        // TODO: Turn on invulnerability.
+        var data = pc.Data;
+        data.invul = true;
+        pc.Data = data;
         VisUtils.CrossfadeNInitAnimEventPlr(
             ref pc.animEventPlr,
             pc.capsuleCharAnim,
@@ -31,7 +33,9 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
-        // TODO: Turn off invulnerability
+        var data = pc.Data;
+        data.invul = false;
+        pc.Data = data;
     }
 
     public void PhysicsTick(){
@@ -68,7 +72,9 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
                 yawAllowed = true;
                 break;
             case CapsuleCharAnimEvent.Dodge_InvulEnd:
-                // TODO: Turn off invulnerability.
+                var data = pc.Data;
+                data.invul = false;
+                pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed:
                 bufferedInputStateSwitchAllowed = true;

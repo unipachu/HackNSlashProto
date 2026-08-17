@@ -15,6 +15,16 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
     }
 
     public void Enter(IFsmSt previousState) {
+        Vector3 viewVec = new Vector3(
+            pc.Data.lastRecievedHitDir.x,
+            0,
+            pc.Data.lastRecievedHitDir.z
+        );
+        // If you, for some reason, set the hit direction to Vector3.zero.
+        if (viewVec.sqrMagnitude < 0.0001f)
+            viewVec = Vector3.down;
+        else
+            viewVec.Normalize();
         if (Vector3.Dot(pc.Data.lastRecievedHitDir, transform.forward) > 0) {
             pc.transform.rotation = Quaternion.LookRotation(
                 new Vector3(
@@ -31,7 +41,8 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
                 animEvent,
                 0.1f
             );
-        } else {
+        }
+        else {
             pc.transform.rotation = Quaternion.LookRotation(
                 new Vector3(
                     -pc.Data.lastRecievedHitDir.x,

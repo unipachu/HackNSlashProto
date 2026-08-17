@@ -3,6 +3,7 @@ using UnityEngine;
 // TODO BEFORE BUILD: Remove instances from the game.
 public class CharacterControllerGizmo : MonoBehaviour{
     [Header("Settings")]
+    [SerializeField] bool drawGizmo = true;
     [SerializeField] Color gizmoColor = Color.green;
     
     [Header("External Refs")]
@@ -10,7 +11,7 @@ public class CharacterControllerGizmo : MonoBehaviour{
 
     private void OnDrawGizmos(){
         // NOTE: No warning, no error. You need to remember to set the reference!
-        if (characterController == null)
+        if (characterController == null || !drawGizmo)
             return;
         float radius = characterController.radius;
         float height = Mathf.Max(characterController.height, radius * 2f);

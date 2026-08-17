@@ -18,6 +18,9 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
     }
 
     public void Enter(IFsmSt previousState){
+        var data = pc.Data;
+        data.invul = true;
+        pc.Data = data;
         attackPhase = AtkPhase.Windup;
         impactFinished = false;
         pc.charCtrlMov.IsAffectedByGravity = false;
@@ -32,6 +35,9 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
+        var data = pc.Data;
+        data.invul = false;
+        pc.Data = data;
         pc.charCtrlMov.IsAffectedByGravity = true;
         pc.weapon.hitDealer.Deactivate();
     }

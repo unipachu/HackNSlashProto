@@ -92,6 +92,7 @@ public struct CapsuleCharacterData {
     public float inputBufferDuration;
     public float maxHp;
     public float curHp;
+    public bool invul;
     public Vector3 lastRecievedHitDir;
     public float lastKnockbackStr;
     public float st_AtkJump_DownSpeedAfterJumpFinished;
@@ -128,9 +129,11 @@ public struct HitData {
 
 public struct HitResult {
     // TODO:
+    public bool wasInvul;
     public bool wasBlocked;
 
-    public HitResult(bool wasBlocked) {
+    public HitResult(bool wasInvul, bool wasBlocked) {
+        this.wasInvul = wasInvul;
         this.wasBlocked = wasBlocked;
     }
 }

@@ -16,7 +16,7 @@ public class PunchingBag : MonoBehaviour, IHitReceiverOwner {
         if (turnRedProcess != null)
             StopCoroutine(turnRedProcess);
         turnRedProcess = StartCoroutine(TurnRed());
-        return new HitResult(false);
+        return new HitResult(false, false);
     }
 
     IEnumerator TurnRed() {
