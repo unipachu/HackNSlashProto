@@ -71,7 +71,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         // TODO: For more parallelism we could actually apply the homing projectile movement to the
         // TODO C: Transforms later but what ever.
         movJobHandle.Complete();
-        // Set projectile pose or deactivate if max lifetime reached.
+        // Update projectile Monobehaviour.
         for (int i = 0; i < numOfPooledProj; i++) {
             if (isActive[i] == false)
                 continue;
@@ -80,6 +80,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
                 continue;
             }
             HomingProj proj = pooledProj[i];
+            proj.hitDealer.hitWldDir = directions[i];
             proj.transform.SetPositionAndRotation(
                 positions[i],
                 Quaternion.LookRotation(directions[i])
@@ -91,7 +92,8 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     /// Shoot a homing projectile.
     /// </summary>
     public void ShootProj(
-        HomingProjData projData,
+        HomingProjMovData projData,
+        AtkData atkData,
         Vector3 wldStartPos,
         Vector3 wldStartDir,
         Transform tgt
@@ -109,12 +111,12 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         isActive[projIndex] = true;
         HomingProj proj = pooledProj[projIndex];
         proj.SetTgt(tgt);
-        proj.hitData = new HitData(projData.dmg, wldStartDir);
         proj.transform.SetPositionAndRotation(
             wldStartPos,
             Quaternion.LookRotation(wldStartDir)
         );
         proj.gameObject.SetActive(true);
+        proj.hitDealer.atkData = atkData;
         proj.hitDealer.Activate();
     }
 

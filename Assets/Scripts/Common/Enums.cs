@@ -48,7 +48,9 @@ public enum CapsuleCharAnimEvent {
     Dodge_YawAllowed,
     Dodge_InvulEnd,
     Dodge_BufferedInputStSwitchAllowed,
-    Dodge_Finished
+    Dodge_Finished,
+    Knockback_Weak_Bwd_Finished,
+    Knockback_Weak_Fwd_Finished
 }
 
 public enum Directions2DVertical{
@@ -81,6 +83,12 @@ public enum Faces{
     Top,
     Near,
     Far,
+}
+
+public enum KnockbackT {
+    None,
+    Weak,
+    Strong
 }
 
 public enum LocomotionType {

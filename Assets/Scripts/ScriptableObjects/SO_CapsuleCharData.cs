@@ -39,6 +39,7 @@ public class SO_CapsuleCharData : ScriptableObject{
         inputBufferDuration = inputBufferDuration,
         maxHp = maxHP,
         curHp = maxHP,
+        lastRecievedHitDir = Vector3.zero,
         st_AtkJump_DownSpeedAfterJumpFinished = st_AtkJump_DownSpeedAfterJumpFinished,
         st_AtkHorSlash_RecoveryMotionInterpDur = st_AtkHorSlash_RecoveryMotionInterpDur,
         st_AtkHorSlash_Impact_AngSpd = st_AtkHorSlash_Impact_AngSpd,

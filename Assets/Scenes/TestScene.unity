@@ -915,6 +915,7 @@ GameObject:
   - component: {fileID: 164602225}
   - component: {fileID: 164602229}
   - component: {fileID: 164602223}
+  - component: {fileID: 164602231}
   - component: {fileID: 164602222}
   m_Layer: 0
   m_Name: FSM
@@ -1021,6 +1022,7 @@ MonoBehaviour:
   atk_Jump: {fileID: 164602225}
   dodge: {fileID: 164602229}
   idle: {fileID: 164602223}
+  knockback_Weak: {fileID: 164602231}
   walk: {fileID: 164602222}
 --- !u!114 &164602227
 MonoBehaviour:
@@ -1073,6 +1075,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3fa92275fa1b2545b2068ce7deb94d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_FlyingAtk
+  pc: {fileID: 439737476}
+--- !u!114 &164602231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb3506cd3ebc2a042a05e683e618def3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FsmSt_Pc_Knockback_Weak
   pc: {fileID: 439737476}
 --- !u!1 &167132625
 GameObject:
@@ -3188,7 +3203,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4627431e80bf53c488f2bdddb9d0c49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooter
-  dmg: 1
+  atkData:
+    dmg: 10
+    knockbackT: 1
+    knockbackStr: 0.5
   spd: 3
   maxLifetime: 10
   homingStr: 2

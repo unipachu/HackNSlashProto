@@ -5,7 +5,6 @@ public class HomingProj : MonoBehaviour {
     public HitDealer hitDealer;
 
     [HideInInspector] public int poolI;
-    [HideInInspector] public HitData hitData;
 
     Transform tgt;
 

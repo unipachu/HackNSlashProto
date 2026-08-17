@@ -39,7 +39,8 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
 
     public void Tick(){
         float angSpd = 0;
-        if (yawAllowed) angSpd = pc.Data.st_Dodge_YawAngSpd;
+        if (yawAllowed)
+            angSpd = pc.Data.st_Dodge_YawAngSpd;
         pc.charCtrlMov.UpdateMov(pc.MoveInput, pc.AnimationDeltaMovement, 0, angSpd);
         if(bufferedInputStateSwitchAllowed){
             if (pc.inputBuffer.TryConsumeInput("atk1"))

@@ -12,5 +12,6 @@ public class Fsm_PcSts : MonoBehaviour{
     public FsmSt_Pc_Atk_Jump atk_Jump;
     public FsmSt_Pc_Dodge dodge;
     public FsmSt_Pc_Idle idle;
+    public FsmSt_Pc_Knockback_Weak knockback_Weak;
     public FsmSt_Pc_Walk walk;
 }

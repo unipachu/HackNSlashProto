@@ -68,6 +68,22 @@ public struct AnimEvent {
     }
 }
 
+[Serializable]
+public struct AtkData {
+    public int dmg;
+    public KnockbackT knockbackT;
+    /// <summary>
+    /// 1 equals knocback movement of 1 unit.
+    /// </summary>
+    public float knockbackStr;
+
+    public AtkData(int dmg, KnockbackT knockbackT, float knockbackStr) {
+        this.dmg = dmg;
+        this.knockbackT = knockbackT;
+        this.knockbackStr = knockbackStr;
+    }
+}
+
 /// <summary>
 /// Used for SoA type of handling of capsule character data.
 /// </summary>
@@ -76,6 +92,8 @@ public struct CapsuleCharacterData {
     public float inputBufferDuration;
     public float maxHp;
     public float curHp;
+    public Vector3 lastRecievedHitDir;
+    public float lastKnockbackStr;
     public float st_AtkJump_DownSpeedAfterJumpFinished;
     public float st_AtkHorSlash_RecoveryMotionInterpDur;
     public float st_AtkHorSlash_Impact_AngSpd;
@@ -99,33 +117,30 @@ public struct CapsuleShape {
 }
 
 public struct HitData {
-    public int dmg;
-    public Vector3 hitDir;
-    // TODO:
+    public AtkData atkData;
+    public Vector3 hitWldDir;
 
-    public HitData(int dmg, Vector3 hitDir) {
-        this.dmg = dmg;
-        this.hitDir = hitDir;
+    public HitData(AtkData atkData, Vector3 hitWldDir) {
+        this.atkData = atkData;
+        this.hitWldDir = hitWldDir;
     }
 }
 
 public struct HitResult {
     // TODO:
-    bool wasBlocked;
+    public bool wasBlocked;
 
     public HitResult(bool wasBlocked) {
         this.wasBlocked = wasBlocked;
     }
 }
 
-public struct HomingProjData {
-    public int dmg;
+public struct HomingProjMovData {
     public float spd;
     public float maxLifetime;
     public float homingStr;
 
-    public HomingProjData(int dmg, float spd, float maxLifetime, float homingStr) {
-        this.dmg = dmg;
+    public HomingProjMovData(float spd, float maxLifetime, float homingStr) {
         this.spd = spd;
         this.maxLifetime = maxLifetime;
         this.homingStr = homingStr;

@@ -4,7 +4,7 @@ using UnityEngine;
 /// Test object for shooting projectiles.
 /// </summary>
 public class Shooter : MonoBehaviour {
-    [SerializeField] int dmg = 1;
+    [SerializeField] AtkData atkData;
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
@@ -12,10 +12,10 @@ public class Shooter : MonoBehaviour {
     [SerializeField] Transform plr;
 
     float timer = 0;
-    HomingProjData projData;
+    HomingProjMovData projData;
 
     private void Awake() {
-        projData = new(dmg, spd, maxLifetime, homingStr);
+        projData = new(spd, maxLifetime, homingStr);
     }
 
     void Update(){
@@ -24,6 +24,7 @@ public class Shooter : MonoBehaviour {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
                 projData,
+                atkData,
                 transform.position,
                 (plr.position - transform.position).normalized,
                 plr);

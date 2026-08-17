@@ -115,8 +115,8 @@ public static class CapsuleCharAnimInfo {
         false,
         18,
         (3, CapsuleCharAnimEvent.Dodge_YawAllowed),
-        (9, CapsuleCharAnimEvent.Dodge_InvulEnd),
-        (12, CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed),
+        (11, CapsuleCharAnimEvent.Dodge_InvulEnd),
+        (17, CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed),
         (18, CapsuleCharAnimEvent.Dodge_Finished)
     );
 
@@ -125,6 +125,22 @@ public static class CapsuleCharAnimInfo {
         0,
         true,
         45
+    );
+
+    public static AnimInfo knockback_Weak_Bwd = new(
+        Animator.StringToHash("Cc_Knockback_Weak_Bwd"),
+        0,
+        false,
+        18,
+        (18, CapsuleCharAnimEvent.Knockback_Weak_Bwd_Finished)
+    );
+
+    public static AnimInfo knockback_Weak_Fwd = new(
+        Animator.StringToHash("Cc_Knockback_Weak_Fwd"),
+        0,
+        false,
+        18,
+        (18, CapsuleCharAnimEvent.Knockback_Weak_Fwd_Finished)
     );
 
     public static AnimInfo walk = new(

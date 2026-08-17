@@ -10,11 +10,19 @@ public class HitDealer : MonoBehaviour {
     [Tooltip("Max colliders a phys query can save during one query.")]
     [SerializeField] int maxColliders = 100;
 
+    // Update these before activating the hit dealer and during activation if needed.
+    [HideInInspector] public AtkData atkData;
+    [HideInInspector] public Vector3 hitWldDir;
+
     bool isActive;
     Collider[] overlapCapsuleResults;
     HashSet<HitReceiver> hitReceiversHitDuringLastActivation = new();
 
     public bool IsActive => isActive;
+
+    // ------------------------------------------------------------------
+    // Unity Callbacks
+    // ------------------------------------------------------------------
 
     private void Awake() {
         overlapCapsuleResults = new Collider[maxColliders];
@@ -23,11 +31,27 @@ public class HitDealer : MonoBehaviour {
     void Update() {
         if (isActive) {
             TryHitAllOverlappingHitRecievers(
-                capsuleLayerMask,
-                new HitData(1, Vector3.up)
+                capsuleLayerMask
             );
         }
     }
+
+    private void OnDrawGizmos() {
+        Color color = isActive ? Color.red : Color.green;
+        for (int i = 0; i < capsules.Length; i++) {
+            CapsuleShape capsule = capsules[i];
+            DebugUtils.OnDrawGizmos_DrawCapsule(
+                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt0),
+                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt1),
+                capsule.r,
+                color
+            );
+        }
+    }
+
+    // ------------------------------------------------------------------
+    // Public Methods
+    // ------------------------------------------------------------------
 
     public void Activate() {
         isActive = true;
@@ -38,13 +62,21 @@ public class HitDealer : MonoBehaviour {
         isActive = false;
     }
 
+    public bool TryDealHit(HitReceiver hitReceiver, HitData hitData) {
+        if (hitReceiversHitDuringLastActivation.Contains(hitReceiver))
+            return false;
+        HitResult hitResult = hitReceiver.ReceiveHit(this, hitData);
+        hitReceiversHitDuringLastActivation.Add(hitReceiver);
+        hitReceiverHit?.Invoke(hitResult);
+        return true;
+    }
+
     // TODO: Make a version of this which uses capsule cast from previous location to current location
     // TODO C: instead. This will allow the weapon to make fast linear movements without going through
     // TODO C: enemies. You need to save the previous capsule world locations for the sweeps.
     // TODO C: Then you can choose between OverlapCapsule or CapsuleCast or use both at the same time!
     public void TryHitAllOverlappingHitRecievers(
         int layerMask,
-        HitData hitData,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         for (int capsuleIndex = 0; capsuleIndex < capsules.Length; capsuleIndex++) {
@@ -63,32 +95,12 @@ public class HitDealer : MonoBehaviour {
                 HitReceiver hitReceiver =
                     overlapCapsuleResults[colliderIndex].GetComponent<HitReceiver>();
                 if (hitReceiver != null)
-                    TryDealHit(hitReceiver, hitData);
+                    TryDealHit(hitReceiver, new HitData(atkData, hitWldDir));
             }
         }
     }
 
-    public bool TryDealHit(HitReceiver hitReceiver, HitData hitData) {
-        if (hitReceiversHitDuringLastActivation.Contains(hitReceiver))
-            return false;
-        HitResult hitResult = hitReceiver.ReceiveHit(this, hitData);
-        hitReceiversHitDuringLastActivation.Add(hitReceiver);
-        hitReceiverHit?.Invoke(hitResult);
-        return true;
-    }
 
-    private void OnDrawGizmos() {
-        Color color = isActive ? Color.red : Color.green;
-        for (int i = 0; i < capsules.Length; i++) {
-            CapsuleShape capsule = capsules[i];
-            DebugUtils.OnDrawGizmos_DrawCapsule(
-                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt0),
-                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt1),
-                capsule.r,
-                color
-            );
-        }
-    }
 }
 
 //public (Collider col, Vector3 HitPoint, Vector3 penetrationDir, float penetrationDist)[] TheFullDeal(
