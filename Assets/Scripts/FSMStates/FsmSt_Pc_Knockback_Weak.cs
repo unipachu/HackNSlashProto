@@ -26,14 +26,14 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
         else
             viewVec.Normalize();
         if (Vector3.Dot(pc.Data.lastRecievedHitDir, transform.forward) > 0) {
-            pc.transform.rotation = Quaternion.LookRotation(
-                new Vector3(
-                    pc.Data.lastRecievedHitDir.x,
-                    0,
-                    pc.Data.lastRecievedHitDir.z
-                ).normalized,
-                Vector3.up
-            );
+            //pc.transform.rotation = Quaternion.LookRotation(
+            //    new Vector3(
+            //        pc.Data.lastRecievedHitDir.x,
+            //        0,
+            //        pc.Data.lastRecievedHitDir.z
+            //    ).normalized,
+            //    Vector3.up
+            //);
             VisUtils.CrossfadeNInitAnimEventPlr(
                 ref pc.animEventPlr,
                 pc.capsuleCharAnim,
@@ -43,14 +43,14 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
             );
         }
         else {
-            pc.transform.rotation = Quaternion.LookRotation(
-                new Vector3(
-                    -pc.Data.lastRecievedHitDir.x,
-                    0,
-                    -pc.Data.lastRecievedHitDir.z
-                ).normalized,
-                Vector3.up
-            );
+            //pc.transform.rotation = Quaternion.LookRotation(
+            //    new Vector3(
+            //        -pc.Data.lastRecievedHitDir.x,
+            //        0,
+            //        -pc.Data.lastRecievedHitDir.z
+            //    ).normalized,
+            //    Vector3.up
+            //);
             VisUtils.CrossfadeNInitAnimEventPlr(
                 ref pc.animEventPlr,
                 pc.capsuleCharAnim,
