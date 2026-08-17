@@ -11,4 +11,6 @@ public interface IFsmSt{
     void Tick();
 
     void LateTick();
+
+    bool CanSwitchStTo(IFsmSt newSt);
 }

@@ -24,7 +24,6 @@ public class HitDealer : MonoBehaviour {
         if (isActive) {
             TryHitAllOverlappingHitRecievers(
                 capsuleLayerMask,
-                QueryTriggerInteraction.Collide,
                 new HitData(1, Vector3.up)
             );
         }
@@ -45,8 +44,8 @@ public class HitDealer : MonoBehaviour {
     // TODO C: Then you can choose between OverlapCapsule or CapsuleCast or use both at the same time!
     public void TryHitAllOverlappingHitRecievers(
         int layerMask,
-        QueryTriggerInteraction qryTrgIxn,
-        HitData hitData
+        HitData hitData,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         for (int capsuleIndex = 0; capsuleIndex < capsules.Length; capsuleIndex++) {
             CapsuleShape capsule = capsules[capsuleIndex];

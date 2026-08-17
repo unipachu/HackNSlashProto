@@ -83,6 +83,8 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
+    public bool CanSwitchStTo(IFsmSt newSt) => true;
+
     // -------------------------
     // Anim Event
     // -------------------------

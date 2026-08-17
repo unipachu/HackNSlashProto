@@ -102,6 +102,8 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
+    public bool CanSwitchStTo(IFsmSt newSt) => true;
+
     // ----------------------
     // Animation Event
     // ----------------------

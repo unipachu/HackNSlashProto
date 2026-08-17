@@ -3,9 +3,9 @@ using Unity.Collections;
 using UnityEngine;
 
 /// <summary>
-/// SoA storage for playable capsule character runtime data.
+/// Storage for playable capsule character runtime data.
 /// </summary>
-public class EntityData : Singleton<EntityData> {
+public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     [SerializeField] int capacity = 2;
 
     public NativeArray<CapsuleCharacterData> configs;

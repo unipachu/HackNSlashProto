@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public class Pc : MonoBehaviour{
     [Header("Data Refs")]
-    [SerializeField] EntityRegisterer entityRegisterer;
+    [SerializeField] CapsuleCharRegisterer capsuleCharRegisterer;
 
     [Header("Component Refs")]
     public CharCtrlMov charCtrlMov;
@@ -15,6 +15,7 @@ public class Pc : MonoBehaviour{
     public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
     public Animator capsuleCharAnim;
     public Weapon weapon;
+    public CapsuleCharHitRecieveHandler hitRecieverHandler;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.
@@ -26,8 +27,8 @@ public class Pc : MonoBehaviour{
     public bool Atk2Input { get; private set; }
     public bool Atk3Input { get; private set; }
     public CapsuleCharacterData Data {
-        get => entityRegisterer.Data;
-        set => entityRegisterer.Data = value;
+        get => capsuleCharRegisterer.Data;
+        set => capsuleCharRegisterer.Data = value;
     }
     public bool DodgeInput { get; private set; }
     public Vector3 AnimationDeltaMovement { get; private set; }

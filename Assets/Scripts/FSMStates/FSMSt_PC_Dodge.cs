@@ -55,6 +55,8 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
+    public bool CanSwitchStTo(IFsmSt newSt) => true;
+
     // ----------------------
     // Animation event
     // ----------------------

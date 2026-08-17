@@ -1,24 +1,24 @@
 using UnityEngine;
 
-public class EntityRegisterer : MonoBehaviour {
+public class CapsuleCharRegisterer : MonoBehaviour {
     [SerializeField] SO_CapsuleCharData configSo;
 
     public CapsuleCharacterData Data {
-        get => EntityData.inst.GetData(Id);
-        set => EntityData.inst.SetData(Id, value);
+        get => CapsuleCharMgr.inst.GetData(Id);
+        set => CapsuleCharMgr.inst.SetData(Id, value);
     }
     public int Id { get; private set; } = -1;
 
     void OnEnable() {
-        Id = EntityData.inst.Register(gameObject, configSo);
+        Id = CapsuleCharMgr.inst.Register(gameObject, configSo);
     }
 
     void OnDisable() {
         if (Id != -1 ) {
             // NOTE EntityData might have been destroyed before this OnDisable, e.g. if
             // NOTE C: scene is being changed.
-            if(EntityData.inst != null)
-                EntityData.inst.Unregister(gameObject);
+            if(CapsuleCharMgr.inst != null)
+                CapsuleCharMgr.inst.Unregister(gameObject);
             Id = -1;
         }
     }

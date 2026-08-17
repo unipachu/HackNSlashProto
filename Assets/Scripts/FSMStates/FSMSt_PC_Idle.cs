@@ -29,4 +29,6 @@ public class FsmSt_Pc_Idle : MonoBehaviour, IFsmSt{
 
     public void LateTick() {
     }
+
+    public bool CanSwitchStTo(IFsmSt newSt) => true;
 }

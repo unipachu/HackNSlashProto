@@ -274,10 +274,10 @@ MonoBehaviour:
   capsules:
   - pt0: {x: 0, y: -0.25, z: 1.36}
     pt1: {x: 0, y: 0.25, z: 1.36}
-    r: 0.4
+    r: 0.45
   - pt0: {x: 0, y: 0, z: 0.04}
     pt1: {x: 0, y: 0, z: 1.13}
-    r: 0.2
+    r: 0.25
   capsuleLayerMask:
     serializedVersion: 2
     m_Bits: 512

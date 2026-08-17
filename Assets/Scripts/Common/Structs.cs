@@ -74,6 +74,8 @@ public struct AnimEvent {
 public struct CapsuleCharacterData {
     public float gravitationalAcc;
     public float inputBufferDuration;
+    public float maxHp;
+    public float curHp;
     public float st_AtkJump_DownSpeedAfterJumpFinished;
     public float st_AtkHorSlash_RecoveryMotionInterpDur;
     public float st_AtkHorSlash_Impact_AngSpd;

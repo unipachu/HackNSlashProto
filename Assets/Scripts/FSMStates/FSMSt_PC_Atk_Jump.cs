@@ -39,6 +39,9 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
+    public bool CanSwitchStTo(IFsmSt newSt) => true;
+
+
     // ----------------------
     // Animation Event
     // ----------------------

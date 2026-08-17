@@ -1660,7 +1660,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -2039,6 +2039,7 @@ GameObject:
   - component: {fileID: 439737475}
   - component: {fileID: 439737477}
   - component: {fileID: 439737478}
+  - component: {fileID: 439737479}
   - component: {fileID: 439737468}
   m_Layer: 0
   m_Name: Plr
@@ -2135,7 +2136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0329b976a79d9c84a9da5973e7208a7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PC
-  entityRegisterer: {fileID: 439737478}
+  capsuleCharRegisterer: {fileID: 439737478}
   charCtrlMov: {fileID: 439737471}
   fsm: {fileID: 164602221}
   fsmSts: {fileID: 164602226}
@@ -2143,6 +2144,7 @@ MonoBehaviour:
   capsuleCharRootMvmtBroadcaster: {fileID: 4043496483517493682}
   capsuleCharAnim: {fileID: 4043496483517493688}
   weapon: {fileID: 1199934673}
+  hitRecieverHandler: {fileID: 439737479}
 --- !u!114 &439737477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2165,10 +2167,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 439737467}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de7210bb42677814db33525e248abf3a, type: 3}
+  m_Script: {fileID: 11500000, guid: 33823bf6098cbc44b80be9346cfc5191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityRegisterer
   configSo: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
+--- !u!114 &439737479
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 439737467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9043e6b090aff34da82013d9c71bcae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieveHandler
+  pc: {fileID: 439737476}
+  bodyHitReciever: {fileID: 4043496483517493683}
 --- !u!1 &465066623
 GameObject:
   m_ObjectHideFlags: 0
@@ -5259,6 +5275,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4eacad3590d05429cfb69aba95762b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
+--- !u!114 &4043496483517493683 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2732198706603240118, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+  m_PrefabInstance: {fileID: 4043496483517493680}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
 --- !u!95 &4043496483517493688 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 4678657368601596990, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
