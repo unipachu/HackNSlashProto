@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public static class CapsuleCharAnimInfo {
     public static AnimInfo atk_FlyingAtk_Impact = new(
-        Animator.StringToHash("PC_Atk_FlyingAtk_Impact"),
+        Animator.StringToHash("Cc_Atk_FlyingAtk_Impact"),
         0,
         false,
         15,
@@ -14,7 +14,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_FlyingAtk_Recovery = new(
-        Animator.StringToHash("PC_Atk_FlyingAtk_Recovery"),
+        Animator.StringToHash("Cc_Atk_FlyingAtk_Recovery"),
         0,
         false,
         24,
@@ -22,7 +22,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_FlyingAtk_Windup = new(
-        Animator.StringToHash("PC_Atk_FlyingAtk_Windup"),
+        Animator.StringToHash("Cc_Atk_FlyingAtk_Windup"),
         0,
         false,
         47,
@@ -30,7 +30,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash1_Impact = new(
-        Animator.StringToHash("PC_Atk_HorSlash1_Impact"),
+        Animator.StringToHash("Cc_Atk_HorSlash1_Impact"),
         0,
         false,
         13,
@@ -44,7 +44,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash1_Recovery = new(
-        Animator.StringToHash("PC_Atk_HorSlash1_Recovery"),
+        Animator.StringToHash("Cc_Atk_HorSlash1_Recovery"),
         0,
         false,
         9,
@@ -53,7 +53,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash1_Windup = new(
-        Animator.StringToHash("PC_Atk_HorSlash1_Windup"),
+        Animator.StringToHash("Cc_Atk_HorSlash1_Windup"),
         0,
         false,
         9,
@@ -61,7 +61,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash2_Impact = new(
-        Animator.StringToHash("PC_Atk_HorSlash2_Impact"),
+        Animator.StringToHash("Cc_Atk_HorSlash2_Impact"),
         0,
         false,
         13,
@@ -75,7 +75,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash2_Recovery = new(
-        Animator.StringToHash("PC_Atk_HorSlash2_Recovery"),
+        Animator.StringToHash("Cc_Atk_HorSlash2_Recovery"),
         0,
         false,
         9,
@@ -84,7 +84,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_HorSlash3_Impact = new(
-        Animator.StringToHash("PC_Atk_HorSlash3_Impact"),
+        Animator.StringToHash("Cc_Atk_HorSlash3_Impact"),
         0,
         false,
         13,
@@ -98,7 +98,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo atk_JumpVerSlam = new(
-        Animator.StringToHash("PC_Atk_JumpVerSlam"),
+        Animator.StringToHash("Cc_Atk_JumpVerSlam"),
         0,
         false,
         61,
@@ -110,7 +110,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo dodge = new(
-        Animator.StringToHash("PC_Dodge"),
+        Animator.StringToHash("Cc_Dodge"),
         0,
         false,
         18,
@@ -121,7 +121,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo idle = new(
-        Animator.StringToHash("PC_Idle"),
+        Animator.StringToHash("Cc_Idle"),
         0,
         true,
         45
@@ -144,7 +144,7 @@ public static class CapsuleCharAnimInfo {
     );
 
     public static AnimInfo walk = new(
-        Animator.StringToHash("PC_Walk"),
+        Animator.StringToHash("Cc_Walk"),
         0,
         true,
         10
