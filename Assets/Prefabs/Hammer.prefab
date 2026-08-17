@@ -189,6 +189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9155164228881544986}
+  - component: {fileID: 4615082075361014732}
   m_Layer: 0
   m_Name: Hammer
   m_TagString: Untagged
@@ -210,10 +211,23 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4308088608016841364}
-  - {fileID: 6192255711978525613}
+  - {fileID: 5169805151543021046}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5333315532987243935
+--- !u!114 &4615082075361014732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4537164938953140185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 96bc9fa7dd2b68d4da73d44e1811af54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Weapon
+  hitDealer: {fileID: 1738826683922648006}
+--- !u!1 &5723746665550441109
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -221,51 +235,53 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6192255711978525613}
-  - component: {fileID: 4717693439745022821}
+  - component: {fileID: 5169805151543021046}
+  - component: {fileID: 1738826683922648006}
   m_Layer: 0
-  m_Name: Collider
+  m_Name: HammerHitDealer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6192255711978525613
+--- !u!4 &5169805151543021046
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5333315532987243935}
+  m_GameObject: {fileID: 5723746665550441109}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.351}
-  m_LocalScale: {x: 0.5525, y: 0.9923123, z: 0.52726036}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 9155164228881544986}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &4717693439745022821
-BoxCollider:
+--- !u!114 &1738826683922648006
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5333315532987243935}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
+  m_GameObject: {fileID: 5723746665550441109}
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033c107452eefb04abfba421a25e8263, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitDealer
+  capsules:
+  - pt0: {x: 0, y: -0.25, z: 1.36}
+    pt1: {x: 0, y: 0.25, z: 1.36}
+    r: 0.4
+  - pt0: {x: 0, y: 0, z: 0.04}
+    pt1: {x: 0, y: 0, z: 1.13}
+    r: 0.2
+  capsuleLayerMask:
+    serializedVersion: 2
+    m_Bits: 512
+  maxColliders: 100
 --- !u!1 &7164331942654089889
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,6 +11,39 @@ public class DebugUtils : MonoBehaviour {
     public static Color DefaultColor = Color.white;
 
     /// <summary>
+    /// Draws a wireframe capsule between the given points with the specified radius.
+    /// Call this in MonoBehaviour's OnDrawGizmos or OnDrawGizmosSelected methods.
+    /// </summary>
+    public static void OnDrawGizmos_DrawCapsule(
+        Vector3 pt0,
+        Vector3 pt1,
+        float radius,
+        Color? color = null
+    ) {
+        Color previousColor = Gizmos.color;
+        Gizmos.color = color ?? DefaultColor;
+        Gizmos.DrawWireSphere(pt0, radius);
+        Gizmos.DrawWireSphere(pt1, radius);
+        Vector3 axis = pt1 - pt0;
+        float axisLength = axis.magnitude;
+        if (axisLength > 0.0001f) {
+            axis /= axisLength;
+            Vector3 side = Vector3.Cross(axis, Vector3.up);
+            if (side.sqrMagnitude < 0.0001f)
+                side = Vector3.Cross(axis, Vector3.right);
+            side.Normalize();
+            Vector3 up = Vector3.Cross(axis, side);
+            Vector3 sideOffset = side * radius;
+            Vector3 upOffset = up * radius;
+            Gizmos.DrawLine(pt0 + sideOffset, pt1 + sideOffset);
+            Gizmos.DrawLine(pt0 - sideOffset, pt1 - sideOffset);
+            Gizmos.DrawLine(pt0 + upOffset, pt1 + upOffset);
+            Gizmos.DrawLine(pt0 - upOffset, pt1 - upOffset);
+        }
+        Gizmos.color = previousColor;
+    }
+
+    /// <summary>
     /// Draws a wireframe sphere at the given position with the specified radius.
     /// ? after Color parameter type means that Color struct is allowed to be null.
     /// Call this in MonoBehaviour's OnDrawGizmos or OnDrawGizmosSelected methods.

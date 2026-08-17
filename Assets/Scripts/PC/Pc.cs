@@ -14,6 +14,7 @@ public class Pc : MonoBehaviour{
     public PcInputBuffer inputBuffer;
     public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
     public Animator capsuleCharAnim;
+    public Weapon weapon;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.

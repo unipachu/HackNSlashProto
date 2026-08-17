@@ -25,6 +25,7 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
 
     public void Exit(){
         pc.charCtrlMov.IsAffectedByGravity = true;
+        pc.weapon.hitDealer.Deactivate();
     }
 
     public void PhysicsTick(){
@@ -48,14 +49,14 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.charCtrlMov.IsAffectedByGravity = false;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
-                // TODO: Activate hitbox.
+                pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
                 pc.charCtrlMov.IsAffectedByGravity = true;
                 pc.charCtrlMov.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:
-                // TODO: Deactivate hitbox.
+                pc.weapon.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_Finished:
                 if (pc.MoveInput != Vector2.zero)

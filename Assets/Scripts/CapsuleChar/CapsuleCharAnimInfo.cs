@@ -9,6 +9,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         15,
+        (13, CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated),
         (15, CapsuleCharAnimEvent.FlyingAtk_Impact_Finished)
     );
 
@@ -102,7 +103,7 @@ public static class CapsuleCharAnimInfo {
         false,
         61,
         (20, CapsuleCharAnimEvent.JumpVerSlam_JumpStarted),
-        (34, CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated),
+        (36, CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated),
         (40, CapsuleCharAnimEvent.JumpVerSlam_JumpFinished),
         (44, CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated),
         (61, CapsuleCharAnimEvent.JumpVerSlam_Finished)

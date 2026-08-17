@@ -12,9 +12,9 @@ TagManager:
   - Water
   - UI
   - StaticEnv
-  - 
-  - Player
-  - NPCBodies
+  - DynamicEnv
+  - CharacterController
+  - HitReceiver
   - 
   - 
   - 

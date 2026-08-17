@@ -1,10 +1,13 @@
-using System;
 using UnityEngine;
 
 // TODO BEFORE BUILD: If you comment out this class, you can easily find these in other files
 // TODO BEFORE BUILD C: and comment them out as well. However you should check asserts and error
 // TODO BEFORE BUILD C: logs carefully since you never want those asserts to fail in a published game!
-[Obsolete("Ugh, it's easier to just comment out Debug calls than to use this.")]
+
+/// <summary>
+/// A bit useless class, but can be used to easily turn off debug messages, and have debug
+/// messages be dependent on conditions.
+/// </summary>
 public class Dbg : Singleton<Dbg>{
     [SerializeField] bool showDebugMessages = true;
     [SerializeField] bool showDebugWarnings = true;
@@ -22,7 +25,7 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Uses Debug.Assert(condition, errMsg, ctx);
     /// </summary>
-    public void Assert(bool condition, string errMsg, UnityEngine.Object ctx) {
+    public void Assert(bool condition, string errMsg, Object ctx) {
         if(useAsserts)
             Debug.Assert(condition, errMsg, ctx);
     }
@@ -30,48 +33,48 @@ public class Dbg : Singleton<Dbg>{
     /// <summary>
     /// Logs a message useing Debug.Log(msg);
     /// </summary>
-    public void Log(string msg){
-        if(showDebugMessages)
+    public void Log(string msg, bool condition = true){
+        if(showDebugMessages && condition)
             Debug.Log(msg);
     }
 
     /// <summary>
     /// Logs a message useing Debug.Log(msg, ctx);
     /// </summary>
-    public void Log(string msg, UnityEngine.Object ctx){
-        if(showDebugMessages)
+    public void Log(string msg, Object ctx, bool condition = true){
+        if(showDebugMessages && condition)
             Debug.Log(msg, ctx);
     }
 
     /// <summary>
     /// Logs an error message useing Debug.LogError(msg);
     /// </summary>
-    public void LogErr(string msg){
-        if (showDebugErrors)
+    public void LogErr(string msg, bool condition = true){
+        if (showDebugErrors && condition)
             Debug.LogError(msg);
     }
 
     /// <summary>
     /// Logs an error message useing Debug.LogError(msg, ctx);
     /// </summary>
-    public void LogErr(string msg, UnityEngine.Object ctx){
-        if(showDebugErrors)
+    public void LogErr(string msg, Object ctx, bool condition = true){
+        if(showDebugErrors && condition)
             Debug.LogError(msg, ctx);
     }
 
     /// <summary>
     /// Logs a warning message using Debug.LogWarning(msg);
     /// </summary>
-    public void LogWrn(string msg){
-        if (showDebugWarnings)
+    public void LogWrn(string msg, bool condition = true){
+        if (showDebugWarnings && condition)
             Debug.LogWarning(msg);
     }
 
     /// <summary>
     /// Logs a warning message using Debug.LogWarning(msg, ctx);
     /// </summary>
-    public void LogWrn(string msg, UnityEngine.Object ctx){
-        if(showDebugWarnings)
+    public void LogWrn(string msg, Object ctx, bool condition = true){
+        if(showDebugWarnings && condition)
             Debug.LogWarning(msg, ctx);
     }
 

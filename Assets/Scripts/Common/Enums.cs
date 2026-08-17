@@ -12,7 +12,6 @@ public enum AtkPhase{
 public enum CapsuleCharAnimEvent {
     FlyingAtk_Windup_Finished,
     FlyingAtk_Impact_HitDealerActivated,
-    FlyingAtk_Impact_HitDealerDeactivated,
     FlyingAtk_Impact_Finished,
     FlyingAtk_Recovery_Finished,
     HorSlash1_Windup_Finished,

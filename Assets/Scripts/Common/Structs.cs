@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -32,7 +33,6 @@ public struct AnimInfo {
         // NOTE: We cannot automaticize sorting since some events might happen on the same frame and yet
         // their order matters.
         // TODO: However we could make an Assert etc to make sure they are at least in ascending order.
-        // TODO: 
         sortedAnimEvents = new AnimEvent[sortedEvents.Length];
         for (int i = 0; i < sortedEvents.Length; i++)
             sortedAnimEvents[i] = new AnimEvent(sortedEvents[i].frame, lastFrame, sortedEvents[i].id);
@@ -81,4 +81,37 @@ public struct CapsuleCharacterData {
     public float st_Walk_LinAcc;
     public float st_Walk_MaxLinSpd;
     public float st_Walk_MaxAngSpd;
+}
+
+[Serializable]
+public struct CapsuleShape {
+    public Vector3 pt0;
+    public Vector3 pt1;
+    public float r;
+
+    public CapsuleShape(Vector3 pt0, Vector3 pt1, float r) {
+        this.pt0 = pt0;
+        this.pt1 = pt1;
+        this.r = r;
+    }
+}
+
+public struct HitData {
+    public int dmg;
+    public Vector3 hitDir;
+    // TODO:
+
+    public HitData(int dmg, Vector3 hitDir) {
+        this.dmg = dmg;
+        this.hitDir = hitDir;
+    }
+}
+
+public struct HitResult {
+    // TODO:
+    bool wasBlocked;
+
+    public HitResult(bool wasBlocked) {
+        this.wasBlocked = wasBlocked;
+    }
 }

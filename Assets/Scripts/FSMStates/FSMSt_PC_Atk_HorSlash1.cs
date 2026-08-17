@@ -44,7 +44,7 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
-        // TODO: Deactivate HitDealers.
+        pc.weapon.hitDealer.Deactivate();
     }
 
     public void PhysicsTick(){
@@ -124,10 +124,10 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 impactInputRotAllowed = false;
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerActivated:
-                // TODO
+                pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerDeactivated:
-                // TODO
+                pc.weapon.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_ComboAllowed:
                 comboAllowed = true;

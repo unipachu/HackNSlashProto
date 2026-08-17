@@ -33,6 +33,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
 
     public void Exit(){
         pc.charCtrlMov.IsAffectedByGravity = true;
+        pc.weapon.hitDealer.Deactivate();
     }
 
     public void PhysicsTick(){
@@ -52,6 +53,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 // TODO: Set values in base data.
                 pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
                 if(pc.charCtrlMov.IsGrounded() && impactFinished){
+                    pc.weapon.hitDealer.Deactivate();
                     attackPhase = AtkPhase.Recovery;
                     VisUtils.CrossfadeNInitAnimEventPlr(
                         ref pc.animEventPlr,
@@ -96,12 +98,9 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 );
                 attackPhase = AtkPhase.Impact;
                 break;
-            //case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated:
-            //    // TODO: Activate hit dealer.
-            //    break;
-            //case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerDeactivated:
-            //    // TODO: Deactivate hit dealer.
-            //    break;
+            case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated:
+                pc.weapon.hitDealer.Activate();
+                break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_Finished:
                 pc.charCtrlMov.IsAffectedByGravity = true;
                 impactFinished = true;
