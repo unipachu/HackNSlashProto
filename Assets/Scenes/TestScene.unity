@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 32162908}
   - component: {fileID: 32162909}
   m_Layer: 0
-  m_Name: EntityData
+  m_Name: CapsuleCharMgr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1856,8 +1856,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.18623762, y: 0.000000019903352, z: -0.0000000037727586, w: 0.9825047}
-  m_LocalPosition: {x: 17.46, y: 26.462826, z: -10.57439}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.46, y: 28.126999, z: -10.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2066,6 +2066,69 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &418198814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 418198818}
+  - component: {fileID: 418198817}
+  m_Layer: 0
+  m_Name: FollowSpingSphere
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &418198817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418198814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3b02b132cd82cf498fd4d2fd1186916, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpringMov
+  linSpring: 5
+  maxLinSpringAcc: 99999
+  linVelMatchDamper: 5
+  maxLinVelMatchDamperAcc: 99999
+  linDragDamper: 1
+  maxLinDragDamperAcc: 99999
+  maxTotalLinAcc: 99999
+  angSpring: 5
+  maxAngSpringAcc: 99999
+  angVelMatchDamper: 5
+  maxAngVelMatchDamperAcc: 99999
+  angDragDamper: 1
+  maxAngDragDamperAcc: 99999
+  maxTotalAngAcc: 99999
+  startAtTgt: 1
+  tgtPosOfs: {x: 0, y: 2, z: 0}
+  rb: {fileID: 0}
+  tgt: {fileID: 2062723877}
+--- !u!4 &418198818
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418198814}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 23.04747, y: 21.7977, z: 1.80526}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1397275937}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &439737467
 GameObject:
   m_ObjectHideFlags: 0
@@ -3065,11 +3128,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e43175fbb78d5b4484371f4ddac7546, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CamMgr
+  camMovByInputAllowed: 1
   horSpd: 360
   verSpd: 360
+  tiltOfs: 20
+  tiltMult: 0.3
   invY: 1
   plrCtrl: {fileID: 83296388}
   orbitalFollow: {fileID: 1713288054}
+  panTilt: {fileID: 1713288055}
   brain: {fileID: 330585548}
 --- !u!4 &936050738
 Transform:
@@ -3900,6 +3967,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1256659988}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1397275937 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6074747043712019840, guid: 2364690db1e804248b781063f2630f08, type: 3}
+  m_PrefabInstance: {fileID: 8191536727539887958}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1409819303
 GameObject:
   m_ObjectHideFlags: 0
@@ -4888,7 +4960,7 @@ GameObject:
   - component: {fileID: 1713288053}
   - component: {fileID: 1713288052}
   - component: {fileID: 1713288054}
-  - component: {fileID: 1713288056}
+  - component: {fileID: 1713288055}
   m_Layer: 0
   m_Name: CinemachineCamera_OrbitalFollow
   m_TagString: Untagged
@@ -4947,8 +5019,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713288049}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.18623762, y: 0.000000019903352, z: -0.000000003772758, w: 0.9825048}
-  m_LocalPosition: {x: 17.46, y: 26.462826, z: -10.57439}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 17.46, y: 28.126999, z: -10.6}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4966,7 +5038,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineOrbitalFollow
-  TargetOffset: {x: 0, y: 1.5, z: 0}
+  TargetOffset: {x: 0, y: 1, z: 0}
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -4977,14 +5049,14 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 6
-      Height: 5
+      Radius: 3
+      Height: 9.3
     Center:
       Radius: 8
-      Height: 2.75
+      Height: 5.3
     Bottom:
-      Radius: 6
-      Height: -1.26
+      Radius: 4
+      Height: -0.7
     SplineCurvature: 0.5
   RecenteringTarget: 2
   HorizontalAxis:
@@ -4998,8 +5070,8 @@ MonoBehaviour:
       Time: 2
     Restrictions: 0
   VerticalAxis:
-    Value: 17.5
-    Center: 17.5
+    Value: 0
+    Center: 180
     Range: {x: -180, y: 180}
     Wrap: 0
     Recentering:
@@ -5017,7 +5089,7 @@ MonoBehaviour:
       Wait: 1
       Time: 2
     Restrictions: 0
---- !u!114 &1713288056
+--- !u!114 &1713288055
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -5026,26 +5098,31 @@ MonoBehaviour:
   m_GameObject: {fileID: 1713288049}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
+  m_Script: {fileID: 11500000, guid: 62d54399b04b4fa48a73e121d4937dd4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
-  Composition:
-    ScreenPosition: {x: 0, y: 0}
-    DeadZone:
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePanTilt
+  ReferenceFrame: 0
+  RecenterTarget: 0
+  PanAxis:
+    Value: 0
+    Center: 0
+    Range: {x: -180, y: 180}
+    Wrap: 1
+    Recentering:
       Enabled: 0
-      Size: {x: 0.2, y: 0.2}
-    HardLimits:
+      Wait: 1
+      Time: 2
+    Restrictions: 0
+  TiltAxis:
+    Value: 0
+    Center: 0
+    Range: {x: -70, y: 70}
+    Wrap: 0
+    Recentering:
       Enabled: 0
-      Size: {x: 0.8, y: 0.8}
-      Offset: {x: 0, y: 0}
-  CenterOnActivate: 1
-  TargetOffset: {x: 0, y: 1.5, z: 0}
-  Damping: {x: 0.5, y: 0.5}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
+      Wait: 1
+      Time: 2
+    Restrictions: 0
 --- !u!1 &1804852530
 GameObject:
   m_ObjectHideFlags: 0
@@ -5822,6 +5899,35 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1613588697446343649, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
   m_PrefabInstance: {fileID: 4043496483517493680}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8191536727539887958
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 418198818}
+    m_Modifications:
+    - target: {fileID: 1030408622608824236, guid: 2364690db1e804248b781063f2630f08, type: 3}
+      propertyPath: m_Name
+      value: AxisVisualizer
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074747043712019840, guid: 2364690db1e804248b781063f2630f08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074747043712019840, guid: 2364690db1e804248b781063f2630f08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6074747043712019840, guid: 2364690db1e804248b781063f2630f08, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2364690db1e804248b781063f2630f08, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -5851,3 +5957,4 @@ SceneRoots:
   - {fileID: 1128584865}
   - {fileID: 465066626}
   - {fileID: 1156347319}
+  - {fileID: 418198818}
