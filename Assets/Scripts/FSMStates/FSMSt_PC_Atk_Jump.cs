@@ -24,7 +24,9 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
-        pc.charCtrlMov.IsAffectedByGravity = true;
+        CapsuleCharData data = pc.Data;
+        data.isAffectedByGravity = true;
+        pc.Data = data;
         pc.weapon.hitDealer.Deactivate();
     }
 
@@ -39,7 +41,12 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
-    public bool CanSwitchStTo(IFsmSt newSt) => true;
+    public bool CanSwitchStTo(IFsmSt newSt) {
+        if (newSt == (IFsmSt)pc.fsmSts.falling)
+            return false;
+        else
+            return true;
+    }
 
 
     // ----------------------
@@ -47,22 +54,25 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
     // ----------------------
 
     private void OnAnimEvent(CapsuleCharAnimEvent id) {
+        CapsuleCharData data = pc.Data;
         switch (id) {
             case CapsuleCharAnimEvent.JumpVerSlam_JumpStarted:
-                pc.charCtrlMov.IsAffectedByGravity = false;
+                data.isAffectedByGravity = false;
+                pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
                 pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
-                pc.charCtrlMov.IsAffectedByGravity = true;
-                pc.charCtrlMov.verVel = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+                data.isAffectedByGravity = true;
+                data.vel_ver = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+                pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:
                 pc.weapon.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_Finished:
-                if (pc.Input_Mov != Vector2.zero)
+                if (pc.inputData.mov != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);

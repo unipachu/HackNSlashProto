@@ -10,8 +10,8 @@ public class CapsuleCharHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         if (!pc.Data.invul) {
-            CapsuleCharacterData data = pc.Data;
-            data.curHp -= hitData.atkData.dmg;
+            CapsuleCharData data = pc.Data;
+            data.hp_Cur -= hitData.atkData.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
             data.lastRecievedHitDir = hitData.hitWldDir;
             data.lastKnockbackStr = hitData.atkData.knockbackStr;

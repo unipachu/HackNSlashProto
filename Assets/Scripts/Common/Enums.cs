@@ -18,6 +18,8 @@ public enum BufferableInput {
 /// Animation events used by the capsule character Animator.
 /// </summary>
 public enum CapsuleCharAnimEvent {
+    FallLanding_CanSwitchSt,
+    FallLanding_Finished,
     FlyingAtk_Windup_Finished,
     FlyingAtk_Impact_HitDealerActivated,
     FlyingAtk_Impact_Finished,

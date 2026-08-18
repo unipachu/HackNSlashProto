@@ -51,13 +51,15 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
     }
 
     public void Tick(){
+        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+            return;
         switch (atkPhase){
             case AtkPhase.Windup:
                 pc.charCtrlMov.UpdateMov(
-                    Vector2.zero,
+                    pc.inputData.mov_WhenLastSwitchedSt_CamRel,
                     pc.AnimationDeltaMovement,
                     0,
-                    0
+                    pc.Data.st_AtkHorSlash_Windup_MaxAngSpd
                 );
                 return;
             case AtkPhase.Impact:
@@ -65,7 +67,7 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 if(impactInputRotAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    pc.inputData.mov_CamRel,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd
@@ -73,6 +75,7 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 if (comboAllowed) {
                     if(pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light)) {
                         pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash2);
+                        return;
                     }
                 }
                 return;
@@ -81,14 +84,16 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 recoveryMotInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    pc.inputData.mov_CamRel,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
-                    pc.Data.st_Walk_LinAcc,
-                    pc.Data.st_Walk_MaxAngSpd * interpValue);
+                    pc.Data.st_Walk_YawSpd * interpValue,
+                    pc.Data.st_Walk_LinAcc
+                );
                 if (dodgeAllowed) {
                     if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge)) {
                         pc.fsm.SwitchSt(pc.fsmSts.dodge);
+                        return;
                     }
                 }
                 return;
@@ -108,7 +113,7 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
     // Animation Event
     // ----------------------
 
-    private void OnAnimEvent(CapsuleCharAnimEvent id) {
+    void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
             case CapsuleCharAnimEvent.HorSlash1_Windup_Finished:
                 VisUtils.CrossfadeNInitAnimEventPlr(
@@ -151,7 +156,7 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
                 pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+                return;
         }
     }
 }

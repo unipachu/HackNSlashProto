@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -5,8 +6,11 @@ using UnityEngine;
 /// </summary>
 // TODO: Check how the FSM in the VRTemplate project is implemented.
 public class Fsm : MonoBehaviour {
-    public bool IsSwitchingSt { get; private set; }
+    public event Action StSwitched;
+
     public IFsmSt CurSt { get; private set; }
+    public bool IsSwitchingSt { get; private set; }
+    public IFsmSt PrevSt { get; private set; }
 
     public void SwitchSt(IFsmSt newSt){
         Debug.Assert(!IsSwitchingSt, "Can't start a new state transition during another state transition!", this);
@@ -16,8 +20,10 @@ public class Fsm : MonoBehaviour {
         if (CurSt != null)
             CurSt.Exit();
         newSt.Enter(CurSt);
+        PrevSt = CurSt;
         CurSt = newSt;
-        //Debug.Log("Switched to state: " + newSt.GetType().Name, this);
+        Debug.Log("Switched to state: " + newSt.GetType().Name, this);
         IsSwitchingSt = false;
+        StSwitched?.Invoke();
     }
 }

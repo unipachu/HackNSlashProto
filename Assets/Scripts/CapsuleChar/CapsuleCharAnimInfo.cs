@@ -120,6 +120,22 @@ public static class CapsuleCharAnimInfo {
         (18, CapsuleCharAnimEvent.Dodge_Finished)
     );
 
+    public static AnimInfo falling = new(
+        Animator.StringToHash("Cc_Falling"),
+        0,
+        true,
+        40
+    );
+
+    public static AnimInfo fallLanding = new(
+        Animator.StringToHash("Cc_FallLanding"),
+        0,
+        false,
+        30,
+        (5, CapsuleCharAnimEvent.FallLanding_CanSwitchSt),
+        (30, CapsuleCharAnimEvent.FallLanding_Finished)
+    );
+
     public static AnimInfo idle = new(
         Animator.StringToHash("Cc_Idle"),
         0,

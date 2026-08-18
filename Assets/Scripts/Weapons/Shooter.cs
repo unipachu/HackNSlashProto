@@ -9,7 +9,7 @@ public class Shooter : MonoBehaviour {
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
-    [SerializeField] float shootFreq = 1;
+    [SerializeField] float shootInterval = 1;
     [SerializeField] Transform plr;
 
     float timer = 0;
@@ -23,7 +23,7 @@ public class Shooter : MonoBehaviour {
         if (!shoot)
             return;
         timer += Time.deltaTime;
-        if(timer > shootFreq) {
+        if(timer > shootInterval) {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
                 projData,

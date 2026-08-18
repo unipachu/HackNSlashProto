@@ -44,9 +44,12 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
     public void Tick(){
         float angSpd = 0;
         if (yawAllowed)
-            angSpd = pc.Data.st_Dodge_YawAngSpd;
-        pc.charCtrlMov.UpdateMov(pc.Input_Mov, pc.AnimationDeltaMovement, 0, angSpd);
+            angSpd = pc.Data.st_Dodge_YawSpd;
+        pc.charCtrlMov.UpdateMov(pc.inputData.mov_CamRel, pc.AnimationDeltaMovement, 0, angSpd);
         if(bufferedInputStateSwitchAllowed){
+            // NOTE: not buffered input but whatever. TODO: REfactor
+            if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+                return;
             if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light))
                 pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash1);
             else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Heavy))
@@ -80,7 +83,7 @@ public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
                 bufferedInputStateSwitchAllowed = true;
                 break;
             case CapsuleCharAnimEvent.Dodge_Finished:
-                if (pc.Input_Mov != Vector2.zero)
+                if (pc.inputData.mov != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);

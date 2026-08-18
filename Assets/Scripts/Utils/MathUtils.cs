@@ -361,13 +361,20 @@ public static class MathUtils {
     ) {
         // Linear
         Vector3 relLinVel = springObjLinVel - tgtLinVel;
-        Vector3 linSpringAcc = Vector3.ClampMagnitude((tgtPos - springObjPos) * linSpring, maxLinSpringAcc);
+        Vector3 linSpringAcc = Vector3.ClampMagnitude(
+            (tgtPos - springObjPos) * linSpring,
+            maxLinSpringAcc
+        );
         Vector3 linVelMatchDamperAcc = Vector3.ClampMagnitude(
             -relLinVel * linVelMatchDamper,
             maxLinVelMatchDamperAcc
         );
-        Vector3 linDragDamperAcc = Vector3.ClampMagnitude(-springObjLinVel * linDragDamper, maxLinDragDamperAcc);
-        Vector3 totalLinAcc = Vector3.ClampMagnitude(linSpringAcc + linSpringAcc + linVelMatchDamperAcc, maxTotalLinAcc);
+        Vector3 linDragDamperAcc = Vector3.ClampMagnitude(
+            -springObjLinVel * linDragDamper, maxLinDragDamperAcc
+        );
+        Vector3 totalLinAcc = Vector3.ClampMagnitude(
+            linSpringAcc + linVelMatchDamperAcc + linDragDamperAcc, maxTotalLinAcc
+        );
         springObjLinVel += totalLinAcc * dt;
         springObjPos += springObjLinVel * dt;
         // Angular

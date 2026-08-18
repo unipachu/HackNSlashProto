@@ -33,7 +33,8 @@ public class SpringMov : MonoBehaviour {
     [Header("Other Settings")]
     [Tooltip("Should move the spring object to target when game starts?")]
     public bool startAtTgt = true;
-    public Vector3 tgtPosOfs = Vector3.zero;
+    public Vector3 tgtPosWldOfs = Vector3.zero;
+    public Vector3 tgtPosOfsInTgtSpc = Vector3.zero;
 
     [Header("Refs")]
     [Tooltip("(Recommended but optional) Rigidbody to be moved with Rigidbody.Move in FixedUpdate." +
@@ -135,7 +136,10 @@ public class SpringMov : MonoBehaviour {
         tgtPrevPose = new(TgtPos(), tgt.rotation);
     }
 
-    Vector3 TgtPos() => tgt.position + tgtPosOfs;
+    Vector3 TgtPos()
+        => tgt.position
+        + tgtPosWldOfs
+        + TrfMathUtils.TrfPtUnscaled(tgt, tgtPosOfsInTgtSpc) - tgt.position;
 
     /// <summary>
     /// Saves target linear and angular velocities.

@@ -19,7 +19,7 @@ public class PcInputBuffer : MonoBehaviour {
 
     public void BufferInput(BufferableInput input) {
         bufferedInput = input;
-        remainingTime = pc.Data.inputBufferDuration;
+        remainingTime = pc.Data.inputBufferDur;
     }
 
     public void Clear(){

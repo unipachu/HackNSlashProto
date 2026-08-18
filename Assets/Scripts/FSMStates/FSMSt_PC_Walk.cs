@@ -26,12 +26,14 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
     }
 
     public void Tick(){
+        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+            return;
         pc.charCtrlMov.UpdateMov(
-            pc.Input_Mov,
+            pc.inputData.mov_CamRel,
             Vector3.zero,
             pc.Data.st_Walk_MaxLinSpd,
-            pc.Data.st_Walk_LinAcc,
-            pc.Data.st_Walk_MaxAngSpd
+            pc.Data.st_Walk_YawSpd,
+            pc.Data.st_Walk_LinAcc
         );
         if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge))
             pc.fsm.SwitchSt(pc.fsmSts.dodge);
@@ -41,7 +43,7 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
             pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
             pc.fsm.SwitchSt(pc.fsmSts.atk_FlyingAtk);
-        else if (pc.Input_Mov == Vector2.zero)
+        else if (pc.inputData.mov == Vector2.zero)
             pc.fsm.SwitchSt(pc.fsmSts.idle);
     }
 

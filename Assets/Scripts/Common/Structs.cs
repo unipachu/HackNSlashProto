@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -87,21 +88,53 @@ public struct AtkData {
 /// <summary>
 /// Used for SoA type of handling of capsule character data.
 /// </summary>
-public struct CapsuleCharacterData {
+public struct CapsuleCharData {
     public float gravitationalAcc;
-    public float inputBufferDuration;
-    public float maxHp;
-    public float curHp;
+    public bool groundCastHitSomething;
+    public float hp_Cur;
+    public float hp_Max;
+    public float inputBufferDur;
     public bool invul;
-    public Vector3 lastRecievedHitDir;
+    public bool isAffectedByGravity;
+    public bool isGrounded;
     public float lastKnockbackStr;
-    public float st_AtkJump_DownSpeedAfterJumpFinished;
+    public float3 lastRecievedHitDir;
+    // TODO: Is this ever used?
     public float st_AtkHorSlash_RecoveryMotionInterpDur;
     public float st_AtkHorSlash_Impact_AngSpd;
-    public float st_Dodge_YawAngSpd;
+    public float st_AtkHorSlash_Windup_MaxAngSpd;
+    public float st_AtkJump_DownSpeedAfterJumpFinished;
+    public float st_Dodge_YawSpd;
+    public float st_Falling_LinAcc;
+    public float st_Falling_MaxLinSpd;
     public float st_Walk_LinAcc;
     public float st_Walk_MaxLinSpd;
-    public float st_Walk_MaxAngSpd;
+    public float st_Walk_YawSpd;
+    public float2 vel_hor;
+    public float vel_ver;
+    public float vel_yaw;
+}
+
+public struct CapsuleCharInputData {
+    public Vector2 mov;
+    /// <summary>
+    /// Movement input relative to camera.
+    /// </summary>
+    public Vector2 mov_CamRel;
+    public Vector2 mov_LastNonZero;
+    /// <summary>
+    /// Last nonzero movement input relative to camera.
+    /// </summary>
+    public Vector2 mov_LastNonZero_CamRel;
+    public Vector2 mov_WhenLastSwitchedSt;
+    /// <summary>
+    /// Movement input during last state switch relative to camera.
+    /// </summary>
+    public Vector2 mov_WhenLastSwitchedSt_CamRel;
+    public bool atk_Light;
+    public bool atk_Heavy;
+    public bool atk_Ult;
+    public bool dodge;
 }
 
 [Serializable]

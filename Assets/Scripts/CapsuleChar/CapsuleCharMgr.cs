@@ -8,7 +8,7 @@ using UnityEngine;
 public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     [SerializeField] int capacity = 2;
 
-    public NativeArray<CapsuleCharacterData> configs;
+    public NativeArray<CapsuleCharData> configs;
     // Structs can't be null, so we need a way to keep track of structs that are actually used.
     private NativeArray<bool> occupied;
     
@@ -19,7 +19,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
 
     protected override void Awake() {
         base.Awake();
-        configs = new NativeArray<CapsuleCharacterData>(capacity, Allocator.Persistent);
+        configs = new NativeArray<CapsuleCharData>(capacity, Allocator.Persistent);
         occupied = new NativeArray<bool>(capacity, Allocator.Persistent);
     }
 
@@ -32,15 +32,21 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     // Public Methods
     // ------------------------------------------------------------------------------
 
-    public CapsuleCharacterData GetData(int id) => configs[id];
+    public CapsuleCharData GetData(int id) {
+        //Debug.Log($"GET id={id}, invul={configs[id].invul}");
+        return configs[id];
+    }
 
-    public void SetData(int id, CapsuleCharacterData value) => configs[id] = value;
+    public void SetData(int id, CapsuleCharData value) {
+        //Debug.Log($"SET id={id}, invul={value.invul}");
+        configs[id] = value;
+    }
 
     /// <summary>
     /// Registers data mapped to a game object.<br/>
     /// Returns the index of the game object data, or -1 on failure.
     /// </summary>
-    public int Register(GameObject owner, SO_CapsuleCharData configSo) {
+    public int Register(GameObject owner, So_CapsuleCharData configSo) {
         if (ownerToId.ContainsKey(owner)) {
             Debug.LogError($"EntityData: {owner.name} is already registered "
                 + $"(id {ownerToId[owner]}).", owner);

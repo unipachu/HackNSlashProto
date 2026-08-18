@@ -1,61 +1,70 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
 /// Movement for character controller.
 /// </summary>
-// TODO: Refactor
 public class CharCtrlMov : MonoBehaviour{
-    [Header("Movement Settings")]
-    [SerializeField] LayerMask groundMask;
-
     [Header("Refs")]
     [SerializeField] CharacterController charCtrl;
     [SerializeField] Pc pc;
-    
-    [HideInInspector] public bool IsAffectedByGravity = true;
-    [HideInInspector] public Vector2 horVel = Vector2.zero;
-    [HideInInspector] public float verVel = 0;
 
-    void ApplyGravity(){
-        if (IsGrounded())
-            verVel = 0;
-        else
-            verVel -= 9.81f * Time.deltaTime;
+    void ApplyGravityAndVerSlide(ref CapsuleCharData data, float dt){
+        if (pc.Data.isGrounded)
+            // TODO: Make this grounded velocity a scriptable object field. It is used
+            // TODO C: to "snap" player to the ground if they are close enough to it.
+            data.vel_ver = -1000 * dt;
+        else {
+            // TODO: Didn't you already have a gravity data field? Also you should not use this when sliding.
+            data.vel_ver -= 9.81f * dt;
+            float2 horDownSlopeDir = float2.zero;
+            if (pc.Data.groundCastHitSomething) {
+                // TODO: Use float3 so that you don't need to cast here.
+                float slopeAng = Vector3.Angle(pc.groundCastResult.normal, Vector3.up);
+                if (slopeAng > pc.charCtrl.slopeLimit) {
+                    Vector3 downSlopeDir = Vector3.ProjectOnPlane(
+                        Vector3.down,
+                        pc.groundCastResult.normal
+                    ).normalized;
+                    horDownSlopeDir = new Vector2(downSlopeDir.x, downSlopeDir.z);
+                }
+            }
+            data.vel_hor += horDownSlopeDir * 100 * dt;
+        }
     }
 
     /// <summary>
-    /// Call once per frame to move character.
-    /// NOTE: Calling this multiple times a frame can cause problems because character controller is not recommended to be called
-    /// two times a frame.
+    /// Uses Physics.CapsuelCast to do a ground check. Returns true if cast hit something.
     /// </summary>
-    // TODO: This class now takes care of velocity based movement as well as direct movement by e.g. animation delta movement.
-    // TODO C: Is this a good way to do this?
-    /// <summary>
-    /// Uses Physics.CapsuelCast to do a ground check.
-    /// </summary>
-    // TODO: Make local variables into fields and reveal to inspector.
     // TODO: Idk if this is good. Maybe just do a sphere cast from capusle
     // TODO C: bottom to avoid hits with walls/ceilings?
-    public bool IsGrounded(){
-        float extraDist = 0.05f;
+    public static bool CastForGround(CharacterController charCtrl, out RaycastHit groundHit) {
+        float castDist = GlobalData.inst.data.groundChkDist;
         float r = charCtrl.radius;
         float height = Mathf.Max(charCtrl.height, r * 2f);
         Vector3 center = charCtrl.transform.position + charCtrl.center;
         Vector3 bottom = center + Vector3.down * (height / 2f - r);
         Vector3 top = center + Vector3.up * (height / 2f - r);
-        float castDist = extraDist + charCtrl.skinWidth;
-        RaycastHit groundHit;
-        bool hitGround = Physics.CapsuleCast(
+        castDist = castDist + charCtrl.skinWidth;
+        return Physics.CapsuleCast(
             top,
             bottom,
             r,
             Vector3.down,
             out groundHit,
             castDist,
-            groundMask,
+            GlobalData.inst.data.groundMask,
             QueryTriggerInteraction.Ignore
         );
-        if (hitGround){
+    }
+
+    public static bool IsGrounded(
+        CharacterController charCtrl,
+        out bool groundCastHitSomething,
+        out RaycastHit groundHit
+    ) {
+        groundCastHitSomething = CastForGround(charCtrl, out groundHit);
+        if (groundCastHitSomething) {
             float slopeAng = Vector3.Angle(groundHit.normal, Vector3.up);
             if( slopeAng <= charCtrl.slopeLimit)
                 return true;
@@ -63,71 +72,36 @@ public class CharCtrlMov : MonoBehaviour{
         return false;
     }
 
-
     /// <summary>
-    /// Rotates character towards the forward vector in xz-plane.
-    /// </summary>
-    /// <param name="fwd">In XZ-plane.</param>
-    void RotateFwd(float maxAngSpd, Vector2 fwd){
-        if (fwd == Vector2.zero)
-            return;
-        Vector3 dir3D = new Vector3(fwd.x, 0, fwd.y);
-        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
-        transform.rotation = Quaternion.RotateTowards(
-            transform.rotation,
-            targetRotation,
-            maxAngSpd * Time.deltaTime
-        );
-    }
-
-    /// <summary>
-    /// Accelerates towards max linear speed
+    /// Ticks character controller movement.
+    /// NOTE: Will snap to max linear speed if linear acceleration param is not not set!
     /// </summary>
     public void UpdateMov(
-        Vector2 horMovInput,
-        Vector3 animRootMotion,
-        float maxLinSpd,
-        float LinAcc,
-        float angSpd
-    ){
-        // TODO: Make this a math static method, maybe call it basis vector transformation.
-        // TODO C: Idk what to call it. Maybe horizontal input projection or something.
-        Vector2 camRelativeMovInput = MathUtils.TrfInputByBasis(horMovInput, pc.camMgr.CamFwdDir);
-        horVel = Vector2.MoveTowards(
-            horVel,
-            camRelativeMovInput * maxLinSpd,
-            LinAcc * Time.deltaTime
-        );
-        RotateFwd(angSpd, camRelativeMovInput);
-        if (IsAffectedByGravity)
-            ApplyGravity();
-        else
-            verVel = 0;
-        animRootMotion.x += horVel.x * Time.deltaTime;
-        animRootMotion.y += verVel * Time.deltaTime;
-        animRootMotion.z += horVel.y * Time.deltaTime;
-        charCtrl.Move(animRootMotion);
-    }
-
-    /// <summary>
-    /// Snaps to linear and angular velocity.
-    /// </summary>
-    public void UpdateMov(
-        Vector2 horMovInput,
+        Vector2 horMov,
         Vector3 animRootMot,
-        float linSpd,
-        float angSpd
-    ){
-        Vector2 camRelativeMovInput = MathUtils.TrfInputByBasis(horMovInput, pc.camMgr.CamFwdDir);
-        horVel = camRelativeMovInput * linSpd;
-        RotateFwd(angSpd, camRelativeMovInput);
-        if (IsAffectedByGravity)
-            ApplyGravity();
+        float maxLinSpd,
+        float yawSpd,
+        // Should this be called hor acc instead?
+        float linAcc = float.PositiveInfinity
+    ) {
+        float dt = Time.deltaTime;
+        CapsuleCharData data = pc.Data;
+        data.vel_hor = Vector2.MoveTowards(
+            data.vel_hor,
+            horMov * maxLinSpd,
+            linAcc * dt
+        );
+        data.vel_yaw = yawSpd;
+        TrfMathUtils.RotateFwdToTgt(transform, data.vel_yaw, horMov);
+        if (data.isAffectedByGravity)
+            ApplyGravityAndVerSlide(ref data, dt);
         else
-            verVel = 0;
-        animRootMot.x += horVel.x * Time.deltaTime;
-        animRootMot.y += verVel * Time.deltaTime;
-        animRootMot.z += horVel.y * Time.deltaTime;
-        charCtrl.Move(animRootMot);
+            data.vel_ver = 0;
+        Vector3 totalMov = animRootMot;
+        totalMov.x += data.vel_hor.x * dt;
+        totalMov.y += data.vel_ver * dt;
+        totalMov.z += data.vel_hor.y * dt;
+        pc.Data = data;
+        charCtrl.Move(totalMov);
     }
 }

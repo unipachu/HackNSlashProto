@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // TODO: This should probably be called FlyingSlam or something more descriptive than "Atk".
-public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
+public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
     event Action<CapsuleCharAnimEvent> animEvent;
     [SerializeField] Pc pc;
 
@@ -13,17 +13,17 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         animEvent += OnAnimEvent;
     }
 
-    void OnDisable(){
+    void OnDisable() {
         animEvent -= OnAnimEvent;
     }
 
-    public void Enter(IFsmSt previousState){
+    public void Enter(IFsmSt previousState) {
         var data = pc.Data;
         data.invul = true;
+        data.isAffectedByGravity = false;
         pc.Data = data;
         attackPhase = AtkPhase.Windup;
         impactFinished = false;
-        pc.charCtrlMov.IsAffectedByGravity = false;
         pc.inputBuffer.Clear();
         VisUtils.CrossfadeNInitAnimEventPlr(
             ref pc.animEventPlr,
@@ -34,22 +34,24 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         );
     }
 
-    public void Exit(){
-        var data = pc.Data;
+    public void Exit() {
+        CapsuleCharData data = pc.Data;
         data.invul = false;
+        data.isAffectedByGravity = true;
         pc.Data = data;
-        pc.charCtrlMov.IsAffectedByGravity = true;
         pc.weapon.hitDealer.Deactivate();
     }
 
-    public void PhysicsTick(){
+    public void PhysicsTick() {
     }
 
-    public void Tick(){
-        switch (attackPhase){
+    public void Tick() {
+        switch (attackPhase) {
             case AtkPhase.Windup:
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    // TODO: Have some interpolation to this so that this smoothly fades to
+                    // TODO C: the input hor speed of the impact part of the attack.
+                    pc.inputData.mov_CamRel,
                     pc.AnimationDeltaMovement,
                     2,
                     0
@@ -57,8 +59,13 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 break;
             case AtkPhase.Impact:
                 // TODO: Set values in base data.
-                pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
-                if(pc.charCtrlMov.IsGrounded() && impactFinished){
+                pc.charCtrlMov.UpdateMov(
+                    Vector3.zero,
+                    pc.AnimationDeltaMovement,
+                    0,
+                    0
+                );
+                if (pc.Data.isGrounded && impactFinished) {
                     pc.weapon.hitDealer.Deactivate();
                     attackPhase = AtkPhase.Recovery;
                     VisUtils.CrossfadeNInitAnimEventPlr(
@@ -70,11 +77,10 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 }
                 break;
             case AtkPhase.Recovery:
-                // TODO: Set values in base data.
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    Vector2.zero,
                     Vector3.zero,
-                    pc.Data.st_Walk_MaxLinSpd,
+                    0,
                     0,
                     0
                 );
@@ -89,7 +95,12 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         pc.animEventPlr.Tick();
     }
 
-    public bool CanSwitchStTo(IFsmSt newSt) => true;
+    public bool CanSwitchStTo(IFsmSt newSt) {
+        if (newSt == (IFsmSt) pc.fsmSts.falling)
+            return false;
+        else
+            return true;
+    }
 
     // -------------------------
     // Anim Event
@@ -110,10 +121,12 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
                 pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_Finished:
-                pc.charCtrlMov.IsAffectedByGravity = true;
+                CapsuleCharData data = pc.Data;
+                data.isAffectedByGravity = true;
                 impactFinished = true;
                 // TODO: Set this in base data.
-                pc.charCtrlMov.verVel = -40;
+                data.vel_ver = -40;
+                pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Recovery_Finished:
                 pc.fsm.SwitchSt(pc.fsmSts.idle);

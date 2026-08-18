@@ -65,6 +65,22 @@ public class TrfMathUtils : MonoBehaviour {
     }
 
     /// <summary>
+    /// Rotates forward towards the target vector in xz-plane.
+    /// </summary>
+    /// <param name="tgtInXZPlane">Forward direction in XZ-plane.</param>
+    public static void RotateFwdToTgt(Transform trf, float maxAngSpd, Vector2 tgtInXZPlane) {
+        if (tgtInXZPlane == Vector2.zero)
+            return;
+        Vector3 dir3D = new Vector3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
+        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
+        trf.rotation = Quaternion.RotateTowards(
+            trf.rotation,
+            targetRotation,
+            maxAngSpd * Time.deltaTime
+        );
+    }
+
+    /// <summary>
     /// Transforms a point from unscaled local space to world space,
     /// ignoring the transform's scale (unlike Transform.TransformPoint).
     /// </summary>

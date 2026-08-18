@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class CapsuleCharRegisterer : MonoBehaviour {
-    [SerializeField] SO_CapsuleCharData configSo;
+    [SerializeField] So_CapsuleCharData configSo;
 
-    public CapsuleCharacterData Data {
+    public CapsuleCharData Data {
         get => CapsuleCharMgr.inst.GetData(Id);
         set => CapsuleCharMgr.inst.SetData(Id, value);
     }

@@ -43,13 +43,15 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
     }
 
     public void Tick() {
+        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+            return;
         switch (attackPhase) {
             case AtkPhase.Impact:
                 float angSpd = 0;
                 if (impactInputRotationAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    pc.inputData.mov_CamRel,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
@@ -65,11 +67,12 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.Input_Mov,
+                    pc.inputData.mov_CamRel,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
-                    pc.Data.st_Walk_LinAcc,
-                    pc.Data.st_Walk_MaxAngSpd * interpValue);
+                    pc.Data.st_Walk_YawSpd * interpValue,
+                    pc.Data.st_Walk_LinAcc
+                );
                 if (dodgeAllowed) {
                     // If input buffer has dodge, then transition to dodge state.
                 }

@@ -69,6 +69,8 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
     }
 
     public void Tick() {
+        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+            return;
         pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement * pc.Data.lastKnockbackStr, 0, 0);
     }
 
@@ -88,13 +90,13 @@ public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
     private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
             case CapsuleCharAnimEvent.Knockback_Weak_Bwd_Finished:
-                if (pc.Input_Mov != Vector2.zero)
+                if (pc.inputData.mov != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);
                 break;
             case CapsuleCharAnimEvent.Knockback_Weak_Fwd_Finished:
-                if (pc.Input_Mov != Vector2.zero)
+                if (pc.inputData.mov != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);
