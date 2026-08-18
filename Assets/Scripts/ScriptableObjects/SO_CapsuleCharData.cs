@@ -7,7 +7,7 @@ public class SO_CapsuleCharData : ScriptableObject{
 
     [Header("General Movement Settings")]
     [Tooltip("In m/s^2. Should be around 9.81.")]
-    [SerializeField] float gravitationalAcc = 20f;
+    [SerializeField] float gravitationalAcc = 20;
     [Tooltip("How long should inputs stay in the buffer?")]
     [SerializeField] float inputBufferDuration = 0.3f;
 
@@ -16,20 +16,20 @@ public class SO_CapsuleCharData : ScriptableObject{
 
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
-    [SerializeField] float st_AtkJump_DownSpeedAfterJumpFinished = 10f;
+    [SerializeField] float st_AtkJump_DownSpeedAfterJumpFinished = 10;
 
     [Header("St_AtkHorSlash")]
     [Tooltip("NOTE: This should be shorter than the recovery animation dur.")]
     [SerializeField] float st_AtkHorSlash_RecoveryMotionInterpDur = 0.2f;
-    [SerializeField] float st_AtkHorSlash_Impact_AngSpd = 800f;
+    [SerializeField] float st_AtkHorSlash_Impact_AngSpd = 1200;
 
     [Header("St_Dodge")]
-    [SerializeField] float st_Dodge_YawAngSpd = 400f;
+    [SerializeField] float st_Dodge_YawAngSpd = 400;
 
     [Header("St_Walk")]
-    [SerializeField] float st_Walk_LinAcc = 100f;
+    [SerializeField] float st_Walk_LinAcc = 100;
     [SerializeField] int st_Walk_MaxLinSpd = 5;
-    [SerializeField] float st_Walk_MaxAngSpd = 800f;
+    [SerializeField] float st_Walk_MaxAngSpd = 800;
 
     // NOTE: This dumb conversion seems to be only way to have default inspector values since
     // NOTE C: C# 9 doesn't support default struct values. Otherwise I'd just have a serialized

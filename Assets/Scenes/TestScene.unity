@@ -2139,10 +2139,10 @@ GameObject:
   m_Component:
   - component: {fileID: 439737473}
   - component: {fileID: 439737476}
+  - component: {fileID: 439737478}
   - component: {fileID: 439737471}
   - component: {fileID: 439737475}
   - component: {fileID: 439737477}
-  - component: {fileID: 439737478}
   - component: {fileID: 439737479}
   - component: {fileID: 439737468}
   m_Layer: 0
@@ -3517,6 +3517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4627431e80bf53c488f2bdddb9d0c49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooter
+  shoot: 0
   atkData:
     dmg: 10
     knockbackT: 1
@@ -5485,7 +5486,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: e90e0efde41e61d48abb8fc5c8838918, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

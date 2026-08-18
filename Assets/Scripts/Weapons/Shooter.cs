@@ -4,7 +4,8 @@ using UnityEngine;
 /// Test object for shooting projectiles.
 /// </summary>
 public class Shooter : MonoBehaviour {
-    [SerializeField] AtkData atkData;
+    [SerializeField] bool shoot = true;
+    [SerializeField] AtkData atkData = new(10, KnockbackT.Weak, 0.5f);
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
@@ -19,6 +20,8 @@ public class Shooter : MonoBehaviour {
     }
 
     void Update(){
+        if (!shoot)
+            return;
         timer += Time.deltaTime;
         if(timer > shootFreq) {
             timer = 0;
