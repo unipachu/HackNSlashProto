@@ -246,7 +246,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &32162908
 Transform:
@@ -515,67 +515,93 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0ef1b2cdbc5fdd4b9067f0c3eb94e06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputController
+  lookPointerSensitivity: 0.001
   inputActs: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  movInputAct:
+  actionMapName: Player
+  inputAct_Atk_Light:
     m_UseReference: 1
     m_Action:
-      m_Name: Mov Input Act
+      m_Name: Input Act_Atk_Light
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 35a3df28-76d6-476a-b13b-652e1c921af2
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_Reference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  atkInputAct:
-    m_UseReference: 1
-    m_Action:
-      m_Name: Atk Input Act
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: ccad9b53-aa48-4f84-a818-ea89831f6028
+      m_Id: fce4e957-d477-41ff-9d8f-47e9db57f10b
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 1120369429361536294, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  atk2InputAct:
+  inputAct_Atk_Heavy:
     m_UseReference: 1
     m_Action:
-      m_Name: Atk 2 Input Act
+      m_Name: Input Act_Atk_Heavy
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 379b1d6f-c2f7-412e-b5df-3dcdfe63ca5f
+      m_Id: d74f9b01-55e3-4db4-b46b-08fba2b7647d
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -7224567617013585675, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  atk3InputAct:
+  inputAct_Atk_Ult:
     m_UseReference: 1
     m_Action:
-      m_Name: Atk 3 Input Act
+      m_Name: Input Act_Atk_Ult
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 2d2b71e2-2ced-4974-9e1a-486557b3a539
+      m_Id: 04ca3838-fd73-4164-8ea5-600e835bbfff
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: -4534823529986419090, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  dodgeInputAct:
+  inputAct_Dodge:
     m_UseReference: 1
     m_Action:
-      m_Name: Dodge Input Act
+      m_Name: Input Act_Dodge
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: b5742223-a19a-4205-8f24-9881154b6d25
+      m_Id: 47e9a8b6-2d86-4480-b348-29bef67e7824
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
       m_Flags: 0
     m_Reference: {fileID: 8623425770421186284, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  inputAct_Look_Gamepad:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Input Act_Look_Gamepad
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: e66bc58a-9c3a-4fb9-866e-3800425a7cb2
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -5630151704836100654, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  inputAct_Look_Pointer:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Input Act_Look_Pointer
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 5c734d54-53d2-460d-b8b8-6c852e52e718
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: 5497956390704255774, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  inputAct_Mov:
+    m_UseReference: 1
+    m_Action:
+      m_Name: Input Act_Mov
+      m_Type: 0
+      m_ExpectedControlType: 
+      m_Id: 70396674-44b4-4dfe-891b-2577193c009a
+      m_Processors: 
+      m_Interactions: 
+      m_SingletonActionBindings: []
+      m_Flags: 0
+    m_Reference: {fileID: -1680190386980627800, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   pc: {fileID: 439737476}
 --- !u!4 &83296389
 Transform:
@@ -1015,7 +1041,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5327e5a9e79b7964fa661ad1c8ac917c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM_PCStates
-  atk_HorFlyingAtk: {fileID: 164602230}
+  atk_FlyingAtk: {fileID: 164602230}
   atk_HorSlash1: {fileID: 164602224}
   atk_HorSlash2: {fileID: 164602227}
   atk_HorSlash3: {fileID: 164602228}
@@ -1830,8 +1856,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19509031, y: 0, z: 0, w: 0.98078537}
-  m_LocalPosition: {x: 17.46, y: 25.267, z: -9.2}
+  m_LocalRotation: {x: 0.18623762, y: 0.000000019903352, z: -0.0000000037727586, w: 0.9825047}
+  m_LocalPosition: {x: 17.46, y: 26.462826, z: -10.57439}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2104,6 +2130,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 192
   charCtrl: {fileID: 439737468}
+  pc: {fileID: 439737476}
   IsAffectedByGravity: 1
   horVel: {x: 0, y: 0}
   verVel: 0
@@ -2161,6 +2188,8 @@ MonoBehaviour:
   capsuleCharAnim: {fileID: 4043496483517493688}
   weapon: {fileID: 1199934673}
   hitRecieverHandler: {fileID: 439737479}
+  plrCtrl: {fileID: 83296388}
+  camMgr: {fileID: 936050737}
 --- !u!114 &439737477
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3007,6 +3036,56 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 871223111}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &936050736
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 936050738}
+  - component: {fileID: 936050737}
+  m_Layer: 0
+  m_Name: CamMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!114 &936050737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936050736}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e43175fbb78d5b4484371f4ddac7546, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CamMgr
+  horSpd: 360
+  verSpd: 360
+  invY: 1
+  plrCtrl: {fileID: 83296388}
+  orbitalFollow: {fileID: 1713288054}
+  brain: {fileID: 330585548}
+--- !u!4 &936050738
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 936050736}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &958623297
 GameObject:
   m_ObjectHideFlags: 0
@@ -4544,7 +4623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!54 &1621868901
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4808,33 +4887,15 @@ GameObject:
   m_Component:
   - component: {fileID: 1713288053}
   - component: {fileID: 1713288052}
-  - component: {fileID: 1713288051}
+  - component: {fileID: 1713288054}
+  - component: {fileID: 1713288056}
   m_Layer: 0
-  m_Name: CinemachineCamera
+  m_Name: CinemachineCamera_OrbitalFollow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1713288051
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1713288049}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b617507da6d07e749b7efdb34e1173e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineFollow
-  TrackerSettings:
-    BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
-    AngularDampingMode: 0
-    RotationDamping: {x: 1, y: 1, z: 1}
-    QuaternionDamping: 1
-  FollowOffset: {x: 0, y: 3.44, z: -6.6}
 --- !u!114 &1713288052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4886,13 +4947,105 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1713288049}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.19509031, y: 0, z: 0, w: 0.98078537}
-  m_LocalPosition: {x: 17.46, y: 25.267, z: -9.2}
+  m_LocalRotation: {x: 0.18623762, y: 0.000000019903352, z: -0.000000003772758, w: 0.9825048}
+  m_LocalPosition: {x: 17.46, y: 26.462826, z: -10.57439}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 22.5, y: 0, z: 0}
+--- !u!114 &1713288054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713288049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineOrbitalFollow
+  TargetOffset: {x: 0, y: 1.5, z: 0}
+  TrackerSettings:
+    BindingMode: 4
+    PositionDamping: {x: 1, y: 1, z: 1}
+    AngularDampingMode: 0
+    RotationDamping: {x: 1, y: 1, z: 1}
+    QuaternionDamping: 1
+  OrbitStyle: 1
+  Radius: 5
+  Orbits:
+    Top:
+      Radius: 6
+      Height: 5
+    Center:
+      Radius: 8
+      Height: 2.75
+    Bottom:
+      Radius: 6
+      Height: -1.26
+    SplineCurvature: 0.5
+  RecenteringTarget: 2
+  HorizontalAxis:
+    Value: 0
+    Center: 0
+    Range: {x: -180, y: 180}
+    Wrap: 1
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
+    Restrictions: 0
+  VerticalAxis:
+    Value: 17.5
+    Center: 17.5
+    Range: {x: -180, y: 180}
+    Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
+    Restrictions: 0
+  RadialAxis:
+    Value: 1
+    Center: 1
+    Range: {x: 1, y: 1}
+    Wrap: 0
+    Recentering:
+      Enabled: 0
+      Wait: 1
+      Time: 2
+    Restrictions: 0
+--- !u!114 &1713288056
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1713288049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineRotationComposer
+  Composition:
+    ScreenPosition: {x: 0, y: 0}
+    DeadZone:
+      Enabled: 0
+      Size: {x: 0.2, y: 0.2}
+    HardLimits:
+      Enabled: 0
+      Size: {x: 0.8, y: 0.8}
+      Offset: {x: 0, y: 0}
+  CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1.5, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!1 &1804852530
 GameObject:
   m_ObjectHideFlags: 0
@@ -5166,7 +5319,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!114 &1861722108
 MonoBehaviour:
@@ -5674,6 +5827,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1026410970}
+  - {fileID: 936050738}
   - {fileID: 32162908}
   - {fileID: 1861722109}
   - {fileID: 1607186510}
@@ -5686,10 +5840,10 @@ SceneRoots:
   - {fileID: 1804852534}
   - {fileID: 958623298}
   - {fileID: 174769194}
-  - {fileID: 1621868906}
-  - {fileID: 702158392}
   - {fileID: 439737473}
   - {fileID: 152869160}
+  - {fileID: 1621868906}
+  - {fileID: 702158392}
   - {fileID: 514178727}
   - {fileID: 545992972}
   - {fileID: 308558585}

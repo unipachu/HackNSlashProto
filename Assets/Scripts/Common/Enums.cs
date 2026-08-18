@@ -6,6 +6,14 @@ public enum AtkPhase{
     Recovery
 }
 
+public enum BufferableInput {
+    None,
+    Atk_Light,
+    Atk_Heavy,
+    Atk_Ult,
+    Dodge
+}
+
 /// <summary>
 /// Animation events used by the capsule character Animator.
 /// </summary>

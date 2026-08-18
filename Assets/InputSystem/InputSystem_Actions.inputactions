@@ -16,9 +16,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Look",
+                    "name": "Look_Gamepad",
                     "type": "Value",
                     "id": "6b444451-8a00-4d00-a97e-f47457f736a8",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Look_Pointer",
+                    "type": "Value",
+                    "id": "55fec9ee-b14e-4187-aefc-3cebad8f83c7",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -228,18 +237,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8c8e490b-c610-4785-884f-f04217b23ca4",
-                    "path": "<Pointer>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse;Touch",
-                    "action": "Look",
+                    "action": "Look_Gamepad",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -250,7 +248,29 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Joystick",
-                    "action": "Look",
+                    "action": "Look_Gamepad",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d0a0e609-56a8-47e9-9dde-d72be1fc3aed",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse;Touch",
+                    "action": "Look_Pointer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e1fc8273-9d82-4046-bd37-7c558ea37eb1",
+                    "path": "<Joystick>/{Hatswitch}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Joystick",
+                    "action": "Look_Pointer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

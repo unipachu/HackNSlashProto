@@ -14,23 +14,25 @@ public class Pc : MonoBehaviour{
     public PcInputBuffer inputBuffer;
     public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
     public Animator capsuleCharAnim;
-    public Weapon weapon;
+    public CapsuleCharWeapon weapon;
     public CapsuleCharHitRecieveHandler hitRecieverHandler;
+    public PlrCtrl plrCtrl;
+    public CamMgr camMgr;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.
     /// </summary>
     [HideInInspector] public AnimEventPlr animEventPlr;
 
-    public Vector2 MoveInput { get; private set; }
-    public bool Atk1Input { get; private set; }
-    public bool Atk2Input { get; private set; }
-    public bool Atk3Input { get; private set; }
+    public Vector2 Input_Mov { get; private set; }
+    public bool Input_Atk_Light { get; private set; }
+    public bool Input_Atk_Heavy { get; private set; }
+    public bool Input_Atk_Ult { get; private set; }
     public CapsuleCharacterData Data {
         get => capsuleCharRegisterer.Data;
         set => capsuleCharRegisterer.Data = value;
     }
-    public bool DodgeInput { get; private set; }
+    public bool Input_Dodge { get; private set; }
     public Vector3 AnimationDeltaMovement { get; private set; }
 
     void OnEnable(){
@@ -47,6 +49,7 @@ public class Pc : MonoBehaviour{
     }
 
     void Update() {
+        UpdateInput();
         fsm.CurSt.Tick();
     }
 
@@ -58,23 +61,20 @@ public class Pc : MonoBehaviour{
         capsuleCharRootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
     }
 
-    // TODO: Maybe create a PC_ControllerInput class with IPawn that can consume input from Controllers.
-    public void UpdateInput(
-        Vector2 newMoveInput,
-        bool newAtk1Input,
-        bool newAtk2Input,
-        bool newAtk3Input,
-        bool newDodgeInput
-    ){
-        MoveInput = newMoveInput;
-        Atk1Input = newAtk1Input;
-        Atk2Input = newAtk2Input;
-        Atk3Input = newAtk3Input;
-        DodgeInput = newDodgeInput;
-        if (newAtk1Input) inputBuffer.BufferInput("atk1");
-        else if (newAtk2Input) inputBuffer.BufferInput("atk2");
-        else if (newAtk3Input) inputBuffer.BufferInput("atk3");
-        else if (newDodgeInput) inputBuffer.BufferInput("dodge");
+    void UpdateInput(){
+        Input_Atk_Light = plrCtrl.TryConsume_Atk_Light();
+        Input_Atk_Heavy = plrCtrl.TryConsume_Atk_Heavy();
+        Input_Atk_Ult = plrCtrl.TryConsume_Atk_Ult();
+        Input_Dodge = plrCtrl.TryConsume_Dodge();
+        Input_Mov = plrCtrl.Input_Mov;
+        if (Input_Atk_Light)
+            inputBuffer.BufferInput(BufferableInput.Atk_Light);
+        else if (Input_Atk_Heavy)
+            inputBuffer.BufferInput(BufferableInput.Atk_Heavy);
+        else if (Input_Atk_Ult)
+            inputBuffer.BufferInput(BufferableInput.Atk_Ult);
+        else if (Input_Dodge)
+            inputBuffer.BufferInput(BufferableInput.Dodge);
     }
 
     /// <summary>

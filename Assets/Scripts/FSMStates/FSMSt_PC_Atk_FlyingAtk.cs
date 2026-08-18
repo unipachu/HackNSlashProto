@@ -49,7 +49,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
         switch (attackPhase){
             case AtkPhase.Windup:
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     pc.AnimationDeltaMovement,
                     2,
                     0
@@ -72,7 +72,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt{
             case AtkPhase.Recovery:
                 // TODO: Set values in base data.
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd,
                     0,

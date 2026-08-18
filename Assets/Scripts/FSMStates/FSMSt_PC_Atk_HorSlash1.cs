@@ -65,13 +65,13 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 if(impactInputRotAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd
                 );
                 if (comboAllowed) {
-                    if(pc.inputBuffer.TryConsumeInput("atk1")) {
+                    if(pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light)) {
                         pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash2);
                     }
                 }
@@ -81,13 +81,13 @@ public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 recoveryMotInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_LinAcc,
                     pc.Data.st_Walk_MaxAngSpd * interpValue);
                 if (dodgeAllowed) {
-                    if (pc.inputBuffer.TryConsumeInput("dodge")) {
+                    if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge)) {
                         pc.fsm.SwitchSt(pc.fsmSts.dodge);
                     }
                 }

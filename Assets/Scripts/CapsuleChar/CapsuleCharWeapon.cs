@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class Weapon : MonoBehaviour {
+public class CapsuleCharWeapon : MonoBehaviour {
     public HitDealer hitDealer;
 }

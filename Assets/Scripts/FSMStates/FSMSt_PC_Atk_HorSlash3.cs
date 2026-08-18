@@ -49,7 +49,7 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 if (impactInputRotationAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
@@ -65,7 +65,7 @@ public class FsmSt_Pc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.MoveInput,
+                    pc.Input_Mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_LinAcc,

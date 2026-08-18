@@ -10,9 +10,18 @@ public class CharCtrlMov : MonoBehaviour{
 
     [Header("Refs")]
     [SerializeField] CharacterController charCtrl;
+    [SerializeField] Pc pc;
+    
     [HideInInspector] public bool IsAffectedByGravity = true;
     [HideInInspector] public Vector2 horVel = Vector2.zero;
     [HideInInspector] public float verVel = 0;
+
+    void ApplyGravity(){
+        if (IsGrounded())
+            verVel = 0;
+        else
+            verVel -= 9.81f * Time.deltaTime;
+    }
 
     /// <summary>
     /// Call once per frame to move character.
@@ -21,52 +30,6 @@ public class CharCtrlMov : MonoBehaviour{
     /// </summary>
     // TODO: This class now takes care of velocity based movement as well as direct movement by e.g. animation delta movement.
     // TODO C: Is this a good way to do this?
-    public void UpdateMov(
-        Vector2 horMovementInput,
-        Vector3 animRootMotion,
-        float maxLinSpd,
-        float LinAcc,
-        float maxAngSpd
-    ){
-        Vector2 xzMovementInput = new Vector2(horMovementInput.x, horMovementInput.y);
-        horVel = Vector2.MoveTowards(
-            horVel,
-            horMovementInput * maxLinSpd,
-            LinAcc * Time.deltaTime
-        );
-        RotateFwd(maxAngSpd, xzMovementInput);
-        if (IsAffectedByGravity)
-            ApplyGravity();
-        else
-            verVel = 0;
-        animRootMotion.x += horVel.x * Time.deltaTime;
-        animRootMotion.y += verVel * Time.deltaTime;
-        animRootMotion.z += horVel.y * Time.deltaTime;
-        charCtrl.Move(animRootMotion);
-    }
-
-    /// <summary>
-    /// Snaps to linear and angular velocity.
-    /// </summary>
-    public void UpdateMov(
-        Vector2 horMovInput,
-        Vector3 animRootMot,
-        float LinSpd,
-        float AngSpd
-    ){
-        Vector2 xzMovementInput = new Vector2(horMovInput.x, horMovInput.y);
-        horVel = horMovInput * LinSpd;
-        RotateFwd(AngSpd, xzMovementInput);
-        if (IsAffectedByGravity)
-            ApplyGravity();
-        else
-            verVel = 0;
-        animRootMot.x += horVel.x * Time.deltaTime;
-        animRootMot.y += verVel * Time.deltaTime;
-        animRootMot.z += horVel.y * Time.deltaTime;
-        charCtrl.Move(animRootMot);
-    }
-
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check.
     /// </summary>
@@ -100,12 +63,6 @@ public class CharCtrlMov : MonoBehaviour{
         return false;
     }
 
-    void ApplyGravity(){
-        if (IsGrounded())
-            verVel = 0;
-        else
-            verVel -= 9.81f * Time.deltaTime;
-    }
 
     /// <summary>
     /// Rotates character towards the forward vector in xz-plane.
@@ -121,5 +78,56 @@ public class CharCtrlMov : MonoBehaviour{
             targetRotation,
             maxAngSpd * Time.deltaTime
         );
+    }
+
+    /// <summary>
+    /// Accelerates towards max linear speed
+    /// </summary>
+    public void UpdateMov(
+        Vector2 horMovInput,
+        Vector3 animRootMotion,
+        float maxLinSpd,
+        float LinAcc,
+        float angSpd
+    ){
+        // TODO: Make this a math static method, maybe call it basis vector transformation.
+        // TODO C: Idk what to call it. Maybe horizontal input projection or something.
+        Vector2 camRelativeMovInput = MathUtils.TrfInputByBasis(horMovInput, pc.camMgr.CamFwdDir);
+        horVel = Vector2.MoveTowards(
+            horVel,
+            camRelativeMovInput * maxLinSpd,
+            LinAcc * Time.deltaTime
+        );
+        RotateFwd(angSpd, camRelativeMovInput);
+        if (IsAffectedByGravity)
+            ApplyGravity();
+        else
+            verVel = 0;
+        animRootMotion.x += horVel.x * Time.deltaTime;
+        animRootMotion.y += verVel * Time.deltaTime;
+        animRootMotion.z += horVel.y * Time.deltaTime;
+        charCtrl.Move(animRootMotion);
+    }
+
+    /// <summary>
+    /// Snaps to linear and angular velocity.
+    /// </summary>
+    public void UpdateMov(
+        Vector2 horMovInput,
+        Vector3 animRootMot,
+        float linSpd,
+        float angSpd
+    ){
+        Vector2 camRelativeMovInput = MathUtils.TrfInputByBasis(horMovInput, pc.camMgr.CamFwdDir);
+        horVel = camRelativeMovInput * linSpd;
+        RotateFwd(angSpd, camRelativeMovInput);
+        if (IsAffectedByGravity)
+            ApplyGravity();
+        else
+            verVel = 0;
+        animRootMot.x += horVel.x * Time.deltaTime;
+        animRootMot.y += verVel * Time.deltaTime;
+        animRootMot.z += horVel.y * Time.deltaTime;
+        charCtrl.Move(animRootMot);
     }
 }

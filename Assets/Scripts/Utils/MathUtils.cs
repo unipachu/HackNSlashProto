@@ -279,6 +279,19 @@ public static class MathUtils {
     }
 
     /// <summary>
+    /// Transforms a 2D input vector into world space XZ coordinates using a horizontal
+    /// basis whose forward dir is given by basisDir. Can be used to find horizontal input
+    /// direction relative to camera fwd dir.
+    /// </summary>
+    public static Vector2 TrfInputByBasis(Vector2 horInput, Vector3 basisDir) {
+        basisDir.y = 0;
+        basisDir.Normalize();
+        Vector3 basisRight = Vector3.Cross(Vector3.up, basisDir);
+        Vector3 movDir = basisRight * horInput.x + basisDir * horInput.y;
+        return new Vector2(movDir.x, movDir.z);
+    }
+
+    /// <summary>
     /// Returns a transformed point from local space to world space using the specified
     /// origin and rotation.
     /// </summary>

@@ -27,21 +27,21 @@ public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
 
     public void Tick(){
         pc.charCtrlMov.UpdateMov(
-            pc.MoveInput,
+            pc.Input_Mov,
             Vector3.zero,
             pc.Data.st_Walk_MaxLinSpd,
             pc.Data.st_Walk_LinAcc,
             pc.Data.st_Walk_MaxAngSpd
         );
-        if (pc.inputBuffer.TryConsumeInput("dodge"))
+        if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge))
             pc.fsm.SwitchSt(pc.fsmSts.dodge);
-        else if (pc.inputBuffer.TryConsumeInput("atk1"))
+        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light))
             pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash1);
-        else if (pc.inputBuffer.TryConsumeInput("atk2"))
+        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Heavy))
             pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
-        else if (pc.inputBuffer.TryConsumeInput("atk3"))
-            pc.fsm.SwitchSt(pc.fsmSts.atk_HorFlyingAtk);
-        else if (pc.MoveInput == Vector2.zero)
+        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
+            pc.fsm.SwitchSt(pc.fsmSts.atk_FlyingAtk);
+        else if (pc.Input_Mov == Vector2.zero)
             pc.fsm.SwitchSt(pc.fsmSts.idle);
     }
 

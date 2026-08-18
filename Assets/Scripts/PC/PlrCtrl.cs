@@ -3,47 +3,83 @@ using UnityEngine.InputSystem;
 
 /// <summary>
 /// Uses input to command CustomCharacterController
-/// NOTE: This class is set to run before default time, just
+/// NOTE: This class is (or should be) set to run before default time, just
 /// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
 public class PlrCtrl : MonoBehaviour {
-    [Header("Input Related Refs")]
+    [Tooltip("Mouse (or joystick hatswitch) sensitivity for look input.")]
+    [SerializeField] float lookPointerSensitivity = 1;
+
+    [Header("Input Action Asset")]
     [SerializeField] InputActionAsset inputActs;
-    [SerializeField] InputActionProperty movInputAct;
-    [SerializeField] InputActionProperty atkInputAct;
-    [SerializeField] InputActionProperty atk2InputAct;
-    [SerializeField] InputActionProperty atk3InputAct;
-    [SerializeField] InputActionProperty dodgeInputAct;
+    [SerializeField] string actionMapName = "Player";
+
+    [Header("Input Action Refs")]
+    [SerializeField] InputActionProperty inputAct_Atk_Light;
+    [SerializeField] InputActionProperty inputAct_Atk_Heavy;
+    [SerializeField] InputActionProperty inputAct_Atk_Ult;
+    [SerializeField] InputActionProperty inputAct_Dodge;
+    [SerializeField] InputActionProperty inputAct_Look_Gamepad;
+    [SerializeField] InputActionProperty inputAct_Look_Pointer;
+    [SerializeField] InputActionProperty inputAct_Mov;
 
     [Header("Refs")]
     [SerializeField] Pc pc;
 
-    Vector2 movInput = Vector2.zero;
-    bool atkInput = false;
-    bool atk2Input = false;
-    bool atk3Input = false;
-    bool dodgeInput = false;
+    bool input_Atk_Light = false;
+    bool input_Atk_Heavy = false;
+    bool input_Atk_Ult = false;
+    bool input_Dodge = false;
+    Vector2 input_Look_Gamepad = Vector2.zero;
+    Vector2 input_Look_Pointer = Vector2.zero;
+    Vector2 input_Mov = Vector2.zero;
+
+    public Vector2 Input_Look_Gamepad => input_Look_Gamepad;
+    /// <summary>
+    /// Gives mouse delta.
+    /// </summary>
+    public Vector2 Input_Look_Pointer => input_Look_Pointer;
+    public Vector2 Input_Mov => input_Mov;
 
     void OnEnable() {
-        inputActs.FindActionMap("Player").Enable();
+        inputActs.FindActionMap(actionMapName).Enable();
     }
 
     // Update is called once per frame
     void Update(){
         ReadInputs();
-        // TODO: If the player can control menus, etc. you could mark the inputs as "consumed" here.
-        pc.UpdateInput(movInput, atkInput, atk2Input, atk3Input, dodgeInput);
     }
 
     void OnDisable(){
-        inputActs.FindActionMap("Player").Disable();
+        inputActs.FindActionMap(actionMapName).Disable();
     }
 
     void ReadInputs(){
-        movInput = movInputAct.action.ReadValue<Vector2>();
-        atkInput = atkInputAct.action.WasPressedThisFrame();
-        atk2Input = atk2InputAct.action.WasPressedThisFrame();
-        atk3Input = atk3InputAct.action.WasPressedThisFrame();
-        dodgeInput = dodgeInputAct.action.WasPressedThisFrame();
+        input_Atk_Light = inputAct_Atk_Light.action.WasPressedThisFrame();
+        input_Atk_Heavy = inputAct_Atk_Heavy.action.WasPressedThisFrame();
+        input_Atk_Ult = inputAct_Atk_Ult.action.WasPressedThisFrame();
+        input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
+        input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
+        input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>() * lookPointerSensitivity;
+        input_Mov = inputAct_Mov.action.ReadValue<Vector2>();
     }
+
+    // -----------------------------------------------------------------
+    // Try Consume Methods
+    // -----------------------------------------------------------------
+
+    public static bool TryConsume(ref bool input) {
+        if (!input)
+            return false;
+        input = false;
+        return true;
+    }
+
+    public bool TryConsume_Atk_Light() => TryConsume(ref input_Atk_Light);
+
+    public bool TryConsume_Atk_Heavy() => TryConsume(ref input_Atk_Heavy);
+
+    public bool TryConsume_Atk_Ult() => TryConsume(ref input_Atk_Ult);
+
+    public bool TryConsume_Dodge() => TryConsume(ref input_Dodge);
 }

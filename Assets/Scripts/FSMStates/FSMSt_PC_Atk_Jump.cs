@@ -62,7 +62,7 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.weapon.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_Finished:
-                if (pc.MoveInput != Vector2.zero)
+                if (pc.Input_Mov != Vector2.zero)
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);

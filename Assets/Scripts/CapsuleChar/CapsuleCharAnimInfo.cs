@@ -115,7 +115,7 @@ public static class CapsuleCharAnimInfo {
         false,
         18,
         (3, CapsuleCharAnimEvent.Dodge_YawAllowed),
-        (11, CapsuleCharAnimEvent.Dodge_InvulEnd),
+        (13, CapsuleCharAnimEvent.Dodge_InvulEnd),
         (17, CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed),
         (18, CapsuleCharAnimEvent.Dodge_Finished)
     );
