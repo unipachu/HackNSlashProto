@@ -1,13 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// Playable character.
+/// Capsule character.
 /// </summary>
+// TODO: Rename to Cc.
 public class Pc : MonoBehaviour{
     [Header("Data Refs")]
     [SerializeField] CapsuleCharRegisterer capsuleCharRegisterer;
 
     [Header("Component Refs")]
+    public CapsuleCharCtrl ctrl;
     public CharCtrlMov charCtrlMov;
     public Fsm fsm;
     public Fsm_PcSts fsmSts;
@@ -16,10 +18,8 @@ public class Pc : MonoBehaviour{
     public Animator capsuleCharAnim;
     public CapsuleCharWeapon weapon;
     public CapsuleCharHitRecieveHandler hitRecieverHandler;
-    public PlrCtrl plrCtrl;
-    public CamMgr camMgr;
     public CharacterController charCtrl;
-
+    
     const float movInputDeadzone = 0.2f;
 
     /// <summary>
@@ -81,21 +81,15 @@ public class Pc : MonoBehaviour{
     }
 
     void UpdateInput(){
-        inputData.atk_Light = plrCtrl.TryConsume_Atk_Light();
-        inputData.atk_Heavy = plrCtrl.TryConsume_Atk_Heavy();
-        inputData.atk_Ult = plrCtrl.TryConsume_Atk_Ult();
-        inputData.dodge = plrCtrl.TryConsume_Dodge();
-        if (plrCtrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
-            inputData.mov = plrCtrl.Input_Mov;
-            inputData.mov_CamRel = MathUtils.TrfInputByBasis(inputData.mov, camMgr.CamFwdDir);
+        inputData.atk_Light = ctrl.TryConsume_Atk_Light();
+        inputData.atk_Heavy = ctrl.TryConsume_Atk_Heavy();
+        inputData.atk_Ult = ctrl.TryConsume_Atk_Ult();
+        inputData.dodge = ctrl.TryConsume_Dodge();
+        if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
+            inputData.mov = ctrl.Input_Mov;
             inputData.mov_LastNonZero = inputData.mov;
-            inputData.mov_LastNonZero_CamRel = MathUtils.TrfInputByBasis(
-                inputData.mov,
-                camMgr.CamFwdDir
-            );
         } else {
             inputData.mov = Vector2.zero;
-            inputData.mov_CamRel = Vector2.zero;
         }
         // Buffer certain inputs
         if (inputData.atk_Light)
@@ -106,6 +100,7 @@ public class Pc : MonoBehaviour{
             inputBuffer.BufferInput(BufferableInput.Atk_Ult);
         else if (inputData.dodge)
             inputBuffer.BufferInput(BufferableInput.Dodge);
+        //Debug.Log("mov input mag: " + inputData.mov.magnitude);
     }
 
     // ---------------------------------------------------------------
@@ -127,15 +122,9 @@ public class Pc : MonoBehaviour{
         CapsuleCharData data = Data;
         data.curStDur = 0;
         Data = data;
-        if (plrCtrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
+        if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone)
             inputData.mov_WhenLastSwitchedSt = inputData.mov;
-            inputData.mov_WhenLastSwitchedSt_CamRel = MathUtils.TrfInputByBasis(
-                inputData.mov,
-                camMgr.CamFwdDir
-            );
-        } else {
+        else
             inputData.mov_WhenLastSwitchedSt = Vector2.zero;
-            inputData.mov_WhenLastSwitchedSt_CamRel = Vector2.zero;
-        }
     }
 }

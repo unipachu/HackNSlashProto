@@ -18,7 +18,7 @@ public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
             return;
         if (pc.fsm.PrevSt == (IFsmSt)pc.fsmSts.walk)
             pc.charCtrlMov.UpdateMov(
-                pc.inputData.mov_LastNonZero_CamRel,
+                pc.inputData.mov_LastNonZero,
                 Vector3.zero,
                 0,
                 pc.Data.st_Walk_YawSpd

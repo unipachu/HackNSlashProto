@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /// NOTE: This class is (or should be) set to run before default time, just
 /// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
-public class PlrCtrl : MonoBehaviour {
+public class PlrCtrl : MonoBehaviour, ICapsuleCharCtrlInputter {
     [Tooltip("Mouse (or joystick hatswitch) sensitivity for look input.")]
     [SerializeField] float lookPointerSensitivity = 1;
 
@@ -24,7 +24,7 @@ public class PlrCtrl : MonoBehaviour {
     [SerializeField] InputActionProperty inputAct_Mov;
 
     [Header("Refs")]
-    [SerializeField] Pc pc;
+    [SerializeField] CamMgr camMgr;
 
     bool input_Atk_Light = false;
     bool input_Atk_Heavy = false;
@@ -61,7 +61,11 @@ public class PlrCtrl : MonoBehaviour {
         input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
         input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
         input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>() * lookPointerSensitivity;
-        input_Mov = inputAct_Mov.action.ReadValue<Vector2>();
+        // NOTE: We use camera relative movement input.
+        input_Mov = MathUtils.TrfInputByBasis(
+            inputAct_Mov.action.ReadValue<Vector2>(),
+            camMgr.CamFwdDir
+        );
     }
 
     // -----------------------------------------------------------------

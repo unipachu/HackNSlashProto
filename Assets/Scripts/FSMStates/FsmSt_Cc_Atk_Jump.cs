@@ -61,6 +61,7 @@ public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
+                pc.weapon.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
                 pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:

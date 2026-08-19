@@ -56,7 +56,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
         switch (atkPhase){
             case AtkPhase.Windup:
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_WhenLastSwitchedSt_CamRel,
+                    pc.inputData.mov_WhenLastSwitchedSt,
                     pc.AnimationDeltaMovement,
                     0,
                     pc.Data.st_AtkHorSlash_Windup_MaxAngSpd
@@ -67,7 +67,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 if(impactInputRotAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_CamRel,
+                    pc.inputData.mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd
@@ -84,7 +84,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 recoveryMotInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_CamRel,
+                    pc.inputData.mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_YawSpd * interpValue,
@@ -131,6 +131,8 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 impactInputRotAllowed = false;
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerActivated:
+                pc.weapon.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                pc.weapon.hitDealer.hitWldDir = pc.transform.forward;
                 pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerDeactivated:

@@ -79,6 +79,10 @@ public class FsmSt_Cc_Knockback_Weak : MonoBehaviour, IFsmSt{
     }
 
     public bool CanSwitchStTo(IFsmSt newSt) {
+        // TODO: To avoid stun locking, after some amount of consequtive knockbacks,
+        // TODO C: allow canceling knockback state.
+        if(newSt == (IFsmSt)pc.fsmSts.knockback_Weak)
+            return true;
         // TODO: Allow switch to death state.
         return false;
     }

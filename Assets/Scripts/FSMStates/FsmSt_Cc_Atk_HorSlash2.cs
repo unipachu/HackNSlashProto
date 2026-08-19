@@ -50,7 +50,7 @@ public class FsmSt_Cc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
                 float angSpd = 0;
                 if (impactInputRotationAllowed) angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_CamRel,
+                    pc.inputData.mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
@@ -65,7 +65,7 @@ public class FsmSt_Cc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_CamRel,
+                    pc.inputData.mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_YawSpd * interpValue,
@@ -100,6 +100,8 @@ public class FsmSt_Cc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
                 impactInputRotationAllowed = false;
                 break;
             case CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerActivated:
+                pc.weapon.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                pc.weapon.hitDealer.hitWldDir = pc.transform.forward;
                 pc.weapon.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerDeactivated:

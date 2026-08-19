@@ -29,7 +29,7 @@ public class FsmSt_Cc_Walk : MonoBehaviour, IFsmSt{
         if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
             return;
         pc.charCtrlMov.UpdateMov(
-            pc.inputData.mov_CamRel,
+            pc.inputData.mov,
             Vector3.zero,
             pc.Data.st_Walk_MaxLinSpd,
             pc.Data.st_Walk_YawSpd,

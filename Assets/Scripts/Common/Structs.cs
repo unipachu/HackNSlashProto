@@ -123,19 +123,13 @@ public struct CapsuleCharData {
 public struct CapsuleCharInputData {
     public Vector2 mov;
     /// <summary>
-    /// Movement input relative to camera.
+    /// Last nonzero movement input (in world space).
     /// </summary>
-    public Vector2 mov_CamRel;
     public Vector2 mov_LastNonZero;
     /// <summary>
-    /// Last nonzero movement input relative to camera.
+    /// Movement input during last state switch (in world space).
     /// </summary>
-    public Vector2 mov_LastNonZero_CamRel;
     public Vector2 mov_WhenLastSwitchedSt;
-    /// <summary>
-    /// Movement input during last state switch relative to camera.
-    /// </summary>
-    public Vector2 mov_WhenLastSwitchedSt_CamRel;
     public bool atk_Light;
     public bool atk_Heavy;
     public bool atk_Ult;

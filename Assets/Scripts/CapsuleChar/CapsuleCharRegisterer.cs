@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// NOTE: This should be before the capsule characters in the execution order!
+/// </summary>
 public class CapsuleCharRegisterer : MonoBehaviour {
     [SerializeField] So_CapsuleCharData configSo;
 
@@ -10,6 +13,7 @@ public class CapsuleCharRegisterer : MonoBehaviour {
     public int Id { get; private set; } = -1;
 
     void OnEnable() {
+        Debug.Assert(CapsuleCharMgr.inst != null, "CapsuleCharMgr inst was null!", this);
         Id = CapsuleCharMgr.inst.Register(gameObject, configSo);
     }
 

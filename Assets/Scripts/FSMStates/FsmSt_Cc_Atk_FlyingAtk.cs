@@ -39,7 +39,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
         data.invul = false;
         data.isAffectedByGravity = true;
         pc.Data = data;
-        pc.weapon.hitDealer.Deactivate();
+        pc.weapon.aoeHitDealer.Deactivate();
     }
 
     public void PhysicsTick() {
@@ -51,7 +51,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 pc.charCtrlMov.UpdateMov(
                     // TODO: Have some interpolation to this so that this smoothly fades to
                     // TODO C: the input hor speed of the impact part of the attack.
-                    pc.inputData.mov_CamRel,
+                    pc.inputData.mov,
                     pc.AnimationDeltaMovement,
                     2,
                     0
@@ -66,7 +66,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                     0
                 );
                 if (pc.Data.isGrounded && impactFinished) {
-                    pc.weapon.hitDealer.Deactivate();
+                    pc.weapon.aoeHitDealer.Deactivate();
                     attackPhase = AtkPhase.Recovery;
                     VisUtils.CrossfadeNInitAnimEventPlr(
                         ref pc.animEventPlr,
@@ -118,7 +118,8 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 attackPhase = AtkPhase.Impact;
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated:
-                pc.weapon.hitDealer.Activate();
+                pc.weapon.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
+                pc.weapon.aoeHitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_Finished:
                 CapsuleCharData data = pc.Data;

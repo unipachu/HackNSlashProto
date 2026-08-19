@@ -45,7 +45,7 @@ public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
         float angSpd = 0;
         if (yawAllowed)
             angSpd = pc.Data.st_Dodge_YawSpd;
-        pc.charCtrlMov.UpdateMov(pc.inputData.mov_CamRel, pc.AnimationDeltaMovement, 0, angSpd);
+        pc.charCtrlMov.UpdateMov(pc.inputData.mov, pc.AnimationDeltaMovement, 0, angSpd);
         if(bufferedInputStateSwitchAllowed){
             // NOTE: not buffered input but whatever. TODO: REfactor
             if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
