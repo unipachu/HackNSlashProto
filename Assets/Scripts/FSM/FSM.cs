@@ -22,7 +22,7 @@ public class Fsm : MonoBehaviour {
         newSt.Enter(CurSt);
         PrevSt = CurSt;
         CurSt = newSt;
-        Debug.Log("Switched to state: " + newSt.GetType().Name, this);
+        //Debug.Log("Switched to state: " + newSt.GetType().Name, this);
         IsSwitchingSt = false;
         StSwitched?.Invoke();
     }

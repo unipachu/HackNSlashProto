@@ -1,5 +1,3 @@
-using UnityEngine;
-
 /// <summary>
 /// Capsule charater's state machine related utility methods (e.g. state change condition checks).
 /// </summary>

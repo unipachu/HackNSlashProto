@@ -41,7 +41,7 @@ public class SpringMov : MonoBehaviour {
         "Should be KINEMATIC for stable spring calculations and interpolation. " +
         "If empty, moves Transform directly in Update which can cause unstable movement " +
         "calculations if framerate is not stable!")]
-    [SerializeField] Rigidbody rb;
+    [SerializeField] Rigidbody optionalRb;
     [Tooltip("Target for the spring.")]
     public Transform tgt;
 
@@ -57,15 +57,15 @@ public class SpringMov : MonoBehaviour {
         if (startAtTgt) {
             transform.position = TgtPos();
             transform.rotation = tgt.rotation;
-            if (rb != null) {
-                rb.position = TgtPos();
-                rb.rotation = tgt.rotation;
+            if (optionalRb != null) {
+                optionalRb.position = TgtPos();
+                optionalRb.rotation = tgt.rotation;
             }
         }
     }
 
     void Update() {
-        if (rb != null)
+        if (optionalRb != null)
             return;
         UpdateTgtMotSt(Time.deltaTime);
         Vector3 trfPos = transform.position;
@@ -101,11 +101,11 @@ public class SpringMov : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (rb == null)
+        if (optionalRb == null)
             return;
         UpdateTgtMotSt(Time.fixedDeltaTime);
-        Vector3 rbPos = rb.position;
-        Quaternion rbRot = rb.rotation;
+        Vector3 rbPos = optionalRb.position;
+        Quaternion rbRot = optionalRb.rotation;
         MathUtils.UpdateSpringTrf(
             ref rbPos,
             ref rbRot,
@@ -131,7 +131,7 @@ public class SpringMov : MonoBehaviour {
             maxAngDragDamperAcc,
             maxTotalAngAcc
         );
-        rb.Move(rbPos, rbRot);
+        optionalRb.Move(rbPos, rbRot);
         // Update tgt prev pose.
         tgtPrevPose = new(TgtPos(), tgt.rotation);
     }

@@ -18,42 +18,36 @@ public class CharCtrlMov : MonoBehaviour{
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
             if (data.groundCastHitSomething) {
-                // TODO: sliding ver vel calculations are the same than freefall. Make a util function.
-                data.vel_Ver = Mathf.Min(data.vel_Ver, 0);
-                data.vel_Ver -= data.gravitationalAcc * dt;
-                data.vel_Ver = Mathf.Clamp(data.vel_Ver, -data.maxFallSpd, 0);
-                float3 downSlopeDir = math.normalize(
-                    // We project ground normal to down vector plane.
-                    // TODO: Create float3 ProjectOnPlane math util.
-                    math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
-                );
-                float slopeDirScl = data.vel_Ver / downSlopeDir.y;
-                float3 slopeVel = downSlopeDir * slopeDirScl;
-                float2 horVel = new float2(slopeVel.x, slopeVel.z);
+                // TODO: Create float3 ProjectOnPlane math util.
+                //math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
+                // TODO: We project last velocity onto the slope normalized direction (we divide by newAcc
+                // TODO C: squared length to compensate for it's length, instead of just doing dir * dor(v, dir).
+                // TODO C: Create math util.
+                //float3 newVel = newAcc * (math.dot(data.lastCharCtrlVel, newAcc) / math.lengthsq(newAcc));
 
 
-
-
-                // TODO: Idk if this is a good idea but I'm trying to basically stop horizontal
-                // TODO C: velocity from suddenly stopping when the character reaches an edge of
-                // TODO C: a slope. This projects current horizontal velocity vector to the new
-                // TODO C: velocity vector and chooses the one that is longer. Think about making
-                // TODO C: a more realistic velocity when falling.
-                float2 horVeldir = math.normalize(horVel);
-                float2 velAlongSlope = horVeldir * math.dot(data.vel_Hor, horVeldir);
-                data.vel_Hor = math.lengthsq(velAlongSlope) > math.lengthsq(horVel)
-                    ? velAlongSlope
-                    : horVel;
-
-                // make sure vel hor isn't very small:
-                if(math.lengthsq(data.vel_Hor) < 0.0001f)
-                    data.vel_Hor = math.normalize(data.vel_Hor) * 0.0001f;
-
-                Debug.Log($"ground normal: {data.groundCastNrm}");
-                Debug.Log($"New hor vel to apply: {data.vel_Hor}"
-                    + $"\n New ver vel to apply: {data.vel_Ver}");
-                    
-            // No slope to slide down so free fall.
+                // Find the gravitational acceleration component along the slope.
+                // TODO: Create float3 ProjectOnPlane math util.
+                float3 newAcc =
+                    (math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm)
+                    * data.gravitationalAcc;
+                float3 slideDir = math.normalize(newAcc);
+                // We use the last velocitys component along the slope as last speed, though we
+                // clamp it to disallow uphill sliding.
+                float slideSpd = math.max(0, math.dot(data.lastCharCtrlVel, slideDir));
+                float3 newVel = slideDir * slideSpd;
+                newVel += newAcc * dt;
+                data.vel_Ver = newVel.y;
+                data.vel_Hor = new float2(newVel.x, newVel.z);
+                //Debug.Log($"ground normal: {data.groundCastNrm}");
+                //float ang = math.degrees(math.acos(
+                //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
+                //    ));
+                //Debug.Log($"angle deg: {ang}");
+                //Debug.Log($"last char ctrl vel: {data.lastCharCtrlVel}");
+                //Debug.Log($"New hor vel to apply: {data.vel_Hor}"
+                //    + $"\n New ver vel to apply: {data.vel_Ver}");
+                // No slope to slide down so free fall.
             } else {
                 // NOTE: Character controller has a "step offset" functionality which can
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
@@ -62,7 +56,7 @@ public class CharCtrlMov : MonoBehaviour{
                 data.vel_Ver = Mathf.Min(data.vel_Ver, 0);
                 data.vel_Ver -= data.gravitationalAcc * dt;
                 data.vel_Ver = Mathf.Clamp(data.vel_Ver, -data.maxFallSpd, 0);
-                Debug.Log("In free fall.");
+                //Debug.Log("In free fall.");
             }
         }
     }
@@ -70,7 +64,7 @@ public class CharCtrlMov : MonoBehaviour{
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check. Returns true if cast hit something.
     /// </summary>
-    // TODO: Idk if this is good. Maybe just do a sphere cast from capusle
+    // TODO: Maybe just do a sphere cast from capusle
     // TODO C: bottom to avoid hits with walls/ceilings?
     public static bool CastForGround(CharacterController charCtrl, out RaycastHit groundHit) {
         float castDist = GlobalData.inst.data.isGroundedChkDist;
@@ -79,6 +73,7 @@ public class CharCtrlMov : MonoBehaviour{
         Vector3 center = charCtrl.transform.position + charCtrl.center;
         Vector3 bottom = center + Vector3.down * (height / 2f - r);
         Vector3 top = center + Vector3.up * (height / 2f - r);
+        // TODO: I'm not 100% sure if SkinWidth should be used in here but it is very small so what ever.
         castDist = castDist + charCtrl.skinWidth;
         return Physics.CapsuleCast(
             top,
@@ -92,6 +87,13 @@ public class CharCtrlMov : MonoBehaviour{
         );
     }
 
+    /// <summary>
+    /// NOTE: Character controller has its own isGrounded method.
+    /// We use this to have custom custom distance for the ground cast, and also to have
+    /// custom slope angle, since we likely want the character controller to more aggressively
+    /// limit slope upwards movement when compared to when the character enters
+    /// the falling state.
+    /// </summary>
     public static bool IsGrounded(
         CharacterController charCtrl,
         out bool groundCastHitSomething,
