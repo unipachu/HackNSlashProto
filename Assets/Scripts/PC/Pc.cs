@@ -29,9 +29,6 @@ public class Pc : MonoBehaviour{
 
     // TODO: Move to native array in capsule char data.
     public CapsuleCharInputData inputData;
-    // TODO C: Nonnative types. Maybe these could be moved to a struct as well (but use
-    // TODO C: the struct here instead of in the capsule char mgr
-    public RaycastHit groundCastResult;
 
     public CapsuleCharData Data {
         get => capsuleCharRegisterer.Data;
@@ -55,6 +52,10 @@ public class Pc : MonoBehaviour{
     }
 
     void Update() {
+        var data = Data;
+        data.lastCharCtrlVel = charCtrl.velocity;
+        data.curStDur += Time.deltaTime;
+        Data = data;
         UpdateInput();
         fsm.CurSt.Tick();
     }
@@ -73,8 +74,9 @@ public class Pc : MonoBehaviour{
         data.isGrounded = CharCtrlMov.IsGrounded(
             pc.charCtrl,
             out data.groundCastHitSomething,
-            out pc.groundCastResult
+            out RaycastHit groundCastResult
         );
+        data.groundCastNrm = groundCastResult.normal;
         pc.Data = data;
     }
 
@@ -122,6 +124,9 @@ public class Pc : MonoBehaviour{
 
     void OnStSwitched() {
         //Debug.Log($"Mov input when st switched: {inputData.mov}.");
+        CapsuleCharData data = Data;
+        data.curStDur = 0;
+        Data = data;
         if (plrCtrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
             inputData.mov_WhenLastSwitchedSt = inputData.mov;
             inputData.mov_WhenLastSwitchedSt_CamRel = MathUtils.TrfInputByBasis(

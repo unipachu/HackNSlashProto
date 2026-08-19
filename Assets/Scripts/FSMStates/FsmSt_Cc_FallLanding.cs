@@ -65,6 +65,8 @@ public class FsmSt_Cc_FallLanding : MonoBehaviour, IFsmSt{
 
     void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
+            // TODO: There could be a dodge window from the beginning of the state to
+            // TODO C: few frames into it instead of this.
             case CapsuleCharAnimEvent.FallLanding_CanSwitchSt:
                 dodgeAllowed = true;
                 return;

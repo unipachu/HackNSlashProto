@@ -125,7 +125,7 @@ public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 data.isAffectedByGravity = true;
                 impactFinished = true;
                 // TODO: Set this in base data.
-                data.vel_ver = -40;
+                data.vel_Ver = -40;
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Recovery_Finished:

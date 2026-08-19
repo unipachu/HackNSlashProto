@@ -65,7 +65,7 @@ public class FsmSt_Pc_Atk_Jump : MonoBehaviour, IFsmSt{
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
                 data.isAffectedByGravity = true;
-                data.vel_ver = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
+                data.vel_Ver = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:

@@ -1,6 +1,7 @@
 using System;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -89,30 +90,36 @@ public struct AtkData {
 /// Used for SoA type of handling of capsule character data.
 /// </summary>
 public struct CapsuleCharData {
+    public float curStDur;
     public float gravitationalAcc;
     public bool groundCastHitSomething;
+    public float3 groundCastNrm;
+    public float groundSnapVerDownSpd;
     public float hp_Cur;
     public float hp_Max;
     public float inputBufferDur;
     public bool invul;
     public bool isAffectedByGravity;
     public bool isGrounded;
+    public float3 lastCharCtrlVel;
     public float lastKnockbackStr;
     public float3 lastRecievedHitDir;
+    public float maxFallSpd;
     // TODO: Is this ever used?
     public float st_AtkHorSlash_RecoveryMotionInterpDur;
     public float st_AtkHorSlash_Impact_AngSpd;
     public float st_AtkHorSlash_Windup_MaxAngSpd;
     public float st_AtkJump_DownSpeedAfterJumpFinished;
     public float st_Dodge_YawSpd;
+    public float st_Falling_LandingStFallDistThreshold;
     public float st_Falling_LinAcc;
     public float st_Falling_MaxLinSpd;
     public float st_Walk_LinAcc;
     public float st_Walk_MaxLinSpd;
     public float st_Walk_YawSpd;
-    public float2 vel_hor;
-    public float vel_ver;
-    public float vel_yaw;
+    public float2 vel_Hor;
+    public float vel_Ver;
+    public float vel_Yaw;
 }
 
 public struct CapsuleCharInputData {

@@ -12,13 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20a2fd9b270a2f348828cffe6f682879, type: 3}
   m_Name: CapsuleCharData_Test
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
-  gravitationalAcc: 20
+  gravitationalAcc: 10
+  groundSnapVerDownSpd: 1000
+  maxFallSpd: 30
   inputBufferDuration: 0.3
   maxHP: 100
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000
   st_AtkHorSlash_Impact_AngSpd: 1200
   st_AtkHorSlash_RecoveryMotionInterpDur: 0.2
+  st_Falling_LandingStFallDistThreshold: 3
   st_Falling_LinAcc: 10
   st_Falling_MaxLinSpd: 1
   st_Dodge_YawAngSpd: 400

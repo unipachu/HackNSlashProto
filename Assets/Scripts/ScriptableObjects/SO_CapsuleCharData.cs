@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CapsuleCharData", menuName = "Character Data/CapsuleChar Data")]
@@ -7,11 +8,18 @@ public class So_CapsuleCharData : ScriptableObject{
 
     [Header("General Movement Settings")]
     [Tooltip("In m/s^2. Should be around 9.81.")]
-    [SerializeField] float gravitationalAcc = 20;
-    [Tooltip("How long should inputs stay in the buffer?")]
+    [SerializeField] float gravitationalAcc = 10;
+    [Tooltip("If character succeeds isGrounded check, this is the vertical velocity "
+        + "used to snap slightly hovering character to the ground.")]
+    [SerializeField] float groundSnapVerDownSpd = 1000;
+    [Tooltip("Max vertical speed when in falling state.")]
+    [SerializeField] float maxFallSpd = 30;
+
+    [Header("Input Settings")]
+    [Tooltip("How long should inputs stay in the buffer (in sec)?")]
     [SerializeField] float inputBufferDuration = 0.3f;
 
-    [Header("Heath")]
+    [Header("Health")]
     [SerializeField] int maxHP = 100;
 
     [Header("St_AtkJump")]
@@ -25,6 +33,11 @@ public class So_CapsuleCharData : ScriptableObject{
     [SerializeField] float st_AtkHorSlash_RecoveryMotionInterpDur = 0.2f;
 
     [Header("St_Falling")]
+    [Tooltip("The distance the character needs to fall to enter landing animation when "
+        + "hitting the ground.")]
+    [SerializeField] float st_Falling_LandingStFallDistThreshold = 3;
+    // TODO: Probably should be called "horizontal input based acceleration". Same for
+    // TODO C: other params like this.
     [SerializeField] float st_Falling_LinAcc = 10;
     [SerializeField] float st_Falling_MaxLinSpd = 1;
 
@@ -40,27 +53,33 @@ public class So_CapsuleCharData : ScriptableObject{
     // NOTE C: C# 9 doesn't support default struct values. Otherwise I'd just have a serialized
     // NOTE C: struct directly in the scriptable object.
     public CapsuleCharData ToStruct() => new CapsuleCharData {
+        curStDur = 0,
         gravitationalAcc = gravitationalAcc,
         groundCastHitSomething = false,
+        groundCastNrm = float3.zero,
+        groundSnapVerDownSpd = groundSnapVerDownSpd,
         hp_Cur = maxHP,
         hp_Max = maxHP,
         inputBufferDur = inputBufferDuration,
         invul = false,
         isAffectedByGravity = true,
         isGrounded = false,
-        lastRecievedHitDir = Vector3.zero,
+        lastCharCtrlVel = float3.zero,
+        lastRecievedHitDir = float3.zero,
+        maxFallSpd = maxFallSpd,
         st_AtkHorSlash_RecoveryMotionInterpDur = st_AtkHorSlash_RecoveryMotionInterpDur,
         st_AtkHorSlash_Impact_AngSpd = st_AtkHorSlash_Impact_AngSpd,
         st_AtkHorSlash_Windup_MaxAngSpd = st_AtkHorSlash_Windup_MaxAngSpd,
         st_AtkJump_DownSpeedAfterJumpFinished = st_AtkJump_DownSpeedAfterJumpFinished,
         st_Dodge_YawSpd = st_Dodge_YawAngSpd,
+        st_Falling_LandingStFallDistThreshold = st_Falling_LandingStFallDistThreshold,
         st_Falling_LinAcc = st_Falling_LinAcc,
         st_Falling_MaxLinSpd = st_Falling_MaxLinSpd,
         st_Walk_LinAcc = st_Walk_LinAcc,
         st_Walk_MaxLinSpd = st_Walk_MaxLinSpd,
         st_Walk_YawSpd = st_Walk_MaxAngSpd,
-        vel_hor = Vector2.zero,
-        vel_ver = 0,
-        vel_yaw = 0
+        vel_Hor = float2.zero,
+        vel_Ver = 0,
+        vel_Yaw = 0
     };
 }
