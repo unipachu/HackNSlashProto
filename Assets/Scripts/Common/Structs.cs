@@ -105,8 +105,6 @@ public struct CapsuleCharData {
     public float lastKnockbackStr;
     public float3 lastRecievedHitDir;
     public float maxFallSpd;
-    // TODO: Is this ever used?
-    public float st_AtkHorSlash_RecoveryMotionInterpDur;
     public float st_AtkHorSlash_Impact_AngSpd;
     public float st_AtkHorSlash_Windup_MaxAngSpd;
     public float st_AtkJump_DownSpeedAfterJumpFinished;

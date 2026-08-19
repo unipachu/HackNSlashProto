@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FsmSt_Pc_Idle : MonoBehaviour, IFsmSt{
+public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
     [SerializeField] Pc pc;
 
     public void Enter(IFsmSt previousState){

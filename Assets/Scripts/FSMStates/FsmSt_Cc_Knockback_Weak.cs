@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class FsmSt_Pc_Knockback_Weak : MonoBehaviour, IFsmSt{
+public class FsmSt_Cc_Knockback_Weak : MonoBehaviour, IFsmSt{
     event Action<CapsuleCharAnimEvent> animEvent;
 
     [SerializeField] Pc pc;

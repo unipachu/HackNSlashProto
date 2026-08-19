@@ -29,8 +29,6 @@ public class So_CapsuleCharData : ScriptableObject{
     [Header("St_AtkHorSlash")]
     [SerializeField] float st_AtkHorSlash_Windup_MaxAngSpd = 1000;
     [SerializeField] float st_AtkHorSlash_Impact_AngSpd = 1200;
-    [Tooltip("NOTE: This should be shorter than the recovery animation dur.")]
-    [SerializeField] float st_AtkHorSlash_RecoveryMotionInterpDur = 0.2f;
 
     [Header("St_Falling")]
     [Tooltip("The distance the character needs to fall to enter landing animation when "
@@ -67,7 +65,6 @@ public class So_CapsuleCharData : ScriptableObject{
         lastCharCtrlVel = float3.zero,
         lastRecievedHitDir = float3.zero,
         maxFallSpd = maxFallSpd,
-        st_AtkHorSlash_RecoveryMotionInterpDur = st_AtkHorSlash_RecoveryMotionInterpDur,
         st_AtkHorSlash_Impact_AngSpd = st_AtkHorSlash_Impact_AngSpd,
         st_AtkHorSlash_Windup_MaxAngSpd = st_AtkHorSlash_Windup_MaxAngSpd,
         st_AtkJump_DownSpeedAfterJumpFinished = st_AtkJump_DownSpeedAfterJumpFinished,

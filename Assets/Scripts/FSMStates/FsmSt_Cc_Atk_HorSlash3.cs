@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
+public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
     event Action<CapsuleCharAnimEvent> animEvent;
 
     [SerializeField] Pc pc;
@@ -30,7 +30,7 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
         VisUtils.CrossfadeNInitAnimEventPlr(
             ref pc.animEventPlr,
             pc.capsuleCharAnim,
-            CapsuleCharAnimInfo.atk_HorSlash2_Impact,
+            CapsuleCharAnimInfo.atk_HorSlash3_Impact,
             animEvent
         );
     }
@@ -48,16 +48,18 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
         switch (attackPhase) {
             case AtkPhase.Impact:
                 float angSpd = 0;
-                if (impactInputRotationAllowed) angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
+                if (impactInputRotationAllowed)
+                    angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
                     pc.inputData.mov_CamRel,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
                 if (comboAllowed) {
-                    if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light)) {
-                        pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash3);
-                    }
+                    //if (pc.inputBuffer.ConsumeInput("atk1"))
+                    //{
+                    //    pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash2);
+                    //}
                 }
                 return;
             case AtkPhase.Recovery:
@@ -93,37 +95,37 @@ public class FsmSt_Pc_Atk_HorSlash2 : MonoBehaviour, IFsmSt {
 
     private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
-            case CapsuleCharAnimEvent.HorSlash2_Impact_RotationAllowed:
-                impactInputRotationAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_RotationDisallowed:
-                impactInputRotationAllowed = false;
-                break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerActivated:
-                pc.weapon.hitDealer.Activate();
-                break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerDeactivated:
-                pc.weapon.hitDealer.Deactivate();
-                break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_ComboAllowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboAllowed:
                 comboAllowed = true;
                 break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_ComboDisallowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboDisallowed:
                 comboAllowed = false;
                 break;
-            case CapsuleCharAnimEvent.HorSlash2_Impact_Finished:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_Finished:
                 VisUtils.CrossfadeNInitAnimEventPlr(
                     ref pc.animEventPlr,
                     pc.capsuleCharAnim,
-                    CapsuleCharAnimInfo.atk_HorSlash2_Recovery,
+                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
                     animEvent
                 );
                 attackPhase = AtkPhase.Recovery;
                 break;
-            case CapsuleCharAnimEvent.HorSlash2_Recovery_DodgeAllowed:
+            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerActivated:
+                pc.weapon.hitDealer.Activate();
+                break;
+            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerDeactivated:
+                pc.weapon.hitDealer.Deactivate();
+                break;
+            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationAllowed:
+                impactInputRotationAllowed = true;
+                break;
+            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationDisallowed:
+                impactInputRotationAllowed = false;
+                break;
+            case CapsuleCharAnimEvent.HorSlash1_Recovery_DodgeAllowed:
                 dodgeAllowed = true;
                 break;
-            case CapsuleCharAnimEvent.HorSlash2_Recovery_Finished:
+            case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
                 pc.fsm.SwitchSt(pc.fsmSts.idle);
                 break;
         }

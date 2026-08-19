@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class FsmSt_Pc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
+public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
     /// <summary>
     /// string is the unique id of the animation event.
     /// </summary>

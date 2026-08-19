@@ -1,15 +1,15 @@
 using UnityEngine;
 
-public class FsmSt_Pc_Walk : MonoBehaviour, IFsmSt{
+public class FsmSt_Cc_Walk : MonoBehaviour, IFsmSt{
     [SerializeField] Pc pc;
 
     public void Enter(IFsmSt previousState){
         switch(previousState){
-            case FsmSt_Pc_Atk_HorSlash1:
+            case FsmSt_Cc_Atk_HorSlash1:
                 // We use a little more time to fade to the walk animation.
                 VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.walk, 1);
                 break;
-            case FsmSt_Pc_Atk_HorSlash2:
+            case FsmSt_Cc_Atk_HorSlash2:
                 // We use a little more time to fade to the walk animation.
                 VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.walk, 1);
                 break;

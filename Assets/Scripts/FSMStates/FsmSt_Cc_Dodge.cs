@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class FsmSt_Pc_Dodge : MonoBehaviour, IFsmSt{
+public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
     event Action<CapsuleCharAnimEvent> animEvent;
 
     [SerializeField] Pc pc;

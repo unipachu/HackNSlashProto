@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // TODO: This should probably be called FlyingSlam or something more descriptive than "Atk".
-public class FsmSt_Pc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
+public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
     event Action<CapsuleCharAnimEvent> animEvent;
     [SerializeField] Pc pc;
 

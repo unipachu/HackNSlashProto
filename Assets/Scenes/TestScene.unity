@@ -936,8 +936,8 @@ GameObject:
   - component: {fileID: 164602226}
   - component: {fileID: 164602230}
   - component: {fileID: 164602224}
-  - component: {fileID: 164602227}
-  - component: {fileID: 164602228}
+  - component: {fileID: 164602235}
+  - component: {fileID: 164602234}
   - component: {fileID: 164602225}
   - component: {fileID: 164602229}
   - component: {fileID: 164602232}
@@ -1001,7 +1001,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 164602219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fb108e9d4b769804189dc39fad26c749, type: 3}
+  m_Script: {fileID: 11500000, guid: 91a6decbc2f664848a84771e1c60948f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Idle
   pc: {fileID: 439737476}
@@ -1027,7 +1027,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 164602219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 516804c5d4e345842bb84bc99fb67502, type: 3}
+  m_Script: {fileID: 11500000, guid: 6b696021ececc27479271b1987f95c26, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_Jump
   pc: {fileID: 439737476}
@@ -1045,8 +1045,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FSM_PCStates
   atk_FlyingAtk: {fileID: 164602230}
   atk_HorSlash1: {fileID: 164602224}
-  atk_HorSlash2: {fileID: 164602227}
-  atk_HorSlash3: {fileID: 164602228}
+  atk_HorSlash2: {fileID: 164602235}
+  atk_HorSlash3: {fileID: 164602234}
   atk_Jump: {fileID: 164602225}
   dodge: {fileID: 164602229}
   falling: {fileID: 164602232}
@@ -1054,32 +1054,6 @@ MonoBehaviour:
   idle: {fileID: 164602223}
   knockback_Weak: {fileID: 164602231}
   walk: {fileID: 164602222}
---- !u!114 &164602227
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 164602219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d55a2b7086fe915469987079c5b2f180, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash2
-  pc: {fileID: 439737476}
---- !u!114 &164602228
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 164602219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99b79c0d5ecbaf249925ae39d4d78b58, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_HorSlash3
-  pc: {fileID: 439737476}
 --- !u!114 &164602229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1102,7 +1076,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 164602219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3fa92275fa1b2545b2068ce7deb94d9, type: 3}
+  m_Script: {fileID: 11500000, guid: 954a1acb3a42b1e4a92bf9e426e979ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_FlyingAtk
   pc: {fileID: 439737476}
@@ -1144,6 +1118,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fff95458dc48fe41a15cc5fed64b15b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FsmSt_Cc_FallLanding
+  pc: {fileID: 439737476}
+--- !u!114 &164602234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3b282c3a5084644a465ca0931373b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FsmSt_Cc_Atk_HorSlash3
+  pc: {fileID: 439737476}
+--- !u!114 &164602235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 164602219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5f092075301f1d4f8c1c605a6b5a1b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FsmSt_Cc_Atk_HorSlash2
   pc: {fileID: 439737476}
 --- !u!1 &167132625
 GameObject:
@@ -4381,15 +4381,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4627431e80bf53c488f2bdddb9d0c49d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooter
-  shoot: 0
+  shoot: 1
   atkData:
     dmg: 10
     knockbackT: 1
     knockbackStr: 0.5
   spd: 3
-  maxLifetime: 10
+  maxLifetime: 1
   homingStr: 2
-  shootInterval: 3
+  shootInterval: 1
   plr: {fileID: 2062723877}
 --- !u!4 &1156347319
 Transform:
