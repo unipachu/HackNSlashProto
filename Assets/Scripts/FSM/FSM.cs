@@ -8,6 +8,8 @@ using UnityEngine;
 public class Fsm : MonoBehaviour {
     public event Action StSwitched;
 
+    public bool logMsg;
+
     public IFsmSt CurSt { get; private set; }
     public bool IsSwitchingSt { get; private set; }
     public IFsmSt PrevSt { get; private set; }
@@ -22,7 +24,8 @@ public class Fsm : MonoBehaviour {
         newSt.Enter(CurSt);
         PrevSt = CurSt;
         CurSt = newSt;
-        //Debug.Log("Switched to state: " + newSt.GetType().Name, this);
+        if(logMsg)
+            Debug.Log("Switched to state: " + newSt.GetType().Name, this);
         IsSwitchingSt = false;
         StSwitched?.Invoke();
     }

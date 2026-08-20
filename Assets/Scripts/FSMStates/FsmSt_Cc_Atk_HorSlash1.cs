@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
@@ -56,7 +57,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
         switch (atkPhase){
             case AtkPhase.Windup:
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov_WhenLastSwitchedSt,
+                    pc.Data.input_mov_WhenLastSwitchedSt,
                     pc.AnimationDeltaMovement,
                     0,
                     pc.Data.st_AtkHorSlash_Windup_MaxAngSpd
@@ -67,7 +68,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 if(impactInputRotAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov,
+                    pc.Data.input_mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd
@@ -84,7 +85,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 recoveryMotInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov,
+                    pc.Data.input_mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_YawSpd * interpValue,
@@ -157,7 +158,10 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 dodgeAllowed = true;
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
-                pc.fsm.SwitchSt(pc.fsmSts.idle);
+                if (!pc.Data.input_mov.Equals(float2.zero))
+                    pc.fsm.SwitchSt(pc.fsmSts.walk);
+                else
+                    pc.fsm.SwitchSt(pc.fsmSts.idle);
                 return;
         }
     }

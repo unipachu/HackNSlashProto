@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
@@ -18,7 +19,7 @@ public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
             return;
         if (pc.fsm.PrevSt == (IFsmSt)pc.fsmSts.walk)
             pc.charCtrlMov.UpdateMov(
-                pc.inputData.mov_LastNonZero,
+                pc.Data.input_mov_LastNonZero,
                 Vector3.zero,
                 0,
                 pc.Data.st_Walk_YawSpd
@@ -40,7 +41,7 @@ public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
             pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
             pc.fsm.SwitchSt(pc.fsmSts.atk_FlyingAtk);
-        else if (pc.inputData.mov != Vector2.zero)
+        else if (!pc.Data.input_mov.Equals(float2.zero))
             pc.fsm.SwitchSt(pc.fsmSts.walk);
     }
 

@@ -275,7 +275,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d427d4986c501e41927ce96e2cbbe17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityData
-  capacity: 2
+  maxCapsuleChars: 2
 --- !u!1 &36494360
 GameObject:
   m_ObjectHideFlags: 0
@@ -6540,6 +6540,51 @@ MonoBehaviour:
   axis: {x: 0, y: 1, z: 0}
   rotSpd: 10
   rb: {fileID: 1621868901}
+--- !u!1 &1648819500
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1648819502}
+  - component: {fileID: 1648819501}
+  m_Layer: 0
+  m_Name: BtMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1648819501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648819500}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ffe869483d82f04eb3312c75469d2b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bt
+  maxBtDepth: 16
+--- !u!4 &1648819502
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1648819500}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1685316093
 GameObject:
   m_ObjectHideFlags: 0
@@ -8197,10 +8242,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4484572386372135825, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: logMsg
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
       value: Plr
       objectReference: {fileID: 0}
+    - target: {fileID: 6852208831813081515, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_capsuleCharData
+      value: 
+      objectReference: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
     - target: {fileID: 8852917719570915941, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -8244,6 +8297,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1026410970}
+  - {fileID: 1648819502}
   - {fileID: 900887753}
   - {fileID: 936050738}
   - {fileID: 32162908}

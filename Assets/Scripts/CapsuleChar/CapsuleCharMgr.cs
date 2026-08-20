@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
@@ -6,25 +5,21 @@ using UnityEngine;
 /// Storage for playable capsule character runtime data.
 /// </summary>
 public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
-    [SerializeField] int capacity = 2;
+    public int maxCapsuleChars = 2;
 
-    public NativeArray<CapsuleCharData> configs;
+    public NativeArray<CapsuleCharData> capsuleCharDatas;
+
     // Structs can't be null, so we need a way to keep track of structs that are actually used.
-    private NativeArray<bool> occupied;
-    
-    // structs can't be null, so track occupancy explicitly
-    // Tracks which GameObject owns which slot, so a caller can't register twice
-    // and so we know a given id actually belongs to this EntityData.
-    private Dictionary<GameObject, int> ownerToId = new Dictionary<GameObject, int>();
-
+    public NativeArray<bool> occupied;
+ 
     protected override void Awake() {
         base.Awake();
-        configs = new NativeArray<CapsuleCharData>(capacity, Allocator.Persistent);
-        occupied = new NativeArray<bool>(capacity, Allocator.Persistent);
+        capsuleCharDatas = new NativeArray<CapsuleCharData>(maxCapsuleChars, Allocator.Persistent);
+        occupied = new NativeArray<bool>(maxCapsuleChars, Allocator.Persistent);
     }
 
     void OnDestroy() {
-        if (configs.IsCreated) configs.Dispose();
+        if (capsuleCharDatas.IsCreated) capsuleCharDatas.Dispose();
         if (occupied.IsCreated) occupied.Dispose();
     }
 
@@ -34,24 +29,18 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
 
     public CapsuleCharData GetData(int id) {
         //Debug.Log($"GET id={id}, invul={configs[id].invul}");
-        return configs[id];
+        return capsuleCharDatas[id];
     }
 
     public void SetData(int id, CapsuleCharData value) {
         //Debug.Log($"SET id={id}, invul={value.invul}");
-        configs[id] = value;
+        capsuleCharDatas[id] = value;
     }
 
     /// <summary>
-    /// Registers data mapped to a game object.<br/>
-    /// Returns the index of the game object data, or -1 on failure.
+    /// Returns the index of the registered data, or -1 on failure.
     /// </summary>
-    public int Register(GameObject owner, So_CapsuleCharData configSo) {
-        if (ownerToId.ContainsKey(owner)) {
-            Debug.LogError($"EntityData: {owner.name} is already registered "
-                + $"(id {ownerToId[owner]}).", owner);
-            return -1;
-        }
+    public int Register(So_CapsuleCharData so_capsuleCharData) {
         int freeIndex = -1;
         for (int i = 0; i < occupied.Length; i++) {
             if (!occupied[i]) {
@@ -60,27 +49,19 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
             }
         }
         if (freeIndex == -1) {
-            Debug.LogError($"EntityData: at capacity ({capacity}), "
-                + $"cannot register {owner.name}.", owner);
+            Debug.LogError($"EntityData: at capacity ({maxCapsuleChars})");
             return -1;
         }
-        configs[freeIndex] = configSo.ToStruct();
+        capsuleCharDatas[freeIndex] = so_capsuleCharData.ToStruct();
         occupied[freeIndex] = true;
-        ownerToId.Add(owner, freeIndex);
         return freeIndex;
     }
 
-    /// <summary>
-    /// Returns true and outputs the id if owner is currently registered.
-    /// </summary>
-    public bool TryGetId(GameObject owner, out int id) => ownerToId.TryGetValue(owner, out id);
-
-    public void Unregister(GameObject owner) {
-        if (!ownerToId.TryGetValue(owner, out int id)) {
-            Debug.LogError($"EntityData: {owner.name} has not been registered!", owner);
+    public void Unregister(int id) {
+        if (!occupied[id]) {
+            Debug.LogError($"Capsule character with id {id} has not been registered!");
             return;
         }
         occupied[id] = false;
-        ownerToId.Remove(owner);
     }
 }

@@ -27,9 +27,6 @@ public class Pc : MonoBehaviour{
     /// </summary>
     [HideInInspector] public AnimEventPlr animEventPlr;
 
-    // TODO: Move to native array in capsule char data.
-    public CapsuleCharInputData inputData;
-
     public CapsuleCharData Data {
         get => capsuleCharRegisterer.Data;
         set => capsuleCharRegisterer.Data = value;
@@ -53,14 +50,17 @@ public class Pc : MonoBehaviour{
 
     void Update() {
         var data = Data;
+        data.trf_pos = transform.position;
+        data.trf_rot = transform.rotation;
+        data.trf_lossyScl = transform.lossyScale;
         data.lastCharCtrlVel = charCtrl.velocity;
         data.curStDur += Time.deltaTime;
+        UpdateInput(ref data, ctrl, inputBuffer);
         Data = data;
-        UpdateInput();
         fsm.CurSt.Tick();
     }
 
-    private void LateUpdate() {
+    void LateUpdate() {
         fsm.CurSt.LateTick();
     }
 
@@ -80,27 +80,27 @@ public class Pc : MonoBehaviour{
         pc.Data = data;
     }
 
-    void UpdateInput(){
-        inputData.atk_Light = ctrl.TryConsume_Atk_Light();
-        inputData.atk_Heavy = ctrl.TryConsume_Atk_Heavy();
-        inputData.atk_Ult = ctrl.TryConsume_Atk_Ult();
-        inputData.dodge = ctrl.TryConsume_Dodge();
+    public static void UpdateInput(ref CapsuleCharData data, CapsuleCharCtrl ctrl, PcInputBuffer inputBuffer){
+        data.input_atk_Light = ctrl.TryConsume_Atk_Light();
+        data.input_atk_Heavy = ctrl.TryConsume_Atk_Heavy();
+        data.input_atk_Ult = ctrl.TryConsume_Atk_Ult();
+        data.input_dodge = ctrl.TryConsume_Dodge();
         if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
-            inputData.mov = ctrl.Input_Mov;
-            inputData.mov_LastNonZero = inputData.mov;
+            data.input_mov = ctrl.Input_Mov;
+            data.input_mov_LastNonZero = data.input_mov;
         } else {
-            inputData.mov = Vector2.zero;
+            data.input_mov = Vector2.zero;
         }
         // Buffer certain inputs
-        if (inputData.atk_Light)
+        if (data.input_atk_Light)
             inputBuffer.BufferInput(BufferableInput.Atk_Light);
-        else if (inputData.atk_Heavy)
+        else if (data.input_atk_Heavy)
             inputBuffer.BufferInput(BufferableInput.Atk_Heavy);
-        else if (inputData.atk_Ult)
+        else if (data.input_atk_Ult)
             inputBuffer.BufferInput(BufferableInput.Atk_Ult);
-        else if (inputData.dodge)
+        else if (data.input_dodge)
             inputBuffer.BufferInput(BufferableInput.Dodge);
-        //Debug.Log("mov input mag: " + inputData.mov.magnitude);
+        //Debug.Log("mov input mag: " + data.mov.magnitude);
     }
 
     // ---------------------------------------------------------------
@@ -121,10 +121,10 @@ public class Pc : MonoBehaviour{
         //Debug.Log($"Mov input when st switched: {inputData.mov}.");
         CapsuleCharData data = Data;
         data.curStDur = 0;
-        Data = data;
         if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone)
-            inputData.mov_WhenLastSwitchedSt = inputData.mov;
+            data.input_mov_WhenLastSwitchedSt = data.input_mov;
         else
-            inputData.mov_WhenLastSwitchedSt = Vector2.zero;
+            data.input_mov_WhenLastSwitchedSt = Vector2.zero;
+        Data = data;
     }
 }

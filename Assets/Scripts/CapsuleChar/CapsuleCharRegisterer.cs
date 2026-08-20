@@ -4,7 +4,7 @@ using UnityEngine;
 /// NOTE: This should be before the capsule characters in the execution order!
 /// </summary>
 public class CapsuleCharRegisterer : MonoBehaviour {
-    [SerializeField] So_CapsuleCharData configSo;
+    [SerializeField] So_CapsuleCharData so_capsuleCharData;
 
     public CapsuleCharData Data {
         get => CapsuleCharMgr.inst.GetData(Id);
@@ -14,7 +14,8 @@ public class CapsuleCharRegisterer : MonoBehaviour {
 
     void OnEnable() {
         Debug.Assert(CapsuleCharMgr.inst != null, "CapsuleCharMgr inst was null!", this);
-        Id = CapsuleCharMgr.inst.Register(gameObject, configSo);
+        Debug.Assert(so_capsuleCharData != null, "No data ref set!", this);
+        Id = CapsuleCharMgr.inst.Register(so_capsuleCharData);
     }
 
     void OnDisable() {
@@ -22,7 +23,7 @@ public class CapsuleCharRegisterer : MonoBehaviour {
             // NOTE EntityData might have been destroyed before this OnDisable, e.g. if
             // NOTE C: scene is being changed.
             if(CapsuleCharMgr.inst != null)
-                CapsuleCharMgr.inst.Unregister(gameObject);
+                CapsuleCharMgr.inst.Unregister(Id);
             Id = -1;
         }
     }

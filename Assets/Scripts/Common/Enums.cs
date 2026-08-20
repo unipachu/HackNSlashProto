@@ -63,6 +63,22 @@ public enum CapsuleCharAnimEvent {
     Knockback_Weak_Fwd_Finished
 }
 
+public enum BtNodeT {
+    Cmd_Atk1,
+    Cmd_Idle,
+    Cmd_MovToTgt,
+    Cond_HasTgt,
+    Cond_InAtkRange,
+    Selector,
+    Sequence,
+}
+
+public enum BtResult {
+    Success,
+    Failue,
+    Running,
+}
+
 public enum Directions2DVertical{
     Left,
     Right,
@@ -84,6 +100,12 @@ public enum Directions3D{
     Up,
     Backward,
     Forward,
+}
+
+public enum BtNodeMethodCall {
+    None,
+    CondExample,
+    ActExample,
 }
 
 public enum Faces{

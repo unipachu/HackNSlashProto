@@ -1,7 +1,7 @@
 using System;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -86,6 +86,25 @@ public struct AtkData {
     }
 }
 
+public struct BtDef {
+    public int nodeStart;
+    public int nodeCount;
+}
+
+public struct BtNodeData {
+    public int childCount;
+    public int dataId;
+    public int firstChild;
+    public FixedString32Bytes nodeName;
+    public BtNodeT t;
+}
+
+public struct BtSt {
+    public int curNode;
+    public int stackStart;
+    public int stackCount;
+}
+
 /// <summary>
 /// Used for SoA type of handling of capsule character data.
 /// </summary>
@@ -97,6 +116,19 @@ public struct CapsuleCharData {
     public float groundSnapVerDownSpd;
     public float hp_Cur;
     public float hp_Max;
+    public float2 input_mov;
+    /// <summary>
+    /// Last nonzero movement input (in world space).
+    /// </summary>
+    public float2 input_mov_LastNonZero;
+    /// <summary>
+    /// Movement input during last state switch (in world space).
+    /// </summary>
+    public float2 input_mov_WhenLastSwitchedSt;
+    public bool input_atk_Light;
+    public bool input_atk_Heavy;
+    public bool input_atk_Ult;
+    public bool input_dodge;
     public float inputBufferDur;
     public bool invul;
     public bool isAffectedByGravity;
@@ -115,25 +147,12 @@ public struct CapsuleCharData {
     public float st_Walk_LinAcc;
     public float st_Walk_MaxLinSpd;
     public float st_Walk_YawSpd;
+    public float3 trf_pos;
+    public quaternion trf_rot;
+    public float3 trf_lossyScl;
     public float2 vel_Hor;
     public float vel_Ver;
     public float vel_Yaw;
-}
-
-public struct CapsuleCharInputData {
-    public Vector2 mov;
-    /// <summary>
-    /// Last nonzero movement input (in world space).
-    /// </summary>
-    public Vector2 mov_LastNonZero;
-    /// <summary>
-    /// Movement input during last state switch (in world space).
-    /// </summary>
-    public Vector2 mov_WhenLastSwitchedSt;
-    public bool atk_Light;
-    public bool atk_Heavy;
-    public bool atk_Ult;
-    public bool dodge;
 }
 
 [Serializable]

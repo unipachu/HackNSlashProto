@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
@@ -45,7 +46,7 @@ public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
         float angSpd = 0;
         if (yawAllowed)
             angSpd = pc.Data.st_Dodge_YawSpd;
-        pc.charCtrlMov.UpdateMov(pc.inputData.mov, pc.AnimationDeltaMovement, 0, angSpd);
+        pc.charCtrlMov.UpdateMov(pc.Data.input_mov, pc.AnimationDeltaMovement, 0, angSpd);
         if(bufferedInputStateSwitchAllowed){
             // NOTE: not buffered input but whatever. TODO: REfactor
             if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
@@ -83,7 +84,7 @@ public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
                 bufferedInputStateSwitchAllowed = true;
                 break;
             case CapsuleCharAnimEvent.Dodge_Finished:
-                if (pc.inputData.mov != Vector2.zero)
+                if (!pc.Data.input_mov.Equals(float2.zero))
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);

@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Knockback_Weak : MonoBehaviour, IFsmSt{
@@ -94,17 +95,17 @@ public class FsmSt_Cc_Knockback_Weak : MonoBehaviour, IFsmSt{
     private void OnAnimEvent(CapsuleCharAnimEvent id) {
         switch (id) {
             case CapsuleCharAnimEvent.Knockback_Weak_Bwd_Finished:
-                if (pc.inputData.mov != Vector2.zero)
+                if (!pc.Data.input_mov.Equals(float2.zero))
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+                return;
             case CapsuleCharAnimEvent.Knockback_Weak_Fwd_Finished:
-                if (pc.inputData.mov != Vector2.zero)
+                if (!pc.Data.input_mov.Equals(float2.zero))
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+                return;
         }
     }
 }

@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Walk : MonoBehaviour, IFsmSt{
@@ -29,7 +30,7 @@ public class FsmSt_Cc_Walk : MonoBehaviour, IFsmSt{
         if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
             return;
         pc.charCtrlMov.UpdateMov(
-            pc.inputData.mov,
+            pc.Data.input_mov,
             Vector3.zero,
             pc.Data.st_Walk_MaxLinSpd,
             pc.Data.st_Walk_YawSpd,
@@ -43,7 +44,7 @@ public class FsmSt_Cc_Walk : MonoBehaviour, IFsmSt{
             pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
             pc.fsm.SwitchSt(pc.fsmSts.atk_FlyingAtk);
-        else if (pc.inputData.mov == Vector2.zero)
+        else if (pc.Data.input_mov.Equals(float2.zero))
             pc.fsm.SwitchSt(pc.fsmSts.idle);
     }
 

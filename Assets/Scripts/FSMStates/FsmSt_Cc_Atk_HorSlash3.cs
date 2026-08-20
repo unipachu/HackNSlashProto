@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
@@ -51,7 +52,7 @@ public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 if (impactInputRotationAllowed)
                     angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov,
+                    pc.Data.input_mov,
                     pc.AnimationDeltaMovement,
                     0,
                     angSpd);
@@ -67,7 +68,7 @@ public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 recoveryMotionInterpTimer += Time.deltaTime;
                 float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
                 pc.charCtrlMov.UpdateMov(
-                    pc.inputData.mov,
+                    pc.Data.input_mov,
                     Vector3.zero,
                     pc.Data.st_Walk_MaxLinSpd * interpValue,
                     pc.Data.st_Walk_YawSpd * interpValue,
@@ -128,8 +129,11 @@ public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
                 dodgeAllowed = true;
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
-                pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+                if (!pc.Data.input_mov.Equals(float2.zero))
+                    pc.fsm.SwitchSt(pc.fsmSts.walk);
+                else
+                    pc.fsm.SwitchSt(pc.fsmSts.idle);
+                return;
         }
     }
 }

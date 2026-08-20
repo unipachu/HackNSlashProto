@@ -1,7 +1,7 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CapsuleCharData", menuName = "Character Data/CapsuleChar Data")]
+[CreateAssetMenu(fileName = "CapsuleCharData_", menuName = "Scriptable Object Data/CapsuleCharData")]
 public class So_CapsuleCharData : ScriptableObject{
     [Header("Playable character read-only base data."
         + "\nNOTE: State specific data starts with \"St_[state name]_\".")]

@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
@@ -73,7 +74,7 @@ public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.weapon.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_Finished:
-                if (pc.inputData.mov != Vector2.zero)
+                if (!pc.Data.input_mov.Equals(float2.zero))
                     pc.fsm.SwitchSt(pc.fsmSts.walk);
                 else
                     pc.fsm.SwitchSt(pc.fsmSts.idle);

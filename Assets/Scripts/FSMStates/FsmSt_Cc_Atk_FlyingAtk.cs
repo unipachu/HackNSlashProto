@@ -1,4 +1,5 @@
 using System;
+using Unity.Mathematics;
 using UnityEngine;
 
 // TODO: This should probably be called FlyingSlam or something more descriptive than "Atk".
@@ -51,7 +52,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 pc.charCtrlMov.UpdateMov(
                     // TODO: Have some interpolation to this so that this smoothly fades to
                     // TODO C: the input hor speed of the impact part of the attack.
-                    pc.inputData.mov,
+                    pc.Data.input_mov,
                     pc.AnimationDeltaMovement,
                     2,
                     0
@@ -130,8 +131,11 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Recovery_Finished:
-                pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+                if (!pc.Data.input_mov.Equals(float2.zero))
+                    pc.fsm.SwitchSt(pc.fsmSts.walk);
+                else
+                    pc.fsm.SwitchSt(pc.fsmSts.idle);
+                return;
         }
     }
 }
