@@ -65,6 +65,8 @@ MonoBehaviour:
   weapon: {fileID: 7649927222215455590}
   hitRecieverHandler: {fileID: 9141355615762476700}
   charCtrl: {fileID: 5079058612890601784}
+  tgt: {fileID: 0}
+  agent: {fileID: 0}
 --- !u!114 &6852208831813081515
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +79,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33823bf6098cbc44b80be9346cfc5191, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityRegisterer
-  configSo: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
+  so_capsuleCharData: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
+  so_BtRootNode: {fileID: 0}
 --- !u!114 &7377177370710215545
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,7 +150,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharCtrl
   plrCtrl: {fileID: 0}
-  bt_BasicEnemy: {fileID: 0}
 --- !u!143 &5079058612890601784
 CharacterController:
   m_ObjectHideFlags: 0
@@ -229,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 865fe4dc2dd257149809449b929102d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM
+  logMsg: 0
 --- !u!114 &5982696648205672473
 MonoBehaviour:
   m_ObjectHideFlags: 0

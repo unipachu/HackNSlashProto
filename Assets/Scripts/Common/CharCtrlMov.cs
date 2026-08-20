@@ -31,7 +31,12 @@ public class CharCtrlMov : MonoBehaviour{
                 float3 newAcc =
                     (math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm)
                     * data.gravitationalAcc;
-                float3 slideDir = math.normalize(newAcc);
+                float3 slideDir;
+                // Normalization will give NaN if acceleration is zero unless we do this.
+                if (math.lengthsq(newAcc) > 0.0001f)
+                    slideDir = math.normalize(newAcc);
+                else
+                    slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
                 float slideSpd = math.max(0, math.dot(data.lastCharCtrlVel, slideDir));
@@ -120,15 +125,25 @@ public class CharCtrlMov : MonoBehaviour{
         // Should this be called hor acc instead?
         float linAcc = float.PositiveInfinity
     ) {
+        //Debug.Log($"UpdateMov: horMov: {horMov} | animRootMot: {animRootMot} \n"
+        //    + $"| maxLinSpd: {maxLinSpd} | linAcc: {linAcc}");
         float dt = Time.deltaTime;
         CapsuleCharData data = pc.Data;
+        Debug.Assert(
+            !float.IsNaN(data.vel_Hor.x) && !float.IsNaN(data.vel_Hor.y),
+            $"vel_hor had NaN: {data.vel_Hor}",
+            this
+        );
+        //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
         data.vel_Hor = Vector2.MoveTowards(
             data.vel_Hor,
             horMov * maxLinSpd,
             linAcc * dt
         );
         data.vel_Yaw = yawSpd;
-        TrfMathUtils.RotateFwdToTgt(transform, data.vel_Yaw, horMov);
+        // Skip rotation if tgt dir vector (horMov) is too small.
+        if(horMov.sqrMagnitude > 0.0001f)
+            TrfMathUtils.RotateFwdToTgt(transform, data.vel_Yaw, horMov);
         if (data.isAffectedByGravity)
             ApplyGravityNSlideDownSlopes(ref data, dt);
         else
@@ -138,6 +153,7 @@ public class CharCtrlMov : MonoBehaviour{
         totalMov.y += data.vel_Ver * dt;
         totalMov.z += data.vel_Hor.y * dt;
         pc.Data = data;
+        //Debug.Log($"UpdateMov: totalMov: {totalMov}");
         charCtrl.Move(totalMov);
     }
 }

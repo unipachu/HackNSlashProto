@@ -67,7 +67,7 @@ public enum BtNodeT {
     Cmd_Atk1,
     Cmd_Idle,
     Cmd_MovToTgt,
-    Cond_HasTgt,
+    Cond_InAggroRange,
     Cond_InAtkRange,
     Selector,
     Sequence,
@@ -75,7 +75,7 @@ public enum BtNodeT {
 
 public enum BtResult {
     Success,
-    Failue,
+    Failure,
     Running,
 }
 
@@ -104,8 +104,9 @@ public enum Directions3D{
 
 public enum BtNodeMethodCall {
     None,
-    CondExample,
-    ActExample,
+    Cond_IsInAggroRange,
+    Cond_IsInAtkRange,
+    Cmd_Atk,
 }
 
 public enum Faces{

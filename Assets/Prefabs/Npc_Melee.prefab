@@ -11,11 +11,9 @@ GameObject:
   - component: {fileID: 6767828009713262367}
   - component: {fileID: 3887869233885004206}
   - component: {fileID: 1589641865003512355}
-  - component: {fileID: 981233402559415608}
   - component: {fileID: 6592795491389861751}
   - component: {fileID: 4657171625217515842}
   - component: {fileID: 3660652888493554705}
-  - component: {fileID: 8358924102819161756}
   - component: {fileID: 4929870850209602819}
   - component: {fileID: 6724037384312258832}
   m_Layer: 8
@@ -55,7 +53,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pc
   capsuleCharRegisterer: {fileID: 1589641865003512355}
-  ctrl: {fileID: 8358924102819161756}
+  ctrl: {fileID: 0}
   charCtrlMov: {fileID: 6592795491389861751}
   fsm: {fileID: 1474272513631453057}
   fsmSts: {fileID: 2012632402294677264}
@@ -65,6 +63,8 @@ MonoBehaviour:
   weapon: {fileID: 7414203403203029937}
   hitRecieverHandler: {fileID: 3660652888493554705}
   charCtrl: {fileID: 6724037384312258832}
+  tgt: {fileID: 0}
+  agent: {fileID: 4929870850209602819}
 --- !u!114 &1589641865003512355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,20 +78,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharRegisterer
   so_capsuleCharData: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
---- !u!114 &981233402559415608
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90890764780532298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b081675857412b459deb443d91cb143, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bt_BasicEnemy
-  agent: {fileID: 4929870850209602819}
-  tgt: {fileID: 0}
+  so_BtRootNode: {fileID: 11400000, guid: 8ce3116f420e44b49aa1fc0bf7798ea2, type: 2}
 --- !u!114 &6592795491389861751
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,20 +120,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieveHandler
   pc: {fileID: 3887869233885004206}
   bodyHitReciever: {fileID: 7103892308228530263}
---- !u!114 &8358924102819161756
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 90890764780532298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b970c682620f4244a168c09950ee838, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharCtrl
-  plrCtrl: {fileID: 0}
-  bt_BasicEnemy: {fileID: 981233402559415608}
 --- !u!195 &4929870850209602819
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -86,29 +86,31 @@ public struct AtkData {
     }
 }
 
-public struct BtDef {
-    public int nodeStart;
-    public int nodeCount;
-}
-
 public struct BtNodeData {
     public int childCount;
+    /// <summary>
+    /// Id for optional data the node might use.
+    /// </summary>
     public int dataId;
     public int firstChild;
+    public int nextSibling;
     public FixedString32Bytes nodeName;
+    public int parent;
     public BtNodeT t;
-}
-
-public struct BtSt {
-    public int curNode;
-    public int stackStart;
-    public int stackCount;
 }
 
 /// <summary>
 /// Used for SoA type of handling of capsule character data.
 /// </summary>
 public struct CapsuleCharData {
+    public float3 brain_AgentDesiredVel;
+    public float brain_AggroRange;
+    public float brain_AtkRange;
+    public float brain_DistToTgt;
+    public bool brain_HasTgt;
+    public bool brain_InAggroRange;
+    public bool brain_InAtkRange;
+    public float3 brain_TgtPos;
     public float curStDur;
     public float gravitationalAcc;
     public bool groundCastHitSomething;

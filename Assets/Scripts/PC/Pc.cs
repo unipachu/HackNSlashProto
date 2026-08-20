@@ -1,4 +1,6 @@
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Capsule character.
@@ -19,8 +21,10 @@ public class Pc : MonoBehaviour{
     public CapsuleCharWeapon weapon;
     public CapsuleCharHitRecieveHandler hitRecieverHandler;
     public CharacterController charCtrl;
+    public Transform tgt;
+    public NavMeshAgent agent;
     
-    const float movInputDeadzone = 0.2f;
+    public const float movInputDeadzone = 0.2f;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.
@@ -50,13 +54,14 @@ public class Pc : MonoBehaviour{
 
     void Update() {
         var data = Data;
-        data.trf_pos = transform.position;
-        data.trf_rot = transform.rotation;
-        data.trf_lossyScl = transform.lossyScale;
-        data.lastCharCtrlVel = charCtrl.velocity;
-        data.curStDur += Time.deltaTime;
-        UpdateInput(ref data, ctrl, inputBuffer);
+        UpdateData_Sensing(ref data, transform, tgt);
+        UpdateData_FromNonNative(ref data, transform, charCtrl);
+        if(ctrl != null)
+            UpdateData_Input(ref data, ctrl, inputBuffer);
+        if(agent != null)
+            UpdateData_AgentMovInput(ref data, agent, tgt);
         Data = data;
+        UpdateInputBuffer(Data, inputBuffer);
         fsm.CurSt.Tick();
     }
 
@@ -67,6 +72,35 @@ public class Pc : MonoBehaviour{
     void OnDisable(){
         capsuleCharRootMvmtBroadcaster.OnRootMove -= OnAnimatorRootMove;
         fsm.StSwitched -= OnStSwitched;
+    }
+
+    public static void UpdateData_AgentMovInput(
+        ref CapsuleCharData data,
+        NavMeshAgent agent,
+        Transform tgt
+    ) {
+        if(tgt == null) {
+            data.brain_AgentDesiredVel = float3.zero;
+            return;
+        }
+        agent.SetDestination(tgt.position);
+        data.brain_AgentDesiredVel = agent.desiredVelocity;
+        //Debug.Log($"Agent desired vel: {data.brain_AgentDesiredVel}", agent);
+    }
+
+    /// <summary>
+    /// Update data from non native data sources, e.g. from Monobehavior components.
+    /// </summary>
+    public static void UpdateData_FromNonNative(
+        ref CapsuleCharData data,
+        Transform thisTrf,
+        CharacterController charCtrl
+    ) {
+        data.trf_pos = thisTrf.position;
+        data.trf_rot = thisTrf.rotation;
+        data.trf_lossyScl = thisTrf.lossyScale;
+        data.lastCharCtrlVel = charCtrl.velocity;
+        data.curStDur += Time.deltaTime;
     }
 
     public static void UpdateGroundCheck(Pc pc) {
@@ -80,7 +114,11 @@ public class Pc : MonoBehaviour{
         pc.Data = data;
     }
 
-    public static void UpdateInput(ref CapsuleCharData data, CapsuleCharCtrl ctrl, PcInputBuffer inputBuffer){
+    public static void UpdateData_Input(
+        ref CapsuleCharData data,
+        CapsuleCharCtrl ctrl,
+        PcInputBuffer inputBuffer
+    ){
         data.input_atk_Light = ctrl.TryConsume_Atk_Light();
         data.input_atk_Heavy = ctrl.TryConsume_Atk_Heavy();
         data.input_atk_Ult = ctrl.TryConsume_Atk_Ult();
@@ -92,6 +130,29 @@ public class Pc : MonoBehaviour{
             data.input_mov = Vector2.zero;
         }
         // Buffer certain inputs
+
+        //Debug.Log("mov input mag: " + data.mov.magnitude);
+    }
+
+    public static void UpdateData_Sensing(
+        ref CapsuleCharData data,
+        Transform thisTrf,
+        Transform tgt
+    ) {
+        if (tgt != null) {
+            data.brain_DistToTgt = Vector3.Distance(thisTrf.position, tgt.position);
+            data.brain_HasTgt = true;
+            data.brain_InAggroRange
+                = Vector3.Distance(thisTrf.position, tgt.position) < data.brain_AggroRange;
+            data.brain_InAtkRange
+                = Vector3.Distance(thisTrf.position, tgt.position) < data.brain_AtkRange;
+            data.brain_TgtPos = tgt.position;
+        }
+        else
+            data.brain_HasTgt = false;
+    }
+
+    public static void UpdateInputBuffer(CapsuleCharData data, PcInputBuffer inputBuffer) {
         if (data.input_atk_Light)
             inputBuffer.BufferInput(BufferableInput.Atk_Light);
         else if (data.input_atk_Heavy)
@@ -100,7 +161,6 @@ public class Pc : MonoBehaviour{
             inputBuffer.BufferInput(BufferableInput.Atk_Ult);
         else if (data.input_dodge)
             inputBuffer.BufferInput(BufferableInput.Dodge);
-        //Debug.Log("mov input mag: " + data.mov.magnitude);
     }
 
     // ---------------------------------------------------------------
@@ -121,10 +181,14 @@ public class Pc : MonoBehaviour{
         //Debug.Log($"Mov input when st switched: {inputData.mov}.");
         CapsuleCharData data = Data;
         data.curStDur = 0;
-        if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone)
+        if(ctrl == null) {
             data.input_mov_WhenLastSwitchedSt = data.input_mov;
-        else
-            data.input_mov_WhenLastSwitchedSt = Vector2.zero;
+        } else {
+            if (ctrl.Input_Mov.sqrMagnitude > movInputDeadzone)
+                data.input_mov_WhenLastSwitchedSt = data.input_mov;
+            else
+                data.input_mov_WhenLastSwitchedSt = Vector2.zero;
+        }
         Data = data;
     }
 }

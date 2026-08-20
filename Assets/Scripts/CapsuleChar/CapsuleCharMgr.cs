@@ -8,19 +8,21 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     public int maxCapsuleChars = 2;
 
     public NativeArray<CapsuleCharData> capsuleCharDatas;
-
     // Structs can't be null, so we need a way to keep track of structs that are actually used.
     public NativeArray<bool> occupied;
  
-    protected override void Awake() {
-        base.Awake();
+    public void Init() {
+        if (capsuleCharDatas.IsCreated) {
+            Debug.LogError("Data already created before Init!", this);
+            return;
+        }
         capsuleCharDatas = new NativeArray<CapsuleCharData>(maxCapsuleChars, Allocator.Persistent);
         occupied = new NativeArray<bool>(maxCapsuleChars, Allocator.Persistent);
     }
 
     void OnDestroy() {
-        if (capsuleCharDatas.IsCreated) capsuleCharDatas.Dispose();
-        if (occupied.IsCreated) occupied.Dispose();
+        capsuleCharDatas.Dispose();
+        occupied.Dispose();
     }
 
     // ------------------------------------------------------------------------------
@@ -40,7 +42,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     /// <summary>
     /// Returns the index of the registered data, or -1 on failure.
     /// </summary>
-    public int Register(So_CapsuleCharData so_capsuleCharData) {
+    public int Register(So_CapsuleCharData so_capsuleCharData, So_BtRootNode bt) {
         int freeIndex = -1;
         for (int i = 0; i < occupied.Length; i++) {
             if (!occupied[i]) {
@@ -53,6 +55,9 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
             return -1;
         }
         capsuleCharDatas[freeIndex] = so_capsuleCharData.ToStruct();
+        if (bt != null) {
+            BtMgr.inst.Register(freeIndex, bt);
+        }
         occupied[freeIndex] = true;
         return freeIndex;
     }

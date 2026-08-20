@@ -22,6 +22,10 @@ public class So_CapsuleCharData : ScriptableObject{
     [Header("Health")]
     [SerializeField] int maxHP = 100;
 
+    [Header("Npc Brain")]
+    [SerializeField] int brain_AggroRange = 8;
+    [SerializeField] int brain_AtkRange = 4;
+
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
     [SerializeField] float st_AtkJump_DownSpeedAfterJumpFinished = 10;
@@ -51,6 +55,9 @@ public class So_CapsuleCharData : ScriptableObject{
     // NOTE C: C# 9 doesn't support default struct values. Otherwise I'd just have a serialized
     // NOTE C: struct directly in the scriptable object.
     public CapsuleCharData ToStruct() => new CapsuleCharData {
+        brain_AgentDesiredVel = float3.zero,
+        brain_AggroRange = brain_AggroRange,
+        brain_AtkRange = brain_AtkRange,
         curStDur = 0,
         gravitationalAcc = gravitationalAcc,
         groundCastHitSomething = false,

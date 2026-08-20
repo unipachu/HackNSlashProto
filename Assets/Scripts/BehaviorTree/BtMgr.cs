@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -7,70 +8,33 @@ using UnityEngine;
 /// </summary>
 public class BtMgr : Singleton<BtMgr>{
     [Tooltip("How deep a tree branch can be at max.")]
-    [SerializeField] int maxBtDepth = 50;
+    [SerializeField] int maxNodesPerTree = 10;
 
-    [Header("Refs")]
-    CapsuleCharMgr capsuleCharMgr;
-    
-    So_BtRootNode[] bts;
-    public NativeArray<BtDef> defs;
+    /// <summary>
+    /// All nodes of all capsule character trees. Nodes of one tree are put here
+    /// sequentially, trees ordered in the order of capsule character ids.
+    /// </summary>
     public NativeArray<BtNodeData> nodes;
-    public NativeArray<BtSt> btSts;
-    public NativeArray<int> exeStack;
-    //// NOTE: Basically only used for debugging.
-    //public NativeArray<bool> occupied;
+    /// <summary>
+    /// Node currently running for a behavior tree. Defaults to -1.
+    /// </summary>
+    public NativeArray<int> curRunningNode;
 
-    override protected void Awake() {
-        base.Awake();
-        CompileTrees();
+    NativeArray<bool> occupied;
+
+    public void Init() {
+        if (nodes.IsCreated || curRunningNode.IsCreated) {
+            Debug.LogError("Data already created before Init!", this);
+            return;
+        }
+        AllocateNodeStorage();
         AllocateRuntimeData();
     }
 
     void OnDestroy() {
-        defs.Dispose();
         nodes.Dispose();
-        btSts.Dispose();
-        exeStack.Dispose();
-        //occupied.Dispose();
-    }
-
-    void AllocateRuntimeData() {
-        btSts = new NativeArray<BtSt>(capsuleCharMgr.maxCapsuleChars, Allocator.Persistent);
-        exeStack = new NativeArray<int>(
-            capsuleCharMgr.maxCapsuleChars * maxBtDepth,
-            Allocator.Persistent
-        );
-        //occupied = new NativeArray<bool>(capsuleCharMgr.maxCapsuleChars, Allocator.Persistent);
-    }
-    
-    void CompileNode(So_BtNode node, List<BtNodeData> nodeList) {
-        int i = nodeList.Count;
-        nodeList.Add(default);
-        BtNodeData data = new BtNodeData {
-            t = node.t,
-            firstChild = -1,
-            childCount = 0,
-            dataId = -1
-        };
-    }
-    
-    void CompileTrees() {
-        List<BtNodeData> nodeList = new List<BtNodeData>();
-        List<BtDef> defList = new List<BtDef>();
-        foreach (So_BtRootNode tree in bts) {
-            int start = nodeList.Count;
-            CompileNode(tree.root, nodeList);
-            defList.Add(new BtDef {
-                nodeStart = start,
-                nodeCount = nodeList.Count - start
-            });
-        }
-        nodes = new NativeArray<BtNodeData>(nodeList.Count, Allocator.Persistent);
-        defs = new NativeArray<BtDef>(defList.Count, Allocator.Persistent);
-        for (int i = 0; i < nodeList.Count; i++)
-            nodes[i] = nodeList[i];
-        for (int i = 0; i < defList.Count; i++)
-            defs[i] = defList[i];
+        curRunningNode.Dispose();
+        occupied.Dispose();
     }
 
     // ------------------------------------------------------------------------------
@@ -80,31 +44,204 @@ public class BtMgr : Singleton<BtMgr>{
     /// <summary>
     /// NOTE: Uses capsule character id as index.
     /// </summary>
-    public void Register(int capsuleCharId) {
-        //if (occupied[capsuleCharId]) {
-        //    Debug.LogError($"Id {capsuleCharId} already registered!");
-        //    return;
-        //}
-        //occupied[capsuleCharId] = true;
-        btSts[capsuleCharId] = new BtSt {
-            curNode = 0,
-            stackStart = capsuleCharId * maxBtDepth,
-            stackCount = 0
-        };
+    public void Register(int capsuleCharId, So_BtRootNode bt) {
+        //Debug.Log($"Registered character {capsuleCharId}", this);
+        AddTree(capsuleCharId, bt);
+        curRunningNode[capsuleCharId] = -1;
+        occupied[capsuleCharId] = true;
+    }
+
+    public void Unregister(int capsuleCharId) {
+        occupied[capsuleCharId] = false;
     }
 
     public void Tick() {
-        var capsuleCharDatas = capsuleCharMgr.capsuleCharDatas;
-        var occupied = capsuleCharMgr.occupied;
+        var capsuleCharDatas = CapsuleCharMgr.inst.capsuleCharDatas;
         for (int i = 0; i < occupied.Length; i++) {
-            if (occupied[i]) {
-                // TODO: Loop over behavior trees
+            if (!occupied[i])
+                continue;
+            CapsuleCharData capsuleCharData = capsuleCharDatas[i];
+            TickBt(i, ref capsuleCharData);
+            capsuleCharDatas[i] = capsuleCharData;
+        }
+        CapsuleCharMgr.inst.capsuleCharDatas = capsuleCharDatas;
+    }
+
+    // ------------------------------------------------------------------------------
+    // Private Methods
+    // ------------------------------------------------------------------------------
+
+    void AddTree(int capsuleCharId, So_BtRootNode tree) {
+        Debug.Log($"Adding bt for char {capsuleCharId}: {tree.name}", this);
+        List<BtNodeData> nodeList = new List<BtNodeData>();
+        CompileNode(tree.root, nodeList, -1);
+        if (nodeList.Count > maxNodesPerTree) {
+            Debug.LogError($"Tree had {nodeList.Count} nodes but max node count "
+                + $"per tree is {maxNodesPerTree}", this);
+            return;
+        }
+        for (int i = 0; i < nodeList.Count; i++)
+            nodes[maxNodesPerTree * capsuleCharId + i] = nodeList[i];
+    }
+
+    void AllocateNodeStorage() {
+        nodes = new NativeArray<BtNodeData>(
+            CapsuleCharMgr.inst.maxCapsuleChars * maxNodesPerTree,
+            Allocator.Persistent
+        );
+    }
+
+    void AllocateRuntimeData() {
+        curRunningNode = new NativeArray<int>(
+            CapsuleCharMgr.inst.maxCapsuleChars,
+            Allocator.Persistent
+        );
+        occupied = new NativeArray<bool>(
+            CapsuleCharMgr.inst.maxCapsuleChars,
+            Allocator.Persistent
+        );
+    }
+
+    /// <summary>
+    /// We compile nodes to a flat list. Each nodes subtree is contiguous.
+    /// </summary>
+    void CompileNode(So_BtNode node, List<BtNodeData> nodeList, int parent) {
+        Debug.Assert(node != null, $"Scriptable object bt node ref was null!", this);
+        int i = nodeList.Count;
+        nodeList.Add(default);
+        int firstChild = node.children.Length > 0 ? nodeList.Count : -1;
+        int prevChild = -1;
+        for (int j = 0; j < node.children.Length; j++) {
+            int childI = nodeList.Count;
+            CompileNode(node.children[j], nodeList, i);
+            if(prevChild != -1) {
+                BtNodeData prevData = nodeList[prevChild];
+                prevData.nextSibling = childI;
+                nodeList[prevChild] = prevData;
             }
+            prevChild = childI;
+        }
+        nodeList[i] = new BtNodeData {
+            childCount = node.children.Length,
+            dataId = -1,
+            firstChild = firstChild,
+            nextSibling = -1,
+            nodeName = node.name,
+            parent = parent,
+            t = node.t
+        };
+    }
+
+    BtResult EvalLeaf(BtNodeT t, ref CapsuleCharData charData) {
+        switch (t) {
+            case BtNodeT.Cmd_Idle:
+                charData.input_atk_Heavy = false;
+                charData.input_atk_Light = false;
+                charData.input_atk_Ult = false;
+                charData.input_dodge = false;
+                if(math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
+                    charData.input_mov_LastNonZero = charData.input_mov;
+                charData.input_mov = float2.zero;
+                return BtResult.Success;
+            case BtNodeT.Cmd_Atk1:
+                charData.input_atk_Heavy = false;
+                charData.input_atk_Light = true;
+                charData.input_atk_Ult = false;
+                charData.input_dodge = false;
+                if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
+                    charData.input_mov_LastNonZero = charData.input_mov;
+                charData.input_mov = float2.zero;
+                return BtResult.Success;
+            case BtNodeT.Cmd_MovToTgt:
+                charData.input_atk_Heavy = false;
+                charData.input_atk_Light = false;
+                charData.input_atk_Ult = false;
+                charData.input_dodge = false;
+                if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
+                    charData.input_mov_LastNonZero = charData.input_mov;
+                float2 horDesiredVel = new float2(
+                        charData.brain_AgentDesiredVel.x,
+                        charData.brain_AgentDesiredVel.z
+                );
+                // Agent can have 0 desired velocity, thus to avoid NaNs:
+                if(math.lengthsq(horDesiredVel) > 0.0001f)
+                    // Movement input should always be max 1 length.
+                    charData.input_mov = math.normalize(horDesiredVel);
+                //Debug.Log($"BtNodeT.Cmd_MovToTgt movement input: {charData.input_mov}", this);
+                return BtResult.Success;
+            case BtNodeT.Cond_InAggroRange:
+                return charData.brain_InAggroRange ? BtResult.Success : BtResult.Failure;
+            case BtNodeT.Cond_InAtkRange:
+                return charData.brain_InAtkRange ? BtResult.Success : BtResult.Failure;
+            case BtNodeT.Selector:
+                Debug.LogError("Selector is a composite not a leaf!", this);
+                return BtResult.Running;
+            case BtNodeT.Sequence:
+                Debug.LogError("Sequence is a composite not a leaf!", this);
+                return BtResult.Running;
+            default:
+                Debug.LogError("Switch defaulted!", this);
+                return BtResult.Running;
         }
     }
 
-    //public void Unregister(int capsuleCharId) {
-    //    Debug.Assert(occupied[capsuleCharId], $"Id has not been registered: {capsuleCharId}!", this);
-    //    occupied[capsuleCharId] = false;
-    //}
+    /// <summary>
+    /// Evaluate each node of a bt.
+    /// </summary>
+    // TODO: Create some optional debugging system that writes data about what nodes were
+    // TODO C: visited and what they returned.
+    void TickBt(int capsuleCharId, ref CapsuleCharData charData) {
+        int outerIterations = 0;
+        int innerIterations = 0;
+        int treeStart = capsuleCharId * maxNodesPerTree;
+        int nodeI = curRunningNode[capsuleCharId] == -1
+            ? treeStart
+            : treeStart + curRunningNode[capsuleCharId];
+        BtResult result = BtResult.Success;
+        while (true) {
+            if (++outerIterations > 100) {
+                Debug.LogError($"{capsuleCharId} bt outer loop looped too long.", this);
+                return;
+            }
+            BtNodeData node = nodes[nodeI];
+            //Debug.Log($"Went to node {node.nodeName}");
+            if (node.t == BtNodeT.Sequence || node.t == BtNodeT.Selector) {
+                nodeI = treeStart + node.firstChild;
+                continue;
+            }
+            result = EvalLeaf(node.t, ref charData);
+            if (result == BtResult.Running) {
+                curRunningNode[capsuleCharId] = nodeI - treeStart;
+                return;
+            }
+            while (true) {
+                if (++innerIterations > 100) {
+                    Debug.LogError($"{capsuleCharId} bt inner loop looped too long.", this);
+                    return;
+                }
+                if (node.parent == -1) {
+                    curRunningNode[capsuleCharId] = -1;
+                    return;
+                }
+                BtNodeData parent = nodes[treeStart + node.parent];
+                bool parentFinished
+                    = parent.t == BtNodeT.Sequence
+                    && result == BtResult.Failure
+                    || parent.t == BtNodeT.Selector
+                    && result == BtResult.Success;
+                if (parentFinished) {
+                    nodeI = treeStart + node.parent;
+                    node = parent;
+                    continue;
+                }
+                if (node.nextSibling != -1) {
+                    nodeI = treeStart + node.nextSibling;
+                    break;
+                }
+                result = parent.t == BtNodeT.Sequence ? BtResult.Success : BtResult.Failure;
+                nodeI = treeStart + node.parent;
+                node = parent;
+            }
+        }
+    }
 }

@@ -3645,7 +3645,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!114 &900887752
 MonoBehaviour:
@@ -3707,8 +3707,8 @@ MonoBehaviour:
   camMovByInputAllowed: 1
   horSpd: 360
   verSpd: 360
-  tiltOfs: 20
-  tiltMult: 0.3
+  tiltOfs: 30
+  tiltMult: 0.25
   invY: 1
   plrCtrl: {fileID: 83296388}
   orbitalFollow: {fileID: 1713288054}
@@ -3802,6 +3802,50 @@ Transform:
   - {fileID: 2136954660}
   - {fileID: 1446263108}
   - {fileID: 1467908560}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &986996946
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 986996948}
+  - component: {fileID: 986996947}
+  m_Layer: 0
+  m_Name: GameMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!114 &986996947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 986996946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 678ebe858a1fba247a6ea9f7e97c5e9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameMgr
+--- !u!4 &986996948
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 986996946}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1002981948
@@ -6555,8 +6599,8 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
 --- !u!114 &1648819501
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6569,7 +6613,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ffe869483d82f04eb3312c75469d2b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Bt
-  maxBtDepth: 16
+  maxNodesPerTree: 10
 --- !u!4 &1648819502
 Transform:
   m_ObjectHideFlags: 0
@@ -6909,13 +6953,13 @@ MonoBehaviour:
   Radius: 5
   Orbits:
     Top:
-      Radius: 3
+      Radius: 1
       Height: 9.3
     Center:
       Radius: 8
       Height: 5.3
     Bottom:
-      Radius: 4
+      Radius: 5
       Height: -0.7
     SplineCurvature: 0.5
   RecenteringTarget: 2
@@ -8149,6 +8193,10 @@ PrefabInstance:
       propertyPath: tgt
       value: 
       objectReference: {fileID: 439737473}
+    - target: {fileID: 3887869233885004206, guid: 3b1212b2b53901a499e0c0b770f8db3d, type: 3}
+      propertyPath: tgt
+      value: 
+      objectReference: {fileID: 439737473}
     - target: {fileID: 6767828009713262367, guid: 3b1212b2b53901a499e0c0b770f8db3d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.19
@@ -8188,6 +8236,10 @@ PrefabInstance:
     - target: {fileID: 6767828009713262367, guid: 3b1212b2b53901a499e0c0b770f8db3d, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358924102819161756, guid: 3b1212b2b53901a499e0c0b770f8db3d, type: 3}
+      propertyPath: bt_BasicEnemy
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -8250,10 +8302,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Plr
       objectReference: {fileID: 0}
-    - target: {fileID: 6852208831813081515, guid: 04441985141764a488372bd370c938f3, type: 3}
-      propertyPath: so_capsuleCharData
-      value: 
-      objectReference: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
     - target: {fileID: 8852917719570915941, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -8297,6 +8345,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 1026410970}
+  - {fileID: 986996948}
   - {fileID: 1648819502}
   - {fileID: 900887753}
   - {fileID: 936050738}

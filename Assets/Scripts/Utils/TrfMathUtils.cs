@@ -72,6 +72,10 @@ public class TrfMathUtils : MonoBehaviour {
         if (tgtInXZPlane == Vector2.zero)
             return;
         Vector3 dir3D = new Vector3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
+        if (dir3D.sqrMagnitude < 0.0001f) {
+            Debug.LogWarning("Look rotation viewing vector was zero", trf);
+            return;
+        }
         Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
         trf.rotation = Quaternion.RotateTowards(
             trf.rotation,
