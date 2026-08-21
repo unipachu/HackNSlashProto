@@ -19,7 +19,7 @@ MonoBehaviour:
   maxHP: 100
   brain_AggroRange: 8
   brain_AtkRange: 4
-  equip_RHandEquippable: 2
+  equip_RHandEquippable: 3
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000
   st_AtkHorSlash_Impact_AngSpd: 1200

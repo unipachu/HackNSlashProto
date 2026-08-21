@@ -585,9 +585,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitDealer
   capsules:
-  - pt0: {x: 0, y: -0.01, z: 0.49}
-    pt1: {x: 0, y: -0.88, z: 0.49}
-    r: 0.54
+  - pt0: {x: 0, y: -0.23, z: 0.15}
+    pt1: {x: 0, y: -0.09, z: 0.15}
+    r: 0.21
   capsuleLayerMask:
     serializedVersion: 2
     m_Bits: 512
@@ -687,6 +687,37 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &7664355315137040867
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4093082790708201532}
+  m_Layer: 0
+  m_Name: ProjSpawnPose
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4093082790708201532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7664355315137040867}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 0, y: -0.3943, z: 0.22}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2010874956325773651}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &7719338795147962438
 GameObject:
   m_ObjectHideFlags: 0
@@ -757,6 +788,7 @@ Transform:
   m_Children:
   - {fileID: 3203417415848378990}
   - {fileID: 4190945920530765519}
+  - {fileID: 4093082790708201532}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3975478873599571957
@@ -773,3 +805,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharWeapon
   hitDealer: {fileID: 5092167040023849340}
   aoeHitDealer: {fileID: 0}
+  projSpawnPose: {fileID: 4093082790708201532}

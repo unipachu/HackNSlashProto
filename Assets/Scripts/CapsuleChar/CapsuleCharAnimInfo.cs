@@ -29,6 +29,22 @@ public static class CapsuleCharAnimInfo {
         (47, CapsuleCharAnimEvent.FlyingAtk_Windup_Finished)
     );
 
+    public static AnimInfo atk_GunShoot_Recovery = new(
+        Animator.StringToHash("Cc_Atk_GunShoot_Recovery"),
+        0,
+        false,
+        40,
+        (40, CapsuleCharAnimEvent.Atk_GunShoot_Recovery_Finished)
+    );
+
+    public static AnimInfo atk_GunShoot_Windup = new(
+        Animator.StringToHash("Cc_Atk_GunShoot_Windup"),
+        0,
+        false,
+        30,
+        (30, CapsuleCharAnimEvent.Atk_GunShoot_Windup_Finished)
+    );
+
     public static AnimInfo atk_HorSlash1_Impact = new(
         Animator.StringToHash("Cc_Atk_HorSlash1_Impact"),
         0,

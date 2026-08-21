@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::So_HandEquippable
   t: 3
   prefab: {fileID: 3975478873599571957, guid: 181c3cbef99e68045a1cb907a5a30ac8, type: 3}
-  lightAtkAct: 0
-  heavyAtkAct: 0
+  lightAtkAct: 1
+  heavyAtkAct: 5
   ultAtkAct: 0

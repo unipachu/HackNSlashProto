@@ -20,6 +20,7 @@ public enum BufferableInput {
 /// </summary>
 public enum CapsuleCharActSt {
     Atk_FlyingAtk,
+    Atk_ShootHomingProj,
     // TODO: start indexing from 0, ugh.
     Atk_HorSlash1,
     Atk_HorSlash2,
@@ -37,6 +38,8 @@ public enum CapsuleCharActSt {
 /// Animation events used by the capsule character Animator.
 /// </summary>
 public enum CapsuleCharAnimEvent {
+    Atk_GunShoot_Windup_Finished,
+    Atk_GunShoot_Recovery_Finished,
     FallLanding_CanSwitchSt,
     FallLanding_Finished,
     FlyingAtk_Windup_Finished,

@@ -189,6 +189,7 @@ GameObject:
   - component: {fileID: 4484572386372135825}
   - component: {fileID: 5982696648205672473}
   - component: {fileID: 4535081202395221052}
+  - component: {fileID: 5127022859350714984}
   - component: {fileID: 379717610484258686}
   - component: {fileID: 7436197896358133280}
   - component: {fileID: 2792139710632491979}
@@ -247,6 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSM_PCStates
   atk_FlyingAtk: {fileID: 4535081202395221052}
+  atk_ShootHomingProj: {fileID: 5127022859350714984}
   atk_HorSlash1: {fileID: 379717610484258686}
   atk_HorSlash2: {fileID: 7436197896358133280}
   atk_HorSlash3: {fileID: 2792139710632491979}
@@ -270,6 +272,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FSMSt_PC_Atk_FlyingAtk
   pc: {fileID: 1442902339715407833}
+--- !u!114 &5127022859350714984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6815989536737173322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e9dde152fae2524bb4f583acdfe181c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FsmSt_Cc_Atk_ShootHomingProj
+  cc: {fileID: 1442902339715407833}
 --- !u!114 &379717610484258686
 MonoBehaviour:
   m_ObjectHideFlags: 0

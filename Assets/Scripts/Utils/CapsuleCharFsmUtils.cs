@@ -1,3 +1,6 @@
+
+using UnityEngine;
+
 /// <summary>
 /// Capsule charater's state machine related utility methods (e.g. state change condition checks).
 /// </summary>
@@ -14,5 +17,25 @@ public static class CapsuleCharFsmUtils{
             return true;
         }
         return false;
+    }
+
+    public static void SwitchToLightAtkSt(Pc cc) {
+        switch (cc.Data.equip_RHandEquippable) {
+            case HandEquippableT.Empty:
+                cc.fsm.SwitchSt(cc.fsmSts.atk_HorSlash1);
+                break;
+            case HandEquippableT.Sword:
+                cc.fsm.SwitchSt(cc.fsmSts.atk_HorSlash1);
+                break;
+            case HandEquippableT.Hammer:
+                cc.fsm.SwitchSt(cc.fsmSts.atk_HorSlash1);
+                break;
+            case HandEquippableT.Pistol:
+                cc.fsm.SwitchSt(cc.fsmSts.atk_ShootHomingProj);
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {cc.Data.equip_RHandEquippable}");
+                break;
+        }
     }
 }

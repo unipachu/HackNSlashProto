@@ -8344,10 +8344,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4484572386372135825, guid: 04441985141764a488372bd370c938f3, type: 3}
-      propertyPath: logMsg
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
       value: Plr

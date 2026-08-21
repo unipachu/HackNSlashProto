@@ -133,6 +133,7 @@ public class BtMgr : Singleton<BtMgr>{
     }
 
     BtResult EvalLeaf(BtNodeT t, ref CapsuleCharData charData) {
+        float2 horDesiredVel;
         switch (t) {
             case BtNodeT.Cmd_Idle:
                 charData.input_atk_Heavy = false;
@@ -150,7 +151,14 @@ public class BtMgr : Singleton<BtMgr>{
                 charData.input_dodge = false;
                 if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
                     charData.input_mov_LastNonZero = charData.input_mov;
-                charData.input_mov = float2.zero;
+                horDesiredVel = new float2(
+                        charData.brain_AgentDesiredVel.x,
+                        charData.brain_AgentDesiredVel.z
+                );
+                // Agent can have 0 desired velocity, thus to avoid NaNs:
+                if (math.lengthsq(horDesiredVel) > 0.0001f)
+                    // Movement input should always be max 1 length.
+                    charData.input_mov = math.normalize(horDesiredVel);
                 return BtResult.Success;
             case BtNodeT.Cmd_MovToTgt:
                 charData.input_atk_Heavy = false;
@@ -159,7 +167,7 @@ public class BtMgr : Singleton<BtMgr>{
                 charData.input_dodge = false;
                 if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
                     charData.input_mov_LastNonZero = charData.input_mov;
-                float2 horDesiredVel = new float2(
+                horDesiredVel = new float2(
                         charData.brain_AgentDesiredVel.x,
                         charData.brain_AgentDesiredVel.z
                 );

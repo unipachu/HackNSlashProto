@@ -25,7 +25,7 @@ public class Pc : MonoBehaviour{
     public Transform rHand;
     
     public const float movInputDeadzone = 0.2f;
-    [HideInInspector]public HandEquippable rHandEquippable;
+    [HideInInspector] public HandEquippable rHandEquippable;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.

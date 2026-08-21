@@ -36,7 +36,7 @@ public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
         if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge))
             pc.fsm.SwitchSt(pc.fsmSts.dodge);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light))
-            pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash1);
+            CapsuleCharFsmUtils.SwitchToLightAtkSt(pc);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Heavy))
             pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
         else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
