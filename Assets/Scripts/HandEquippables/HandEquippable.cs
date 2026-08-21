@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CapsuleCharWeapon : MonoBehaviour {
+public class HandEquippable : MonoBehaviour {
     public HitDealer hitDealer;
     public HitDealer aoeHitDealer;
 }

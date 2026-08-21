@@ -112,6 +112,7 @@ public struct CapsuleCharData {
     public bool brain_InAtkRange;
     public float3 brain_TgtPos;
     public float curStDur;
+    public HandEquippableT equip_RHandEquippable;
     public float gravitationalAcc;
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
@@ -201,4 +202,11 @@ public struct HomingProjMovData {
         this.maxLifetime = maxLifetime;
         this.homingStr = homingStr;
     }
+}
+
+public struct HandEquippableData {
+    public HandEquippableT type;
+    public int lightAtkActId;
+    public int heavyAtkActId;
+    public int ultAtkActId;
 }

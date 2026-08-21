@@ -3,8 +3,9 @@ using UnityEngine;
 /// <summary>
 /// NOTE: This should be before the capsule characters in the execution order!
 /// </summary>
-public class CapsuleCharRegisterer : MonoBehaviour {
+public class CapsuleCharInitializer : MonoBehaviour {
     [SerializeField] So_CapsuleCharData so_capsuleCharData;
+    [SerializeField] Pc cc;
     [SerializeField] So_BtRootNode so_BtRootNode;
 
     public CapsuleCharData Data {
@@ -17,6 +18,12 @@ public class CapsuleCharRegisterer : MonoBehaviour {
         Debug.Assert(CapsuleCharMgr.inst != null, "CapsuleCharMgr inst was null!", this);
         Debug.Assert(so_capsuleCharData != null, "No data ref set!", this);
         Id = CapsuleCharMgr.inst.Register(so_capsuleCharData, so_BtRootNode);
+        cc.rHandEquippable = HandEquippableMgr.inst.InstantiateHandEquippable(Data.equip_RHandEquippable);
+        cc.rHandEquippable.gameObject.transform.SetPositionAndRotation(
+            cc.rHand.position,
+            cc.rHand.rotation
+        );
+        cc.rHandEquippable.transform.parent = cc.rHand;
     }
 
     void OnDisable() {

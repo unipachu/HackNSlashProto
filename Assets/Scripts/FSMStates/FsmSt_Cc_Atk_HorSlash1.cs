@@ -45,7 +45,7 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
     }
 
     public void Exit(){
-        pc.weapon.hitDealer.Deactivate();
+        pc.rHandEquippable.hitDealer.Deactivate();
     }
 
     public void PhysicsTick(){
@@ -132,12 +132,12 @@ public class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour, IFsmSt{
                 impactInputRotAllowed = false;
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerActivated:
-                pc.weapon.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                pc.weapon.hitDealer.hitWldDir = pc.transform.forward;
-                pc.weapon.hitDealer.Activate();
+                pc.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                pc.rHandEquippable.hitDealer.hitWldDir = pc.transform.forward;
+                pc.rHandEquippable.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerDeactivated:
-                pc.weapon.hitDealer.Deactivate();
+                pc.rHandEquippable.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.HorSlash1_Impact_ComboAllowed:
                 comboAllowed = true;

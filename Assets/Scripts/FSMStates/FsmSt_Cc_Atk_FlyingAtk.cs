@@ -40,7 +40,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
         data.invul = false;
         data.isAffectedByGravity = true;
         pc.Data = data;
-        pc.weapon.aoeHitDealer.Deactivate();
+        pc.rHandEquippable.aoeHitDealer.Deactivate();
     }
 
     public void PhysicsTick() {
@@ -67,7 +67,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                     0
                 );
                 if (pc.Data.isGrounded && impactFinished) {
-                    pc.weapon.aoeHitDealer.Deactivate();
+                    pc.rHandEquippable.aoeHitDealer.Deactivate();
                     attackPhase = AtkPhase.Recovery;
                     VisUtils.CrossfadeNInitAnimEventPlr(
                         ref pc.animEventPlr,
@@ -119,8 +119,8 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
                 attackPhase = AtkPhase.Impact;
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated:
-                pc.weapon.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
-                pc.weapon.aoeHitDealer.Activate();
+                pc.rHandEquippable.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
+                pc.rHandEquippable.aoeHitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.FlyingAtk_Impact_Finished:
                 CapsuleCharData data = pc.Data;

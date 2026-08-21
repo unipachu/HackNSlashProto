@@ -1,5 +1,6 @@
 // Add all public enums here.
 
+
 public enum AtkPhase{
     Windup,
     Impact,
@@ -12,6 +13,24 @@ public enum BufferableInput {
     Atk_Heavy,
     Atk_Ult,
     Dodge
+}
+
+/// <summary>
+/// Capsule character action state. These pair animations and animation events with gameplay logic.
+/// </summary>
+public enum CapsuleCharActSt {
+    Atk_FlyingAtk,
+    // TODO: start indexing from 0, ugh.
+    Atk_HorSlash1,
+    Atk_HorSlash2,
+    Atk_HorSlash3,
+    Atk_Jump,
+    Dodge,
+    Falling,
+    FallLanding,
+    Idle,
+    Knockback_Weak,
+    Walk
 }
 
 /// <summary>
@@ -132,4 +151,11 @@ public enum LocomotionType {
 public enum Side{
     Left,
     Right,
+}
+
+public enum HandEquippableT {
+    Empty,
+    Sword,
+    Hammer,
+    Pistol,
 }

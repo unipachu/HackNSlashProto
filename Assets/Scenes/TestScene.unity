@@ -3815,7 +3815,7 @@ GameObject:
   - component: {fileID: 986996948}
   - component: {fileID: 986996947}
   m_Layer: 0
-  m_Name: GameMgr
+  m_Name: _GameMgr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7953,6 +7953,56 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4401862854214746052, guid: 04441985141764a488372bd370c938f3, type: 3}
   m_PrefabInstance: {fileID: 6254414166165582577}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2064935155
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2064935156}
+  - component: {fileID: 2064935157}
+  m_Layer: 0
+  m_Name: HandEquippableMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &2064935156
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064935155}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2064935157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064935155}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 378362940c830854589528b91c5a0b76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HandEquippableMgr
+  handEquippableSos:
+  - {fileID: 11400000, guid: 79ac9de6f8b9d5d489ee9c323914b284, type: 2}
+  - {fileID: 11400000, guid: 0be676f69bf337047b80d69c31935d04, type: 2}
+  - {fileID: 11400000, guid: 25465986ed35339409fc030312ddb660, type: 2}
+  - {fileID: 11400000, guid: 3a24805ff97da4646a81cdf4083a7374, type: 2}
+  prefab: []
 --- !u!1 &2130705772
 GameObject:
   m_ObjectHideFlags: 0
@@ -8347,9 +8397,10 @@ SceneRoots:
   - {fileID: 1026410970}
   - {fileID: 986996948}
   - {fileID: 1648819502}
-  - {fileID: 900887753}
   - {fileID: 936050738}
   - {fileID: 32162908}
+  - {fileID: 900887753}
+  - {fileID: 2064935156}
   - {fileID: 1861722109}
   - {fileID: 1607186510}
   - {fileID: 832575519}

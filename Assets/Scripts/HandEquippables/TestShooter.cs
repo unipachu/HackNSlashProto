@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Test object for shooting projectiles.
 /// </summary>
-public class Shooter : MonoBehaviour {
+public class TestShooter : MonoBehaviour {
     [SerializeField] bool shoot = true;
     [SerializeField] AtkData atkData = new(10, KnockbackT.Weak, 0.5f);
     [SerializeField] float spd = 3;

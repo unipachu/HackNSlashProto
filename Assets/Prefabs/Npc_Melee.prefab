@@ -60,11 +60,12 @@ MonoBehaviour:
   inputBuffer: {fileID: 4657171625217515842}
   capsuleCharRootMvmtBroadcaster: {fileID: 2588787686441085569}
   capsuleCharAnim: {fileID: 545303081454821087}
-  weapon: {fileID: 7414203403203029937}
   hitRecieverHandler: {fileID: 3660652888493554705}
   charCtrl: {fileID: 6724037384312258832}
   tgt: {fileID: 0}
   agent: {fileID: 4929870850209602819}
+  rHand: {fileID: 5843488733018892544}
+  rHandEquippable: {fileID: 0}
 --- !u!114 &1589641865003512355
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,6 +79,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharRegisterer
   so_capsuleCharData: {fileID: 11400000, guid: 4be4a859b1e64684eb1279d28aeba0b4, type: 2}
+  cc: {fileID: 3887869233885004206}
   so_BtRootNode: {fileID: 11400000, guid: 8ce3116f420e44b49aa1fc0bf7798ea2, type: 2}
 --- !u!114 &6592795491389861751
 MonoBehaviour:
@@ -484,10 +486,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: e90e0efde41e61d48abb8fc5c8838918, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 1613588697446343649, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 5343281608324988183}
+    m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
 --- !u!95 &545303081454821087 stripped
@@ -527,76 +526,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
---- !u!1001 &5894990147842235460
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 5843488733018892544}
-    m_Modifications:
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8427959144526498737, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-      propertyPath: m_Name
-      value: Sword
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
---- !u!4 &5343281608324988183 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2010874956325773651, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-  m_PrefabInstance: {fileID: 5894990147842235460}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &7414203403203029937 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3975478873599571957, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}
-  m_PrefabInstance: {fileID: 5894990147842235460}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96bc9fa7dd2b68d4da73d44e1811af54, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharWeapon

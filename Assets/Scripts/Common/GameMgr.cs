@@ -3,6 +3,7 @@
 public class GameMgr : Singleton<GameMgr>{
     override protected void Awake(){
         base.Awake();
+        HandEquippableMgr.inst.Init();
         CapsuleCharMgr.inst.Init();
         BtMgr.inst.Init();
     }

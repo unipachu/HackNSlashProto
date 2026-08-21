@@ -12,7 +12,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     public NativeArray<bool> occupied;
  
     public void Init() {
-        if (capsuleCharDatas.IsCreated) {
+        if (capsuleCharDatas.IsCreated || occupied.IsCreated) {
             Debug.LogError("Data already created before Init!", this);
             return;
         }

@@ -8,7 +8,7 @@ using UnityEngine.AI;
 // TODO: Rename to Cc.
 public class Pc : MonoBehaviour{
     [Header("Data Refs")]
-    [SerializeField] CapsuleCharRegisterer capsuleCharRegisterer;
+    [SerializeField] CapsuleCharInitializer capsuleCharRegisterer;
 
     [Header("Component Refs")]
     public CapsuleCharCtrl ctrl;
@@ -18,13 +18,14 @@ public class Pc : MonoBehaviour{
     public PcInputBuffer inputBuffer;
     public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
     public Animator capsuleCharAnim;
-    public CapsuleCharWeapon weapon;
     public CapsuleCharHitRecieveHandler hitRecieverHandler;
     public CharacterController charCtrl;
     public Transform tgt;
     public NavMeshAgent agent;
+    public Transform rHand;
     
     public const float movInputDeadzone = 0.2f;
+    [HideInInspector]public HandEquippable rHandEquippable;
 
     /// <summary>
     /// Used to create animation events decoupled from the Animator.

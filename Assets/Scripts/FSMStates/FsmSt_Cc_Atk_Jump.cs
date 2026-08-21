@@ -28,7 +28,7 @@ public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
         CapsuleCharData data = pc.Data;
         data.isAffectedByGravity = true;
         pc.Data = data;
-        pc.weapon.hitDealer.Deactivate();
+        pc.rHandEquippable.hitDealer.Deactivate();
     }
 
     public void PhysicsTick(){
@@ -62,8 +62,8 @@ public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
-                pc.weapon.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                pc.weapon.hitDealer.Activate();
+                pc.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                pc.rHandEquippable.hitDealer.Activate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
                 data.isAffectedByGravity = true;
@@ -71,7 +71,7 @@ public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
                 pc.Data = data;
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:
-                pc.weapon.hitDealer.Deactivate();
+                pc.rHandEquippable.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEvent.JumpVerSlam_Finished:
                 if (!pc.Data.input_mov.Equals(float2.zero))

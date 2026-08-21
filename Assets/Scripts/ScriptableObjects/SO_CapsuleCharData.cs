@@ -26,6 +26,9 @@ public class So_CapsuleCharData : ScriptableObject{
     [SerializeField] int brain_AggroRange = 8;
     [SerializeField] int brain_AtkRange = 4;
 
+    [Header("Equipment Settings")]
+    [SerializeField] HandEquippableT equip_RHandEquippable;
+
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
     [SerializeField] float st_AtkJump_DownSpeedAfterJumpFinished = 10;
@@ -59,6 +62,7 @@ public class So_CapsuleCharData : ScriptableObject{
         brain_AggroRange = brain_AggroRange,
         brain_AtkRange = brain_AtkRange,
         curStDur = 0,
+        equip_RHandEquippable = equip_RHandEquippable,
         gravitationalAcc = gravitationalAcc,
         groundCastHitSomething = false,
         groundCastNrm = float3.zero,
