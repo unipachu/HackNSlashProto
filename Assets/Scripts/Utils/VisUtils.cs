@@ -7,23 +7,6 @@ using UnityEngine;
 /// </summary>
 public static class VisUtils {
     /// <summary>
-    /// Creates an array of animation events with their normalized times calculated from their frame indices.
-    /// </summary>
-    /// <param name="lastFrame">
-    /// Index of the last frame of the animation (the one in the Animation timeline where the color changes).
-    /// </param>
-    /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
-    public static AnimEvent[] CreateAnimEvents(
-        AnimInfo animInfo,
-        params (int frame, CapsuleCharAnimEvent id)[] events
-    ) {
-        AnimEvent[] result = new AnimEvent[events.Length];
-        for (int i = 0; i < events.Length; i++)
-            result[i] = new AnimEvent(events[i].frame, animInfo.lastFrame, events[i].id);
-        return result;
-    }
-
-    /// <summary>
     /// Starts a crossfade to an animation state.
     /// </summary>
     /// <param name="anim">Animator whose state is changed.</param>
@@ -164,53 +147,6 @@ public static class VisUtils {
                 return true;
         }
         return false;
-    }
-
-    /// <summary>
-    /// Starts crossfade and initializes animation event player.
-    /// </summary>
-    /// <param name="animEventPlr">
-    /// Animation event player to initialize.
-    /// </param>
-    /// <param name="anim">
-    /// Animator whose animation state is being changed.
-    /// </param>
-    /// <param name="animInfo">
-    /// Information about the animation state to crossfade to.
-    /// </param>
-    /// <param name="sortedAnimEvents">
-    /// Animation events for the animation, sorted in ascending order by normalized time.
-    /// </param>
-    /// <param name="onEvent">
-    /// Callback invoked when an animation event is triggered. The string parameter is the
-    /// unique ID/name of the triggered animation event e.g. "TurnOnInvulnerability".
-    /// </param>
-    /// <param name="nrmTransDur">
-    /// Duration of the crossfade in normalized time of the next animation.
-    /// </param>
-    /// <param name="startOffset">
-    /// Normalized starting time within the next animation.
-    /// </param>
-    public static void CrossfadeNInitAnimEventPlr(
-        ref AnimEventPlr animEventPlr,
-        Animator anim,
-        AnimInfo animInfo,
-        Action<CapsuleCharAnimEvent> onEvent,
-        float nrmTransDur = 0.1f,
-        float startOffset = 0
-    ) {
-        anim.CrossFade(
-            animInfo.shortNameHash,
-            nrmTransDur,
-            animInfo.animLayer,
-            startOffset
-        );
-        animEventPlr = new AnimEventPlr(
-            anim,
-            animInfo,
-            onEvent,
-            startOffset
-        );
     }
 
     /// <summary>

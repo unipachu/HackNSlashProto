@@ -9,8 +9,8 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         15,
-        (13, CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated),
-        (15, CapsuleCharAnimEvent.FlyingAtk_Impact_Finished)
+        (13, CapsuleCharAnimEventT.Atk_FlyingAtk_Impact_HitDealerActivated),
+        (15, CapsuleCharAnimEventT.FlyingAtk_Impact_Finished)
     );
 
     public static AnimInfo atk_FlyingAtk_Recovery = new(
@@ -18,7 +18,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         24,
-        (24, CapsuleCharAnimEvent.FlyingAtk_Recovery_Finished)
+        (24, CapsuleCharAnimEventT.Atk_FlyingAtk_Recovery_Finished)
     );
 
     public static AnimInfo atk_FlyingAtk_Windup = new(
@@ -26,7 +26,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         47,
-        (47, CapsuleCharAnimEvent.FlyingAtk_Windup_Finished)
+        (47, CapsuleCharAnimEventT.Atk_FlyingAtk_Windup_Finished)
     );
 
     public static AnimInfo atk_GunShoot_Recovery = new(
@@ -34,7 +34,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         40,
-        (40, CapsuleCharAnimEvent.Atk_GunShoot_Recovery_Finished)
+        (40, CapsuleCharAnimEventT.Atk_GunShoot_Recovery_Finished)
     );
 
     public static AnimInfo atk_GunShoot_Windup = new(
@@ -42,7 +42,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         30,
-        (30, CapsuleCharAnimEvent.Atk_GunShoot_Windup_Finished)
+        (30, CapsuleCharAnimEventT.Atk_GunShoot_Windup_Finished)
     );
 
     public static AnimInfo atk_HorSlash1_Impact = new(
@@ -50,13 +50,13 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         13,
-        (0, CapsuleCharAnimEvent.HorSlash1_Impact_RotationAllowed),
-        (4, CapsuleCharAnimEvent.HorSlash1_Impact_RotationDisallowed),
-        (4, CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerActivated),
-        (9, CapsuleCharAnimEvent.HorSlash1_Impact_HitDealerDeactivated),
-        (11, CapsuleCharAnimEvent.HorSlash1_Impact_ComboAllowed),
-        (12, CapsuleCharAnimEvent.HorSlash1_Impact_ComboDisallowed),
-        (13, CapsuleCharAnimEvent.HorSlash1_Impact_Finished)
+        (0, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_RotationAllowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_RotationDisallowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_HitDealerActivated),
+        (9, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_HitDealerDeactivated),
+        (11, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_ComboAllowed),
+        (12, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_ComboDisallowed),
+        (13, CapsuleCharAnimEventT.Atk_HorSlash1_Impact_Finished)
     );
 
     public static AnimInfo atk_HorSlash1_Recovery = new(
@@ -64,8 +64,8 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         9,
-        (3, CapsuleCharAnimEvent.HorSlash1_Recovery_DodgeAllowed),
-        (9, CapsuleCharAnimEvent.HorSlash1_Recovery_Finished)
+        (3, CapsuleCharAnimEventT.Atk_HorSlash1_Recovery_DodgeAllowed),
+        (9, CapsuleCharAnimEventT.Atk_HorSlash1_Recovery_Finished)
     );
 
     public static AnimInfo atk_HorSlash1_Windup = new(
@@ -73,7 +73,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         9,
-        (9, CapsuleCharAnimEvent.HorSlash1_Windup_Finished)
+        (9, CapsuleCharAnimEventT.Atk_HorSlash1_Windup_Finished)
     );
 
     public static AnimInfo atk_HorSlash2_Impact = new(
@@ -81,13 +81,13 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         13,
-        (0, CapsuleCharAnimEvent.HorSlash2_Impact_RotationAllowed),
-        (4, CapsuleCharAnimEvent.HorSlash2_Impact_RotationDisallowed),
-        (4, CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerActivated),
-        (9, CapsuleCharAnimEvent.HorSlash2_Impact_HitDealerDeactivated),
-        (11, CapsuleCharAnimEvent.HorSlash2_Impact_ComboAllowed),
-        (12, CapsuleCharAnimEvent.HorSlash2_Impact_ComboDisallowed),
-        (13, CapsuleCharAnimEvent.HorSlash2_Impact_Finished)
+        (0, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_RotationAllowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_RotationDisallowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_HitDealerActivated),
+        (9, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_HitDealerDeactivated),
+        (11, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_ComboAllowed),
+        (12, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_ComboDisallowed),
+        (13, CapsuleCharAnimEventT.Atk_HorSlash2_Impact_Finished)
     );
 
     public static AnimInfo atk_HorSlash2_Recovery = new(
@@ -95,8 +95,8 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         9,
-        (3, CapsuleCharAnimEvent.HorSlash2_Recovery_DodgeAllowed),
-        (9, CapsuleCharAnimEvent.HorSlash2_Recovery_Finished)
+        (3, CapsuleCharAnimEventT.Atk_HorSlash2_Recovery_DodgeAllowed),
+        (9, CapsuleCharAnimEventT.Atk_HorSlash2_Recovery_Finished)
     );
 
     public static AnimInfo atk_HorSlash3_Impact = new(
@@ -104,13 +104,13 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         13,
-        (0, CapsuleCharAnimEvent.HorSlash3_Impact_RotationAllowed),
-        (4, CapsuleCharAnimEvent.HorSlash3_Impact_RotationDisallowed),
-        (4, CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerActivated),
-        (9, CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerDeactivated),
-        (11, CapsuleCharAnimEvent.HorSlash3_Impact_ComboAllowed),
-        (12, CapsuleCharAnimEvent.HorSlash3_Impact_ComboDisallowed),
-        (13, CapsuleCharAnimEvent.HorSlash3_Impact_Finished)
+        (0, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_RotationAllowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_RotationDisallowed),
+        (4, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_HitDealerActivated),
+        (9, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_HitDealerDeactivated),
+        (11, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_ComboAllowed),
+        (12, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_ComboDisallowed),
+        (13, CapsuleCharAnimEventT.Atk_HorSlash3_Impact_Finished)
     );
 
     public static AnimInfo atk_JumpVerSlam = new(
@@ -118,11 +118,11 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         61,
-        (20, CapsuleCharAnimEvent.JumpVerSlam_JumpStarted),
-        (36, CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated),
-        (40, CapsuleCharAnimEvent.JumpVerSlam_JumpFinished),
-        (44, CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated),
-        (61, CapsuleCharAnimEvent.JumpVerSlam_Finished)
+        (20, CapsuleCharAnimEventT.Atk_JumpVerSlam_JumpStarted),
+        (36, CapsuleCharAnimEventT.Atk_JumpVerSlam_HitboxActivated),
+        (40, CapsuleCharAnimEventT.Atk_JumpVerSlam_JumpFinished),
+        (44, CapsuleCharAnimEventT.Atk_JumpVerSlam_HitboxDeactivated),
+        (61, CapsuleCharAnimEventT.Atk_JumpVerSlam_Finished)
     );
 
     public static AnimInfo dodge = new(
@@ -130,10 +130,10 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         18,
-        (3, CapsuleCharAnimEvent.Dodge_YawAllowed),
-        (13, CapsuleCharAnimEvent.Dodge_InvulEnd),
-        (17, CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed),
-        (18, CapsuleCharAnimEvent.Dodge_Finished)
+        (3, CapsuleCharAnimEventT.Dodge_YawAllowed),
+        (13, CapsuleCharAnimEventT.Dodge_InvulEnd),
+        (17, CapsuleCharAnimEventT.Dodge_BufferedInputStSwitchAllowed),
+        (18, CapsuleCharAnimEventT.Dodge_Finished)
     );
 
     public static AnimInfo falling = new(
@@ -148,8 +148,8 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         30,
-        (5, CapsuleCharAnimEvent.FallLanding_CanSwitchSt),
-        (30, CapsuleCharAnimEvent.FallLanding_Finished)
+        (5, CapsuleCharAnimEventT.FallLanding_CanSwitchSt),
+        (30, CapsuleCharAnimEventT.FallLanding_Finished)
     );
 
     public static AnimInfo idle = new(
@@ -164,7 +164,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         18,
-        (18, CapsuleCharAnimEvent.Knockback_Weak_Bwd_Finished)
+        (18, CapsuleCharAnimEventT.Knockback_Weak_Bwd_Finished)
     );
 
     public static AnimInfo knockback_Weak_Fwd = new(
@@ -172,7 +172,7 @@ public static class CapsuleCharAnimInfo {
         0,
         false,
         18,
-        (18, CapsuleCharAnimEvent.Knockback_Weak_Fwd_Finished)
+        (18, CapsuleCharAnimEventT.Knockback_Weak_Fwd_Finished)
     );
 
     public static AnimInfo walk = new(

@@ -4,20 +4,18 @@ using UnityEngine;
 /// <summary>
 /// Movement for character controller.
 /// </summary>
-public class CharCtrlMov : MonoBehaviour{
-    [Header("Refs")]
-    [SerializeField] CharacterController charCtrl;
-    [SerializeField] Pc pc;
-
-    static void ApplyGravityNSlideDownSlopes(ref CapsuleCharData data, float dt){
-        if (data.isGrounded)
-            data.vel_Ver = -data.groundSnapVerDownSpd * dt;
+public class CharCtrlMov: MonoBehaviour{
+    public static void ApplyGravityNSlideDownSlopes(int capsuleCharId, float dt){
+        // TODO: This is cheating. Either use ref keywords, or take in all the arrays.
+        CapsuleCharMgr ccMgr = CapsuleCharMgr.inst;
+        if (ccMgr.data.isGrounded[capsuleCharId])
+            ccMgr.data.vel_Ver[capsuleCharId] = -ccMgr.data.groundSnapVerDownSpd[capsuleCharId] * dt;
         // Freefalling and slope down sliding.
         else {
-            data.vel_Ver = data.lastCharCtrlVel.y;
+            ccMgr.data.vel_Ver[capsuleCharId] = ccMgr.data.lastCharCtrlVel[capsuleCharId].y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (data.groundCastHitSomething) {
+            if (ccMgr.data.groundCastHitSomething[capsuleCharId]) {
                 // TODO: Create float3 ProjectOnPlane math util.
                 //math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
                 // TODO: We project last velocity onto the slope normalized direction (we divide by newAcc
@@ -29,8 +27,11 @@ public class CharCtrlMov : MonoBehaviour{
                 // Find the gravitational acceleration component along the slope.
                 // TODO: Create float3 ProjectOnPlane math util.
                 float3 newAcc =
-                    (math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm)
-                    * data.gravitationalAcc;
+                    (math.down() - math.dot(
+                        math.down(),
+                        ccMgr.data.groundCastNrm[capsuleCharId]) * ccMgr.data.groundCastNrm[capsuleCharId]
+                    )
+                    * ccMgr.data.gravitationalAcc[capsuleCharId];
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
                 if (math.lengthsq(newAcc) > 0.0001f)
@@ -39,11 +40,11 @@ public class CharCtrlMov : MonoBehaviour{
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(data.lastCharCtrlVel, slideDir));
+                float slideSpd = math.max(0, math.dot(ccMgr.data.lastCharCtrlVel[capsuleCharId], slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                data.vel_Ver = newVel.y;
-                data.vel_Hor = new float2(newVel.x, newVel.z);
+                ccMgr.data.vel_Ver[capsuleCharId] = newVel.y;
+                ccMgr.data.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -58,9 +59,13 @@ public class CharCtrlMov : MonoBehaviour{
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0.
-                data.vel_Ver = Mathf.Min(data.vel_Ver, 0);
-                data.vel_Ver -= data.gravitationalAcc * dt;
-                data.vel_Ver = Mathf.Clamp(data.vel_Ver, -data.maxFallSpd, 0);
+                ccMgr.data.vel_Ver[capsuleCharId] = Mathf.Min(ccMgr.data.vel_Ver[capsuleCharId], 0);
+                ccMgr.data.vel_Ver[capsuleCharId] -= ccMgr.data.gravitationalAcc[capsuleCharId] * dt;
+                ccMgr.data.vel_Ver[capsuleCharId] = Mathf.Clamp(
+                    ccMgr.data.vel_Ver[capsuleCharId],
+                    -ccMgr.data.maxFallSpd[capsuleCharId],
+                    0
+                );
                 //Debug.Log("In free fall.");
             }
         }
@@ -113,47 +118,18 @@ public class CharCtrlMov : MonoBehaviour{
         return false;
     }
 
-    /// <summary>
-    /// Ticks character controller movement.
-    /// NOTE: Will snap to max linear speed if linear acceleration param is not not set!
-    /// </summary>
-    public void UpdateMov(
-        Vector2 horMov,
-        Vector3 animRootMot,
-        float maxLinSpd,
-        float yawSpd,
-        // Should this be called hor acc instead?
-        float linAcc = float.PositiveInfinity
-    ) {
-        //Debug.Log($"UpdateMov: horMov: {horMov} | animRootMot: {animRootMot} \n"
-        //    + $"| maxLinSpd: {maxLinSpd} | linAcc: {linAcc}");
-        float dt = Time.deltaTime;
-        CapsuleCharData data = pc.Data;
-        Debug.Assert(
-            !float.IsNaN(data.vel_Hor.x) && !float.IsNaN(data.vel_Hor.y),
-            $"vel_hor had NaN: {data.vel_Hor}",
-            this
-        );
-        //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-        data.vel_Hor = Vector2.MoveTowards(
-            data.vel_Hor,
-            horMov * maxLinSpd,
-            linAcc * dt
-        );
-        data.vel_Yaw = yawSpd;
-        // Skip rotation if tgt dir vector (horMov) is too small.
-        if(horMov.sqrMagnitude > 0.0001f)
-            TrfMathUtils.RotateFwdToTgt(transform, data.vel_Yaw, horMov);
-        if (data.isAffectedByGravity)
-            ApplyGravityNSlideDownSlopes(ref data, dt);
-        else
-            data.vel_Ver = 0;
-        Vector3 totalMov = animRootMot;
-        totalMov.x += data.vel_Hor.x * dt;
-        totalMov.y += data.vel_Ver * dt;
-        totalMov.z += data.vel_Hor.y * dt;
-        pc.Data = data;
-        //Debug.Log($"UpdateMov: totalMov: {totalMov}");
-        charCtrl.Move(totalMov);
-    }
+    ///// <summary>
+    ///// Ticks character controller movement.
+    ///// NOTE: Will snap to max linear speed if linear acceleration param is not not set!
+    ///// </summary>
+    //public static void UpdateMov(
+    //    Vector2 horMov,
+    //    Vector3 animRootMot,
+    //    float maxLinSpd,
+    //    float yawSpd,
+    //    // Should this be called hor acc instead?
+    //    float linAcc = float.PositiveInfinity
+    //) {
+
+    //}
 }

@@ -406,7 +406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa4eacad3590d05429cfb69aba95762b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AnimRootMvmtBroadcaster
-  animator: {fileID: 4678657368601596990}
+  anim: {fileID: 4678657368601596990}
 --- !u!95 &4678657368601596990
 Animator:
   serializedVersion: 7
@@ -938,6 +938,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2877554013161557112}
   - component: {fileID: 2732198706603240118}
+  - component: {fileID: 6838515308935653087}
   - component: {fileID: 1930875150031484807}
   m_Layer: 9
   m_Name: BodyHitReciever
@@ -973,6 +974,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
+--- !u!114 &6838515308935653087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6413266446938913594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b83babda1a15dc4a91c6383f24868f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieverGizmo
+  drawGizmo: 1
+  vulnerableColor: {r: 0.5803922, g: 0, b: 0.8274511, a: 1}
+  invulnerableColor: {r: 0, g: 1, b: 1, a: 1}
+  pc: {fileID: 0}
+  col: {fileID: 1930875150031484807}
 --- !u!136 &1930875150031484807
 CapsuleCollider:
   m_ObjectHideFlags: 0

@@ -1,141 +1,92 @@
-using System;
 using Unity.Mathematics;
 using UnityEngine;
 
 // TODO: This should probably be called FlyingSlam or something more descriptive than "Atk".
-public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour, IFsmSt {
-    event Action<CapsuleCharAnimEvent> animEvent;
-    [SerializeField] Pc pc;
-
-    AtkPhase attackPhase = AtkPhase.Windup;
-    bool impactFinished = false;
-
-    void OnEnable() {
-        animEvent += OnAnimEvent;
-    }
-
-    void OnDisable() {
-        animEvent -= OnAnimEvent;
-    }
-
-    public void Enter(IFsmSt previousState) {
-        var data = pc.Data;
-        data.invul = true;
-        data.isAffectedByGravity = false;
-        pc.Data = data;
-        attackPhase = AtkPhase.Windup;
-        impactFinished = false;
-        pc.inputBuffer.Clear();
-        VisUtils.CrossfadeNInitAnimEventPlr(
-            ref pc.animEventPlr,
-            pc.capsuleCharAnim,
+public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour {
+    public static void Enter(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        data.invul[id] = true;
+        data.isAffectedByGravity[id] = false;
+        data.actStSt_AtkPhase[id] = AtkPhase.Windup;
+        data.actStSt_ImpactFinished[id] = false;
+        PcInputBuffer.Clear(id, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+            ref animEventPlrData,
+            unityComps[id].anim,
             CapsuleCharAnimInfo.atk_FlyingAtk_Windup,
-            animEvent,
+            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
 
-    public void Exit() {
-        CapsuleCharData data = pc.Data;
-        data.invul = false;
-        data.isAffectedByGravity = true;
-        pc.Data = data;
-        pc.rHandEquippable.aoeHitDealer.Deactivate();
+    public static void Exit(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
+        data.invul[id] = false;
+        data.isAffectedByGravity[id] = true;
+        unityComps[id].rHandEquippable.aoeHitDealer.Deactivate();
     }
 
-    public void PhysicsTick() {
-    }
-
-    public void Tick() {
-        switch (attackPhase) {
+    public static void Tick(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        switch (data.actStSt_AtkPhase[id]) {
             case AtkPhase.Windup:
-                pc.charCtrlMov.UpdateMov(
-                    // TODO: Have some interpolation to this so that this smoothly fades to
-                    // TODO C: the input hor speed of the impact part of the attack.
-                    pc.Data.input_mov,
-                    pc.AnimationDeltaMovement,
-                    2,
-                    0
+                CapsuleCharActStUtils.UpdateMovData(
+                    id,
+                    data,
+                    data.input_mov[id],
+                    data.animDPos[id],
+                    2, // TODO: To So field
+                    0,
+                    float.PositiveInfinity
                 );
                 break;
             case AtkPhase.Impact:
-                // TODO: Set values in base data.
-                pc.charCtrlMov.UpdateMov(
-                    Vector3.zero,
-                    pc.AnimationDeltaMovement,
+                CapsuleCharActStUtils.UpdateMovData(
+                    id,
+                    data,
+                    data.input_mov[id],
+                    data.animDPos[id],
+                    2, // TODO: To So parameter.
                     0,
                     0
                 );
-                if (pc.Data.isGrounded && impactFinished) {
-                    pc.rHandEquippable.aoeHitDealer.Deactivate();
-                    attackPhase = AtkPhase.Recovery;
-                    VisUtils.CrossfadeNInitAnimEventPlr(
-                        ref pc.animEventPlr,
-                        pc.capsuleCharAnim,
+                if (data.isGrounded[id] && data.actStSt_ImpactFinished[id]) {
+                    unityComps[id].rHandEquippable.aoeHitDealer.Deactivate();
+                    data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
+                    AnimEventPlr.CrossfadeNInitAnimEventPlr(
+                        ref animEventPlrData,
+                        unityComps[id].anim,
                         CapsuleCharAnimInfo.atk_FlyingAtk_Recovery,
-                        animEvent
+                        unityComps[id].animEvents.animEvent
                     );
                 }
                 break;
             case AtkPhase.Recovery:
-                pc.charCtrlMov.UpdateMov(
-                    Vector2.zero,
-                    Vector3.zero,
+                CapsuleCharActStUtils.UpdateMovData(
+                    id,
+                    data,
+                    float2.zero,
+                    float3.zero,
                     0,
                     0,
                     0
                 );
                 break;
             default:
-                Debug.LogError("Switch defaulted.", this);
+                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[id]}.");
                 break;
-        }
-    }
-
-    public void LateTick() {
-        pc.animEventPlr.Tick();
-    }
-
-    public bool CanSwitchStTo(IFsmSt newSt) {
-        if (newSt == (IFsmSt) pc.fsmSts.falling)
-            return false;
-        else
-            return true;
-    }
-
-    // -------------------------
-    // Anim Event
-    // -------------------------
-
-    private void OnAnimEvent(CapsuleCharAnimEvent id) {
-        switch (id) {
-            case CapsuleCharAnimEvent.FlyingAtk_Windup_Finished:
-                VisUtils.CrossfadeNInitAnimEventPlr(
-                    ref pc.animEventPlr,
-                    pc.capsuleCharAnim,
-                    CapsuleCharAnimInfo.atk_FlyingAtk_Impact,
-                    animEvent
-                );
-                attackPhase = AtkPhase.Impact;
-                break;
-            case CapsuleCharAnimEvent.FlyingAtk_Impact_HitDealerActivated:
-                pc.rHandEquippable.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
-                pc.rHandEquippable.aoeHitDealer.Activate();
-                break;
-            case CapsuleCharAnimEvent.FlyingAtk_Impact_Finished:
-                CapsuleCharData data = pc.Data;
-                data.isAffectedByGravity = true;
-                impactFinished = true;
-                // TODO: Set this in base data.
-                data.vel_Ver = -40;
-                pc.Data = data;
-                break;
-            case CapsuleCharAnimEvent.FlyingAtk_Recovery_Finished:
-                if (!pc.Data.input_mov.Equals(float2.zero))
-                    pc.fsm.SwitchSt(pc.fsmSts.walk);
-                else
-                    pc.fsm.SwitchSt(pc.fsmSts.idle);
-                return;
         }
     }
 }
+

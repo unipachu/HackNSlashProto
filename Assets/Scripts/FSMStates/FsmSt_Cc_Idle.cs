@@ -1,52 +1,68 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public class FsmSt_Cc_Idle : MonoBehaviour, IFsmSt{
-    [SerializeField] Pc pc;
-
-    public void Enter(IFsmSt previousState){
-        VisUtils.CrossfadeAnim(pc.capsuleCharAnim, CapsuleCharAnimInfo.idle, 0.1f);
+public  class FsmSt_Cc_Idle : MonoBehaviour {
+    public static void Enter(int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+            ref animEventPlrData,
+            unityComps[id].anim,
+            CapsuleCharAnimInfo.idle,
+            unityComps[id].animEvents.animEvent,
+            0.1f
+        );
     }
 
-    public void Exit(){
-    }
-
-    public void PhysicsTick(){
-    }
-
-    public void Tick(){
-        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+    public static void Tick(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
+        if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
             return;
-        if (pc.fsm.PrevSt == (IFsmSt)pc.fsmSts.walk)
-            pc.charCtrlMov.UpdateMov(
-                pc.Data.input_mov_LastNonZero,
-                Vector3.zero,
+        if (data.prevSt[id] == CapsuleCharActSt.Walk)
+            CapsuleCharActStUtils.UpdateMovData(
+                id,
+                data,
+                data.input_mov_LastNonZero[id],
+                float3.zero,
                 0,
-                pc.Data.st_Walk_YawSpd
+                data.st_Walk_YawSpd[id],
+                float.PositiveInfinity
             );
-        else {
-            pc.charCtrlMov.UpdateMov(
-                Vector2.zero,
-                Vector3.zero,
+        else
+            CapsuleCharActStUtils.UpdateMovData(
+                id,
+                data,
+                float2.zero,
+                float3.zero,
+                0,
                 0,
                 0
             );
-        }
         // Try consume input
-        if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge))
-            pc.fsm.SwitchSt(pc.fsmSts.dodge);
-        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light))
-            CapsuleCharFsmUtils.SwitchToLightAtkSt(pc);
-        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Heavy))
-            pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
-        else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Ult))
-            pc.fsm.SwitchSt(pc.fsmSts.atk_FlyingAtk);
-        else if (!pc.Data.input_mov.Equals(float2.zero))
-            pc.fsm.SwitchSt(pc.fsmSts.walk);
+        if (PcInputBuffer.TryConsumeInput(
+            id,
+            BufferableInput.Dodge,
+            data.inputBuffer_BufferedInput,
+            data.inputBuffer_RemainingTime)
+        )
+            CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Dodge);
+        else if (PcInputBuffer.TryConsumeInput(
+            id,
+            BufferableInput.Atk_Light,
+            data.inputBuffer_BufferedInput,
+            data.inputBuffer_RemainingTime)
+        )
+            CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActStUtils.GetLightAtkSt(id, data));
+        else if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
+            CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_Jump);
+        else if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Ult, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
+            CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_FlyingAtk);
+        else if (!data.input_mov.Equals(float2.zero))
+            CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
     }
-
-    public void LateTick() {
-    }
-
-    public bool CanSwitchStTo(IFsmSt newSt) => true;
 }

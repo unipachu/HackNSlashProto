@@ -2,6 +2,8 @@ using System;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
+using static UnityEditor.Experimental.GraphView.Port;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -15,6 +17,11 @@ public struct AnimInfo {
     /// </summary>
     public bool looping;
     public int lastFrame;
+    // TODO MINOR: This struct cannot be used in native arrays because of this managed array. This could
+    // TODO MINOR C: be fixed by either making this array a fixed list - meaning more memory overhead. Or
+    // TODO MINOR C: possibly better option: have all anim event data in a list and in here have an index
+    // TODO MINOR C: to the first and the last events. But both of these options seem more complicated than
+    // TODO MINOR C: this and I'm already running out of time...
     public AnimEvent[] sortedAnimEvents;
 
     /// <param name="sortedEvents">
@@ -26,7 +33,7 @@ public struct AnimInfo {
         int animLayer,
         bool looping,
         int lastFrame,
-        params (int frame, CapsuleCharAnimEvent id)[] sortedEvents
+        params (int frame, CapsuleCharAnimEventT id)[] sortedEvents
     ) {
         this.shortNameHash = shortNameHash;
         this.animLayer = animLayer;
@@ -36,8 +43,16 @@ public struct AnimInfo {
         // their order matters.
         // TODO: However we could make an Assert etc to make sure they are at least in ascending order.
         sortedAnimEvents = new AnimEvent[sortedEvents.Length];
-        for (int i = 0; i < sortedEvents.Length; i++)
+        for (int i = 0; i < sortedEvents.Length; i++) {
             sortedAnimEvents[i] = new AnimEvent(sortedEvents[i].frame, lastFrame, sortedEvents[i].id);
+            if (i != 0)
+                Debug.Assert(
+                    sortedEvents[i - 1].frame <= sortedEvents[i].frame,
+                    $"Animation event '{sortedEvents[i].id}' at frame {sortedEvents[i].frame} should happen "
+                        + $"after the previous anim event: '{sortedEvents[i - 1].id}' at frame "
+                        + $"{sortedEvents[i - 1].frame}"
+                );
+        }
     }
 }
 
@@ -53,7 +68,7 @@ public struct AnimEvent {
     /// <summary>
     /// Unique id for the animation event.
     /// </summary>
-    public CapsuleCharAnimEvent id;
+    public CapsuleCharAnimEventT id;
 
     /// <param name="frame">
     /// Frame of the animation event.<br/>
@@ -64,10 +79,37 @@ public struct AnimEvent {
     /// on the timeline where the animation bar changes to dark grey.
     /// </param>
     /// <param name="id">Unique name for the action event, used to check against a switch case.</param>
-    public AnimEvent(int frame, int lastFrame, CapsuleCharAnimEvent id) {
+    public AnimEvent(int frame, int lastFrame, CapsuleCharAnimEventT id) {
         nrmT = frame / (float)lastFrame;
         this.id = id;
     }
+}
+
+public struct AnimEventPlrData {
+    public AnimInfo animInfo;
+    /// <summary>
+    /// Last frame's normalized time from the animator.
+    /// NOTE: This will go over 1.
+    /// </summary>
+    public float prevTotalNrmT;
+    /// <summary>
+    /// Normalized position within current loop (0-1)
+    /// </summary>
+    public float cursor;
+    /// <summary>
+    /// Authoritative loop counter. Doesn't reset even when animation state is rebased.
+    /// </summary>
+    public int loopCount;
+    /// <summary>
+    /// Counter used to start a looping animation from the beginning after
+    /// <see cref="loopRebaseThreshold"/> is reached to avoid animation time precision problems.
+    /// </summary>
+    public int loopsSinceRebase;
+    /// <summary>
+    /// Has the animation finished (for non-looping only)?
+    /// </summary>
+    public bool finished;
+    public bool firstTick;
 }
 
 [Serializable]
@@ -99,63 +141,246 @@ public struct BtNodeData {
     public BtNodeT t;
 }
 
-/// <summary>
-/// Used for SoA type of handling of capsule character data.
-/// </summary>
-public struct CapsuleCharData {
-    public float3 brain_AgentDesiredVel;
-    public float brain_AggroRange;
-    public float brain_AtkRange;
-    public float brain_DistToTgt;
-    public bool brain_HasTgt;
-    public bool brain_InAggroRange;
-    public bool brain_InAtkRange;
-    public float3 brain_TgtPos;
-    public float curStDur;
-    public HandEquippableT equip_RHandEquippable;
-    public float gravitationalAcc;
-    public bool groundCastHitSomething;
-    public float3 groundCastNrm;
-    public float groundSnapVerDownSpd;
-    public float hp_Cur;
-    public float hp_Max;
-    public float2 input_mov;
+public struct CapsuleChar_BaseData {
+    public NativeArray<CapsuleCharActSt> actSt;
+    public NativeArray<AtkPhase> actStSt_AtkPhase;
+    public NativeArray<bool> actStSt_BufferedInputStSwitchAllowed;
+    public NativeArray<bool> actStSt_ComboAllowed;
+    public NativeArray<bool> actStSt_DodgeAllowed;
+    public NativeArray<float> actStSt_FallingStartHgt;
+    public NativeArray<bool> actStSt_ImpactFinished;
+    public NativeArray<bool> actStSt_ImpactInputRotAllowed;
+    public NativeArray<float> actStSt_RecoveryMotInterpTimer;
+    public NativeArray<float3> animDPos;
+    public NativeArray<float> curStDur;
+    public NativeArray<HandEquippableT> equip_RHandEquippable;
+    public NativeArray<float> gravitationalAcc;
+    public NativeArray<bool> groundCastHitSomething;
+    public NativeArray<float3> groundCastNrm;
+    public NativeArray<float> groundSnapVerDownSpd;
+    public NativeArray<float> hp_Cur;
+    public NativeArray<float> hp_Max;
+    public NativeArray<float2> input_mov;
     /// <summary>
     /// Last nonzero movement input (in world space).
     /// </summary>
-    public float2 input_mov_LastNonZero;
+    public NativeArray<float2> input_mov_LastNonZero;
     /// <summary>
     /// Movement input during last state switch (in world space).
     /// </summary>
-    public float2 input_mov_WhenLastSwitchedSt;
-    public bool input_atk_Light;
-    public bool input_atk_Heavy;
-    public bool input_atk_Ult;
-    public bool input_dodge;
-    public float inputBufferDur;
-    public bool invul;
-    public bool isAffectedByGravity;
-    public bool isGrounded;
-    public float3 lastCharCtrlVel;
-    public float lastKnockbackStr;
-    public float3 lastRecievedHitDir;
-    public float maxFallSpd;
-    public float st_AtkHorSlash_Impact_AngSpd;
-    public float st_AtkHorSlash_Windup_MaxAngSpd;
-    public float st_AtkJump_DownSpeedAfterJumpFinished;
-    public float st_Dodge_YawSpd;
-    public float st_Falling_LandingStFallDistThreshold;
-    public float st_Falling_LinAcc;
-    public float st_Falling_MaxLinSpd;
-    public float st_Walk_LinAcc;
-    public float st_Walk_MaxLinSpd;
-    public float st_Walk_YawSpd;
-    public float3 trf_pos;
-    public quaternion trf_rot;
-    public float3 trf_lossyScl;
-    public float2 vel_Hor;
-    public float vel_Ver;
-    public float vel_Yaw;
+    public NativeArray<float2> input_mov_WhenLastSwitchedSt;
+    public NativeArray<bool> input_atk_Light;
+    public NativeArray<bool> input_atk_Heavy;
+    public NativeArray<bool> input_atk_Ult;
+    public NativeArray<bool> input_dodge;
+    public NativeArray<BufferableInput> inputBuffer_BufferedInput;
+    public NativeArray<float> inputBuffer_RemainingTime;
+    public NativeArray<bool> invul;
+    public NativeArray<bool> isAffectedByGravity;
+    public NativeArray<bool> isGrounded;
+    public NativeArray<bool> isSwitchingActSt;
+    public NativeArray<float3> lastCharCtrlVel;
+    public NativeArray<float> lastKnockbackStr;
+    public NativeArray<float3> lastRecievedHitDir;
+    public NativeArray<float> maxFallSpd;
+    public NativeArray<float2> mov_horMov;
+    public NativeArray<float3> mov_animRootMot;
+    public NativeArray<float> mov_maxLinSpd;
+    public NativeArray<float> mov_yawSpd;
+    // TODO MINOR: Should this be called hor acc instead?
+    public NativeArray<float> mov_linAcc;
+    // To keep track of which indices are actually used for entitites.
+    public NativeArray<bool> occupied; // <- This is important!
+    public NativeArray<CapsuleCharActSt> prevSt;
+    public NativeArray<float> st_AtkHorSlash_Impact_AngSpd;
+    public NativeArray<float> st_AtkHorSlash_Windup_MaxAngSpd;
+    public NativeArray<float> st_AtkJump_DownSpeedAfterJumpFinished;
+    public NativeArray<float> st_Dodge_YawSpd;
+    public NativeArray<float> st_Falling_LandingStFallDistThreshold;
+    public NativeArray<float> st_Falling_LinAcc;
+    public NativeArray<float> st_Falling_MaxLinSpd;
+    public NativeArray<float> st_Walk_LinAcc;
+    public NativeArray<float> st_Walk_MaxLinSpd;
+    public NativeArray<float> st_Walk_YawSpd;
+    public NativeArray<float3> trf_lossyScl;
+    public NativeArray<float3> trf_pos;
+    public NativeArray<quaternion> trf_rot;
+    // TODO: Maybe you don't need these since you have the mov_ arrays?
+    public NativeArray<float2> vel_Hor;
+    public NativeArray<float> vel_Ver;
+    public NativeArray<float> vel_Yaw;
+
+    public static CapsuleChar_BaseData Create(int capacity) {
+        return new CapsuleChar_BaseData {
+            actSt = StructUtils.Alloc<CapsuleCharActSt>(capacity),
+            actStSt_AtkPhase = StructUtils.Alloc<AtkPhase>(capacity),
+            actStSt_BufferedInputStSwitchAllowed = StructUtils.Alloc<bool>(capacity),
+            actStSt_ComboAllowed = StructUtils.Alloc<bool>(capacity),
+            actStSt_DodgeAllowed = StructUtils.Alloc<bool>(capacity),
+            actStSt_FallingStartHgt = StructUtils.Alloc<float>(capacity),
+            actStSt_ImpactFinished = StructUtils.Alloc<bool>(capacity),
+            actStSt_ImpactInputRotAllowed = StructUtils.Alloc<bool>(capacity),
+            animDPos = StructUtils.Alloc<float3>(capacity),
+            curStDur = StructUtils.Alloc<float>(capacity),
+            equip_RHandEquippable = StructUtils.Alloc<HandEquippableT>(capacity),
+            gravitationalAcc = StructUtils.Alloc<float>(capacity),
+            groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
+            groundCastNrm = StructUtils.Alloc<float3>(capacity),
+            groundSnapVerDownSpd = StructUtils.Alloc<float>(capacity),
+            hp_Cur = StructUtils.Alloc<float>(capacity),
+            hp_Max = StructUtils.Alloc<float>(capacity),
+            input_mov = StructUtils.Alloc<float2>(capacity),
+            input_mov_LastNonZero = StructUtils.Alloc<float2>(capacity),
+            input_mov_WhenLastSwitchedSt = StructUtils.Alloc<float2>(capacity),
+            input_atk_Light = StructUtils.Alloc<bool>(capacity),
+            input_atk_Heavy = StructUtils.Alloc<bool>(capacity),
+            input_atk_Ult = StructUtils.Alloc<bool>(capacity),
+            input_dodge = StructUtils.Alloc<bool>(capacity),
+            inputBuffer_BufferedInput = StructUtils.Alloc<BufferableInput>(capacity),
+            inputBuffer_RemainingTime = StructUtils.Alloc<float>(capacity),
+            invul = StructUtils.Alloc<bool>(capacity),
+            isAffectedByGravity = StructUtils.Alloc<bool>(capacity),
+            isGrounded = StructUtils.Alloc<bool>(capacity),
+            isSwitchingActSt = StructUtils.Alloc<bool>(capacity),
+            lastCharCtrlVel = StructUtils.Alloc<float3>(capacity),
+            lastKnockbackStr = StructUtils.Alloc<float>(capacity),
+            lastRecievedHitDir = StructUtils.Alloc<float3>(capacity),
+            maxFallSpd = StructUtils.Alloc<float>(capacity),
+            mov_horMov = StructUtils.Alloc<float2>(capacity),
+            mov_animRootMot = StructUtils.Alloc<float3>(capacity),
+            mov_maxLinSpd = StructUtils.Alloc<float>(capacity),
+            mov_yawSpd = StructUtils.Alloc<float>(capacity),
+            mov_linAcc = StructUtils.Alloc<float>(capacity),
+            occupied = StructUtils.Alloc<bool>(capacity),
+            prevSt = StructUtils.Alloc<CapsuleCharActSt>(capacity),
+            st_AtkHorSlash_Impact_AngSpd = StructUtils.Alloc<float>(capacity),
+            st_AtkHorSlash_Windup_MaxAngSpd = StructUtils.Alloc<float>(capacity),
+            st_AtkJump_DownSpeedAfterJumpFinished = StructUtils.Alloc<float>(capacity),
+            st_Dodge_YawSpd = StructUtils.Alloc<float>(capacity),
+            st_Falling_LandingStFallDistThreshold = StructUtils.Alloc<float>(capacity),
+            st_Falling_LinAcc = StructUtils.Alloc<float>(capacity),
+            st_Falling_MaxLinSpd = StructUtils.Alloc<float>(capacity),
+            st_Walk_LinAcc = StructUtils.Alloc<float>(capacity),
+            st_Walk_MaxLinSpd = StructUtils.Alloc<float>(capacity),
+            st_Walk_YawSpd = StructUtils.Alloc<float>(capacity),
+            trf_pos = StructUtils.Alloc<float3>(capacity),
+            trf_rot = StructUtils.Alloc<quaternion>(capacity),
+            trf_lossyScl = StructUtils.Alloc<float3>(capacity),
+            vel_Hor = StructUtils.Alloc<float2>(capacity),
+            vel_Ver = StructUtils.Alloc<float>(capacity),
+            vel_Yaw = StructUtils.Alloc<float>(capacity)
+        };
+    }
+
+    public void Dispose() {
+        actSt.Dispose();
+        actStSt_AtkPhase.Dispose();
+        actStSt_BufferedInputStSwitchAllowed.Dispose();
+        actStSt_ComboAllowed.Dispose();
+        actStSt_DodgeAllowed.Dispose();
+        actStSt_FallingStartHgt.Dispose();
+        actStSt_ImpactFinished.Dispose();
+        actStSt_ImpactInputRotAllowed.Dispose();
+        animDPos.Dispose();
+        curStDur.Dispose();
+        equip_RHandEquippable.Dispose();
+        gravitationalAcc.Dispose();
+        groundCastHitSomething.Dispose();
+        groundCastNrm.Dispose();
+        groundSnapVerDownSpd.Dispose();
+        hp_Cur.Dispose();
+        hp_Max.Dispose();
+        input_mov.Dispose();
+        input_mov_LastNonZero.Dispose();
+        input_mov_WhenLastSwitchedSt.Dispose();
+        input_atk_Light.Dispose();
+        input_atk_Heavy.Dispose();
+        input_atk_Ult.Dispose();
+        input_dodge.Dispose();
+        inputBuffer_BufferedInput.Dispose();
+        inputBuffer_RemainingTime.Dispose();
+        invul.Dispose();
+        isAffectedByGravity.Dispose();
+        isGrounded.Dispose();
+        isSwitchingActSt.Dispose();
+        lastCharCtrlVel.Dispose();
+        lastKnockbackStr.Dispose();
+        lastRecievedHitDir.Dispose();
+        maxFallSpd.Dispose();
+        mov_horMov.Dispose();
+        mov_animRootMot.Dispose();
+        mov_maxLinSpd.Dispose();
+        mov_yawSpd.Dispose();
+        mov_linAcc.Dispose();
+        occupied.Dispose();
+        prevSt.Dispose();
+        st_AtkHorSlash_Impact_AngSpd.Dispose();
+        st_AtkHorSlash_Windup_MaxAngSpd.Dispose();
+        st_AtkJump_DownSpeedAfterJumpFinished.Dispose();
+        st_Dodge_YawSpd.Dispose();
+        st_Falling_LandingStFallDistThreshold.Dispose();
+        st_Falling_LinAcc.Dispose();
+        st_Falling_MaxLinSpd.Dispose();
+        st_Walk_LinAcc.Dispose();
+        st_Walk_MaxLinSpd.Dispose();
+        st_Walk_YawSpd.Dispose();
+        trf_lossyScl.Dispose();
+        trf_pos.Dispose();
+        trf_rot.Dispose();
+        vel_Hor.Dispose();
+        vel_Ver.Dispose();
+        vel_Yaw.Dispose();
+    }
+}
+
+public struct CapsuleChar_BrainData {
+    public NativeArray<float3> agentDesiredVel;
+    public NativeArray<float> aggroRange;
+    public NativeArray<float> atkRange;
+    public NativeArray<float> distToTgt;
+    public NativeArray<bool> hasTgt;
+    public NativeArray<bool> inAggroRange;
+    public NativeArray<bool> inAtkRange;
+    public NativeArray<float3> tgtPos;
+
+    public static CapsuleChar_BrainData Create(int capacity) {
+        return new CapsuleChar_BrainData {
+            agentDesiredVel = StructUtils.Alloc<float3>(capacity),
+            aggroRange = StructUtils.Alloc<float>(capacity),
+            atkRange = StructUtils.Alloc<float>(capacity),
+            distToTgt = StructUtils.Alloc<float>(capacity),
+            hasTgt = StructUtils.Alloc<bool>(capacity),
+            inAggroRange = StructUtils.Alloc<bool>(capacity),
+            inAtkRange = StructUtils.Alloc<bool>(capacity),
+            tgtPos = StructUtils.Alloc<float3>(capacity)
+        };
+    }
+
+    public void Dispose() {
+        agentDesiredVel.Dispose();
+        aggroRange.Dispose();
+        atkRange.Dispose();
+        distToTgt.Dispose();
+        hasTgt.Dispose();
+        inAggroRange.Dispose();
+        inAtkRange.Dispose();
+        tgtPos.Dispose();
+    }
+}
+
+[Serializable]
+public struct CapsuleChar_UnityComps {
+    public Transform transform;
+    public CapsuleCharCtrl ctrl;
+    public Animator anim;
+    public CapsuleCharHitRecieveHandler hitRecieverHandler;
+    public CharacterController charCtrl;
+    public Transform tgt;
+    public NavMeshAgent agent;
+    public Transform rHand;
+    public CapsuleCharAnimEvents animEvents;
+    public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
+    [HideInInspector] public HandEquippable rHandEquippable;
 }
 
 [Serializable]

@@ -2,137 +2,79 @@ using System;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour, IFsmSt {
-    event Action<CapsuleCharAnimEvent> animEvent;
-
-    [SerializeField] Pc pc;
-
-    AtkPhase attackPhase = AtkPhase.Impact;
-    bool comboAllowed = false;
-    bool dodgeAllowed = false;
-    bool impactInputRotationAllowed = false;
-    float recoveryMotionInterpTimer = 0;
-
-    void OnEnable() {
-        animEvent += OnAnimEvent;
-    }
-
-    void OnDisable() {
-        animEvent -= OnAnimEvent;
-    }
-
-    public void Enter(IFsmSt previousState) {
-        attackPhase = AtkPhase.Impact;
-        comboAllowed = false;
-        dodgeAllowed = false;
-        impactInputRotationAllowed = false;
-        recoveryMotionInterpTimer = 0;
-        pc.inputBuffer.Clear();
-        VisUtils.CrossfadeNInitAnimEventPlr(
-            ref pc.animEventPlr,
-            pc.capsuleCharAnim,
+public  class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour {
+    public static void Enter(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        data.actStSt_AtkPhase[id] = AtkPhase.Impact;
+        data.actStSt_ComboAllowed[id] = false;
+        data.actStSt_DodgeAllowed[id] = false;
+        data.actStSt_ImpactInputRotAllowed[id] = false;
+        data.actStSt_RecoveryMotInterpTimer[id] = 0;
+        PcInputBuffer.Clear(id, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+            ref animEventPlrData,
+            unityComps[id].anim,
             CapsuleCharAnimInfo.atk_HorSlash3_Impact,
-            animEvent
+            unityComps[id].animEvents.animEvent
         );
     }
 
-    public void Exit() {
-        pc.rHandEquippable.hitDealer.Deactivate();
+    public static void Exit(
+        int id,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
+            unityComps[id].rHandEquippable.hitDealer.Deactivate();
     }
 
-    public void PhysicsTick() {
-    }
-
-    public void Tick() {
-        if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+    public static void Tick(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
+        if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
             return;
-        switch (attackPhase) {
+        switch (data.actStSt_AtkPhase[id]) {
             case AtkPhase.Impact:
                 float angSpd = 0;
-                if (impactInputRotationAllowed)
-                    angSpd = pc.Data.st_AtkHorSlash_Impact_AngSpd;
-                pc.charCtrlMov.UpdateMov(
-                    pc.Data.input_mov,
-                    pc.AnimationDeltaMovement,
+                if (data.actStSt_ImpactInputRotAllowed[id])
+                    angSpd = data.st_AtkHorSlash_Impact_AngSpd[id];
+                CapsuleCharActStUtils.UpdateMovData(
+                    id,
+                    data,
+                    data.input_mov[id],
+                    data.animDPos[id],
                     0,
-                    angSpd);
-                if (comboAllowed) {
-                    //if (pc.inputBuffer.ConsumeInput("atk1"))
-                    //{
-                    //    pc.fSM.SwitchState(pc.fSMStates.atk_HorSlash2);
-                    //}
-                }
+                    angSpd,
+                    0
+                );
                 return;
             case AtkPhase.Recovery:
                 // interpolate to walking speed.
-                recoveryMotionInterpTimer += Time.deltaTime;
-                float interpValue = Mathf.Clamp01(recoveryMotionInterpTimer / 0.2f);
-                pc.charCtrlMov.UpdateMov(
-                    pc.Data.input_mov,
-                    Vector3.zero,
-                    pc.Data.st_Walk_MaxLinSpd * interpValue,
-                    pc.Data.st_Walk_YawSpd * interpValue,
-                    pc.Data.st_Walk_LinAcc
+                data.actStSt_RecoveryMotInterpTimer[id] += Time.deltaTime;
+                // TODO: Make interp value SO field.
+                float interpValue = Mathf.Clamp01(data.actStSt_RecoveryMotInterpTimer[id] / 0.2f);
+                CapsuleCharActStUtils.UpdateMovData(
+                    id,
+                    data,
+                    data.input_mov[id],
+                    float3.zero,
+                    data.st_Walk_MaxLinSpd[id] * interpValue,
+                    data.st_Walk_YawSpd[id] * interpValue,
+                    data.st_Walk_LinAcc[id]
                 );
-                if (dodgeAllowed) {
-                    // If input buffer has dodge, then transition to dodge state.
+                if (data.actStSt_DodgeAllowed[id]) {
+                    if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime)) {
+                        CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Dodge);
+                        return;
+                    }
                 }
                 return;
             default:
-                Debug.LogError("Switch defaulted.", this);
-                return;
-        }
-    }
-
-    public void LateTick() {
-        pc.animEventPlr.Tick();
-    }
-
-    public bool CanSwitchStTo(IFsmSt newSt) => true;
-
-    // ----------------------
-    // Animation Event
-    // ----------------------
-
-    private void OnAnimEvent(CapsuleCharAnimEvent id) {
-        switch (id) {
-            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboAllowed:
-                comboAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_ComboDisallowed:
-                comboAllowed = false;
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_Finished:
-                VisUtils.CrossfadeNInitAnimEventPlr(
-                    ref pc.animEventPlr,
-                    pc.capsuleCharAnim,
-                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
-                    animEvent
-                );
-                attackPhase = AtkPhase.Recovery;
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerActivated:
-                pc.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                pc.rHandEquippable.hitDealer.hitWldDir = pc.transform.forward;
-                pc.rHandEquippable.hitDealer.Activate();
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_HitDealerDeactivated:
-                pc.rHandEquippable.hitDealer.Deactivate();
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationAllowed:
-                impactInputRotationAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.HorSlash3_Impact_RotationDisallowed:
-                impactInputRotationAllowed = false;
-                break;
-            case CapsuleCharAnimEvent.HorSlash1_Recovery_DodgeAllowed:
-                dodgeAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.HorSlash1_Recovery_Finished:
-                if (!pc.Data.input_mov.Equals(float2.zero))
-                    pc.fsm.SwitchSt(pc.fsmSts.walk);
-                else
-                    pc.fsm.SwitchSt(pc.fsmSts.idle);
+                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[id]}.");
                 return;
         }
     }

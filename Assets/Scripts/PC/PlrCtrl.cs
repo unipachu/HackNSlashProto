@@ -66,6 +66,7 @@ public class PlrCtrl : MonoBehaviour, ICapsuleCharCtrlInputter {
             inputAct_Mov.action.ReadValue<Vector2>(),
             camMgr.CamFwdDir
         );
+        //Debug.Log($"input_Mov: {input_Mov}.");
     }
 
     // -----------------------------------------------------------------

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 20a2fd9b270a2f348828cffe6f682879, type: 3}
-  m_Name: CapsuleCharData_Test
+  m_Name: CapsuleCharData_TestPlayer
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
   gravitationalAcc: 10
   groundSnapVerDownSpd: 1000
@@ -19,7 +19,7 @@ MonoBehaviour:
   maxHP: 100
   brain_AggroRange: 8
   brain_AtkRange: 4
-  equip_RHandEquippable: 3
+  equip_RHandEquippable: 1
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000
   st_AtkHorSlash_Impact_AngSpd: 1200

@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -233,6 +234,23 @@ public static class MathUtils {
     /// </returns>
     public static float Remap(float value, float from1, float to1, float from2, float to2) {
         return Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, value));
+    }
+
+    public static quaternion RotateTowards(
+        quaternion current,
+        quaternion target,
+        float maxDegreesDelta
+    ) {
+        float angle = math.degrees(
+            2f * math.acos(math.clamp(
+                math.abs(math.dot(current.value, target.value)),
+                -1f,
+                1f
+            ))
+        );
+        if (angle <= maxDegreesDelta)
+            return target;
+        return math.slerp(current, target, maxDegreesDelta / angle);
     }
 
     /// <summary>

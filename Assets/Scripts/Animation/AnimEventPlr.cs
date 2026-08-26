@@ -6,7 +6,7 @@ using UnityEngine;
 /// next animation state are triggered (which causes erroneus behavior), we instead tie the animation
 /// events to the action FSM states and use this for the animation events instead.
 /// </summary>
-public class AnimEventPlr{
+public class AnimEventPlr : MonoBehaviour{
     /// <summary>
     /// Max animation loops before animation is forced to restart to avoid timing precision problems.
     /// </summary>
@@ -16,152 +16,184 @@ public class AnimEventPlr{
     /// </summary>
     const int maxLoopStepsPerTick = 500;
 
-    readonly Animator anim;
-    readonly AnimInfo animInfo;
     /// <summary>
-    /// This Action will be invoked for all animation events.
+    /// Starts crossfade and initializes animation event data.
     /// </summary>
-    // TODO MINOR: Make this generic so that it can be used with any Animator.
-    readonly Action<CapsuleCharAnimEvent> onEvent;
+    public static void CrossfadeNInitAnimEventPlr(
+        ref AnimEventPlrData animEventPlrData,
+        Animator anim,
+        AnimInfo animInfo,
+        Action<int, CapsuleCharAnimEventT> animEventAction,
+        float nrmTransDur = 0.1f,
+        float startOffset = 0
+    ) {
+        anim.CrossFade(
+            animInfo.shortNameHash,
+            nrmTransDur,
+            animInfo.animLayer,
+            startOffset
+        );
+        InitAnimEventPlrData(
+            ref animEventPlrData,
+            animInfo,
+            animEventAction,
+            startOffset
+        );
+    }
 
     /// <summary>
-    /// Last frame's normalized time from the animator.
-    /// NOTE: This will go over 1.
+    /// Creates an array of animation events with their normalized times calculated from their frame indices.
     /// </summary>
-    float prevTotalNrmT;
-    /// <summary>
-    /// Normalized position within current loop (0-1)
-    /// </summary>
-    float cursor;
-    /// <summary>
-    /// Authoritative loop counter. Doesn't reset even when animation state is rebased.
-    /// </summary>
-    int loopCount;
-    /// <summary>
-    /// Counter used to start a looping animation from the beginning after
-    /// <see cref="loopRebaseThreshold"/> is reached to avoid animation time precision problems.
-    /// </summary>
-    int loopsSinceRebase;
-    /// <summary>
-    /// Has the animation finished (for non-looping only)?
-    /// </summary>
-    bool finished;
-    bool firstTick;
-
-    public long LoopCount => loopCount;
+    /// <param name="lastFrame">
+    /// Index of the last frame of the animation (the one in the Animation timeline where the color changes).
+    /// </param>
+    /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
+    public static AnimEvent[] CreateAnimEvents(
+        AnimInfo animInfo,
+        params (int frame, CapsuleCharAnimEventT id)[] events
+    ) {
+        AnimEvent[] result = new AnimEvent[events.Length];
+        for (int i = 0; i < events.Length; i++)
+            result[i] = new AnimEvent(events[i].frame, animInfo.lastFrame, events[i].id);
+        return result;
+    }
 
     /// <summary>
     /// Call this after action state machine has started a crossfade to a new state to initialize
     /// animation events for the next animation.<br/>
     /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
     /// </summary>
-    public AnimEventPlr(
-         Animator anim,
-         AnimInfo animInfo,
-         Action<CapsuleCharAnimEvent> onEvent,
-         float startOffset = 0
+    public static void InitAnimEventPlrData(
+        ref AnimEventPlrData animEventPlrData,
+        AnimInfo animInfo,
+        Action<int, CapsuleCharAnimEventT> onEvent,
+        float startOffset = 0
     ) {
-        this.anim = anim;
-        this.animInfo = animInfo;
-        this.onEvent = onEvent;
-        prevTotalNrmT = startOffset;
-        cursor = startOffset;
-        loopCount = 0;
-        loopsSinceRebase = 0;
-        finished = false;
-        firstTick = true;
+        animEventPlrData.animInfo = animInfo;
+        animEventPlrData.prevTotalNrmT = startOffset;
+        animEventPlrData.cursor = startOffset;
+        animEventPlrData.loopCount = 0;
+        animEventPlrData.loopsSinceRebase = 0;
+        animEventPlrData.finished = false;
+        animEventPlrData.firstTick = true;
     }
 
     /// <summary>
     /// NOTE: Tick this in LateUpdate to make sure that the queued animator changes during this
     /// frame Update have already been applied!
     /// </summary>
-    public void Tick() {
-        if (finished) {
-            firstTick = false;
+    public static void Tick(
+        int caId,
+        ref AnimEventPlrData data,
+        Animator anim,
+        Action<int, CapsuleCharAnimEventT> animEventAction
+    ) {
+        if (data.finished) {
+            data.firstTick = false;
             return;
         }
         if (!VisUtils.TryGetNewestStInfo(
             anim,
-            animInfo.animLayer,
-            animInfo.shortNameHash,
+            data.animInfo.animLayer,
+            data.animInfo.shortNameHash,
             out AnimatorStateInfo info
         )) {
             Debug.LogWarning(
-                $"Short name hash ({animInfo.shortNameHash}) did not match current animation "
+                $"Short name hash ({data.animInfo.shortNameHash}) did not match current animation "
                 + $"({info.shortNameHash}).\nPerhaps action state was "
                 + "changed but animator transition hasn't have the time to start yet?"
             );
-            firstTick = false;
+            data.firstTick = false;
             return;
         }
         float curTotalNrmT = info.normalizedTime;
-        if (!animInfo.looping) {
-            FireEventsInNrmRange(cursor, Mathf.Min(curTotalNrmT, 1), firstTick);
+        if (!data.animInfo.looping) {
+            FireEventsInNrmRange(
+                caId,
+                data,
+                data.cursor,
+                Mathf.Min(curTotalNrmT, 1),
+                data.firstTick,
+                animEventAction
+            );
             if (curTotalNrmT >= 1)
-                finished = true;
-            cursor = Mathf.Min(curTotalNrmT, 1);
-            firstTick = false;
+                data.finished = true;
+            data.cursor = Mathf.Min(curTotalNrmT, 1);
+            data.firstTick = false;
             return;
         }
-        float dTotalNrmT = curTotalNrmT - prevTotalNrmT;
-        prevTotalNrmT = curTotalNrmT;
+        float dTotalNrmT = curTotalNrmT - data.prevTotalNrmT;
+        data.prevTotalNrmT = curTotalNrmT;
         int stepsTaken = 0;
         while (dTotalNrmT > 0) {
-            float toLoopEnd = 1 - cursor;
+            float toLoopEnd = 1 - data.cursor;
             if (dTotalNrmT < toLoopEnd) {
-                FireEventsInNrmRange(cursor, cursor + dTotalNrmT, firstTick);
-                cursor += dTotalNrmT;
+                FireEventsInNrmRange(
+                    caId,
+                    data,
+                    data.cursor,
+                    data.cursor + dTotalNrmT,
+                    data.firstTick,
+                    animEventAction
+                );
+                data.cursor += dTotalNrmT;
                 dTotalNrmT = 0;
             }
             else {
-                FireEventsInNrmRange(cursor, 1, firstTick);
+                FireEventsInNrmRange(caId, data, data.cursor, 1, data.firstTick, animEventAction);
                 dTotalNrmT -= toLoopEnd;
-                cursor = 0;
-                loopCount++;
-                loopsSinceRebase++;
+                data.cursor = 0;
+                data.loopCount++;
+                data.loopsSinceRebase++;
                 // If animation looped too many times this tick, 
                 if (++stepsTaken >= maxLoopStepsPerTick) {
                     Debug.LogError($"Animation looped {stepsTaken} times during one tick! " 
                         + $"Max allowed loops: {maxLoopStepsPerTick}");
-                    firstTick = false;
+                    data.firstTick = false;
                     return;
                 }
                 // If we have looped too many times and the cursor is at the beginning of the loop,
                 // start animation from the beginning.
-                if (loopsSinceRebase >= loopRebaseThreshold && cursor == 0) {
-                    anim.Play(animInfo.shortNameHash, animInfo.animLayer, 0);
-                    prevTotalNrmT = 0;
-                    loopsSinceRebase = 0;
+                if (data.loopsSinceRebase >= loopRebaseThreshold && data.cursor == 0) {
+                    anim.Play(data.animInfo.shortNameHash, data.animInfo.animLayer, 0);
+                    data.prevTotalNrmT = 0;
+                    data.loopsSinceRebase = 0;
                 }
             }
         }
-        firstTick = false;
+        data.firstTick = false;
     }
 
     /// <summary>
     /// Invokes events.
     /// NOTE: from and to need to be normalized!
     /// </summary>
-    void FireEventsInNrmRange(float from, float to, bool includeFrom) {
+    static void FireEventsInNrmRange(
+        int caId,
+        in AnimEventPlrData data,
+        float from,
+        float to,
+        bool includeFrom,
+        Action<int, CapsuleCharAnimEventT> animEventAction
+    ) {
         // Find first event in the range. NOTE that it doesn't include "from", but does include
         // "to". This way events do not fire twice. That also means we need a separate check for
         // first tick to fire any possible events at 0 normalized time.
         int startIndex = includeFrom
-            ? LowerBoundInclusive(animInfo.sortedAnimEvents, from)
-            : LowerBound(animInfo.sortedAnimEvents, from);
-        for (int i = startIndex; i < animInfo.sortedAnimEvents.Length; i++) {
-            float t = animInfo.sortedAnimEvents[i].nrmT;
+            ? LowerBoundInclusive(data.animInfo.sortedAnimEvents, from)
+            : LowerBound(data.animInfo.sortedAnimEvents, from);
+        for (int i = startIndex; i < data.animInfo.sortedAnimEvents.Length; i++) {
+            float t = data.animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
             //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
-            onEvent?.Invoke(animInfo.sortedAnimEvents[i].id);
+            animEventAction?.Invoke(caId, data.animInfo.sortedAnimEvents[i].id);
         }
     }
 
     /// <summary>
     /// Finds the index of the first event that has its normalized time above the threshold.
     /// </summary>
-    int LowerBound(AnimEvent[] events, float nrmTThreshold) {
+    static int LowerBound(AnimEvent[] events, float nrmTThreshold) {
         int lo = 0;
         int hi = events.Length;
         while (lo < hi) {
@@ -175,7 +207,7 @@ public class AnimEventPlr{
     /// <summary>
     /// Finds the index of the first event that has its normalized time above or exactly at the threshold.
     /// </summary>
-    int LowerBoundInclusive(AnimEvent[] events, float nrmTThreshold) {
+    static int LowerBoundInclusive(AnimEvent[] events, float nrmTThreshold) {
         int lo = 0;
         int hi = events.Length;
         while (lo < hi) {

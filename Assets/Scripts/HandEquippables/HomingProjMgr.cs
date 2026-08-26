@@ -131,7 +131,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
             if (isActive[i] == false)
                 return i;
         }
-        Debug.LogWarning("Not enough pooled projectiles! Pool more!", this);
+        Debug.LogError("Not enough pooled projectiles! Pool more!", this);
         return -1;
     }
 

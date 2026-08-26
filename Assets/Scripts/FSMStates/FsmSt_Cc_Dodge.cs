@@ -1,94 +1,57 @@
-using System;
-using Unity.Mathematics;
 using UnityEngine;
 
-public class FsmSt_Cc_Dodge : MonoBehaviour, IFsmSt{
-    event Action<CapsuleCharAnimEvent> animEvent;
-
-    [SerializeField] Pc pc;
-
-    bool yawAllowed = false;
-    bool bufferedInputStateSwitchAllowed = false;
-
-    void OnEnable(){
-        animEvent += OnAnimEvent;
-    }
-
-    void OnDisable(){
-        animEvent -= OnAnimEvent;
-    }
-
-    public void Enter(IFsmSt previousState){
-        yawAllowed = false;
-        bufferedInputStateSwitchAllowed = false;
-        var data = pc.Data;
-        data.invul = true;
-        pc.Data = data;
-        VisUtils.CrossfadeNInitAnimEventPlr(
-            ref pc.animEventPlr,
-            pc.capsuleCharAnim,
+public  class FsmSt_Cc_Dodge : MonoBehaviour {
+    public static void Enter(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        // TODO MINOR: Rename to yawinputrotallowed
+        data.actStSt_ImpactInputRotAllowed[id] = false;
+        data.actStSt_BufferedInputStSwitchAllowed[id] = false;
+        data.invul[id] = true;
+        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+            ref animEventPlrData,
+            unityComps[id].anim,
+            // TODO MINOR: Rename from dodge to Dodge
             CapsuleCharAnimInfo.dodge,
-            animEvent,
+            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
 
-    public void Exit(){
-        var data = pc.Data;
-        data.invul = false;
-        pc.Data = data;
+    public static void Exit(int id, CapsuleChar_BaseData data) {
+        data.invul[id] = false;
     }
 
-    public void PhysicsTick(){
-    }
-
-    public void Tick(){
+    public static void Tick(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
         float angSpd = 0;
-        if (yawAllowed)
-            angSpd = pc.Data.st_Dodge_YawSpd;
-        pc.charCtrlMov.UpdateMov(pc.Data.input_mov, pc.AnimationDeltaMovement, 0, angSpd);
-        if(bufferedInputStateSwitchAllowed){
+        if (data.actStSt_ImpactInputRotAllowed[id])
+            angSpd = data.st_Dodge_YawSpd[id];
+        CapsuleCharActStUtils.UpdateMovData(
+            id,
+            data,
+            data.input_mov[id],
+            data.animDPos[id],
+            0,
+            angSpd,
+            float.PositiveInfinity
+        );
+        if (data.actStSt_BufferedInputStSwitchAllowed[id]){
             // NOTE: not buffered input but whatever. TODO: REfactor
-            if (CapsuleCharFsmUtils.SwitchToFallingStIfNotGrounded(pc))
+            if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
                 return;
-            if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Light))
-                pc.fsm.SwitchSt(pc.fsmSts.atk_HorSlash1);
-            else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Atk_Heavy))
-                pc.fsm.SwitchSt(pc.fsmSts.atk_Jump);
-            else if (pc.inputBuffer.TryConsumeInput(BufferableInput.Dodge))
-                pc.fsm.SwitchSt(pc.fsmSts.dodge);
-        }
-    }
-
-    public void LateTick() {
-        pc.animEventPlr.Tick();
-    }
-
-    public bool CanSwitchStTo(IFsmSt newSt) => true;
-
-    // ----------------------
-    // Animation event
-    // ----------------------
-
-    private void OnAnimEvent(CapsuleCharAnimEvent id) {
-        switch (id) {
-            case CapsuleCharAnimEvent.Dodge_YawAllowed:
-                yawAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.Dodge_InvulEnd:
-                var data = pc.Data;
-                data.invul = false;
-                pc.Data = data;
-                break;
-            case CapsuleCharAnimEvent.Dodge_BufferedInputStSwitchAllowed:
-                bufferedInputStateSwitchAllowed = true;
-                break;
-            case CapsuleCharAnimEvent.Dodge_Finished:
-                if (!pc.Data.input_mov.Equals(float2.zero))
-                    pc.fsm.SwitchSt(pc.fsmSts.walk);
-                else
-                    pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
+            if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Light, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
+                CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_HorSlash1);
+            else if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
+                CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_Jump);
+            else if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
+                CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Dodge);
         }
     }
 }

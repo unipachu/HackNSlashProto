@@ -1,3 +1,4 @@
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
@@ -68,17 +69,17 @@ public class TrfMathUtils : MonoBehaviour {
     /// Rotates forward towards the target vector in xz-plane.
     /// </summary>
     /// <param name="tgtInXZPlane">Forward direction in XZ-plane.</param>
-    public static void RotateFwdToTgt(Transform trf, float maxAngSpd, Vector2 tgtInXZPlane) {
-        if (tgtInXZPlane == Vector2.zero)
-            return;
-        Vector3 dir3D = new Vector3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
-        if (dir3D.sqrMagnitude < 0.0001f) {
-            Debug.LogWarning("Look rotation viewing vector was zero", trf);
-            return;
+    public static quaternion RotateFwdToTgt(quaternion rot, float maxAngSpd, float2 tgtInXZPlane) {
+        if (tgtInXZPlane.Equals(float2.zero))
+            return rot;
+        float3 dir3D = new float3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
+        if (math.lengthsq(dir3D) < 0.0001f) {
+            Debug.LogWarning("Look rotation viewing vector was zero");
+            return rot;
         }
-        Quaternion targetRotation = Quaternion.LookRotation(dir3D, Vector3.up);
-        trf.rotation = Quaternion.RotateTowards(
-            trf.rotation,
+        quaternion targetRotation = quaternion.LookRotation(dir3D, Vector3.up);
+        return MathUtils.RotateTowards(
+            rot,
             targetRotation,
             maxAngSpd * Time.deltaTime
         );

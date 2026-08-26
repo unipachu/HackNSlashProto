@@ -1,72 +1,536 @@
+using NUnit.Framework.Internal;
 using Unity.Collections;
+using Unity.Mathematics;
 using UnityEngine;
 
 /// <summary>
-/// Storage for playable capsule character runtime data.
+/// Capsule character manager working in a manner of ECS.
 /// </summary>
 public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
-    public int maxCapsuleChars = 2;
+    [Header("Settings")]
+    public int maxCapsuleChars = 1;
+    // TODO: Idk what is the most cache friendly way to handle global/static variables like this?
+    public float movInputDeadzone = 0.2f;
+    public float inputBuffer_Dur = 0.3f;
 
-    public NativeArray<CapsuleCharData> capsuleCharDatas;
-    // Structs can't be null, so we need a way to keep track of structs that are actually used.
-    public NativeArray<bool> occupied;
- 
+    [HideInInspector] public CapsuleChar_BaseData data;
+    [HideInInspector] public CapsuleChar_BrainData brainData;
+    // All game object components the capsule characters use.
+    [HideInInspector] public CapsuleChar_UnityComps[] unityComps;
+    [HideInInspector] public AnimEventPlrData[] animEventPlrData;
+
     public void Init() {
-        if (capsuleCharDatas.IsCreated || occupied.IsCreated) {
-            Debug.LogError("Data already created before Init!", this);
-            return;
-        }
-        capsuleCharDatas = new NativeArray<CapsuleCharData>(maxCapsuleChars, Allocator.Persistent);
-        occupied = new NativeArray<bool>(maxCapsuleChars, Allocator.Persistent);
+        data = CapsuleChar_BaseData.Create(maxCapsuleChars);
+        brainData = CapsuleChar_BrainData.Create(maxCapsuleChars);
+        unityComps = new CapsuleChar_UnityComps[maxCapsuleChars];
+        animEventPlrData = new AnimEventPlrData[maxCapsuleChars];
     }
 
     void OnDestroy() {
-        capsuleCharDatas.Dispose();
-        occupied.Dispose();
+        data.Dispose();
+        brainData.Dispose();
     }
 
-    // ------------------------------------------------------------------------------
-    // Public Methods
-    // ------------------------------------------------------------------------------
+    // ------------------------------------------------------------
+    // Fixed Tick Methods
+    // ------------------------------------------------------------
 
-    public CapsuleCharData GetData(int id) {
-        //Debug.Log($"GET id={id}, invul={configs[id].invul}");
-        return capsuleCharDatas[id];
+    public void FixedTick() {
+        UpdateGroundCheck(
+            data.groundCastHitSomething,
+            data.groundCastNrm,
+            data.isGrounded,
+            data.occupied,
+            unityComps
+        );
+        FixedTick_Fsm();
     }
 
-    public void SetData(int id, CapsuleCharData value) {
-        //Debug.Log($"SET id={id}, invul={value.invul}");
-        capsuleCharDatas[id] = value;
+    void FixedTick_Fsm() {
+        for (int i = 0; i < unityComps.Length; i++) {
+            if (!data.occupied[i])
+                continue;
+            switch (data.actSt[i]) {
+                default:
+                    //Debug.LogError($"Switch defaulted with {data.actSt[i]}.", this);
+                    break;
+            }
+        }
     }
+
+    static void UpdateGroundCheck(
+        NativeArray<bool> groundCastHitSomething,
+        NativeArray<float3> groundCastNrm,
+        NativeArray<bool> isGrounded,
+        NativeArray<bool> occupied,
+        CapsuleChar_UnityComps[] unityComp
+    ) {
+        for (int i = 0; i < unityComp.Length; i++) {
+            if (!occupied[i])
+                continue;
+            // TODO MINOR: Maybe there's a way not not use a local variable?
+            bool hitSomething = false;
+            isGrounded[i] = CharCtrlMov.IsGrounded(
+                unityComp[i].charCtrl,
+                out hitSomething,
+                out RaycastHit groundCastResult
+            );
+            groundCastHitSomething[i] = hitSomething;
+            groundCastNrm[i] = groundCastResult.normal;
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Tick Methods
+    // ------------------------------------------------------------
+
+    public void Tick(float dt) {
+        Tick_FromNonNative(
+            data.curStDur,
+            data.lastCharCtrlVel,
+            data.occupied,
+            data.trf_lossyScl,
+            data.trf_pos,
+            data.trf_rot,
+            unityComps
+        );
+        Tick_Input();
+        Tick_InputBuffer(dt);
+        Tick_Sensing();
+        Tick_AgentMovInput(
+            brainData.agentDesiredVel,
+            brainData.distToTgt,
+            data.occupied,
+            unityComps
+        );
+        Tick_Fsm();
+        Tick_Mov();
+        //Tick_PlayBufferedAnim();
+    }
+
+    // TODO: Update in Tick_FromNonNative
+    static void Tick_AgentMovInput(
+        NativeArray<float3> brain_AgentDesiredVel,
+        NativeArray<float> brain_DistToTgt,
+        NativeArray<bool> occupied,
+        CapsuleChar_UnityComps[] unityComp
+    ) {
+        for (int i = 0; i < brain_DistToTgt.Length; i++) {
+            if (!occupied[i] || unityComp[i].agent == null)
+                continue;
+            if (unityComp[i].tgt == null) {
+                brain_AgentDesiredVel[i] = float3.zero;
+                return;
+            }
+            unityComp[i].agent.SetDestination(unityComp[i].tgt.position);
+            brain_AgentDesiredVel[i] = unityComp[i].agent.desiredVelocity;
+            //Debug.Log($"Agent desired vel: {brain_AgentDesiredVel[i]}", unityComp[i].agent);
+        }
+    }
+
+    /// <summary>
+    /// Update data from non native sources, e.g. from Monobehavior components.
+    /// </summary>
+    void Tick_FromNonNative(
+        NativeArray<float> curStDur,
+        NativeArray<float3> lastCharCtrlVel,
+        NativeArray<bool> occupied,
+        NativeArray<float3> trf_lossyScl,
+        NativeArray<float3> trf_pos,
+        NativeArray<quaternion> trf_rot,
+        CapsuleChar_UnityComps[] unityComp
+    ) {
+        for (int i = 0; i < unityComp.Length; i++) {
+            if (!occupied[i])
+                continue;
+            trf_pos[i] = unityComp[i].transform.position;
+            trf_rot[i] = unityComp[i].transform.rotation;
+            trf_lossyScl[i] = unityComp[i].transform.lossyScale;
+            lastCharCtrlVel[i] = unityComp[i].charCtrl.velocity;
+            curStDur[i] += Time.deltaTime;
+        }
+    }
+
+    void Tick_Fsm() {
+        for (int i = 0; i < unityComps.Length; i++) {
+            if (!data.occupied[i])
+                continue;
+            switch (data.actSt[i]) {
+                case CapsuleCharActSt.Atk_FlyingAtk:
+                    FsmSt_Cc_Atk_FlyingAtk.Tick(i, data, unityComps, ref animEventPlrData[i]);
+                    break;
+                case CapsuleCharActSt.Atk_ShootHomingProj:
+                    break;
+                case CapsuleCharActSt.Atk_HorSlash1:
+                    break;
+                case CapsuleCharActSt.Atk_HorSlash2:
+                    break;
+                case CapsuleCharActSt.Atk_HorSlash3:
+                    break;
+                case CapsuleCharActSt.Atk_Jump:
+                    break;
+                case CapsuleCharActSt.Dodge:
+                    break;
+                case CapsuleCharActSt.Falling:
+                    break;
+                case CapsuleCharActSt.FallLanding:
+                    break;
+                case CapsuleCharActSt.Idle:
+                    break;
+                case CapsuleCharActSt.Knockback_Weak:
+                    break;
+                case CapsuleCharActSt.Walk:
+                    break;
+                default:
+                    Debug.LogError($"Switch defaulted with {data.actSt[i]}", this);
+                    break;
+            }
+        }
+    }
+
+    void Tick_Input() {
+        for (int i = 0; i < unityComps.Length; i++) {
+            if (!data.occupied[i] || unityComps[i].ctrl == null)
+                continue;
+            data.input_atk_Light[i] = unityComps[i].ctrl.TryConsume_Atk_Light();
+            data.input_atk_Heavy[i] = unityComps[i].ctrl.TryConsume_Atk_Heavy();
+            data.input_atk_Ult[i] = unityComps[i].ctrl.TryConsume_Atk_Ult();
+            data.input_dodge[i] = unityComps[i].ctrl.TryConsume_Dodge();
+            if (unityComps[i].ctrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
+                data.input_mov[i] = unityComps[i].ctrl.Input_Mov;
+                data.input_mov_LastNonZero[i] = data.input_mov[i];
+            }
+            else {
+                data.input_mov[i] = Vector2.zero;
+            }
+            //Debug.Log("mov input mag: " + math.length(data.input_mov[i]));
+        }
+    }
+
+    void Tick_InputBuffer(float dt) {
+        for (int i = 0; i < unityComps.Length; i++) {
+            if (!data.occupied[i])
+                continue;
+            if (data.input_atk_Light[i])
+                PcInputBuffer.BufferInput(i, BufferableInput.Atk_Light, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+            else if (data.input_atk_Heavy[i])
+                PcInputBuffer.BufferInput(i, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+            else if (data.input_atk_Ult[i])
+                PcInputBuffer.BufferInput(i, BufferableInput.Atk_Ult, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+            else if (data.input_dodge[i])
+                PcInputBuffer.BufferInput(i, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+            // Clear input if buffer time passed.
+            if (data.inputBuffer_RemainingTime[i] <= 0)
+                continue;
+            data.inputBuffer_RemainingTime[i] -= dt;
+            //Debug.Log("remaining time: " + remainingTime);
+            if (data.inputBuffer_RemainingTime[i] <= 0)
+                PcInputBuffer.Clear(i, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+        }
+    }
+
+    void Tick_Mov() {
+        for (int i = 0; i < data.occupied.Length; i++) {
+            if (!data.occupied[i])
+                continue;
+            //Debug.Log($"UpdateMov: horMov: {horMov} | animRootMot: {animRootMot} \n"
+            //    + $"| maxLinSpd: {maxLinSpd} | linAcc: {linAcc}");
+            float dt = Time.deltaTime;
+            //Debug.Assert(
+            //    !float.IsNaN(ccMgr.vel_Hor[capsuleCharId].x)
+            //      && !float.IsNaN(ccMgr.vel_Hor[capsuleCharId].y),
+            //    $"vel_hor had NaN: {ccMgr.vel_Hor[capsuleCharId]}"
+            //);
+            //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
+            data.vel_Hor[i] = Vector2.MoveTowards(
+                data.vel_Hor[i],
+                data.mov_horMov[i] * data.mov_maxLinSpd[i],
+                data.mov_linAcc[i] * dt
+            );
+            data.vel_Yaw[i] = data.mov_yawSpd[i];
+            // Skip rotation if tgt dir vector (horMov) is too small.
+            if (math.lengthsq(data.mov_horMov[i]) > 0.0001f) {
+                data.trf_rot[i] = TrfMathUtils.RotateFwdToTgt(data.trf_rot[i], data.vel_Yaw[i], data.mov_horMov[i]);
+                // TODO: You could make a separate function that sets this later after all calculations
+                // TODO C: have finished. Though should each character be moved one at a time? Maybe. But
+                // TODO C: wait, they are! Is that ok or is some other logic tied to how the character
+                // TODO C: should move that should be done one character at a time?
+                unityComps[i].transform.rotation = data.trf_rot[i];
+            }
+            // TODO: This should be its own Tick function I think. Then you didn't need to worry about ref
+            // TODO C: keywords or such. Over multiple Tick_Mov_ you accumulate impulses and forces and
+            // TODO C: then apply them all with a separate method to the character controller!
+            if (data.isAffectedByGravity[i])
+                CharCtrlMov.ApplyGravityNSlideDownSlopes(i, dt);
+            else
+                data.vel_Ver[i] = 0;
+            Vector3 totalMov = data.animDPos[i];
+            totalMov.x += data.vel_Hor[i].x * dt;
+            totalMov.y += data.vel_Ver[i] * dt;
+            totalMov.z += data.vel_Hor[i].y * dt;
+            //Debug.Log($"UpdateMov: totalMov: {totalMov}");
+            unityComps[i].charCtrl.Move(totalMov);
+        }
+    }
+
+    //void Tick_PlayBufferedAnim() {
+    //    for (int i = 0; i < data.occupied.Length; i++) {
+    //        VisUtils.CrossfadeNInitAnimEventPlr(
+    //            ref unityComps[i].animEventPlr,
+    //            unityComps[i].anim,
+    //            CapsuleCharAnimInfo.atk_FlyingAtk_Windup,
+    //            unityComps[i].animEvents.animEvent,
+    //            0.1f
+    //        );
+    //    }
+    //}
+
+    void Tick_Sensing() {
+        for (int i = 0; i < data.occupied.Length; i++) {
+            // TODO MINOR: Find out if skipping through elements like this affects cpu cache performance.
+            if (!data.occupied[i])
+                continue;
+            if (unityComps[i].tgt != null) {
+                brainData.distToTgt[i] = Vector3.Distance(
+                    unityComps[i].transform.position,
+                    unityComps[i].tgt.position
+                );
+                brainData.hasTgt[i] = true;
+                brainData.inAggroRange[i]
+                    = Vector3.Distance(
+                        unityComps[i].transform.position,
+                    unityComps[i].tgt.position) < brainData.aggroRange[i];
+                brainData.inAtkRange[i]
+                    = Vector3.Distance(
+                        unityComps[i].transform.position,
+                    unityComps[i].tgt.position
+                ) < brainData.atkRange[i];
+                brainData.tgtPos[i] = unityComps[i].tgt.position;
+            }
+            else
+                brainData.hasTgt[i] = false;
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Late Tick Methods
+    // ------------------------------------------------------------
+
+    // TODO: Remember to call this from game manager.
+    public void LateTick() {
+        LateTick_AnimEventPlr();
+    }
+
+    void LateTick_AnimEventPlr() {
+        for (int i = 0; i < data.occupied.Length; i++) {
+            AnimEventPlr.Tick(i, ref animEventPlrData[i], unityComps[i].anim, unityComps[i].animEvents.animEvent);
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Other Methods
+    // ------------------------------------------------------------
 
     /// <summary>
     /// Returns the index of the registered data, or -1 on failure.
     /// </summary>
-    public int Register(So_CapsuleCharData so_capsuleCharData, So_BtRootNode bt) {
-        int freeIndex = -1;
-        for (int i = 0; i < occupied.Length; i++) {
-            if (!occupied[i]) {
-                freeIndex = i;
+    public int Register(So_CapsuleCharData so, CapsuleChar_UnityComps unityComps, So_BtRootNode bt) {
+        int freeI = -1;
+        for (int i = 0; i < data.occupied.Length; i++) {
+            if (!data.occupied[i]) {
+                freeI = i;
                 break;
             }
         }
-        if (freeIndex == -1) {
+        if (freeI == -1) {
             Debug.LogError($"EntityData: at capacity ({maxCapsuleChars})");
             return -1;
         }
-        capsuleCharDatas[freeIndex] = so_capsuleCharData.ToStruct();
-        if (bt != null) {
-            BtMgr.inst.Register(freeIndex, bt);
-        }
-        occupied[freeIndex] = true;
-        return freeIndex;
+        brainData.agentDesiredVel[freeI] = float3.zero;
+        brainData.aggroRange[freeI] = so.brain_AggroRange;
+        brainData.atkRange[freeI] = so.brain_AtkRange;
+        brainData.distToTgt[freeI] = 0;
+        brainData.hasTgt[freeI] = false;
+        brainData.inAggroRange[freeI] = false;
+        brainData.inAtkRange[freeI] = false;
+        brainData.tgtPos[freeI] = float3.zero;
+        data.curStDur[freeI] = 0;
+        data.equip_RHandEquippable[freeI] = so.equip_RHandEquippable;
+        data.gravitationalAcc[freeI] = so.gravitationalAcc;
+        data.groundCastHitSomething[freeI] = false;
+        data.groundCastNrm[freeI] = float3.zero;
+        data.groundSnapVerDownSpd[freeI] = so.groundSnapVerDownSpd;
+        data.hp_Cur[freeI] = so.maxHP;
+        data.hp_Max[freeI] = so.maxHP;
+        data.input_mov[freeI] = float2.zero;
+        data.input_mov_LastNonZero[freeI] = float2.zero;
+        data.input_mov_WhenLastSwitchedSt[freeI] = float2.zero;
+        data.input_atk_Light[freeI] = false;
+        data.input_atk_Heavy[freeI] = false;
+        data.input_atk_Ult[freeI] = false;
+        data.input_dodge[freeI] = false;
+        data.invul[freeI] = false;
+        data.isAffectedByGravity[freeI] = true;
+        data.isGrounded[freeI] = false;
+        data.lastCharCtrlVel[freeI] = float3.zero;
+        data.lastKnockbackStr[freeI] = 0;
+        data.lastRecievedHitDir[freeI] = float3.zero;
+        data.maxFallSpd[freeI] = so.maxFallSpd;
+        data.st_AtkHorSlash_Impact_AngSpd[freeI] = so.st_AtkHorSlash_Impact_AngSpd;
+        data.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_MaxAngSpd;
+        data.st_AtkJump_DownSpeedAfterJumpFinished[freeI] = so.st_AtkJump_DownSpeedAfterJumpFinished;
+        data.st_Dodge_YawSpd[freeI] = so.st_Dodge_YawAngSpd;
+        data.st_Falling_LandingStFallDistThreshold[freeI] = so.st_Falling_LandingStFallDistThreshold;
+        data.st_Falling_LinAcc[freeI] = so.st_Falling_LinAcc;
+        data.st_Falling_MaxLinSpd[freeI] = so.st_Falling_MaxLinSpd;
+        data.st_Walk_LinAcc[freeI] = so.st_Walk_LinAcc;
+        data.st_Walk_MaxLinSpd[freeI] = so.st_Walk_MaxLinSpd;
+        data.st_Walk_YawSpd[freeI] = so.st_Walk_MaxAngSpd;
+        data.trf_pos[freeI] = float3.zero;
+        data.trf_rot[freeI] = quaternion.identity;
+        data.trf_lossyScl[freeI] = new float3(1);
+        data.vel_Hor[freeI] = float2.zero;
+        data.vel_Ver[freeI] = 0;
+        data.vel_Yaw[freeI] = 0;
+        data.occupied[freeI] = true;
+        this.unityComps[freeI] = unityComps; 
+        if (bt != null)
+            BtMgr.inst.Register(freeI, bt);
+        return freeI;
     }
 
     public void Unregister(int id) {
-        if (!occupied[id]) {
+        if (!data.occupied[id]) {
             Debug.LogError($"Capsule character with id {id} has not been registered!");
             return;
         }
-        occupied[id] = false;
+        data.occupied[id] = false;
+    }
+
+    public bool ActSt_CanSwitchTo(CapsuleCharActSt newActSt) {
+        switch (newActSt) {
+            case CapsuleCharActSt.Atk_FlyingAtk:
+                return newActSt == CapsuleCharActSt.Falling ? false : true;
+            case CapsuleCharActSt.Atk_HorSlash1:
+                return true;
+            case CapsuleCharActSt.Atk_HorSlash2:
+                return true;
+            case CapsuleCharActSt.Atk_HorSlash3:
+                return true;
+            case CapsuleCharActSt.Atk_Jump:
+                if (newActSt == CapsuleCharActSt.Falling)
+                    return false;
+                else
+                    return true;
+            case CapsuleCharActSt.Atk_ShootHomingProj:
+                return true;
+            case CapsuleCharActSt.Dodge:
+                return true;
+            case CapsuleCharActSt.Falling:
+                return true;
+            case CapsuleCharActSt.FallLanding:
+                return true;
+            case CapsuleCharActSt.Idle:
+                return true;
+            case CapsuleCharActSt.Knockback_Weak:
+                // TODO: To avoid stun locking, after some amount of consequtive knockbacks,
+                // TODO C: allow canceling knockback state.
+                if (newActSt == CapsuleCharActSt.Knockback_Weak)
+                    return true;
+                // TODO: Allow switch to death state.
+                return false;
+            case CapsuleCharActSt.Walk:
+                return true;
+            default:
+                Debug.LogError($"Switch defaulted with {newActSt}", this);
+                return false;
+        }
+    }
+
+    public void ActSt_EnterSt(int id, CapsuleCharActSt newSt, CapsuleCharActSt prevSt) {
+        switch (newSt) {
+            case CapsuleCharActSt.Atk_FlyingAtk:
+                FsmSt_Cc_Atk_FlyingAtk.Enter(id, data, unityComps, ref animEventPlrData[id]);
+                break;
+            case CapsuleCharActSt.Atk_ShootHomingProj:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash1:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash2:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash3:
+                break;
+            case CapsuleCharActSt.Atk_Jump:
+                break;
+            case CapsuleCharActSt.Dodge:
+                break;
+            case CapsuleCharActSt.Falling:
+                break;
+            case CapsuleCharActSt.FallLanding:
+                break;
+            case CapsuleCharActSt.Idle:
+                break;
+            case CapsuleCharActSt.Knockback_Weak:
+                break;
+            case CapsuleCharActSt.Walk:
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {newSt}", this);
+                break;
+        }
+    }
+
+    public void ActSt_ExitSt(int id, CapsuleCharActSt actSt) {
+        switch (actSt) {
+            case CapsuleCharActSt.Atk_FlyingAtk:
+                FsmSt_Cc_Atk_FlyingAtk.Exit(id, data, unityComps);
+                break;
+            case CapsuleCharActSt.Atk_ShootHomingProj:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash1:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash2:
+                break;
+            case CapsuleCharActSt.Atk_HorSlash3:
+                break;
+            case CapsuleCharActSt.Atk_Jump:
+                break;
+            case CapsuleCharActSt.Dodge:
+                break;
+            case CapsuleCharActSt.Falling:
+                break;
+            case CapsuleCharActSt.FallLanding:
+                break;
+            case CapsuleCharActSt.Idle:
+                break;
+            case CapsuleCharActSt.Knockback_Weak:
+                break;
+            case CapsuleCharActSt.Walk:
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {actSt}", this);
+                break;
+        }
+    }
+
+    // TODO MINOR: Rename to St"
+    public void ActSt_SwitchState(int id, CapsuleCharActSt newSt) {
+        data.isSwitchingActSt[id] = true;
+        data.prevSt[id] = data.actSt[id];
+        data.actSt[id] = newSt;
+        ActSt_ExitSt(id, newSt);
+        ActSt_EnterSt(id, newSt, data.prevSt[id]);
+        data.curStDur[id] = 0;
+        if (unityComps[id].ctrl == null)
+            data.input_mov_WhenLastSwitchedSt[id]
+                = data.input_mov[id];
+        else {
+            if (unityComps[id].ctrl.Input_Mov.sqrMagnitude > CapsuleCharMgr.inst.movInputDeadzone)
+                data.input_mov_WhenLastSwitchedSt[id]
+                    = data.input_mov[id];
+            else
+                data.input_mov_WhenLastSwitchedSt[id] = float2.zero;
+        }
+        data.isSwitchingActSt[id] = false;
     }
 }

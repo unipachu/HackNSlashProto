@@ -56,15 +56,11 @@ public class BtMgr : Singleton<BtMgr>{
     }
 
     public void Tick() {
-        var capsuleCharDatas = CapsuleCharMgr.inst.capsuleCharDatas;
         for (int i = 0; i < occupied.Length; i++) {
             if (!occupied[i])
                 continue;
-            CapsuleCharData capsuleCharData = capsuleCharDatas[i];
-            TickBt(i, ref capsuleCharData);
-            capsuleCharDatas[i] = capsuleCharData;
+            TickBt(i);
         }
-        CapsuleCharMgr.inst.capsuleCharDatas = capsuleCharDatas;
     }
 
     // ------------------------------------------------------------------------------
@@ -132,55 +128,58 @@ public class BtMgr : Singleton<BtMgr>{
         };
     }
 
-    BtResult EvalLeaf(BtNodeT t, ref CapsuleCharData charData) {
+    BtResult EvalLeaf(BtNodeT t, int capsuleCharId) {
         float2 horDesiredVel;
+        CapsuleChar_BaseData ccMgr = CapsuleCharMgr.inst.data;
+        CapsuleCharMgr caMgr = CapsuleCharMgr.inst;
+        CapsuleChar_BrainData brainData = CapsuleCharMgr.inst.brainData;
         switch (t) {
             case BtNodeT.Cmd_Idle:
-                charData.input_atk_Heavy = false;
-                charData.input_atk_Light = false;
-                charData.input_atk_Ult = false;
-                charData.input_dodge = false;
-                if(math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
-                    charData.input_mov_LastNonZero = charData.input_mov;
-                charData.input_mov = float2.zero;
+                ccMgr.input_atk_Heavy[capsuleCharId] = false;
+                ccMgr.input_atk_Light[capsuleCharId] = false;
+                ccMgr.input_atk_Ult[capsuleCharId] = false;
+                ccMgr.input_dodge[capsuleCharId] = false;
+                if(math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
+                ccMgr.input_mov[capsuleCharId] = float2.zero;
                 return BtResult.Success;
             case BtNodeT.Cmd_Atk1:
-                charData.input_atk_Heavy = false;
-                charData.input_atk_Light = true;
-                charData.input_atk_Ult = false;
-                charData.input_dodge = false;
-                if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
-                    charData.input_mov_LastNonZero = charData.input_mov;
+                ccMgr.input_atk_Heavy[capsuleCharId] = false;
+                ccMgr.input_atk_Light[capsuleCharId] = true;
+                ccMgr.input_atk_Ult[capsuleCharId] = false;
+                ccMgr.input_dodge[capsuleCharId] = false;
+                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
                 horDesiredVel = new float2(
-                        charData.brain_AgentDesiredVel.x,
-                        charData.brain_AgentDesiredVel.z
+                        brainData.agentDesiredVel[capsuleCharId].x,
+                        brainData.agentDesiredVel[capsuleCharId].z
                 );
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if (math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    charData.input_mov = math.normalize(horDesiredVel);
+                    ccMgr.input_mov[capsuleCharId] = math.normalize(horDesiredVel);
                 return BtResult.Success;
             case BtNodeT.Cmd_MovToTgt:
-                charData.input_atk_Heavy = false;
-                charData.input_atk_Light = false;
-                charData.input_atk_Ult = false;
-                charData.input_dodge = false;
-                if (math.lengthsq(charData.input_mov) > Pc.movInputDeadzone)
-                    charData.input_mov_LastNonZero = charData.input_mov;
+                ccMgr.input_atk_Heavy[capsuleCharId] = false;
+                ccMgr.input_atk_Light[capsuleCharId] = false;
+                ccMgr.input_atk_Ult[capsuleCharId] = false;
+                ccMgr.input_dodge[capsuleCharId] = false;
+                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
                 horDesiredVel = new float2(
-                        charData.brain_AgentDesiredVel.x,
-                        charData.brain_AgentDesiredVel.z
+                        brainData.agentDesiredVel[capsuleCharId].x,
+                        brainData.agentDesiredVel[capsuleCharId].z
                 );
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if(math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    charData.input_mov = math.normalize(horDesiredVel);
+                    ccMgr.input_mov[capsuleCharId] = math.normalize(horDesiredVel);
                 //Debug.Log($"BtNodeT.Cmd_MovToTgt movement input: {charData.input_mov}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:
-                return charData.brain_InAggroRange ? BtResult.Success : BtResult.Failure;
+                return brainData.inAggroRange[capsuleCharId] ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Cond_InAtkRange:
-                return charData.brain_InAtkRange ? BtResult.Success : BtResult.Failure;
+                return brainData.inAtkRange[capsuleCharId] ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Selector:
                 Debug.LogError("Selector is a composite not a leaf!", this);
                 return BtResult.Running;
@@ -198,7 +197,7 @@ public class BtMgr : Singleton<BtMgr>{
     /// </summary>
     // TODO: Create some optional debugging system that writes data about what nodes were
     // TODO C: visited and what they returned.
-    void TickBt(int capsuleCharId, ref CapsuleCharData charData) {
+    void TickBt(int capsuleCharId) {
         int outerIterations = 0;
         int innerIterations = 0;
         int treeStart = capsuleCharId * maxNodesPerTree;
@@ -217,7 +216,7 @@ public class BtMgr : Singleton<BtMgr>{
                 nodeI = treeStart + node.firstChild;
                 continue;
             }
-            result = EvalLeaf(node.t, ref charData);
+            result = EvalLeaf(node.t, capsuleCharId);
             if (result == BtResult.Running) {
                 curRunningNode[capsuleCharId] = nodeI - treeStart;
                 return;

@@ -1,84 +1,44 @@
-using System;
 using Unity.Mathematics;
 using UnityEngine;
 
-public class FsmSt_Cc_Atk_Jump : MonoBehaviour, IFsmSt{
-    event Action<CapsuleCharAnimEvent> animEvent;
-    
-    [SerializeField] Pc pc;
-
-    void OnEnable(){
-        animEvent += OnAnimEvent;
-    }
-
-    void OnDisable(){
-        animEvent -= OnAnimEvent;
-    }
-
-    public void Enter(IFsmSt previousState){
-        VisUtils.CrossfadeNInitAnimEventPlr(
-            ref pc.animEventPlr,
-            pc.capsuleCharAnim,
+public  class FsmSt_Cc_Atk_Jump : MonoBehaviour {
+    public static void Enter(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps,
+        ref AnimEventPlrData animEventPlrData
+    ) {
+        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+            ref animEventPlrData,
+            unityComps[id].anim,
             CapsuleCharAnimInfo.atk_JumpVerSlam,
-            animEvent
+            unityComps[id].animEvents.animEvent,
+            0.1f
         );
     }
 
-    public void Exit(){
-        CapsuleCharData data = pc.Data;
-        data.isAffectedByGravity = true;
-        pc.Data = data;
-        pc.rHandEquippable.hitDealer.Deactivate();
+    public static void Exit(
+        int id,
+        CapsuleChar_UnityComps[] unityComps,
+        CapsuleChar_BaseData data
+    ) {
+        data.isAffectedByGravity[id] = true;
+        unityComps[id].rHandEquippable.hitDealer.Deactivate();
     }
 
-    public void PhysicsTick(){
-    }
-
-    public void Tick(){
-        pc.charCtrlMov.UpdateMov(Vector3.zero, pc.AnimationDeltaMovement, 0, 0);
-    }
-
-    public void LateTick() {
-        pc.animEventPlr.Tick();
-    }
-
-    public bool CanSwitchStTo(IFsmSt newSt) {
-        if (newSt == (IFsmSt)pc.fsmSts.falling)
-            return false;
-        else
-            return true;
-    }
-
-
-    // ----------------------
-    // Animation Event
-    // ----------------------
-
-    private void OnAnimEvent(CapsuleCharAnimEvent id) {
-        CapsuleCharData data = pc.Data;
-        switch (id) {
-            case CapsuleCharAnimEvent.JumpVerSlam_JumpStarted:
-                data.isAffectedByGravity = false;
-                pc.Data = data;
-                break;
-            case CapsuleCharAnimEvent.JumpVerSlam_HitboxActivated:
-                pc.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                pc.rHandEquippable.hitDealer.Activate();
-                break;
-            case CapsuleCharAnimEvent.JumpVerSlam_JumpFinished:
-                data.isAffectedByGravity = true;
-                data.vel_Ver = -pc.Data.st_AtkJump_DownSpeedAfterJumpFinished;
-                pc.Data = data;
-                break;
-            case CapsuleCharAnimEvent.JumpVerSlam_HitboxDeactivated:
-                pc.rHandEquippable.hitDealer.Deactivate();
-                break;
-            case CapsuleCharAnimEvent.JumpVerSlam_Finished:
-                if (!pc.Data.input_mov.Equals(float2.zero))
-                    pc.fsm.SwitchSt(pc.fsmSts.walk);
-                else
-                    pc.fsm.SwitchSt(pc.fsmSts.idle);
-                break;
-        }
+    public static void Tick(
+        int id,
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
+    ) {
+        CapsuleCharActStUtils.UpdateMovData(
+            id,
+            data,
+            float2.zero,
+            data.animDPos[id],
+            0,
+            0,
+            float.PositiveInfinity
+        );
     }
 }

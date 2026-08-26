@@ -5,14 +5,14 @@ using UnityEngine;
 /// Used for getting animation root delta movement.
 /// </summary>
 public class AnimRootMovBroadcaster : MonoBehaviour{
-    public event Action<Vector3> OnRootMove;
+    public event Action<Vector3, Quaternion> OnRootMove;
 
-    [SerializeField] Animator animator;
+    [SerializeField] Animator anim;
 
     void OnAnimatorMove(){
-        Vector3 deltaPos = animator.deltaPosition;
-        Quaternion deltaRot = animator.deltaRotation;
-        OnRootMove?.Invoke(deltaPos);
+        Vector3 dPos = anim.deltaPosition;
+        Quaternion dRot = anim.deltaRotation;
+        OnRootMove?.Invoke(dPos, dRot);
     }
 
 }

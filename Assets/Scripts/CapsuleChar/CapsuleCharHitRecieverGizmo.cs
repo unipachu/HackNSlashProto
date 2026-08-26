@@ -12,10 +12,11 @@ public class CapsuleCharHitRecieverGizmo : MonoBehaviour{
     [SerializeField] Collider col;
 
     private void OnDrawGizmos() {
+        CapsuleCharMgr caMgr = CapsuleCharMgr.inst;
         // NOTE: No warning, no error. You need to remember to set the references!
         if (pc == null || col == null || !drawGizmo || CapsuleCharMgr.inst == null)
             return;
-        Color color = pc.Data.invul ? invulnerableColor : vulnerableColor;
+        Color color = caMgr.data.invul[pc.Id] ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {
             float radius = capsuleCollider.radius;
             float height = Mathf.Max(capsuleCollider.height, radius * 2f);
