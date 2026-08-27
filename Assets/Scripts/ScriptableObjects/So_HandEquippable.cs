@@ -10,7 +10,7 @@ using UnityEngine;
 public class So_HandEquippable : ScriptableObject {
     public HandEquippableT t;
     public HandEquippable prefab;
-    public CapsuleCharActSt lightAtkAct;
-    public CapsuleCharActSt heavyAtkAct;
-    public CapsuleCharActSt ultAtkAct;
+    public CpActSt lightAtkAct;
+    public CpActSt heavyAtkAct;
+    public CpActSt ultAtkAct;
 }

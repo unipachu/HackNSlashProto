@@ -6,7 +6,7 @@ using UnityEngine;
 /// next animation state are triggered (which causes erroneus behavior), we instead tie the animation
 /// events to the action FSM states and use this for the animation events instead.
 /// </summary>
-public class AnimEventPlr : MonoBehaviour{
+public static class AnimEventPlr {
     /// <summary>
     /// Max animation loops before animation is forced to restart to avoid timing precision problems.
     /// </summary>
@@ -49,7 +49,7 @@ public class AnimEventPlr : MonoBehaviour{
     /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
     public static AnimEvent[] CreateAnimEvents(
         AnimInfo animInfo,
-        params (int frame, CapsuleCharAnimEventT id)[] events
+        params (int frame, CpAnimEventT id)[] events
     ) {
         AnimEvent[] result = new AnimEvent[events.Length];
         for (int i = 0; i < events.Length; i++)
@@ -84,7 +84,7 @@ public class AnimEventPlr : MonoBehaviour{
         int caId,
         ref AnimEventPlrData data,
         Animator anim,
-        Action<int, CapsuleCharAnimEventT> animEventAction
+        Action<int, CpAnimEventT> animEventAction
     ) {
         bool firstTickHelper = data.firstTick;
         data.firstTick = false;
@@ -190,7 +190,7 @@ public class AnimEventPlr : MonoBehaviour{
         float from,
         float to,
         bool includeFrom,
-        Action<int, CapsuleCharAnimEventT> animEventAction
+        Action<int, CpAnimEventT> animEventAction
     ) {
         // Find first event in the range. NOTE that it doesn't include "from", but does include
         // "to". This way events do not fire twice. That also means we need a separate check for

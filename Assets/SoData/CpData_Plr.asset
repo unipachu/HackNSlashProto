@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
+  m_Name: CpData_Plr
+  m_EditorClassIdentifier: Assembly-CSharp::So_CpData
+  gravitationalAcc: 10
+  groundSnapVerDownSpd: 1000
+  maxFallSpd: 30
+  inputBufferDuration: 0.3
+  maxHP: 100
+  initSt: 9
+  brain_AggroRange: 8
+  brain_AtkRange: 4
+  equip_RHandEquippable: 1
+  st_AtkJump_DownSpeedAfterJumpFinished: 10
+  st_AtkHorSlash_Windup_MaxAngSpd: 1000
+  st_AtkHorSlash_Impact_AngSpd: 1200
+  st_Falling_LandingStFallDistThreshold: 3
+  st_Falling_LinAcc: 10
+  st_Falling_MaxLinSpd: 1
+  st_Dodge_YawAngSpd: 400
+  st_Walk_LinAcc: 100
+  st_Walk_MaxLinSpd: 6
+  st_Walk_MaxAngSpd: 1000

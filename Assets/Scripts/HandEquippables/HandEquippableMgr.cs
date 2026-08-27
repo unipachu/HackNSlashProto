@@ -6,9 +6,9 @@ public class HandEquippableMgr : Singleton<HandEquippableMgr>{
     [SerializeField] List<So_HandEquippable> handEquippableSos;
 
     [HideInInspector] public HandEquippable[] prefab;
-    public NativeArray<CapsuleCharActSt> lightAtkActId;
-    public NativeArray<CapsuleCharActSt> heavyAtkActId;
-    public NativeArray<CapsuleCharActSt> ultAtkActId;
+    public NativeArray<CpActSt> lightAtkActId;
+    public NativeArray<CpActSt> heavyAtkActId;
+    public NativeArray<CpActSt> ultAtkActId;
 
     public void Init() {
         if (
@@ -19,15 +19,15 @@ public class HandEquippableMgr : Singleton<HandEquippableMgr>{
             Debug.LogError("Data already created before Init!", this);
             return;
         }
-        lightAtkActId = new NativeArray<CapsuleCharActSt>(
+        lightAtkActId = new NativeArray<CpActSt>(
             handEquippableSos.Count,
             Allocator.Persistent
         );
-        heavyAtkActId = new NativeArray<CapsuleCharActSt>(
+        heavyAtkActId = new NativeArray<CpActSt>(
             handEquippableSos.Count,
             Allocator.Persistent
         );
-        ultAtkActId = new NativeArray<CapsuleCharActSt>(
+        ultAtkActId = new NativeArray<CpActSt>(
             handEquippableSos.Count,
             Allocator.Persistent
         );

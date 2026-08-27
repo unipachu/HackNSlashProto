@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 /// NOTE: This class is (or should be) set to run before default time, just
 /// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
-public class PlrCtrl : MonoBehaviour, ICapsuleCharCtrlInputter {
+public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
     [Tooltip("Mouse (or joystick hatswitch) sensitivity for look input.")]
     [SerializeField] float lookPointerSensitivity = 1;
 

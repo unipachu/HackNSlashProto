@@ -82,18 +82,18 @@ public class BtMgr : Singleton<BtMgr>{
 
     void AllocateNodeStorage() {
         nodes = new NativeArray<BtNodeData>(
-            CapsuleCharMgr.inst.maxCapsuleChars * maxNodesPerTree,
+            CpMgr.inst.maxCps * maxNodesPerTree,
             Allocator.Persistent
         );
     }
 
     void AllocateRuntimeData() {
         curRunningNode = new NativeArray<int>(
-            CapsuleCharMgr.inst.maxCapsuleChars,
+            CpMgr.inst.maxCps,
             Allocator.Persistent
         );
         occupied = new NativeArray<bool>(
-            CapsuleCharMgr.inst.maxCapsuleChars,
+            CpMgr.inst.maxCps,
             Allocator.Persistent
         );
     }
@@ -130,9 +130,9 @@ public class BtMgr : Singleton<BtMgr>{
 
     BtResult EvalLeaf(BtNodeT t, int capsuleCharId) {
         float2 horDesiredVel;
-        CapsuleChar_BaseData ccMgr = CapsuleCharMgr.inst.data;
-        CapsuleCharMgr caMgr = CapsuleCharMgr.inst;
-        CapsuleChar_BrainData brainData = CapsuleCharMgr.inst.brainData;
+        Cp_BaseData ccMgr = CpMgr.inst.data;
+        CpMgr caMgr = CpMgr.inst;
+        Cp_BrainData brainData = CpMgr.inst.brainData;
         switch (t) {
             case BtNodeT.Cmd_Idle:
                 ccMgr.input_atk_Heavy[capsuleCharId] = false;

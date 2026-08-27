@@ -3,7 +3,6 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.Experimental.GraphView.Port;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -33,7 +32,7 @@ public struct AnimInfo {
         int animLayer,
         bool looping,
         int lastFrame,
-        params (int frame, CapsuleCharAnimEventT id)[] sortedEvents
+        params (int frame, CpAnimEventT id)[] sortedEvents
     ) {
         this.shortNameHash = shortNameHash;
         this.animLayer = animLayer;
@@ -68,7 +67,7 @@ public struct AnimEvent {
     /// <summary>
     /// Unique id for the animation event.
     /// </summary>
-    public CapsuleCharAnimEventT id;
+    public CpAnimEventT id;
 
     /// <param name="frame">
     /// Frame of the animation event.<br/>
@@ -79,7 +78,7 @@ public struct AnimEvent {
     /// on the timeline where the animation bar changes to dark grey.
     /// </param>
     /// <param name="id">Unique name for the action event, used to check against a switch case.</param>
-    public AnimEvent(int frame, int lastFrame, CapsuleCharAnimEventT id) {
+    public AnimEvent(int frame, int lastFrame, CpAnimEventT id) {
         nrmT = frame / (float)lastFrame;
         this.id = id;
     }
@@ -141,8 +140,8 @@ public struct BtNodeData {
     public BtNodeT t;
 }
 
-public struct CapsuleChar_BaseData {
-    public NativeArray<CapsuleCharActSt> actSt;
+public struct Cp_BaseData {
+    public NativeArray<CpActSt> actSt;
     public NativeArray<AtkPhase> actStSt_AtkPhase;
     public NativeArray<bool> actStSt_BufferedInputStSwitchAllowed;
     public NativeArray<bool> actStSt_ComboAllowed;
@@ -191,7 +190,7 @@ public struct CapsuleChar_BaseData {
     public NativeArray<float> mov_linAcc;
     // To keep track of which indices are actually used for entitites.
     public NativeArray<bool> occupied; // <- This is important!
-    public NativeArray<CapsuleCharActSt> prevSt;
+    public NativeArray<CpActSt> prevSt;
     public NativeArray<float> st_AtkHorSlash_Impact_AngSpd;
     public NativeArray<float> st_AtkHorSlash_Windup_MaxAngSpd;
     public NativeArray<float> st_AtkJump_DownSpeedAfterJumpFinished;
@@ -210,9 +209,9 @@ public struct CapsuleChar_BaseData {
     public NativeArray<float> vel_Ver;
     public NativeArray<float> vel_Yaw;
 
-    public static CapsuleChar_BaseData Create(int capacity) {
-        return new CapsuleChar_BaseData {
-            actSt = StructUtils.Alloc<CapsuleCharActSt>(capacity),
+    public static Cp_BaseData Create(int capacity) {
+        return new Cp_BaseData {
+            actSt = StructUtils.Alloc<CpActSt>(capacity),
             actStSt_AtkPhase = StructUtils.Alloc<AtkPhase>(capacity),
             actStSt_BufferedInputStSwitchAllowed = StructUtils.Alloc<bool>(capacity),
             actStSt_ComboAllowed = StructUtils.Alloc<bool>(capacity),
@@ -253,7 +252,7 @@ public struct CapsuleChar_BaseData {
             mov_yawSpd = StructUtils.Alloc<float>(capacity),
             mov_linAcc = StructUtils.Alloc<float>(capacity),
             occupied = StructUtils.Alloc<bool>(capacity),
-            prevSt = StructUtils.Alloc<CapsuleCharActSt>(capacity),
+            prevSt = StructUtils.Alloc<CpActSt>(capacity),
             st_AtkHorSlash_Impact_AngSpd = StructUtils.Alloc<float>(capacity),
             st_AtkHorSlash_Windup_MaxAngSpd = StructUtils.Alloc<float>(capacity),
             st_AtkJump_DownSpeedAfterJumpFinished = StructUtils.Alloc<float>(capacity),
@@ -335,7 +334,7 @@ public struct CapsuleChar_BaseData {
     }
 }
 
-public struct CapsuleChar_BrainData {
+public struct Cp_BrainData {
     public NativeArray<float3> agentDesiredVel;
     public NativeArray<float> aggroRange;
     public NativeArray<float> atkRange;
@@ -345,8 +344,8 @@ public struct CapsuleChar_BrainData {
     public NativeArray<bool> inAtkRange;
     public NativeArray<float3> tgtPos;
 
-    public static CapsuleChar_BrainData Create(int capacity) {
-        return new CapsuleChar_BrainData {
+    public static Cp_BrainData Create(int capacity) {
+        return new Cp_BrainData {
             agentDesiredVel = StructUtils.Alloc<float3>(capacity),
             aggroRange = StructUtils.Alloc<float>(capacity),
             atkRange = StructUtils.Alloc<float>(capacity),
@@ -371,17 +370,17 @@ public struct CapsuleChar_BrainData {
 }
 
 [Serializable]
-public struct CapsuleChar_UnityComps {
-    public Transform transform;
-    public CapsuleCharCtrl ctrl;
+public struct Cp_UnityComps {
+    public Transform rootTrf;
+    public CpCtrl cpCtrl;
     public Animator anim;
-    public CapsuleCharHitRecieveHandler hitRecieverHandler;
-    public CharacterController charCtrl;
+    public CpHitRecieveHandler hitRecieverHandler;
+    public CharacterController cc;
     public Transform tgt;
     public NavMeshAgent agent;
     public Transform rHand;
-    public CapsuleCharAnimEvents animEvents;
-    public AnimRootMovBroadcaster capsuleCharRootMvmtBroadcaster;
+    public CpAnimEventHandler animEventHandler;
+    public AnimRootMovBroadcaster animRootMovBroadcaster;
     [HideInInspector] public HandEquippable rHandEquippable;
 }
 

@@ -16,9 +16,9 @@ public enum BufferableInput {
 }
 
 /// <summary>
-/// Capsule character action state. These pair animations and animation events with gameplay logic.
+/// Capsule pawn action state. These pair animations and animation events with gameplay logic.
 /// </summary>
-public enum CapsuleCharActSt {
+public enum CpActSt {
     Atk_FlyingAtk,
     // TODO: start indexing from 0, ugh.
     Atk_HorSlash1,
@@ -35,9 +35,9 @@ public enum CapsuleCharActSt {
 }
 
 /// <summary>
-/// Animation events used by the capsule character Animator.
+/// Animation events used by the capsule pawn Animator.
 /// </summary>
-public enum CapsuleCharAnimEventT {
+public enum CpAnimEventT {
     Atk_GunShoot_Recovery_Finished,
     Atk_GunShoot_Windup_Finished,
     Dodge_BufferedInputStSwitchAllowed,

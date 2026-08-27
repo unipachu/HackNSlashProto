@@ -8,15 +8,15 @@ public class CapsuleCharHitRecieverGizmo : MonoBehaviour{
     [SerializeField] Color invulnerableColor = Color.cyan;
 
     [Header("External Refs")]
-    [SerializeField] Pc pc;
+    [SerializeField] CpRegisterer cp;
     [SerializeField] Collider col;
 
     private void OnDrawGizmos() {
-        CapsuleCharMgr caMgr = CapsuleCharMgr.inst;
+        CpMgr caMgr = CpMgr.inst;
         // NOTE: No warning, no error. You need to remember to set the references!
-        if (pc == null || col == null || !drawGizmo || CapsuleCharMgr.inst == null)
+        if (cp == null || col == null || !drawGizmo || CpMgr.inst == null)
             return;
-        Color color = caMgr.data.invul[pc.Id] ? invulnerableColor : vulnerableColor;
+        Color color = caMgr.data.invul[cp.Id] ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {
             float radius = capsuleCollider.radius;
             float height = Mathf.Max(capsuleCollider.height, radius * 2f);
