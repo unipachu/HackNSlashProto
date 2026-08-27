@@ -11,7 +11,6 @@ public  class FsmSt_Cc_Idle : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.idle,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
@@ -21,8 +20,9 @@ public  class FsmSt_Cc_Idle : MonoBehaviour {
         CapsuleChar_BaseData data,
         CapsuleChar_UnityComps[] unityComps
     ) {
-        if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
+        if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data)) {
             return;
+        }
         if (data.prevSt[id] == CapsuleCharActSt.Walk)
             CapsuleCharActStUtils.UpdateMovData(
                 id,
@@ -41,7 +41,7 @@ public  class FsmSt_Cc_Idle : MonoBehaviour {
                 float3.zero,
                 0,
                 0,
-                0
+                float.PositiveInfinity
             );
         // Try consume input
         if (PcInputBuffer.TryConsumeInput(
@@ -62,7 +62,7 @@ public  class FsmSt_Cc_Idle : MonoBehaviour {
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_Jump);
         else if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Ult, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_FlyingAtk);
-        else if (!data.input_mov.Equals(float2.zero))
+        else if (math.all(data.input_mov[id] != float2.zero))
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
     }
 }

@@ -13,7 +13,6 @@ public  class FsmSt_Cc_Falling : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.falling,
-            unityComps[id].animEvents.animEvent,
             4
         );
     }

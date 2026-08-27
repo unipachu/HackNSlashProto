@@ -1,4 +1,3 @@
-using Unity.Mathematics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CapsuleCharData_", menuName = "Scriptable Object Data/CapsuleCharData")]
@@ -21,6 +20,9 @@ public class So_CapsuleCharData : ScriptableObject {
 
     [Header("Health")]
     public int maxHP = 100;
+
+    [Header("Action States")]
+    public CapsuleCharActSt initSt = CapsuleCharActSt.Idle;
 
     [Header("Npc Brain")]
     public int brain_AggroRange = 8;

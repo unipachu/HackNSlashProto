@@ -11,8 +11,7 @@ public  class FsmSt_Cc_Walk : MonoBehaviour {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref animEventPlrData,
             unityComps[id].anim,
-            CapsuleCharAnimInfo.atk_HorSlash1_Windup,
-            unityComps[id].animEvents.animEvent,
+            CapsuleCharAnimInfo.walk,
             0.5f
         );
     }
@@ -61,7 +60,7 @@ public  class FsmSt_Cc_Walk : MonoBehaviour {
             data.inputBuffer_RemainingTime)
         )
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Atk_FlyingAtk);
-        else if (data.input_mov.Equals(float2.zero))
+        else if (math.all(data.input_mov[id] == float2.zero))
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
     }
 }

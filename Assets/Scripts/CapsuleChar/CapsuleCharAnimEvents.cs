@@ -18,13 +18,14 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
     // TODO C: animation events to point more directly into some methods so that this switch case would
     // TODO C: not be needed?
     void OnAnimEvent(int id, CapsuleCharAnimEventT animEvent) {
+        //Debug.Log($"Anim event {animEvent} for {id} called!", this);
         CapsuleCharMgr ccMgr = CapsuleCharMgr.inst;
         CapsuleChar_UnityComps unityComps = ccMgr.unityComps[id];
         CapsuleChar_BaseData data = ccMgr.data;
         switch (animEvent) {
             case CapsuleCharAnimEventT.Atk_GunShoot_Recovery_Finished:
                 data.isAffectedByGravity[id] = false;
-                if (!data.input_mov.Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -48,16 +49,14 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_GunShoot_Recovery,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_GunShoot_Recovery
                 );
                 break;
             case CapsuleCharAnimEventT.Atk_FlyingAtk_Windup_Finished:
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_FlyingAtk_Impact,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_FlyingAtk_Impact
                 );
                 data.actStSt_AtkPhase[id] = AtkPhase.Impact;
                 break;
@@ -72,7 +71,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 data.vel_Ver[id] = -40;
                 break;
             case CapsuleCharAnimEventT.Atk_FlyingAtk_Recovery_Finished:
-                if (!data.input_mov.Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -87,12 +86,12 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery
                 );
                 data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                 break;
             case CapsuleCharAnimEventT.Atk_HorSlash1_Impact_HitDealerActivated:
+                //Debug.Log($"rHandEquippable null: {unityComps.rHandEquippable == null}");
                 unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
                 unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.transform.forward;
                 unityComps.rHandEquippable.hitDealer.Activate();
@@ -110,7 +109,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 data.actStSt_DodgeAllowed[id] = true;
                 break;
             case CapsuleCharAnimEventT.Atk_HorSlash1_Recovery_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -119,8 +118,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_HorSlash1_Impact,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_HorSlash1_Impact
                 );
                 data.actStSt_AtkPhase[id] = AtkPhase.Impact;
                 break;
@@ -134,8 +132,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_HorSlash2_Recovery,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_HorSlash2_Recovery
                 );
                 data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                 break;
@@ -157,7 +154,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 data.actStSt_DodgeAllowed[id] = true;
                 break;
             case CapsuleCharAnimEventT.Atk_HorSlash2_Recovery_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -172,8 +169,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
-                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery,
-                    unityComps.animEvents.animEvent
+                    CapsuleCharAnimInfo.atk_HorSlash1_Recovery
                 );
                 data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                 break;
@@ -204,7 +200,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 unityComps.rHandEquippable.hitDealer.Deactivate();
                 break;
             case CapsuleCharAnimEventT.Atk_JumpVerSlam_JumpFinished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -216,7 +212,7 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 data.actStSt_BufferedInputStSwitchAllowed[id] = true;
                 break;
             case CapsuleCharAnimEventT.Dodge_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
@@ -231,19 +227,19 @@ public class CapsuleCharAnimEvents : MonoBehaviour {
                 data.actStSt_DodgeAllowed[id] = true;
                 break;
             case CapsuleCharAnimEventT.FallLanding_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
                 break;
             case CapsuleCharAnimEventT.Knockback_Weak_Bwd_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);
                 break;
             case CapsuleCharAnimEventT.Knockback_Weak_Fwd_Finished:
-                if (!data.input_mov[id].Equals(float2.zero))
+                if (math.all(data.input_mov[id] != float2.zero))
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Walk);
                 else
                     ccMgr.ActSt_SwitchState(id, CapsuleCharActSt.Idle);

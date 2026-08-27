@@ -1,4 +1,3 @@
-using System;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -24,7 +23,6 @@ public  class FsmSt_Cc_Knockback_Weak : MonoBehaviour {
                 ref animEventPlrData,
                 unityComps[id].anim,
                 CapsuleCharAnimInfo.knockback_Weak_Fwd,
-                unityComps[id].animEvents.animEvent,
                 0.1f
             );
         }
@@ -33,7 +31,6 @@ public  class FsmSt_Cc_Knockback_Weak : MonoBehaviour {
                 ref animEventPlrData,
                 unityComps[id].anim,
                 CapsuleCharAnimInfo.knockback_Weak_Bwd,
-                unityComps[id].animEvents.animEvent,
                 0.1f
             );
         }
@@ -44,8 +41,8 @@ public  class FsmSt_Cc_Knockback_Weak : MonoBehaviour {
         CapsuleChar_BaseData data,
         CapsuleChar_UnityComps[] unityComps
     ) {
-        if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
-            return;
+        //if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
+        //    return;
         CapsuleCharActStUtils.UpdateMovData(
             id,
             data,

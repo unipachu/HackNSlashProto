@@ -139,7 +139,7 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[capsuleCharId] = false;
                 ccMgr.input_atk_Ult[capsuleCharId] = false;
                 ccMgr.input_dodge[capsuleCharId] = false;
-                if(math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                if(math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
                 ccMgr.input_mov[capsuleCharId] = float2.zero;
                 return BtResult.Success;
@@ -148,7 +148,7 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[capsuleCharId] = true;
                 ccMgr.input_atk_Ult[capsuleCharId] = false;
                 ccMgr.input_dodge[capsuleCharId] = false;
-                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel[capsuleCharId].x,
@@ -164,7 +164,7 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[capsuleCharId] = false;
                 ccMgr.input_atk_Ult[capsuleCharId] = false;
                 ccMgr.input_dodge[capsuleCharId] = false;
-                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel[capsuleCharId].x,

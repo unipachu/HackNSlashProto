@@ -13,7 +13,6 @@ public  class FsmSt_Cc_FallLanding : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.fallLanding,
-            unityComps[id].animEvents.animEvent,
             // TODO MINOR: You could make this transition faster if falling from higher/faster,
             // TODO MINOR C: e.g. 0.2 if hitting the ground with slow speed, and 0.1 if hitting
             // TODO MINOR C: the ground while fast falling speed.
@@ -35,7 +34,7 @@ public  class FsmSt_Cc_FallLanding : MonoBehaviour {
             float3.zero,
             0,
             0,
-            0
+            float.PositiveInfinity
         );
         if (data.actStSt_DodgeAllowed[id]) {
             if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime)) {

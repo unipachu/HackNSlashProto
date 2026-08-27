@@ -110,6 +110,7 @@ public class CharCtrlMov: MonoBehaviour{
         out RaycastHit groundHit
     ) {
         groundCastHitSomething = CastForGround(charCtrl, out groundHit);
+        //Debug.Log($"Ground cast hit something: {groundCastHitSomething}");
         if (groundCastHitSomething) {
             float slopeAng = Vector3.Angle(groundHit.normal, Vector3.up);
             if( slopeAng <= charCtrl.slopeLimit)
@@ -117,19 +118,4 @@ public class CharCtrlMov: MonoBehaviour{
         }
         return false;
     }
-
-    ///// <summary>
-    ///// Ticks character controller movement.
-    ///// NOTE: Will snap to max linear speed if linear acceleration param is not not set!
-    ///// </summary>
-    //public static void UpdateMov(
-    //    Vector2 horMov,
-    //    Vector3 animRootMot,
-    //    float maxLinSpd,
-    //    float yawSpd,
-    //    // Should this be called hor acc instead?
-    //    float linAcc = float.PositiveInfinity
-    //) {
-
-    //}
 }

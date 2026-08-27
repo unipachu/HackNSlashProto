@@ -18,8 +18,7 @@ public  class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref animEventPlrData,
             unityComps[id].anim,
-            CapsuleCharAnimInfo.atk_HorSlash3_Impact,
-            unityComps[id].animEvents.animEvent
+            CapsuleCharAnimInfo.atk_HorSlash3_Impact
         );
     }
 
@@ -49,7 +48,7 @@ public  class FsmSt_Cc_Atk_HorSlash3 : MonoBehaviour {
                     data.animDPos[id],
                     0,
                     angSpd,
-                    0
+                    float.PositiveInfinity
                 );
                 return;
             case AtkPhase.Recovery:

@@ -220,6 +220,7 @@ public struct CapsuleChar_BaseData {
             actStSt_FallingStartHgt = StructUtils.Alloc<float>(capacity),
             actStSt_ImpactFinished = StructUtils.Alloc<bool>(capacity),
             actStSt_ImpactInputRotAllowed = StructUtils.Alloc<bool>(capacity),
+            actStSt_RecoveryMotInterpTimer = StructUtils.Alloc<float>(capacity),
             animDPos = StructUtils.Alloc<float3>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
             equip_RHandEquippable = StructUtils.Alloc<HandEquippableT>(capacity),
@@ -281,6 +282,7 @@ public struct CapsuleChar_BaseData {
         actStSt_FallingStartHgt.Dispose();
         actStSt_ImpactFinished.Dispose();
         actStSt_ImpactInputRotAllowed.Dispose();
+        actStSt_RecoveryMotInterpTimer.Dispose();
         animDPos.Dispose();
         curStDur.Dispose();
         equip_RHandEquippable.Dispose();

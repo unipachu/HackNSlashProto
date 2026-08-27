@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Capsule character.
 /// </summary>
-// TODO MINOR: Rename to CapsuleChar.
+// TODO MINOR: Rename to Ca.
 public class Pc : MonoBehaviour{
     [Header("Scriptable Object Data")]
     [SerializeField] So_CapsuleCharData so_capsuleCharData;
@@ -14,20 +14,19 @@ public class Pc : MonoBehaviour{
 
     public int Id { get; private set; } = -1;
 
-
     void OnEnable(){
-        unityComps.capsuleCharRootMvmtBroadcaster.OnRootMove += OnAnimatorRootMove;
         Debug.Assert(CapsuleCharMgr.inst != null, "CapsuleCharMgr inst was null!", this);
         Debug.Assert(so_capsuleCharData != null, "No data ref set!", this);
-        Id = CapsuleCharMgr.inst.Register(so_capsuleCharData, unityComps, so_BtRootNode);
+        unityComps.capsuleCharRootMvmtBroadcaster.OnRootMove += OnAnimatorRootMove;
         unityComps.rHandEquippable = HandEquippableMgr.inst.InstantiateHandEquippable(
-            CapsuleCharMgr.inst.data.equip_RHandEquippable[Id]
+            so_capsuleCharData.equip_RHandEquippable
         );
         unityComps.rHandEquippable.gameObject.transform.SetPositionAndRotation(
             unityComps.rHand.position,
             unityComps.rHand.rotation
         );
         unityComps.rHandEquippable.transform.parent = unityComps.rHand;
+        Id = CapsuleCharMgr.inst.Register(so_capsuleCharData, unityComps, so_BtRootNode);
     }
 
     void OnDisable(){

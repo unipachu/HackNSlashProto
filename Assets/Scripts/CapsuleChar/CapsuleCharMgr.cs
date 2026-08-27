@@ -1,6 +1,7 @@
 using NUnit.Framework.Internal;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -10,7 +11,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     [Header("Settings")]
     public int maxCapsuleChars = 1;
     // TODO: Idk what is the most cache friendly way to handle global/static variables like this?
-    public float movInputDeadzone = 0.2f;
+    public float movInputSqrDeadzone = 0.2f;
     public float inputBuffer_Dur = 0.3f;
 
     [HideInInspector] public CapsuleChar_BaseData data;
@@ -105,7 +106,6 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
         );
         Tick_Fsm();
         Tick_Mov();
-        //Tick_PlayBufferedAnim();
     }
 
     // TODO: Update in Tick_FromNonNative
@@ -160,26 +160,37 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
                     FsmSt_Cc_Atk_FlyingAtk.Tick(i, data, unityComps, ref animEventPlrData[i]);
                     break;
                 case CapsuleCharActSt.Atk_ShootHomingProj:
+                    FsmSt_Cc_Atk_ShootHomingProj.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Atk_HorSlash1:
+                    FsmSt_Cc_Atk_HorSlash1.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Atk_HorSlash2:
+                    FsmSt_Cc_Atk_HorSlash2.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Atk_HorSlash3:
+                    FsmSt_Cc_Atk_HorSlash3.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Atk_Jump:
+                    FsmSt_Cc_Atk_Jump.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Dodge:
+                    FsmSt_Cc_Dodge.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Falling:
+                    FsmSt_Cc_Falling.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.FallLanding:
+                    FsmSt_Cc_FallLanding.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Idle:
+                    FsmSt_Cc_Idle.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Knockback_Weak:
+                    FsmSt_Cc_Knockback_Weak.Tick(i, data, unityComps);
                     break;
                 case CapsuleCharActSt.Walk:
+                    FsmSt_Cc_Walk.Tick(i, data, unityComps);
                     break;
                 default:
                     Debug.LogError($"Switch defaulted with {data.actSt[i]}", this);
@@ -196,7 +207,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
             data.input_atk_Heavy[i] = unityComps[i].ctrl.TryConsume_Atk_Heavy();
             data.input_atk_Ult[i] = unityComps[i].ctrl.TryConsume_Atk_Ult();
             data.input_dodge[i] = unityComps[i].ctrl.TryConsume_Dodge();
-            if (unityComps[i].ctrl.Input_Mov.sqrMagnitude > movInputDeadzone) {
+            if (unityComps[i].ctrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone) {
                 data.input_mov[i] = unityComps[i].ctrl.Input_Mov;
                 data.input_mov_LastNonZero[i] = data.input_mov[i];
             }
@@ -273,18 +284,6 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
         }
     }
 
-    //void Tick_PlayBufferedAnim() {
-    //    for (int i = 0; i < data.occupied.Length; i++) {
-    //        VisUtils.CrossfadeNInitAnimEventPlr(
-    //            ref unityComps[i].animEventPlr,
-    //            unityComps[i].anim,
-    //            CapsuleCharAnimInfo.atk_FlyingAtk_Windup,
-    //            unityComps[i].animEvents.animEvent,
-    //            0.1f
-    //        );
-    //    }
-    //}
-
     void Tick_Sensing() {
         for (int i = 0; i < data.occupied.Length; i++) {
             // TODO MINOR: Find out if skipping through elements like this affects cpu cache performance.
@@ -323,6 +322,11 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
 
     void LateTick_AnimEventPlr() {
         for (int i = 0; i < data.occupied.Length; i++) {
+            if (!data.occupied[i])
+                continue;
+            //Debug.Log($"{animEventPlrData[i]}");
+            //Debug.Log($"{unityComps[i].anim == null}");
+            //Debug.Log($"{unityComps[i].animEvents == null}");
             AnimEventPlr.Tick(i, ref animEventPlrData[i], unityComps[i].anim, unityComps[i].animEvents.animEvent);
         }
     }
@@ -371,7 +375,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
         data.input_dodge[freeI] = false;
         data.invul[freeI] = false;
         data.isAffectedByGravity[freeI] = true;
-        data.isGrounded[freeI] = false;
+        data.isGrounded[freeI] = true;
         data.lastCharCtrlVel[freeI] = float3.zero;
         data.lastKnockbackStr[freeI] = 0;
         data.lastRecievedHitDir[freeI] = float3.zero;
@@ -396,6 +400,8 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
         this.unityComps[freeI] = unityComps; 
         if (bt != null)
             BtMgr.inst.Register(freeI, bt);
+        //Debug.Log($"Switching {freeI} to initial act st!", this);
+        ActSt_SwitchToInitSt(freeI, so.initSt);
         return freeI;
     }
 
@@ -448,31 +454,43 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     }
 
     public void ActSt_EnterSt(int id, CapsuleCharActSt newSt, CapsuleCharActSt prevSt) {
+        //Debug.Log($"{id} EnterSt called! Prev st: {prevSt}. New st: {newSt}.", this);
         switch (newSt) {
             case CapsuleCharActSt.Atk_FlyingAtk:
                 FsmSt_Cc_Atk_FlyingAtk.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Atk_ShootHomingProj:
+                FsmSt_Cc_Atk_ShootHomingProj.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Atk_HorSlash1:
+                FsmSt_Cc_Atk_HorSlash1.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Atk_HorSlash2:
+                FsmSt_Cc_Atk_HorSlash2.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Atk_HorSlash3:
+                FsmSt_Cc_Atk_HorSlash3.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Atk_Jump:
+                FsmSt_Cc_Atk_Jump.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Dodge:
+                FsmSt_Cc_Dodge.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Falling:
+                FsmSt_Cc_Falling.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.FallLanding:
+                FsmSt_Cc_FallLanding.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Idle:
+                FsmSt_Cc_Idle.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Knockback_Weak:
+                FsmSt_Cc_Knockback_Weak.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             case CapsuleCharActSt.Walk:
+                FsmSt_Cc_Walk.Enter(id, data, unityComps, ref animEventPlrData[id]);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {newSt}", this);
@@ -481,6 +499,7 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
     }
 
     public void ActSt_ExitSt(int id, CapsuleCharActSt actSt) {
+        //Debug.Log($"{id} ExitSt called for: {actSt}.", this);
         switch (actSt) {
             case CapsuleCharActSt.Atk_FlyingAtk:
                 FsmSt_Cc_Atk_FlyingAtk.Exit(id, data, unityComps);
@@ -488,14 +507,19 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
             case CapsuleCharActSt.Atk_ShootHomingProj:
                 break;
             case CapsuleCharActSt.Atk_HorSlash1:
+                FsmSt_Cc_Atk_HorSlash1.Exit(id, unityComps);
                 break;
             case CapsuleCharActSt.Atk_HorSlash2:
+                FsmSt_Cc_Atk_HorSlash2.Exit(id, unityComps);
                 break;
             case CapsuleCharActSt.Atk_HorSlash3:
+                FsmSt_Cc_Atk_HorSlash3.Exit(id, unityComps);
                 break;
             case CapsuleCharActSt.Atk_Jump:
+                FsmSt_Cc_Atk_Jump.Exit(id, data, unityComps);
                 break;
             case CapsuleCharActSt.Dodge:
+                FsmSt_Cc_Dodge.Exit(id, data);
                 break;
             case CapsuleCharActSt.Falling:
                 break;
@@ -513,19 +537,44 @@ public class CapsuleCharMgr : Singleton<CapsuleCharMgr> {
         }
     }
 
+    public void ActSt_SwitchToInitSt(int id, CapsuleCharActSt initSt) {
+        Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {initSt}, but {id} was already changing"
+            + $"state!", this);
+        data.isSwitchingActSt[id] = true;
+        //Debug.Log($"{id} switching to init state: {initSt}", this);
+        data.actSt[id] = initSt;
+        ActSt_EnterSt(id, initSt, data.prevSt[id]);
+        data.curStDur[id] = 0;
+        if (unityComps[id].ctrl == null)
+            data.input_mov_WhenLastSwitchedSt[id]
+                = data.input_mov[id];
+        else {
+            if (unityComps[id].ctrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone)
+                data.input_mov_WhenLastSwitchedSt[id]
+                    = data.input_mov[id];
+            else
+                data.input_mov_WhenLastSwitchedSt[id] = float2.zero;
+        }
+        data.isSwitchingActSt[id] = false;
+        //Debug.Log($"{id} state initialized to : {initSt}", this);
+    }
+
     // TODO MINOR: Rename to St"
     public void ActSt_SwitchState(int id, CapsuleCharActSt newSt) {
+        Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {newSt}, but {id} was already changing"
+            + $"state!", this);
         data.isSwitchingActSt[id] = true;
+        //Debug.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this);
         data.prevSt[id] = data.actSt[id];
         data.actSt[id] = newSt;
-        ActSt_ExitSt(id, newSt);
+        ActSt_ExitSt(id, data.prevSt[id]);
         ActSt_EnterSt(id, newSt, data.prevSt[id]);
         data.curStDur[id] = 0;
         if (unityComps[id].ctrl == null)
             data.input_mov_WhenLastSwitchedSt[id]
                 = data.input_mov[id];
         else {
-            if (unityComps[id].ctrl.Input_Mov.sqrMagnitude > CapsuleCharMgr.inst.movInputDeadzone)
+            if (unityComps[id].ctrl.Input_Mov.sqrMagnitude > CapsuleCharMgr.inst.movInputSqrDeadzone)
                 data.input_mov_WhenLastSwitchedSt[id]
                     = data.input_mov[id];
             else

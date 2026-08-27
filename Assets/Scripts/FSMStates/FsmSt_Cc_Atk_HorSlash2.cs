@@ -18,8 +18,7 @@ public  class FsmSt_Cc_Atk_HorSlash2 : MonoBehaviour {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref animEventPlrData,
             unityComps[id].anim,
-            CapsuleCharAnimInfo.atk_HorSlash2_Impact,
-            unityComps[id].animEvents.animEvent
+            CapsuleCharAnimInfo.atk_HorSlash2_Impact
         );
     }
 
@@ -49,7 +48,7 @@ public  class FsmSt_Cc_Atk_HorSlash2 : MonoBehaviour {
                     data.animDPos[id],
                     0,
                     angSpd,
-                    0
+                    float.PositiveInfinity
                 );
                 if (data.actStSt_ComboAllowed[id]) {
                     if (PcInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Light, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime)) {

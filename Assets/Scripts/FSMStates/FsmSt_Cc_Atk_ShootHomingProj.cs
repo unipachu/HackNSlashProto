@@ -11,7 +11,6 @@ public  class FsmSt_Cc_Atk_ShootHomingProj : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.atk_GunShoot_Windup,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }

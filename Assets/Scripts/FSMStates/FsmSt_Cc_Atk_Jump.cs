@@ -12,15 +12,14 @@ public  class FsmSt_Cc_Atk_Jump : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.atk_JumpVerSlam,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
 
     public static void Exit(
         int id,
-        CapsuleChar_UnityComps[] unityComps,
-        CapsuleChar_BaseData data
+        CapsuleChar_BaseData data,
+        CapsuleChar_UnityComps[] unityComps
     ) {
         data.isAffectedByGravity[id] = true;
         unityComps[id].rHandEquippable.hitDealer.Deactivate();

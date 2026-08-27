@@ -18,7 +18,6 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.atk_FlyingAtk_Windup,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
@@ -59,7 +58,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour {
                     data.animDPos[id],
                     2, // TODO: To So parameter.
                     0,
-                    0
+                    float.PositiveInfinity
                 );
                 if (data.isGrounded[id] && data.actStSt_ImpactFinished[id]) {
                     unityComps[id].rHandEquippable.aoeHitDealer.Deactivate();
@@ -67,8 +66,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour {
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref animEventPlrData,
                         unityComps[id].anim,
-                        CapsuleCharAnimInfo.atk_FlyingAtk_Recovery,
-                        unityComps[id].animEvents.animEvent
+                        CapsuleCharAnimInfo.atk_FlyingAtk_Recovery
                     );
                 }
                 break;
@@ -80,7 +78,7 @@ public class FsmSt_Cc_Atk_FlyingAtk : MonoBehaviour {
                     float3.zero,
                     0,
                     0,
-                    0
+                    float.PositiveInfinity
                 );
                 break;
             default:

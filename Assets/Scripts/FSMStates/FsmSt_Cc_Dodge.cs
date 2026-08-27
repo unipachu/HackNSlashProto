@@ -16,7 +16,6 @@ public  class FsmSt_Cc_Dodge : MonoBehaviour {
             unityComps[id].anim,
             // TODO MINOR: Rename from dodge to Dodge
             CapsuleCharAnimInfo.dodge,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }

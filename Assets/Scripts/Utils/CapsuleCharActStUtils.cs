@@ -10,6 +10,7 @@ public static class CapsuleCharActStUtils{
     /// </summary>
     public static bool SwitchToFallingStIfNotGrounded(int id, CapsuleChar_BaseData data) {
         if (!data.isGrounded[id] && data.actSt[id] != CapsuleCharActSt.Falling) {
+            //Debug.Log($"{id} was not grounded so switch to falling st!");
             CapsuleCharMgr.inst.ActSt_SwitchState(id, CapsuleCharActSt.Falling);
             return true;
         }

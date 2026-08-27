@@ -10,9 +10,17 @@ public class GameMgr : Singleton<GameMgr>{
         BtMgr.inst.Init();
     }
 
+    void FixedUpdate() {
+        CapsuleCharMgr.inst.FixedTick();
+    }
+    
     void Update() {
         // TODO: Tick CapsuleCharMgr here too.
         BtMgr.inst.Tick();
         CapsuleCharMgr.inst.Tick(Time.deltaTime);
+    }
+
+    void LateUpdate() {
+        CapsuleCharMgr.inst.LateTick();
     }
 }

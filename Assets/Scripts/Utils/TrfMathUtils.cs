@@ -70,7 +70,7 @@ public class TrfMathUtils : MonoBehaviour {
     /// </summary>
     /// <param name="tgtInXZPlane">Forward direction in XZ-plane.</param>
     public static quaternion RotateFwdToTgt(quaternion rot, float maxAngSpd, float2 tgtInXZPlane) {
-        if (tgtInXZPlane.Equals(float2.zero))
+        if (math.all(tgtInXZPlane == float2.zero))
             return rot;
         float3 dir3D = new float3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
         if (math.lengthsq(dir3D) < 0.0001f) {

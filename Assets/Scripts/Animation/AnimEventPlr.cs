@@ -23,10 +23,10 @@ public class AnimEventPlr : MonoBehaviour{
         ref AnimEventPlrData animEventPlrData,
         Animator anim,
         AnimInfo animInfo,
-        Action<int, CapsuleCharAnimEventT> animEventAction,
         float nrmTransDur = 0.1f,
         float startOffset = 0
     ) {
+        //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}");
         anim.CrossFade(
             animInfo.shortNameHash,
             nrmTransDur,
@@ -36,7 +36,6 @@ public class AnimEventPlr : MonoBehaviour{
         InitAnimEventPlrData(
             ref animEventPlrData,
             animInfo,
-            animEventAction,
             startOffset
         );
     }
@@ -66,7 +65,6 @@ public class AnimEventPlr : MonoBehaviour{
     public static void InitAnimEventPlrData(
         ref AnimEventPlrData animEventPlrData,
         AnimInfo animInfo,
-        Action<int, CapsuleCharAnimEventT> onEvent,
         float startOffset = 0
     ) {
         animEventPlrData.animInfo = animInfo;
@@ -88,8 +86,10 @@ public class AnimEventPlr : MonoBehaviour{
         Animator anim,
         Action<int, CapsuleCharAnimEventT> animEventAction
     ) {
+        bool firstTickHelper = data.firstTick;
+        data.firstTick = false;
+        //Debug.Log($"Num of anim events: {data.animInfo.sortedAnimEvents.Length}");
         if (data.finished) {
-            data.firstTick = false;
             return;
         }
         if (!VisUtils.TryGetNewestStInfo(
@@ -103,7 +103,6 @@ public class AnimEventPlr : MonoBehaviour{
                 + $"({info.shortNameHash}).\nPerhaps action state was "
                 + "changed but animator transition hasn't have the time to start yet?"
             );
-            data.firstTick = false;
             return;
         }
         float curTotalNrmT = info.normalizedTime;
@@ -113,13 +112,15 @@ public class AnimEventPlr : MonoBehaviour{
                 data,
                 data.cursor,
                 Mathf.Min(curTotalNrmT, 1),
-                data.firstTick,
+                firstTickHelper,
                 animEventAction
             );
+            // NOTE: If data was reinitialized during firing of animation events, exit tick.
+            if (data.firstTick)
+                return;
             if (curTotalNrmT >= 1)
                 data.finished = true;
             data.cursor = Mathf.Min(curTotalNrmT, 1);
-            data.firstTick = false;
             return;
         }
         float dTotalNrmT = curTotalNrmT - data.prevTotalNrmT;
@@ -133,15 +134,31 @@ public class AnimEventPlr : MonoBehaviour{
                     data,
                     data.cursor,
                     data.cursor + dTotalNrmT,
-                    data.firstTick,
+                    firstTickHelper,
                     animEventAction
                 );
+                // NOTE: If data was reinitialized during firing of animation events, exit tick.
+                if (data.firstTick)
+                    return;
                 data.cursor += dTotalNrmT;
                 dTotalNrmT = 0;
             }
             else {
-                FireEventsInNrmRange(caId, data, data.cursor, 1, data.firstTick, animEventAction);
+                FireEventsInNrmRange(
+                    caId,
+                    data,
+                    data.cursor,
+                    1,
+                    firstTickHelper,
+                    animEventAction
+                );
+                // NOTE: If data was reinitialized during firing of animation events, exit tick.
+                if (data.firstTick)
+                    return;
                 dTotalNrmT -= toLoopEnd;
+                // NOTE: Since we fire events that include event at nrmT 1, we should be able to set cursor
+                // NOTE C: to 0 here even though during the next loop iteration we skip possible events at
+                // NOTE C: nrm time 0.
                 data.cursor = 0;
                 data.loopCount++;
                 data.loopsSinceRebase++;
@@ -149,7 +166,6 @@ public class AnimEventPlr : MonoBehaviour{
                 if (++stepsTaken >= maxLoopStepsPerTick) {
                     Debug.LogError($"Animation looped {stepsTaken} times during one tick! " 
                         + $"Max allowed loops: {maxLoopStepsPerTick}");
-                    data.firstTick = false;
                     return;
                 }
                 // If we have looped too many times and the cursor is at the beginning of the loop,
@@ -160,8 +176,8 @@ public class AnimEventPlr : MonoBehaviour{
                     data.loopsSinceRebase = 0;
                 }
             }
+            firstTickHelper = false;
         }
-        data.firstTick = false;
     }
 
     /// <summary>
@@ -183,10 +199,14 @@ public class AnimEventPlr : MonoBehaviour{
             ? LowerBoundInclusive(data.animInfo.sortedAnimEvents, from)
             : LowerBound(data.animInfo.sortedAnimEvents, from);
         for (int i = startIndex; i < data.animInfo.sortedAnimEvents.Length; i++) {
+            //Debug.Log($"from: {from}, to {to}");
             float t = data.animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
             //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
             animEventAction?.Invoke(caId, data.animInfo.sortedAnimEvents[i].id);
+            // If the animation event switched animation, we return.
+            if (data.firstTick)
+                return;
         }
     }
 

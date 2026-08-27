@@ -18,7 +18,6 @@ public  class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour {
             ref animEventPlrData,
             unityComps[id].anim,
             CapsuleCharAnimInfo.atk_HorSlash1_Windup,
-            unityComps[id].animEvents.animEvent,
             0.1f
         );
     }
@@ -60,7 +59,7 @@ public  class FsmSt_Cc_Atk_HorSlash1 : MonoBehaviour {
                     data.animDPos[id],
                     0,
                     angSpd,
-                    0
+                    float.PositiveInfinity
                 );
                 if (data.actStSt_ComboAllowed[id]) {
                     if(PcInputBuffer.TryConsumeInput(
