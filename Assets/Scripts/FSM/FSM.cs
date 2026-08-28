@@ -4,7 +4,6 @@ using UnityEngine;
 /// <summary>
 /// Reusable finite state machine.
 /// </summary>
-// TODO: Check how the FSM in the VRTemplate project is implemented.
 public class Fsm : MonoBehaviour {
     public event Action StSwitched;
 
@@ -15,8 +14,12 @@ public class Fsm : MonoBehaviour {
     public IFsmSt PrevSt { get; private set; }
 
     public void SwitchSt(IFsmSt newSt){
+#if UNITY_EDITOR
         Debug.Assert(!IsSwitchingSt, "Can't start a new state transition during another state transition!", this);
-        //Debug.Assert(CurSt != newSt, "Tried to change to same state we are already in. " +
+        if (newSt == CurSt)
+            Debug.LogWarning("Tried to change to the same state the FSM was already in. " 
+                + "If this was intended, ignore this.", this);
+#endif
         //    "This can cause errors related to animation events overlapping during animation transition.", this);
         IsSwitchingSt = true;
         if (CurSt != null)
@@ -24,8 +27,10 @@ public class Fsm : MonoBehaviour {
         newSt.Enter(CurSt);
         PrevSt = CurSt;
         CurSt = newSt;
-        if(logMsg)
+#if UNITY_EDITOR
+        if (logMsg)
             Debug.Log("Switched to state: " + newSt.GetType().Name, this);
+#endif
         IsSwitchingSt = false;
         StSwitched?.Invoke();
     }

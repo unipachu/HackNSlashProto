@@ -151,6 +151,7 @@ public struct Cp_BaseData {
     public NativeArray<bool> actStSt_ImpactInputRotAllowed;
     public NativeArray<float> actStSt_RecoveryMotInterpTimer;
     public NativeArray<float3> animDPos;
+    public NativeArray<quaternion> animDRot;
     public NativeArray<float> curStDur;
     public NativeArray<HandEquippableT> equip_RHandEquippable;
     public NativeArray<float> gravitationalAcc;
@@ -221,6 +222,7 @@ public struct Cp_BaseData {
             actStSt_ImpactInputRotAllowed = StructUtils.Alloc<bool>(capacity),
             actStSt_RecoveryMotInterpTimer = StructUtils.Alloc<float>(capacity),
             animDPos = StructUtils.Alloc<float3>(capacity),
+            animDRot = StructUtils.Alloc<quaternion>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
             equip_RHandEquippable = StructUtils.Alloc<HandEquippableT>(capacity),
             gravitationalAcc = StructUtils.Alloc<float>(capacity),
@@ -283,6 +285,7 @@ public struct Cp_BaseData {
         actStSt_ImpactInputRotAllowed.Dispose();
         actStSt_RecoveryMotInterpTimer.Dispose();
         animDPos.Dispose();
+        animDRot.Dispose();
         curStDur.Dispose();
         equip_RHandEquippable.Dispose();
         gravitationalAcc.Dispose();
@@ -380,7 +383,6 @@ public struct Cp_UnityComps {
     public NavMeshAgent agent;
     public Transform rHand;
     public CpAnimEventHandler animEventHandler;
-    public AnimRootMovBroadcaster animRootMovBroadcaster;
     [HideInInspector] public HandEquippable rHandEquippable;
 }
 

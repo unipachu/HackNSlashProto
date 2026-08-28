@@ -24,7 +24,7 @@ public class HitDealer : MonoBehaviour {
     // Unity Callbacks
     // ------------------------------------------------------------------
 
-    private void Awake() {
+    void Awake() {
         overlapCapsuleResults = new Collider[maxColliders];
     }
 
@@ -36,7 +36,7 @@ public class HitDealer : MonoBehaviour {
         }
     }
 
-    private void OnDrawGizmos() {
+    void OnDrawGizmos() {
         Color color = isActive ? Color.red : Color.green;
         for (int i = 0; i < capsules.Length; i++) {
             CapsuleShape capsule = capsules[i];
@@ -102,34 +102,3 @@ public class HitDealer : MonoBehaviour {
 
 
 }
-
-//public (Collider col, Vector3 HitPoint, Vector3 penetrationDir, float penetrationDist)[] TheFullDeal(
-//    CapsuleCollider thisCol,
-//    Vector3 pt1,
-//    Vector3 pt2,
-//    float r,
-//    Vector3 dir,
-//    float maxDist,
-//    int layerMask,
-//    QueryTriggerInteraction qryTrgIxn
-//) {
-//    (Collider col, Vector3 HitPoint, Vector3 penetrationDir, float penetrationDist)[] returnArray = { };
-//    RaycastHit[] hits = new RaycastHit[100];
-//    int numCols = Physics.CapsuleCastNonAlloc(pt1, pt2, r, dir, hits, maxDist, layerMask, qryTrgIxn);
-//    for (int i = 0; i < numCols; i++) {
-//        Vector3 hitPoint = hits[i].point;
-//        bool overlapped = Physics.ComputePenetration(
-//            thisCol,
-//            thisCol.transform.position + hits[i].distance,
-//            rotationA,
-//            hits[i].collider,
-//            positionB,
-//            rotationB,
-//            out Vector3 direction,
-//            out float distance
-//        );
-//        hits[i].collider.ClosestPoint(somePoint);
-//        returnArray = returnArray + (hits[i].collider, hits[i].point, )
-//    }
-//    return returnArray;
-//}

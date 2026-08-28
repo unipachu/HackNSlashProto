@@ -1,7 +1,10 @@
+// TODO BEFORE BUILD: Remove instances from the game.
 using UnityEngine;
 
-// TODO BEFORE BUILD: Remove instances from the game.
-public class CapsuleCharHitRecieverGizmo : MonoBehaviour{
+/// <summary>
+/// Draws a debug gizmo representing hit reciever collision and wether the character is invulnerable.
+/// </summary>
+public class CpHitRecieverGizmo : MonoBehaviour{
     [Header("Settings")]
     [SerializeField] bool drawGizmo = true;
     [SerializeField] Color vulnerableColor = Color.darkViolet;

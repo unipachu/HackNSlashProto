@@ -7,15 +7,15 @@ using UnityEngine;
 public static class CcMov {
     public static void ApplyGravityNSlideDownSlopes(int capsuleCharId, float dt){
         // TODO: This is cheating. Either use ref keywords, or take in all the arrays.
-        CpMgr ccMgr = CpMgr.inst;
-        if (ccMgr.data.isGrounded[capsuleCharId])
-            ccMgr.data.vel_Ver[capsuleCharId] = -ccMgr.data.groundSnapVerDownSpd[capsuleCharId] * dt;
+        CpMgr cpMgr = CpMgr.inst;
+        if (cpMgr.data.isGrounded[capsuleCharId])
+            cpMgr.data.vel_Ver[capsuleCharId] = -cpMgr.data.groundSnapVerDownSpd[capsuleCharId] * dt;
         // Freefalling and slope down sliding.
         else {
-            ccMgr.data.vel_Ver[capsuleCharId] = ccMgr.data.lastCharCtrlVel[capsuleCharId].y;
+            cpMgr.data.vel_Ver[capsuleCharId] = cpMgr.data.lastCharCtrlVel[capsuleCharId].y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (ccMgr.data.groundCastHitSomething[capsuleCharId]) {
+            if (cpMgr.data.groundCastHitSomething[capsuleCharId]) {
                 // TODO: Create float3 ProjectOnPlane math util.
                 //math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
                 // TODO: We project last velocity onto the slope normalized direction (we divide by newAcc
@@ -29,9 +29,9 @@ public static class CcMov {
                 float3 newAcc =
                     (math.down() - math.dot(
                         math.down(),
-                        ccMgr.data.groundCastNrm[capsuleCharId]) * ccMgr.data.groundCastNrm[capsuleCharId]
+                        cpMgr.data.groundCastNrm[capsuleCharId]) * cpMgr.data.groundCastNrm[capsuleCharId]
                     )
-                    * ccMgr.data.gravitationalAcc[capsuleCharId];
+                    * cpMgr.data.gravitationalAcc[capsuleCharId];
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
                 if (math.lengthsq(newAcc) > 0.0001f)
@@ -40,11 +40,11 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(ccMgr.data.lastCharCtrlVel[capsuleCharId], slideDir));
+                float slideSpd = math.max(0, math.dot(cpMgr.data.lastCharCtrlVel[capsuleCharId], slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                ccMgr.data.vel_Ver[capsuleCharId] = newVel.y;
-                ccMgr.data.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
+                cpMgr.data.vel_Ver[capsuleCharId] = newVel.y;
+                cpMgr.data.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -59,11 +59,11 @@ public static class CcMov {
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0.
-                ccMgr.data.vel_Ver[capsuleCharId] = Mathf.Min(ccMgr.data.vel_Ver[capsuleCharId], 0);
-                ccMgr.data.vel_Ver[capsuleCharId] -= ccMgr.data.gravitationalAcc[capsuleCharId] * dt;
-                ccMgr.data.vel_Ver[capsuleCharId] = Mathf.Clamp(
-                    ccMgr.data.vel_Ver[capsuleCharId],
-                    -ccMgr.data.maxFallSpd[capsuleCharId],
+                cpMgr.data.vel_Ver[capsuleCharId] = Mathf.Min(cpMgr.data.vel_Ver[capsuleCharId], 0);
+                cpMgr.data.vel_Ver[capsuleCharId] -= cpMgr.data.gravitationalAcc[capsuleCharId] * dt;
+                cpMgr.data.vel_Ver[capsuleCharId] = Mathf.Clamp(
+                    cpMgr.data.vel_Ver[capsuleCharId],
+                    -cpMgr.data.maxFallSpd[capsuleCharId],
                     0
                 );
                 //Debug.Log("In free fall.");
@@ -76,15 +76,15 @@ public static class CcMov {
     /// </summary>
     // TODO: Maybe just do a sphere cast from capusle
     // TODO C: bottom to avoid hits with walls/ceilings?
-    public static bool CastForGround(CharacterController charCtrl, out RaycastHit groundHit) {
+    public static bool CastForGround(CharacterController cc, out RaycastHit groundHit) {
         float castDist = GlobalData.inst.data.isGroundedChkDist;
-        float r = charCtrl.radius;
-        float height = Mathf.Max(charCtrl.height, r * 2f);
-        Vector3 center = charCtrl.transform.position + charCtrl.center;
+        float r = cc.radius;
+        float height = Mathf.Max(cc.height, r * 2f);
+        Vector3 center = cc.transform.position + cc.center;
         Vector3 bottom = center + Vector3.down * (height / 2f - r);
         Vector3 top = center + Vector3.up * (height / 2f - r);
         // TODO: I'm not 100% sure if SkinWidth should be used in here but it is very small so what ever.
-        castDist = castDist + charCtrl.skinWidth;
+        castDist = castDist + cc.skinWidth;
         return Physics.CapsuleCast(
             top,
             bottom,
@@ -105,15 +105,15 @@ public static class CcMov {
     /// the falling state.
     /// </summary>
     public static bool IsGrounded(
-        CharacterController charCtrl,
+        CharacterController cc,
         out bool groundCastHitSomething,
         out RaycastHit groundHit
     ) {
-        groundCastHitSomething = CastForGround(charCtrl, out groundHit);
+        groundCastHitSomething = CastForGround(cc, out groundHit);
         //Debug.Log($"Ground cast hit something: {groundCastHitSomething}");
         if (groundCastHitSomething) {
             float slopeAng = Vector3.Angle(groundHit.normal, Vector3.up);
-            if( slopeAng <= charCtrl.slopeLimit)
+            if( slopeAng <= cc.slopeLimit)
                 return true;
         }
         return false;

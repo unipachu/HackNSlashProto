@@ -16,6 +16,10 @@ public static class AnimEventPlr {
     /// </summary>
     const int maxLoopStepsPerTick = 500;
 
+    // --------------------------------------------------------------------------------------------
+    // Public Methods
+    // --------------------------------------------------------------------------------------------
+
     /// <summary>
     /// Starts crossfade and initializes animation event data.
     /// </summary>
@@ -38,42 +42,6 @@ public static class AnimEventPlr {
             animInfo,
             startOffset
         );
-    }
-
-    /// <summary>
-    /// Creates an array of animation events with their normalized times calculated from their frame indices.
-    /// </summary>
-    /// <param name="lastFrame">
-    /// Index of the last frame of the animation (the one in the Animation timeline where the color changes).
-    /// </param>
-    /// <param name="events">Animation events specified as frame index and unique event ID pairs.</param>
-    public static AnimEvent[] CreateAnimEvents(
-        AnimInfo animInfo,
-        params (int frame, CpAnimEventT id)[] events
-    ) {
-        AnimEvent[] result = new AnimEvent[events.Length];
-        for (int i = 0; i < events.Length; i++)
-            result[i] = new AnimEvent(events[i].frame, animInfo.lastFrame, events[i].id);
-        return result;
-    }
-
-    /// <summary>
-    /// Call this after action state machine has started a crossfade to a new state to initialize
-    /// animation events for the next animation.<br/>
-    /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
-    /// </summary>
-    public static void InitAnimEventPlrData(
-        ref AnimEventPlrData animEventPlrData,
-        AnimInfo animInfo,
-        float startOffset = 0
-    ) {
-        animEventPlrData.animInfo = animInfo;
-        animEventPlrData.prevTotalNrmT = startOffset;
-        animEventPlrData.cursor = startOffset;
-        animEventPlrData.loopCount = 0;
-        animEventPlrData.loopsSinceRebase = 0;
-        animEventPlrData.finished = false;
-        animEventPlrData.firstTick = true;
     }
 
     /// <summary>
@@ -180,6 +148,10 @@ public static class AnimEventPlr {
         }
     }
 
+    // --------------------------------------------------------------------------------------------
+    // Private Methods
+    // --------------------------------------------------------------------------------------------
+
     /// <summary>
     /// Invokes events.
     /// NOTE: from and to need to be normalized!
@@ -208,6 +180,25 @@ public static class AnimEventPlr {
             if (data.firstTick)
                 return;
         }
+    }
+
+    /// <summary>
+    /// Call this after action state machine has started a crossfade to a new state to initialize
+    /// animation events for the next animation.<br/>
+    /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
+    /// </summary>
+    static void InitAnimEventPlrData(
+        ref AnimEventPlrData animEventPlrData,
+        AnimInfo animInfo,
+        float startOffset = 0
+    ) {
+        animEventPlrData.animInfo = animInfo;
+        animEventPlrData.prevTotalNrmT = startOffset;
+        animEventPlrData.cursor = startOffset;
+        animEventPlrData.loopCount = 0;
+        animEventPlrData.loopsSinceRebase = 0;
+        animEventPlrData.finished = false;
+        animEventPlrData.firstTick = true;
     }
 
     /// <summary>

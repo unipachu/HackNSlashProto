@@ -14,5 +14,4 @@ public class AnimRootMovBroadcaster : MonoBehaviour{
         Quaternion dRot = anim.deltaRotation;
         OnRootMove?.Invoke(dPos, dRot);
     }
-
 }

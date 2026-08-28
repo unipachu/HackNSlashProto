@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// TODO: Just make a hit reciever interface and remove this class.
 public class HitReceiver : MonoBehaviour {
     public IHitReceiverOwner owner;
 
