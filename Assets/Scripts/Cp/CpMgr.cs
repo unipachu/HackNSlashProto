@@ -1,6 +1,7 @@
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Capsule pawn (i.e. player or ai controlled character that uses capsule collision for movement) manager.
@@ -113,16 +114,46 @@ public class CpMgr : Singleton<CpMgr> {
         NativeArray<bool> occupied,
         Cp_UnityComps[] unityComp
     ) {
-        for (int i = 0; i < brain_DistToTgt.Length; i++) {
-            if (!occupied[i] || unityComp[i].agent == null)
+        for (int i = 0; i < occupied.Length; i++) {
+            //Debug.Log($"{i} tgt: {unityComp[i].tgt}");
+            if (!occupied[i] || unityComp[i].navMeshAgent == null)
                 continue;
             if (unityComp[i].tgt == null) {
                 brain_AgentDesiredVel[i] = float3.zero;
-                return;
+                continue;
             }
-            unityComp[i].agent.SetDestination(unityComp[i].tgt.position);
-            brain_AgentDesiredVel[i] = unityComp[i].agent.desiredVelocity;
-            //Debug.Log($"Agent desired vel: {brain_AgentDesiredVel[i]}", unityComp[i].agent);
+            // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
+            unityComp[i].navMeshAgent.nextPosition = unityComp[i].trf.position;
+            unityComp[i].navMeshAgent.SetDestination(unityComp[i].tgt.position);
+            // TODO: This probably is useless here.
+            bool tgtOnNavMesh = NavMesh.SamplePosition(
+                unityComp[i].tgt.position,
+                out NavMeshHit hit,
+                // TODO: Make So.
+                0.1f,
+                unityComp[i].navMeshAgent.areaMask
+            );
+            Debug.Log($"Entity id: {i}");
+            Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
+            Debug.Log($"pending: {unityComp[i].navMeshAgent.pathPending}");
+            Debug.Log($"status: {unityComp[i].navMeshAgent.pathStatus}");
+            Debug.Log($"has path: {unityComp[i].navMeshAgent.hasPath}");
+            Debug.Log($"tgt: {unityComp[i].tgt.position}");
+            Debug.Log($"destination: {unityComp[i].navMeshAgent.destination}");
+            Debug.Log($"path end: {unityComp[i].navMeshAgent.pathEndPosition}");
+            Debug.Log($"desired vel: {unityComp[i].navMeshAgent.desiredVelocity}");
+            // Only move if found full path to tgt.
+            if (
+                unityComp[i].navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete
+                    && !unityComp[i].navMeshAgent.pathPending
+            )
+                brain_AgentDesiredVel[i] = unityComp[i].navMeshAgent.desiredVelocity;
+            else {
+                // TODO: Not sure if this should be here or does it prevent agent from finding path over frames?
+                //unityComp[i].navMeshAgent.ResetPath();
+                brain_AgentDesiredVel[i] = float3.zero;
+
+            }
         }
     }
 
@@ -141,9 +172,9 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < unityComp.Length; i++) {
             if (!occupied[i])
                 continue;
-            trf_pos[i] = unityComp[i].rootTrf.position;
-            trf_rot[i] = unityComp[i].rootTrf.rotation;
-            trf_lossyScl[i] = unityComp[i].rootTrf.lossyScale;
+            trf_pos[i] = unityComp[i].trf.position;
+            trf_rot[i] = unityComp[i].trf.rotation;
+            trf_lossyScl[i] = unityComp[i].trf.lossyScale;
             lastCpVel[i] = unityComp[i].cc.velocity;
             curStDur[i] += Time.deltaTime;
         }
@@ -212,7 +243,7 @@ public class CpMgr : Singleton<CpMgr> {
             else {
                 data.input_mov[i] = Vector2.zero;
             }
-            //Debug.Log("mov input mag: " + math.length(data.input_mov[i]));
+            //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
     }
 
@@ -264,7 +295,7 @@ public class CpMgr : Singleton<CpMgr> {
                 // TODO C: have finished. Though should each pawn be moved one at a time? Maybe. But
                 // TODO C: wait, they are! Is that ok or is some other logic tied to how the pawn
                 // TODO C: should move that should be done one pawn at a time?
-                unityComps[i].rootTrf.rotation = data.trf_rot[i];
+                unityComps[i].trf.rotation = data.trf_rot[i];
             }
             // TODO: This should be its own Tick function I think. Then you didn't need to worry about ref
             // TODO C: keywords or such. Over multiple Tick_Mov_ you accumulate impulses and forces and
@@ -279,6 +310,8 @@ public class CpMgr : Singleton<CpMgr> {
             totalMov.z += data.vel_Hor[i].y * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
             unityComps[i].cc.Move(totalMov);
+            // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
+            unityComps[i].navMeshAgent.nextPosition = unityComps[i].trf.position;
         }
     }
 
@@ -289,17 +322,17 @@ public class CpMgr : Singleton<CpMgr> {
                 continue;
             if (unityComps[i].tgt != null) {
                 brainData.distToTgt[i] = Vector3.Distance(
-                    unityComps[i].rootTrf.position,
+                    unityComps[i].trf.position,
                     unityComps[i].tgt.position
                 );
                 brainData.hasTgt[i] = true;
                 brainData.inAggroRange[i]
                     = Vector3.Distance(
-                        unityComps[i].rootTrf.position,
+                        unityComps[i].trf.position,
                     unityComps[i].tgt.position) < brainData.aggroRange[i];
                 brainData.inAtkRange[i]
                     = Vector3.Distance(
-                        unityComps[i].rootTrf.position,
+                        unityComps[i].trf.position,
                     unityComps[i].tgt.position
                 ) < brainData.atkRange[i];
                 brainData.tgtPos[i] = unityComps[i].tgt.position;

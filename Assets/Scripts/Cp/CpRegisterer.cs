@@ -14,6 +14,12 @@ public class CpRegisterer : MonoBehaviour{
     public int Id { get; private set; } = -1;
 
     void OnEnable(){
+        // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
+        // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
+        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
+        // NOTE C: the capsule pawn.
+        unityComps.navMeshAgent.updatePosition = false;
+        unityComps.navMeshAgent.updateRotation = false;
         Debug.Assert(CpMgr.inst != null, $"{typeof(CpMgr).Name} inst was null!", this);
         Debug.Assert(so_cpData != null, "No data ref set!", this);
         unityComps.rHandEquippable = HandEquippableMgr.inst.InstantiateHandEquippable(

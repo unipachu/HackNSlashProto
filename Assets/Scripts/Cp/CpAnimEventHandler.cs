@@ -93,7 +93,7 @@ public class CpAnimEventHandler : MonoBehaviour {
             case CpAnimEventT.Atk_HorSlash1_Impact_HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {unityComps.rHandEquippable == null}");
                 unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
                 unityComps.rHandEquippable.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash1_Impact_HitDealerDeactivated:
@@ -138,7 +138,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.Atk_HorSlash2_Impact_HitDealerActivated:
                 unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
                 unityComps.rHandEquippable.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash2_Impact_HitDealerDeactivated:
@@ -175,7 +175,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.Atk_HorSlash3_Impact_HitDealerActivated:
                 unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
                 unityComps.rHandEquippable.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash3_Impact_HitDealerDeactivated:
@@ -193,7 +193,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.Atk_JumpVerSlam_HitboxActivated:
                 unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
                 unityComps.rHandEquippable.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_JumpVerSlam_HitboxDeactivated:

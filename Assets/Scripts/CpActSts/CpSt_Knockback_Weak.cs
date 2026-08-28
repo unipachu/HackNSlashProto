@@ -18,7 +18,7 @@ public static class CpSt_Knockback_Weak {
             viewVec = Vector3.down;
         else
             viewVec.Normalize();
-        if (Vector3.Dot(data.lastRecievedHitDir[id], unityComps[id].rootTrf.forward) > 0) {
+        if (Vector3.Dot(data.lastRecievedHitDir[id], unityComps[id].trf.forward) > 0) {
             AnimEventPlr.CrossfadeNInitAnimEventPlr(
                 ref animEventPlrData,
                 unityComps[id].anim,

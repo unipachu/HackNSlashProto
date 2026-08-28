@@ -44,15 +44,15 @@ public class BtMgr : Singleton<BtMgr>{
     /// <summary>
     /// NOTE: Uses capsule character id as index.
     /// </summary>
-    public void Register(int capsuleCharId, So_BtRootNode bt) {
+    public void Register(int cpId, So_BtRootNode bt) {
         //Debug.Log($"Registered character {capsuleCharId}", this);
-        AddTree(capsuleCharId, bt);
-        curRunningNode[capsuleCharId] = -1;
-        occupied[capsuleCharId] = true;
+        AddTree(cpId, bt);
+        curRunningNode[cpId] = -1;
+        occupied[cpId] = true;
     }
 
-    public void Unregister(int capsuleCharId) {
-        occupied[capsuleCharId] = false;
+    public void Unregister(int cpId) {
+        occupied[cpId] = false;
     }
 
     public void Tick() {
@@ -67,8 +67,8 @@ public class BtMgr : Singleton<BtMgr>{
     // Private Methods
     // ------------------------------------------------------------------------------
 
-    void AddTree(int capsuleCharId, So_BtRootNode tree) {
-        Debug.Log($"Adding bt for char {capsuleCharId}: {tree.name}", this);
+    void AddTree(int cpId, So_BtRootNode tree) {
+        Debug.Log($"Adding bt for char {cpId}: {tree.name}", this);
         List<BtNodeData> nodeList = new List<BtNodeData>();
         CompileNode(tree.root, nodeList, -1);
         if (nodeList.Count > maxNodesPerTree) {
@@ -77,7 +77,7 @@ public class BtMgr : Singleton<BtMgr>{
             return;
         }
         for (int i = 0; i < nodeList.Count; i++)
-            nodes[maxNodesPerTree * capsuleCharId + i] = nodeList[i];
+            nodes[maxNodesPerTree * cpId + i] = nodeList[i];
     }
 
     void AllocateNodeStorage() {
@@ -128,58 +128,60 @@ public class BtMgr : Singleton<BtMgr>{
         };
     }
 
-    BtResult EvalLeaf(BtNodeT t, int capsuleCharId) {
+    BtResult EvalLeaf(BtNodeT t, int cpId) {
         float2 horDesiredVel;
         Cp_BaseData ccMgr = CpMgr.inst.data;
         CpMgr caMgr = CpMgr.inst;
         Cp_BrainData brainData = CpMgr.inst.brainData;
         switch (t) {
             case BtNodeT.Cmd_Idle:
-                ccMgr.input_atk_Heavy[capsuleCharId] = false;
-                ccMgr.input_atk_Light[capsuleCharId] = false;
-                ccMgr.input_atk_Ult[capsuleCharId] = false;
-                ccMgr.input_dodge[capsuleCharId] = false;
-                if(math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
-                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
-                ccMgr.input_mov[capsuleCharId] = float2.zero;
+                ccMgr.input_atk_Heavy[cpId] = false;
+                ccMgr.input_atk_Light[cpId] = false;
+                ccMgr.input_atk_Ult[cpId] = false;
+                ccMgr.input_dodge[cpId] = false;
+                if(math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                    ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
+                ccMgr.input_mov[cpId] = float2.zero;
                 return BtResult.Success;
             case BtNodeT.Cmd_Atk1:
-                ccMgr.input_atk_Heavy[capsuleCharId] = false;
-                ccMgr.input_atk_Light[capsuleCharId] = true;
-                ccMgr.input_atk_Ult[capsuleCharId] = false;
-                ccMgr.input_dodge[capsuleCharId] = false;
-                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
-                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
+                ccMgr.input_atk_Heavy[cpId] = false;
+                ccMgr.input_atk_Light[cpId] = true;
+                ccMgr.input_atk_Ult[cpId] = false;
+                ccMgr.input_dodge[cpId] = false;
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                    ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
-                        brainData.agentDesiredVel[capsuleCharId].x,
-                        brainData.agentDesiredVel[capsuleCharId].z
+                        brainData.agentDesiredVel[cpId].x,
+                        brainData.agentDesiredVel[cpId].z
                 );
+                //Debug.Log($"{cpId} agent desired hor vel: {horDesiredVel}", this);
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if (math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    ccMgr.input_mov[capsuleCharId] = math.normalize(horDesiredVel);
+                    ccMgr.input_mov[cpId] = math.normalize(horDesiredVel);
                 return BtResult.Success;
             case BtNodeT.Cmd_MovToTgt:
-                ccMgr.input_atk_Heavy[capsuleCharId] = false;
-                ccMgr.input_atk_Light[capsuleCharId] = false;
-                ccMgr.input_atk_Ult[capsuleCharId] = false;
-                ccMgr.input_dodge[capsuleCharId] = false;
-                if (math.lengthsq(ccMgr.input_mov[capsuleCharId]) > caMgr.movInputSqrDeadzone)
-                    ccMgr.input_mov_LastNonZero[capsuleCharId] = ccMgr.input_mov[capsuleCharId];
+                ccMgr.input_atk_Heavy[cpId] = false;
+                ccMgr.input_atk_Light[cpId] = false;
+                ccMgr.input_atk_Ult[cpId] = false;
+                ccMgr.input_dodge[cpId] = false;
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                    ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
-                        brainData.agentDesiredVel[capsuleCharId].x,
-                        brainData.agentDesiredVel[capsuleCharId].z
+                        brainData.agentDesiredVel[cpId].x,
+                        brainData.agentDesiredVel[cpId].z
                 );
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if(math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    ccMgr.input_mov[capsuleCharId] = math.normalize(horDesiredVel);
-                //Debug.Log($"BtNodeT.Cmd_MovToTgt movement input: {charData.input_mov}", this);
+                    ccMgr.input_mov[cpId] = math.normalize(horDesiredVel);
+                //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:
-                return brainData.inAggroRange[capsuleCharId] ? BtResult.Success : BtResult.Failure;
+                // TODO: aggro and atk ranges should be calculated using navmesh path finding. Or maybe not.
+                return brainData.inAggroRange[cpId] ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Cond_InAtkRange:
-                return brainData.inAtkRange[capsuleCharId] ? BtResult.Success : BtResult.Failure;
+                return brainData.inAtkRange[cpId] ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Selector:
                 Debug.LogError("Selector is a composite not a leaf!", this);
                 return BtResult.Running;

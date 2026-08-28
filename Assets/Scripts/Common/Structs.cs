@@ -374,13 +374,13 @@ public struct Cp_BrainData {
 
 [Serializable]
 public struct Cp_UnityComps {
-    public Transform rootTrf;
+    public Transform trf;
     public CpCtrl cpCtrl;
     public Animator anim;
     public CpHitRecieveHandler hitRecieverHandler;
     public CharacterController cc;
     public Transform tgt;
-    public NavMeshAgent agent;
+    public NavMeshAgent navMeshAgent;
     public Transform rHand;
     public CpAnimEventHandler animEventHandler;
     [HideInInspector] public HandEquippable rHandEquippable;

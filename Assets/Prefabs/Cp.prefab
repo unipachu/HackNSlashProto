@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3037795622728005573}
   - component: {fileID: 4596513238272593172}
   - component: {fileID: 5079058612890601784}
-  - component: {fileID: 2212291680455607110}
+  - component: {fileID: 8087861647241408892}
   m_Layer: 8
   m_Name: Cp
   m_TagString: Untagged
@@ -54,16 +54,15 @@ MonoBehaviour:
   so_cpData: {fileID: 11400000, guid: cb105a8688779a64ba26fd821fe0069c, type: 2}
   so_BtRootNode: {fileID: 11400000, guid: 8ce3116f420e44b49aa1fc0bf7798ea2, type: 2}
   unityComps:
-    rootTrf: {fileID: 1582683670335378908}
+    trf: {fileID: 1582683670335378908}
     cpCtrl: {fileID: 3037795622728005573}
     anim: {fileID: 1091843080481240901}
     hitRecieverHandler: {fileID: 9141355615762476700}
     cc: {fileID: 5079058612890601784}
     tgt: {fileID: 0}
-    agent: {fileID: 2212291680455607110}
+    navMeshAgent: {fileID: 8087861647241408892}
     rHand: {fileID: 6462226994868355226}
     animEventHandler: {fileID: 4596513238272593172}
-    animRootMovBroadcaster: {fileID: 0}
     rHandEquippable: {fileID: 0}
 --- !u!114 &9141355615762476700
 MonoBehaviour:
@@ -129,7 +128,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
---- !u!195 &2212291680455607110
+--- !u!195 &8087861647241408892
 NavMeshAgent:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
