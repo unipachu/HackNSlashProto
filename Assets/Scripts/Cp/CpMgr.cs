@@ -124,14 +124,14 @@ public class CpMgr : Singleton<CpMgr> {
             );
             if (!tgtOnNavMesh) {
                 brainData.agentDesiredVel[i] = float3.zero;
-                Debug.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.");
+                //Debug.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.");
                 return;
             }
-            // Only update destination if target moved over a threshold
+            // Only update destination if target moved.
             if (!unityComps[i].navMeshAgent.hasPath
                 || Vector3.SqrMagnitude(
                     unityComps[i].navMeshAgent.destination - unityComps[i].tgt.position
-                ) > 0.1f // TODO: Make So.
+                ) > 0f
             ) {
                 unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
             }
@@ -143,7 +143,7 @@ public class CpMgr : Singleton<CpMgr> {
                 // TODO: Not sure if this should be here or does it prevent agent from finding path over frames?
                 //unityComp[i].navMeshAgent.ResetPath();
                 brainData.agentDesiredVel[i] = float3.zero;
-                Debug.Log($"{i} Set agent desired vel to 0 since pathPending or because no path was found.");
+                //Debug.Log($"{i} Set agent desired vel to 0 since pathPending or because no path was found.");
                 return;
             }
             //Debug.Log($"Entity id: {i}");
@@ -598,7 +598,7 @@ public class CpMgr : Singleton<CpMgr> {
         Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {newSt}, but {id} was already changing"
             + $"state!", this);
         data.isSwitchingActSt[id] = true;
-        //Debug.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this);
+        Dbg.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this, data.enableDebugMsgs[id]);
         data.prevSt[id] = data.actSt[id];
         data.actSt[id] = newSt;
         ActSt_ExitSt(id, data.prevSt[id]);

@@ -8,6 +8,7 @@ public static class CpSt_Falling {
         ref AnimEventPlrData animEventPlrData
     ) {
         data.actStSt_FallingStartHgt[id] = data.trf_pos[id].y;
+        Dbg.Log("Went here", data.enableDebugMsgs[id]);
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref animEventPlrData,
             unityComps[id].anim,

@@ -177,7 +177,7 @@ public class BtMgr : Singleton<BtMgr>{
                     ccMgr.input_mov[cpId] = math.normalize(horDesiredVel);
                 else
                     ccMgr.input_mov[cpId] = float2.zero;
-                    Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
+                    //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:
                 // TODO: aggro and atk ranges should be calculated using navmesh path finding. Or maybe not.
