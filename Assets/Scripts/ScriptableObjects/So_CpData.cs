@@ -31,6 +31,9 @@ public class So_CpData : ScriptableObject {
     [Header("Equipment Settings")]
     public HandEquippableT equip_RHandEquippable;
 
+    [Header("Debug")]
+    public bool enableDebugMsgs = false;
+
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
     public float st_AtkJump_DownSpeedAfterJumpFinished = 10;

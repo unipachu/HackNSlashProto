@@ -153,6 +153,7 @@ public struct Cp_BaseData {
     public NativeArray<float3> animDPos;
     public NativeArray<quaternion> animDRot;
     public NativeArray<float> curStDur;
+    public NativeArray<bool> enableDebugMsgs;
     public NativeArray<HandEquippableT> equip_RHandEquippable;
     public NativeArray<float> gravitationalAcc;
     public NativeArray<bool> groundCastHitSomething;
@@ -224,6 +225,7 @@ public struct Cp_BaseData {
             animDPos = StructUtils.Alloc<float3>(capacity),
             animDRot = StructUtils.Alloc<quaternion>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
+            enableDebugMsgs = StructUtils.Alloc<bool>(capacity),
             equip_RHandEquippable = StructUtils.Alloc<HandEquippableT>(capacity),
             gravitationalAcc = StructUtils.Alloc<float>(capacity),
             groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
@@ -287,6 +289,7 @@ public struct Cp_BaseData {
         animDPos.Dispose();
         animDRot.Dispose();
         curStDur.Dispose();
+        enableDebugMsgs.Dispose();
         equip_RHandEquippable.Dispose();
         gravitationalAcc.Dispose();
         groundCastHitSomething.Dispose();

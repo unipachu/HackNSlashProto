@@ -97,63 +97,65 @@ public class CpMgr : Singleton<CpMgr> {
         Tick_Input();
         Tick_InputBuffer(dt);
         Tick_Sensing();
-        Tick_AgentMovInput(
-            brainData.agentDesiredVel,
-            brainData.distToTgt,
-            data.occupied,
-            unityComps
-        );
+        Tick_AgentMovInput();
         Tick_Fsm();
         Tick_Mov();
     }
 
     // TODO: Update in Tick_FromNonNative
-    static void Tick_AgentMovInput(
-        NativeArray<float3> brain_AgentDesiredVel,
-        NativeArray<float> brain_DistToTgt,
-        NativeArray<bool> occupied,
-        Cp_UnityComps[] unityComp
-    ) {
-        for (int i = 0; i < occupied.Length; i++) {
+    // TODO C: Or maybe in Tick_Sensing.
+    void Tick_AgentMovInput() {
+        for (int i = 0; i < data.occupied.Length; i++) {
             //Debug.Log($"{i} tgt: {unityComp[i].tgt}");
-            if (!occupied[i] || unityComp[i].navMeshAgent == null)
+            if (!data.occupied[i] || unityComps[i].navMeshAgent == null)
                 continue;
-            if (unityComp[i].tgt == null) {
-                brain_AgentDesiredVel[i] = float3.zero;
+            if (unityComps[i].tgt == null) {
+                brainData.agentDesiredVel[i] = float3.zero;
                 continue;
             }
             // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
-            unityComp[i].navMeshAgent.nextPosition = unityComp[i].trf.position;
-            unityComp[i].navMeshAgent.SetDestination(unityComp[i].tgt.position);
-            // TODO: This probably is useless here.
+            unityComps[i].navMeshAgent.nextPosition = unityComps[i].trf.position;
             bool tgtOnNavMesh = NavMesh.SamplePosition(
-                unityComp[i].tgt.position,
+                unityComps[i].tgt.position,
                 out NavMeshHit hit,
                 // TODO: Make So.
-                0.1f,
-                unityComp[i].navMeshAgent.areaMask
+                0.2f,
+                unityComps[i].navMeshAgent.areaMask
             );
-            Debug.Log($"Entity id: {i}");
-            Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
-            Debug.Log($"pending: {unityComp[i].navMeshAgent.pathPending}");
-            Debug.Log($"status: {unityComp[i].navMeshAgent.pathStatus}");
-            Debug.Log($"has path: {unityComp[i].navMeshAgent.hasPath}");
-            Debug.Log($"tgt: {unityComp[i].tgt.position}");
-            Debug.Log($"destination: {unityComp[i].navMeshAgent.destination}");
-            Debug.Log($"path end: {unityComp[i].navMeshAgent.pathEndPosition}");
-            Debug.Log($"desired vel: {unityComp[i].navMeshAgent.desiredVelocity}");
+            if (!tgtOnNavMesh) {
+                brainData.agentDesiredVel[i] = float3.zero;
+                Debug.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.");
+                return;
+            }
+            // Only update destination if target moved over a threshold
+            if (!unityComps[i].navMeshAgent.hasPath
+                || Vector3.SqrMagnitude(
+                    unityComps[i].navMeshAgent.destination - unityComps[i].tgt.position
+                ) > 0.1f // TODO: Make So.
+            ) {
+                unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
+            }
             // Only move if found full path to tgt.
             if (
-                unityComp[i].navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete
-                    && !unityComp[i].navMeshAgent.pathPending
-            )
-                brain_AgentDesiredVel[i] = unityComp[i].navMeshAgent.desiredVelocity;
-            else {
+                unityComps[i].navMeshAgent.pathStatus != NavMeshPathStatus.PathComplete
+                    || unityComps[i].navMeshAgent.pathPending
+            ) {
                 // TODO: Not sure if this should be here or does it prevent agent from finding path over frames?
                 //unityComp[i].navMeshAgent.ResetPath();
-                brain_AgentDesiredVel[i] = float3.zero;
-
+                brainData.agentDesiredVel[i] = float3.zero;
+                Debug.Log($"{i} Set agent desired vel to 0 since pathPending or because no path was found.");
+                return;
             }
+            //Debug.Log($"Entity id: {i}");
+            //Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
+            //Debug.Log($"pending: {unityComps[i].navMeshAgent.pathPending}");
+            //Debug.Log($"status: {unityComps[i].navMeshAgent.pathStatus}");
+            //Debug.Log($"has path: {unityComps[i].navMeshAgent.hasPath}");
+            //Debug.Log($"tgt: {unityComps[i].tgt.position}");
+            //Debug.Log($"destination: {unityComps[i].navMeshAgent.destination}");
+            //Debug.Log($"path end: {unityComps[i].navMeshAgent.pathEndPosition}");
+            //Debug.Log($"desired vel: {unityComps[i].navMeshAgent.desiredVelocity}");
+            brainData.agentDesiredVel[i] = unityComps[i].navMeshAgent.desiredVelocity;
         }
     }
 
@@ -390,6 +392,7 @@ public class CpMgr : Singleton<CpMgr> {
         brainData.inAtkRange[freeI] = false;
         brainData.tgtPos[freeI] = float3.zero;
         data.curStDur[freeI] = 0;
+        data.enableDebugMsgs[freeI] = so.enableDebugMsgs;
         data.equip_RHandEquippable[freeI] = so.equip_RHandEquippable;
         data.gravitationalAcc[freeI] = so.gravitationalAcc;
         data.groundCastHitSomething[freeI] = false;

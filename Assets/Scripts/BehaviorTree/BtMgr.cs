@@ -172,10 +172,12 @@ public class BtMgr : Singleton<BtMgr>{
                         brainData.agentDesiredVel[cpId].z
                 );
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
-                if(math.lengthsq(horDesiredVel) > 0.0001f)
+                if (math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
                     ccMgr.input_mov[cpId] = math.normalize(horDesiredVel);
-                //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
+                else
+                    ccMgr.input_mov[cpId] = float2.zero;
+                    Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:
                 // TODO: aggro and atk ranges should be calculated using navmesh path finding. Or maybe not.
