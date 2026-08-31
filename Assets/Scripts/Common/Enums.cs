@@ -1,13 +1,13 @@
 // Add all public enums here.
 
 
-public enum AtkPhase{
+public enum AtkPhase : byte {
     Windup,
     Impact,
     Recovery
 }
 
-public enum BufferableInput {
+public enum BufferableInput : byte {
     None,
     Atk_Light,
     Atk_Heavy,
@@ -18,7 +18,7 @@ public enum BufferableInput {
 /// <summary>
 /// Capsule pawn action state. These pair animations and animation events with gameplay logic.
 /// </summary>
-public enum CpActSt {
+public enum CpActSt : byte {
     Atk_FlyingAtk,
     // TODO: start indexing from 0, ugh.
     Atk_HorSlash1,
@@ -37,7 +37,7 @@ public enum CpActSt {
 /// <summary>
 /// Animation events used by the capsule pawn Animator.
 /// </summary>
-public enum CpAnimEventT {
+public enum CpAnimEventT : byte {
     Atk_GunShoot_Recovery_Finished,
     Atk_GunShoot_Windup_Finished,
     Dodge_BufferedInputStSwitchAllowed,
@@ -85,7 +85,7 @@ public enum CpAnimEventT {
     Knockback_Weak_Fwd_Finished
 }
 
-public enum BtNodeT {
+public enum BtNodeT : byte {
     Cmd_Atk1,
     Cmd_Idle,
     Cmd_MovToTgt,
@@ -95,27 +95,27 @@ public enum BtNodeT {
     Sequence,
 }
 
-public enum BtResult {
+public enum BtResult : byte {
     Success,
     Failure,
     Running,
 }
 
-public enum Directions2DVertical{
+public enum Directions2DVertical : byte {
     Left,
     Right,
     Down,
     Up,
 }
 
-public enum Directions2DHorizontal{
+public enum Directions2DHorizontal : byte {
     Left,
     Right,
     Backward,
     Forward,
 }
 
-public enum Directions3D{
+public enum Directions3D : byte {
     Left,
     Right,
     Down,
@@ -124,14 +124,14 @@ public enum Directions3D{
     Forward,
 }
 
-public enum BtNodeMethodCall {
+public enum BtNodeMethodCall : byte {
     None,
     Cond_IsInAggroRange,
     Cond_IsInAtkRange,
     Cmd_Atk,
 }
 
-public enum Faces{
+public enum Faces : byte {
     Left,
     Right,
     Bottom,
@@ -140,23 +140,23 @@ public enum Faces{
     Far,
 }
 
-public enum KnockbackT {
+public enum KnockbackT : byte {
     None,
     Weak,
     Strong
 }
 
-public enum LocomotionType {
+public enum LocomotionType : byte {
     VelocityByDirectionalInput,
     DirectMotion,
 }
 
-public enum Side{
+public enum Side : byte {
     Left,
     Right,
 }
 
-public enum HandEquippableT {
+public enum HandEquippableT : byte {
     Empty,
     Sword,
     Hammer,

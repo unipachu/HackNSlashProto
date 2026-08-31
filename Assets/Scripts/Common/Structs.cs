@@ -1,3 +1,4 @@
+// TODO: Check if some ints can be converted to short or byte.
 using System;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -159,6 +160,7 @@ public struct Cp_BaseData {
     public NativeArray<bool> groundCastHitSomething;
     public NativeArray<float3> groundCastNrm;
     public NativeArray<float> groundSnapVerDownSpd;
+    // TODO: make these int.
     public NativeArray<float> hp_Cur;
     public NativeArray<float> hp_Max;
     public NativeArray<float2> input_mov;
@@ -180,7 +182,7 @@ public struct Cp_BaseData {
     public NativeArray<bool> isAffectedByGravity;
     public NativeArray<bool> isGrounded;
     public NativeArray<bool> isSwitchingActSt;
-    public NativeArray<float3> lastCharCtrlVel;
+    public NativeArray<float3> lastCcVel;
     public NativeArray<float> lastKnockbackStr;
     public NativeArray<float3> lastRecievedHitDir;
     public NativeArray<float> maxFallSpd;
@@ -246,7 +248,7 @@ public struct Cp_BaseData {
             isAffectedByGravity = StructUtils.Alloc<bool>(capacity),
             isGrounded = StructUtils.Alloc<bool>(capacity),
             isSwitchingActSt = StructUtils.Alloc<bool>(capacity),
-            lastCharCtrlVel = StructUtils.Alloc<float3>(capacity),
+            lastCcVel = StructUtils.Alloc<float3>(capacity),
             lastKnockbackStr = StructUtils.Alloc<float>(capacity),
             lastRecievedHitDir = StructUtils.Alloc<float3>(capacity),
             maxFallSpd = StructUtils.Alloc<float>(capacity),
@@ -310,7 +312,7 @@ public struct Cp_BaseData {
         isAffectedByGravity.Dispose();
         isGrounded.Dispose();
         isSwitchingActSt.Dispose();
-        lastCharCtrlVel.Dispose();
+        lastCcVel.Dispose();
         lastKnockbackStr.Dispose();
         lastRecievedHitDir.Dispose();
         maxFallSpd.Dispose();
@@ -348,6 +350,7 @@ public struct Cp_BrainData {
     public NativeArray<bool> hasTgt;
     public NativeArray<bool> inAggroRange;
     public NativeArray<bool> inAtkRange;
+    public NativeArray<bool> prevCalculatePathSucceeded;
     public NativeArray<float3> tgtPos;
 
     public static Cp_BrainData Create(int capacity) {
@@ -359,6 +362,7 @@ public struct Cp_BrainData {
             hasTgt = StructUtils.Alloc<bool>(capacity),
             inAggroRange = StructUtils.Alloc<bool>(capacity),
             inAtkRange = StructUtils.Alloc<bool>(capacity),
+            prevCalculatePathSucceeded = StructUtils.Alloc<bool>(capacity),
             tgtPos = StructUtils.Alloc<float3>(capacity)
         };
     }
@@ -371,6 +375,7 @@ public struct Cp_BrainData {
         hasTgt.Dispose();
         inAggroRange.Dispose();
         inAtkRange.Dispose();
+        prevCalculatePathSucceeded.Dispose();
         tgtPos.Dispose();
     }
 }

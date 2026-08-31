@@ -30,8 +30,8 @@ public static class AnimEventPlr {
         float nrmTransDur = 0.1f,
         float startOffset = 0
     ) {
-        Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {nrmTransDur}, and "
-            + $"startOffset: {startOffset}.");
+        //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {nrmTransDur}, and "
+        //    + $"startOffset: {startOffset}.");
         anim.CrossFade(
             animInfo.shortNameHash,
             nrmTransDur,

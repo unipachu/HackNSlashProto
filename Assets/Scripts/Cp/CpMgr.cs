@@ -85,15 +85,7 @@ public class CpMgr : Singleton<CpMgr> {
     // ------------------------------------------------------------
 
     public void Tick(float dt) {
-        Tick_FromNonNative(
-            data.curStDur,
-            data.lastCharCtrlVel,
-            data.occupied,
-            data.trf_lossyScl,
-            data.trf_pos,
-            data.trf_rot,
-            unityComps
-        );
+        Tick_FromNonNative(dt);
         Tick_Input();
         Tick_InputBuffer(dt);
         Tick_Sensing();
@@ -106,10 +98,15 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
         for (int i = 0; i < data.occupied.Length; i++) {
-            //Debug.Log($"{i} tgt: {unityComp[i].tgt}");
+            //Dbg.Log($"{i} tgt: {unityComps[i].tgt}", data.enableDebugMsgs[i]);
             if (!data.occupied[i] || unityComps[i].navMeshAgent == null)
                 continue;
             if (unityComps[i].tgt == null) {
+                //Dbg.Log(
+                //    $"{i} Set agent desired vel to 0 because tgt was null: {unityComps[i].tgt}",
+                //    data.enableDebugMsgs[i]
+                //);
+                unityComps[i].navMeshAgent.ResetPath();
                 brainData.agentDesiredVel[i] = float3.zero;
                 continue;
             }
@@ -122,63 +119,79 @@ public class CpMgr : Singleton<CpMgr> {
                 0.2f,
                 unityComps[i].navMeshAgent.areaMask
             );
+            // NOTE: We need to check this manually since SetDestination does not have option to set target sample
+            // NOTE C: position max distance.
             if (!tgtOnNavMesh) {
+                //Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.", data.enableDebugMsgs[i]);
+                unityComps[i].navMeshAgent.ResetPath();
                 brainData.agentDesiredVel[i] = float3.zero;
-                //Debug.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.");
-                return;
+                continue;
             }
-            // Only update destination if target moved.
-            if (!unityComps[i].navMeshAgent.hasPath
-                || Vector3.SqrMagnitude(
-                    unityComps[i].navMeshAgent.destination - unityComps[i].tgt.position
-                ) > 0f
-            ) {
+            // TODO: The point of this is to START path finding calculation if there is no previous path calculation
+            // TODO C: (e.g. no path status) and if the agent is not currenly calculating a path. I think this might
+            // TODO C: be incorrect way to do it but the agent navigation seems to work well enough for now.
+            if (!unityComps[i].navMeshAgent.hasPath) {
+                //Dbg.Log($"{i} Agent had no path. Set destination.", data.enableDebugMsgs[i]);
                 unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
+                continue;
             }
-            // Only move if found full path to tgt.
-            if (
-                unityComps[i].navMeshAgent.pathStatus != NavMeshPathStatus.PathComplete
-                    || unityComps[i].navMeshAgent.pathPending
-            ) {
-                // TODO: Not sure if this should be here or does it prevent agent from finding path over frames?
-                //unityComp[i].navMeshAgent.ResetPath();
+            // If we are close enough to the destination, stop desiring movement.
+            // TODO: Make So.
+            if(Vector3.SqrMagnitude(unityComps[i].navMeshAgent.destination - unityComps[i].trf.position) < 0.1f) {
+                //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.", data.enableDebugMsgs[i]);
+                unityComps[i].navMeshAgent.ResetPath();
                 brainData.agentDesiredVel[i] = float3.zero;
-                //Debug.Log($"{i} Set agent desired vel to 0 since pathPending or because no path was found.");
-                return;
+                continue;
             }
-            //Debug.Log($"Entity id: {i}");
-            //Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
-            //Debug.Log($"pending: {unityComps[i].navMeshAgent.pathPending}");
-            //Debug.Log($"status: {unityComps[i].navMeshAgent.pathStatus}");
-            //Debug.Log($"has path: {unityComps[i].navMeshAgent.hasPath}");
-            //Debug.Log($"tgt: {unityComps[i].tgt.position}");
-            //Debug.Log($"destination: {unityComps[i].navMeshAgent.destination}");
-            //Debug.Log($"path end: {unityComps[i].navMeshAgent.pathEndPosition}");
-            //Debug.Log($"desired vel: {unityComps[i].navMeshAgent.desiredVelocity}");
-            brainData.agentDesiredVel[i] = unityComps[i].navMeshAgent.desiredVelocity;
+            // NOTE: We only use the current unfinished path if last path calculation was completed. This way if we
+            // NOTE C: get sequential failed path finding attempts, the character will not move at all (instead of
+            // NOTE C: jittering a little because of the partial paths).
+            if (unityComps[i].navMeshAgent.pathPending) {
+                //Dbg.Log($"{i} Path was pending.", data.enableDebugMsgs[i]);
+                if (brainData.prevCalculatePathSucceeded[i])
+                    brainData.agentDesiredVel[i] = unityComps[i].navMeshAgent.desiredVelocity;
+                else
+                    brainData.agentDesiredVel[i] = float3.zero;
+                continue;
+            }
+            if (unityComps[i].navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete) {
+                brainData.prevCalculatePathSucceeded[i] = true;
+                //Debug.Log($"Entity id: {i}");
+                //Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
+                //Debug.Log($"prevCalculatePathSucceeded: {brainData.prevCalculatePathSucceeded[i]}");
+                //Debug.Log($"pending: {unityComps[i].navMeshAgent.pathPending}");
+                //Debug.Log($"status: {unityComps[i].navMeshAgent.pathStatus}");
+                //Debug.Log($"has path: {unityComps[i].navMeshAgent.hasPath}");
+                //Debug.Log($"tgt: {unityComps[i].tgt.position}");
+                //Debug.Log($"destination: {unityComps[i].navMeshAgent.destination}");
+                //Debug.Log($"path end: {unityComps[i].navMeshAgent.pathEndPosition}");
+                //Debug.Log($"desired vel: {unityComps[i].navMeshAgent.desiredVelocity}");
+                //Debug.Log($"steering tgt: {unityComps[i].navMeshAgent.steeringTarget}");
+                // NOTE: We use desired velocity instead of steering target, because steering target doesn't
+                // NOTE C: use avoidance.
+                brainData.agentDesiredVel[i] = unityComps[i].navMeshAgent.desiredVelocity;
+            }
+            else {
+                //Dbg.Log($"{i} Did not find path. Setting desired vel to 0.", data.enableDebugMsgs[i]);
+                brainData.prevCalculatePathSucceeded[i] = false;
+                brainData.agentDesiredVel[i] = float3.zero;
+            }
+            unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
         }
     }
 
     /// <summary>
     /// Update data from non native sources, e.g. from Monobehavior components.
     /// </summary>
-    void Tick_FromNonNative(
-        NativeArray<float> curStDur,
-        NativeArray<float3> lastCpVel,
-        NativeArray<bool> occupied,
-        NativeArray<float3> trf_lossyScl,
-        NativeArray<float3> trf_pos,
-        NativeArray<quaternion> trf_rot,
-        Cp_UnityComps[] unityComp
-    ) {
-        for (int i = 0; i < unityComp.Length; i++) {
-            if (!occupied[i])
+    void Tick_FromNonNative(float dt) {
+        for (int i = 0; i < unityComps.Length; i++) {
+            if (!data.occupied[i])
                 continue;
-            trf_pos[i] = unityComp[i].trf.position;
-            trf_rot[i] = unityComp[i].trf.rotation;
-            trf_lossyScl[i] = unityComp[i].trf.lossyScale;
-            lastCpVel[i] = unityComp[i].cc.velocity;
-            curStDur[i] += Time.deltaTime;
+            data.trf_pos[i] = unityComps[i].trf.position;
+            data.trf_rot[i] = unityComps[i].trf.rotation;
+            data.trf_lossyScl[i] = unityComps[i].trf.lossyScale;
+            data.lastCcVel[i] = unityComps[i].cc.velocity;
+            data.curStDur[i] += dt;
         }
     }
 
@@ -254,13 +267,37 @@ public class CpMgr : Singleton<CpMgr> {
             if (!data.occupied[i])
                 continue;
             if (data.input_atk_Light[i])
-                CpInputBuffer.BufferInput(i, BufferableInput.Atk_Light, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+                CpInputBuffer.BufferInput(
+                    i,
+                    BufferableInput.Atk_Light,
+                    data.inputBuffer_BufferedInput,
+                    data.inputBuffer_RemainingTime,
+                    inputBuffer_Dur
+                );
             else if (data.input_atk_Heavy[i])
-                CpInputBuffer.BufferInput(i, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+                CpInputBuffer.BufferInput(
+                    i,
+                    BufferableInput.Atk_Heavy,
+                    data.inputBuffer_BufferedInput,
+                    data.inputBuffer_RemainingTime,
+                    inputBuffer_Dur
+                );
             else if (data.input_atk_Ult[i])
-                CpInputBuffer.BufferInput(i, BufferableInput.Atk_Ult, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+                CpInputBuffer.BufferInput(
+                    i,
+                    BufferableInput.Atk_Ult,
+                    data.inputBuffer_BufferedInput,
+                    data.inputBuffer_RemainingTime,
+                    inputBuffer_Dur
+                );
             else if (data.input_dodge[i])
-                CpInputBuffer.BufferInput(i, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime, inputBuffer_Dur);
+                CpInputBuffer.BufferInput(
+                    i,
+                    BufferableInput.Dodge,
+                    data.inputBuffer_BufferedInput,
+                    data.inputBuffer_RemainingTime, 
+                    inputBuffer_Dur
+                );
             // Clear input if buffer time passed.
             if (data.inputBuffer_RemainingTime[i] <= 0)
                 continue;
@@ -410,7 +447,7 @@ public class CpMgr : Singleton<CpMgr> {
         data.invul[freeI] = false;
         data.isAffectedByGravity[freeI] = true;
         data.isGrounded[freeI] = true;
-        data.lastCharCtrlVel[freeI] = float3.zero;
+        data.lastCcVel[freeI] = float3.zero;
         data.lastKnockbackStr[freeI] = 0;
         data.lastRecievedHitDir[freeI] = float3.zero;
         data.maxFallSpd[freeI] = so.maxFallSpd;
@@ -598,7 +635,7 @@ public class CpMgr : Singleton<CpMgr> {
         Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {newSt}, but {id} was already changing"
             + $"state!", this);
         data.isSwitchingActSt[id] = true;
-        Dbg.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this, data.enableDebugMsgs[id]);
+        //Dbg.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this, data.enableDebugMsgs[id]);
         data.prevSt[id] = data.actSt[id];
         data.actSt[id] = newSt;
         ActSt_ExitSt(id, data.prevSt[id]);

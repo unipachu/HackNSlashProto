@@ -19,9 +19,9 @@ MonoBehaviour:
   maxHP: 100
   initSt: 9
   brain_AggroRange: 20
-  brain_AtkRange: 1
+  brain_AtkRange: 3
   equip_RHandEquippable: 2
-  enableDebugMsgs: 0
+  enableDebugMsgs: 1
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000
   st_AtkHorSlash_Impact_AngSpd: 1200

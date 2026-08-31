@@ -12,7 +12,7 @@ public static class CcMov {
             cpMgr.data.vel_Ver[capsuleCharId] = -cpMgr.data.groundSnapVerDownSpd[capsuleCharId] * dt;
         // Freefalling and slope down sliding.
         else {
-            cpMgr.data.vel_Ver[capsuleCharId] = cpMgr.data.lastCharCtrlVel[capsuleCharId].y;
+            cpMgr.data.vel_Ver[capsuleCharId] = cpMgr.data.lastCcVel[capsuleCharId].y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
             if (cpMgr.data.groundCastHitSomething[capsuleCharId]) {
@@ -40,7 +40,7 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(cpMgr.data.lastCharCtrlVel[capsuleCharId], slideDir));
+                float slideSpd = math.max(0, math.dot(cpMgr.data.lastCcVel[capsuleCharId], slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
                 cpMgr.data.vel_Ver[capsuleCharId] = newVel.y;
