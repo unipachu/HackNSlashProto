@@ -38,14 +38,15 @@ public class CpAnimEventHandler : MonoBehaviour {
                 float maxLifetime = 10;
                 float homingStr = 2;
                 projData = new(spd, maxLifetime, homingStr);
-                HomingProjMgr.inst.ShootProj(
-                    projData,
-                    atkData,
-                    unityComps.rHandEquippable.projSpawnPose.position,
-                    unityComps.rHandEquippable.projSpawnPose.forward,
-                    // TODO: Set homing target.
-                    null
-                );
+                // TODO: Item
+                //HomingProjMgr.inst.ShootProj(
+                //    projData,
+                //    atkData,
+                //    unityComps.rHandItem.projSpawnPose.position,
+                //    unityComps.rHandItem.projSpawnPose.forward,
+                //    // TODO: Set homing target.
+                //    null
+                //);
                 AnimEventPlr.CrossfadeNInitAnimEventPlr(
                     ref ccMgr.animEventPlrData[id],
                     unityComps.anim,
@@ -61,8 +62,9 @@ public class CpAnimEventHandler : MonoBehaviour {
                 data.actStSt_AtkPhase[id] = AtkPhase.Impact;
                 break;
             case CpAnimEventT.Atk_FlyingAtk_Impact_HitDealerActivated:
-                unityComps.rHandEquippable.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
-                unityComps.rHandEquippable.aoeHitDealer.Activate();
+                // TODO: Item
+                //unityComps.rHandItem.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
+                //unityComps.rHandItem.aoeHitDealer.Activate();
                 break;
             case CpAnimEventT.FlyingAtk_Impact_Finished:
                 data.isAffectedByGravity[id] = true;
@@ -92,12 +94,16 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.Atk_HorSlash1_Impact_HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {unityComps.rHandEquippable == null}");
-                unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
-                unityComps.rHandEquippable.hitDealer.Activate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                //unityComps.rHandItem.hitDealer.hitWldDir = unityComps.trf.forward;
+                //unityComps.rHandItem.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash1_Impact_HitDealerDeactivated:
-                unityComps.rHandEquippable.hitDealer.Deactivate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.Deactivate();
                 break;
             case CpAnimEventT.Atk_HorSlash1_Impact_RotationAllowed:
                 data.actStSt_ImpactInputRotAllowed[id] = true;
@@ -137,12 +143,16 @@ public class CpAnimEventHandler : MonoBehaviour {
                 data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                 break;
             case CpAnimEventT.Atk_HorSlash2_Impact_HitDealerActivated:
-                unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
-                unityComps.rHandEquippable.hitDealer.Activate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                //unityComps.rHandItem.hitDealer.hitWldDir = unityComps.trf.forward;
+                //unityComps.rHandItem.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash2_Impact_HitDealerDeactivated:
-                unityComps.rHandEquippable.hitDealer.Deactivate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.Deactivate();
                 break;
             case CpAnimEventT.Atk_HorSlash2_Impact_RotationAllowed:
                 data.actStSt_ImpactInputRotAllowed[id] = true;
@@ -174,12 +184,16 @@ public class CpAnimEventHandler : MonoBehaviour {
                 data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                 break;
             case CpAnimEventT.Atk_HorSlash3_Impact_HitDealerActivated:
-                unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
-                unityComps.rHandEquippable.hitDealer.Activate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                //unityComps.rHandItem.hitDealer.hitWldDir = unityComps.trf.forward;
+                //unityComps.rHandItem.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_HorSlash3_Impact_HitDealerDeactivated:
-                unityComps.rHandEquippable.hitDealer.Deactivate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.Deactivate();
                 break;
             case CpAnimEventT.Atk_HorSlash3_Impact_RotationAllowed:
                 data.actStSt_ImpactInputRotAllowed[id] = true;
@@ -192,12 +206,16 @@ public class CpAnimEventHandler : MonoBehaviour {
                 data.vel_Ver[id] = -data.st_AtkJump_DownSpeedAfterJumpFinished[id];
                 break;
             case CpAnimEventT.Atk_JumpVerSlam_HitboxActivated:
-                unityComps.rHandEquippable.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                unityComps.rHandEquippable.hitDealer.hitWldDir = unityComps.trf.forward;
-                unityComps.rHandEquippable.hitDealer.Activate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                //unityComps.rHandItem.hitDealer.hitWldDir = unityComps.trf.forward;
+                //unityComps.rHandItem.hitDealer.Activate();
                 break;
             case CpAnimEventT.Atk_JumpVerSlam_HitboxDeactivated:
-                unityComps.rHandEquippable.hitDealer.Deactivate();
+                // TODO: Item
+
+                //unityComps.rHandItem.hitDealer.Deactivate();
                 break;
             case CpAnimEventT.Atk_JumpVerSlam_JumpFinished:
                 if (math.all(data.input_mov[id] != float2.zero))

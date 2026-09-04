@@ -1,5 +1,6 @@
 // TODO: Check if some ints can be converted to short or byte.
 using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -155,7 +156,6 @@ public struct Cp_BaseData {
     public NativeArray<quaternion> animDRot;
     public NativeArray<float> curStDur;
     public NativeArray<bool> enableDebugMsgs;
-    public NativeArray<HandEquippableT> equip_RHandEquippable;
     public NativeArray<float> gravitationalAcc;
     public NativeArray<bool> groundCastHitSomething;
     public NativeArray<float3> groundCastNrm;
@@ -228,7 +228,6 @@ public struct Cp_BaseData {
             animDRot = StructUtils.Alloc<quaternion>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
             enableDebugMsgs = StructUtils.Alloc<bool>(capacity),
-            equip_RHandEquippable = StructUtils.Alloc<HandEquippableT>(capacity),
             gravitationalAcc = StructUtils.Alloc<float>(capacity),
             groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
             groundCastNrm = StructUtils.Alloc<float3>(capacity),
@@ -292,7 +291,6 @@ public struct Cp_BaseData {
         animDRot.Dispose();
         curStDur.Dispose();
         enableDebugMsgs.Dispose();
-        equip_RHandEquippable.Dispose();
         gravitationalAcc.Dispose();
         groundCastHitSomething.Dispose();
         groundCastNrm.Dispose();
@@ -382,16 +380,16 @@ public struct Cp_BrainData {
 
 [Serializable]
 public struct Cp_UnityComps {
-    public Transform trf;
-    public CpCtrl cpCtrl;
     public Animator anim;
-    public CpHitRecieveHandler hitRecieverHandler;
+    public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
-    public Transform tgt;
+    public CpCtrl cpCtrl;
+    public CpHitRecieveHandler hitRecieverHandler;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
-    public CpAnimEventHandler animEventHandler;
-    [HideInInspector] public HandEquippable rHandEquippable;
+    [HideInInspector] public IHandItemHandle rHandItem;
+    public Transform tgt;
+    public Transform trf;
 }
 
 [Serializable]
@@ -404,6 +402,40 @@ public struct CapsuleShape {
         this.pt0 = pt0;
         this.pt1 = pt1;
         this.r = r;
+    }
+}
+
+public struct GunData {
+    public int atk0Dmg;
+    public int atk1Dmg;
+
+    public GunData(int atk0Dmg, int atk1Dmg) {
+        this.atk0Dmg = atk0Dmg;
+        this.atk1Dmg = atk1Dmg;
+    }
+}
+
+public struct GunCompRefs {
+    public GunHandle gunHandle;
+    public HitDealer hitDealer0;
+}
+
+public struct HandItemData {
+    public HandItemDataT t;
+    public CpActSt actSt0;
+    public CpActSt actSt1;
+    public CpActSt actSt2;
+
+    public HandItemData(
+        HandItemDataT t,
+        CpActSt actSt0,
+        CpActSt actSt1,
+        CpActSt actSt2
+    ) {
+        this.t = t;
+        this.actSt0 = actSt0;
+        this.actSt1 = actSt1;
+        this.actSt2 = actSt2;
     }
 }
 
@@ -440,9 +472,24 @@ public struct HomingProjMovData {
     }
 }
 
-public struct HandEquippableData {
-    public HandEquippableT type;
-    public int lightAtkActId;
-    public int heavyAtkActId;
-    public int ultAtkActId;
+public struct MeleeWeaponData {
+    public int atk0Dmg;
+    public int atk1Dmg;
+    public int atk2Dmg;
+
+    public MeleeWeaponData(
+    int atk0Dmg,
+    int atk1Dmg,
+    int atk2Dmg
+    ) {
+        this.atk0Dmg = atk0Dmg;
+        this.atk1Dmg = atk1Dmg;
+        this.atk2Dmg = atk2Dmg;
+    }
+}
+
+public struct MeleeWeaponCompRefs {
+    public MeleeWeaponHandle meleeWeaponHandle;
+    public HitDealer hitDealer0;
+    public HitDealer hitDealer1;
 }

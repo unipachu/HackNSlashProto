@@ -22,14 +22,15 @@ public class CpRegisterer : MonoBehaviour{
         unityComps.navMeshAgent.updateRotation = false;
         Debug.Assert(CpMgr.inst != null, $"{typeof(CpMgr).Name} inst was null!", this);
         Debug.Assert(so_cpData != null, "No data ref set!", this);
-        unityComps.rHandEquippable = HandEquippableMgr.inst.InstantiateHandEquippable(
-            so_cpData.equip_RHandEquippable
-        );
-        unityComps.rHandEquippable.gameObject.transform.SetPositionAndRotation(
-            unityComps.rHand.position,
-            unityComps.rHand.rotation
-        );
-        unityComps.rHandEquippable.transform.parent = unityComps.rHand;
+        // TODO: Item
+        //unityComps.rHandItem = HandItemConfigs.inst.InstantiateHandEquippable(
+        //    so_cpData.rHandItem
+        //);
+        //unityComps.rHandItem.gameObject.transform.SetPositionAndRotation(
+        //    unityComps.rHand.position,
+        //    unityComps.rHand.rotation
+        //);
+        //unityComps.rHandItem.transform.parent = unityComps.rHand;
         Id = CpMgr.inst.Register(so_cpData, unityComps, so_BtRootNode);
     }
 

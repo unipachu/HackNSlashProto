@@ -430,7 +430,8 @@ public class CpMgr : Singleton<CpMgr> {
         brainData.tgtPos[freeI] = float3.zero;
         data.curStDur[freeI] = 0;
         data.enableDebugMsgs[freeI] = so.enableDebugMsgs;
-        data.equip_RHandEquippable[freeI] = so.equip_RHandEquippable;
+        // TODO: Item
+        //data.equip_RHandEquippable[freeI] = so.rHandItem;
         data.gravitationalAcc[freeI] = so.gravitationalAcc;
         data.groundCastHitSomething[freeI] = false;
         data.groundCastNrm[freeI] = float3.zero;

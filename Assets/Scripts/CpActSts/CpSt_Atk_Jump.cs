@@ -21,7 +21,8 @@ public static class CpSt_Atk_Jump {
         Cp_UnityComps[] unityComps
     ) {
         data.isAffectedByGravity[id] = true;
-        unityComps[id].rHandEquippable.hitDealer.Deactivate();
+        // TODO: Item
+        //unityComps[id].rHandItem.Id.hitDealer.Deactivate();
     }
 
     public static void Tick(

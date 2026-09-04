@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class HandEquippable : MonoBehaviour {
+public class HandItem : MonoBehaviour {
     public HitDealer hitDealer;
     public HitDealer aoeHitDealer;
     public Transform projSpawnPose;

@@ -29,7 +29,7 @@ public class So_CpData : ScriptableObject {
     public int brain_AtkRange = 4;
 
     [Header("Equipment Settings")]
-    public HandEquippableT equip_RHandEquippable;
+    public HandItemT rHandItem;
 
     [Header("Debug")]
     public bool enableDebugMsgs = false;

@@ -28,7 +28,8 @@ public static class CpSt_Atk_FlyingAtk {
     ) {
         data.invul[id] = false;
         data.isAffectedByGravity[id] = true;
-        unityComps[id].rHandEquippable.aoeHitDealer.Deactivate();
+        // TODO: Item
+        //unityComps[id].rHandItem.aoeHitDealer.Deactivate();
     }
 
     public static void Tick(
@@ -60,7 +61,9 @@ public static class CpSt_Atk_FlyingAtk {
                     float.PositiveInfinity
                 );
                 if (data.isGrounded[id] && data.actStSt_ImpactFinished[id]) {
-                    unityComps[id].rHandEquippable.aoeHitDealer.Deactivate();
+                    // TODO: Item
+
+                    //unityComps[id].rHandItem.aoeHitDealer.Deactivate();
                     data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref animEventPlrData,

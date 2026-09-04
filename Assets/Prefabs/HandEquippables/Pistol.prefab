@@ -765,7 +765,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2010874956325773651}
-  - component: {fileID: 3975478873599571957}
   m_Layer: 0
   m_Name: Pistol
   m_TagString: Untagged
@@ -791,18 +790,3 @@ Transform:
   - {fileID: 4093082790708201532}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3975478873599571957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8427959144526498737}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05fcc60b299588140bc2ec2161fc3848, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharWeapon
-  hitDealer: {fileID: 5092167040023849340}
-  aoeHitDealer: {fileID: 0}
-  projSpawnPose: {fileID: 4093082790708201532}

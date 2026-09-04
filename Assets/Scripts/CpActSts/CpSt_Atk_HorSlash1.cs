@@ -26,7 +26,9 @@ public static class CpSt_Atk_HorSlash1 {
         int id,
         Cp_UnityComps[] unityComps
     ) {
-        unityComps[id].rHandEquippable.hitDealer.Deactivate();
+        // TODO: Item
+
+        //unityComps[id].rHandItem.hitDealer.Deactivate();
     }
 
     public static void Tick(

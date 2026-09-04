@@ -5,7 +5,6 @@ using UnityEngine;
 public class GameMgr : Singleton<GameMgr>{
     override protected void Awake(){
         base.Awake();
-        HandEquippableMgr.inst.Init();
         CpMgr.inst.Init();
         BtMgr.inst.Init();
     }

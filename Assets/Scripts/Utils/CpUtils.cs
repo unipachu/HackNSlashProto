@@ -18,19 +18,22 @@ public static class CpUtils{
     }
 
     public static CpActSt GetLightAtkSt(int id, Cp_BaseData data) {
-        switch (data.equip_RHandEquippable[id]) {
-            case HandEquippableT.Empty:
-                return CpActSt.Atk_HorSlash1;
-            case HandEquippableT.Sword:
-                return CpActSt.Atk_HorSlash1;
-            case HandEquippableT.Hammer:
-                return CpActSt.Atk_HorSlash1;
-            case HandEquippableT.Pistol:
-                return CpActSt.Atk_ShootHomingProj;
-            default:
-                Debug.LogError($"Switch defaulted with {data.equip_RHandEquippable[id]}");
-                return CpActSt.Atk_HorSlash1;
-        }
+        // TODO: Item
+
+        //switch (data.equip_RHandEquippable[id]) {
+        //    case HandItemT.Empty:
+        //        return CpActSt.Atk_HorSlash1;
+        //    case HandItemT.Sword:
+        //        return CpActSt.Atk_HorSlash1;
+        //    case HandItemT.Hammer:
+        //        return CpActSt.Atk_HorSlash1;
+        //    case HandItemT.Gun:
+        //        return CpActSt.Atk_ShootHomingProj;
+        //    default:
+        //        Debug.LogError($"Switch defaulted with {data.equip_RHandEquippable[id]}");
+        //        return CpActSt.Atk_HorSlash1;
+        //}
+        return CpActSt.Atk_HorSlash1;
     }
 
     public static void UpdateMovData(

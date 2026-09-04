@@ -37,7 +37,7 @@ public enum CpActSt : byte {
 /// <summary>
 /// Animation events used by the capsule pawn Animator.
 /// </summary>
-public enum CpAnimEventT : byte {
+public enum CpAnimEventT {
     Atk_GunShoot_Recovery_Finished,
     Atk_GunShoot_Windup_Finished,
     Dodge_BufferedInputStSwitchAllowed,
@@ -140,6 +140,14 @@ public enum Faces : byte {
     Far,
 }
 
+/// <summary>
+/// Represent the type of data a hand item uses (and what handle and database it uses).
+/// </summary>
+public enum HandItemDataT : byte {
+    MeleeWeapon,
+    Gun,
+}
+
 public enum KnockbackT : byte {
     None,
     Weak,
@@ -154,11 +162,4 @@ public enum LocomotionType : byte {
 public enum Side : byte {
     Left,
     Right,
-}
-
-public enum HandEquippableT : byte {
-    Empty,
-    Sword,
-    Hammer,
-    Pistol,
 }
