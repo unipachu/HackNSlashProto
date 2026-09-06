@@ -54,16 +54,16 @@ MonoBehaviour:
   so_cpData: {fileID: 11400000, guid: cb105a8688779a64ba26fd821fe0069c, type: 2}
   so_BtRootNode: {fileID: 11400000, guid: 8ce3116f420e44b49aa1fc0bf7798ea2, type: 2}
   unityComps:
-    trf: {fileID: 1582683670335378908}
-    cpCtrl: {fileID: 3037795622728005573}
     anim: {fileID: 1091843080481240901}
-    hitRecieverHandler: {fileID: 9141355615762476700}
+    animEventHandler: {fileID: 4596513238272593172}
     cc: {fileID: 5079058612890601784}
-    tgt: {fileID: 0}
+    cpCtrl: {fileID: 3037795622728005573}
+    fsm: {fileID: 0}
+    hitRecieverHandler: {fileID: 9141355615762476700}
     navMeshAgent: {fileID: 8087861647241408892}
     rHand: {fileID: 6462226994868355226}
-    animEventHandler: {fileID: 4596513238272593172}
-    rHandEquippable: {fileID: 0}
+    tgt: {fileID: 0}
+    trf: {fileID: 1582683670335378908}
 --- !u!114 &9141355615762476700
 MonoBehaviour:
   m_ObjectHideFlags: 0

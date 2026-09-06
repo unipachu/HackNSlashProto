@@ -1,40 +1,52 @@
 using Unity.Mathematics;
+using UnityEngine;
 
-public static class CpSt_Idle {
-    public static void Enter(int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
+public class CpSt_Idle : IFsmSt_Cp {
+    int cpId;
+
+    public CpSt_Idle(int cpId) {
+        this.cpId = cpId;
+    }
+
+    public bool CanSwitchTo<TState>() where TState : IFsmSt
+    => true;
+
+    public CpSt_Idle Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref animEventPlrData,
-            unityComps[id].anim,
+            ref CpMgr.inst.animEventPlrData[cpId],
+            CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.idle,
             0.1f
         );
+        return this;
     }
 
-    public static void Tick(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps
-    ) {
-        if (CpUtils.SwitchToFallingStIfNotGrounded(id, data)) {
-            return;
-        }
-        if (data.prevSt[id] == CpActSt.Walk)
+    public void Exit() {}
+
+    public void HandleAnimEvent(CpAnimEventT animEvent) {}
+
+    public void LateTick() {}
+
+    public void PhysicsTick() {}
+
+    public void Tick() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        var classRefs = CpMgr.inst.classRefs[cpId];
+        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
+        // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
+        if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovData(
-                id,
+                cpId,
                 data,
-                data.input_mov_LastNonZero[id],
+                data.input_mov_LastNonZero[cpId],
                 float3.zero,
                 0,
-                data.st_Walk_YawSpd[id],
+                data.st_Walk_YawSpd[cpId],
                 float.PositiveInfinity
             );
         else
             CpUtils.UpdateMovData(
-                id,
+                cpId,
                 data,
                 float2.zero,
                 float3.zero,
@@ -42,26 +54,14 @@ public static class CpSt_Idle {
                 0,
                 float.PositiveInfinity
             );
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+            return;
         // Try consume input
-        if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Dodge,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Dodge);
-        else if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Atk_Light,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpUtils.GetLightAtkSt(id, data));
-        else if (CpInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_Jump);
-        else if (CpInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Ult, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_FlyingAtk);
-        else if (math.all(data.input_mov[id] != float2.zero))
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Walk);
+        if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+            return;
+        if (math.all(data.input_mov[cpId] != float2.zero)) {
+            CpMgr.inst.SwitchToActSt(() => classRefs.actSts.walk.Enter(), cpId);
+            return;
+        }
     }
 }

@@ -21,9 +21,6 @@ public class So_CpData : ScriptableObject {
     [Header("Health")]
     public int maxHP = 100;
 
-    [Header("Action States")]
-    public CpActSt initSt = CpActSt.Idle;
-
     [Header("Npc Brain")]
     public int brain_AggroRange = 8;
     public int brain_AtkRange = 4;

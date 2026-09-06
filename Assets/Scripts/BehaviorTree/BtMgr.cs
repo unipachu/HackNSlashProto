@@ -130,7 +130,7 @@ public class BtMgr : Singleton<BtMgr>{
 
     BtResult EvalLeaf(BtNodeT t, int cpId) {
         float2 horDesiredVel;
-        Cp_BaseData ccMgr = CpMgr.inst.data;
+        Cp_SoaData ccMgr = CpMgr.inst.soaData;
         CpMgr caMgr = CpMgr.inst;
         Cp_BrainData brainData = CpMgr.inst.brainData;
         switch (t) {

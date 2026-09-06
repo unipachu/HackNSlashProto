@@ -5,7 +5,7 @@ public class CpAnimRootMot : MonoBehaviour {
     [SerializeField] CpRegisterer cpReg;
 
     void OnAnimatorMove() {
-        CpMgr.inst.data.animDPos[cpReg.Id] = anim.deltaPosition;
-        CpMgr.inst.data.animDRot[cpReg.Id] = anim.deltaRotation;
+        CpMgr.inst.soaData.animDPos[cpReg.Id] = anim.deltaPosition;
+        CpMgr.inst.soaData.animDRot[cpReg.Id] = anim.deltaRotation;
     }
 }

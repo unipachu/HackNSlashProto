@@ -1,5 +1,13 @@
-using System.Collections.Generic;
+using System;
+using UnityEngine;
 
+public interface IHandItem {
+    Transform Trf { get; }
+}
+
+
+// TODO: Delete
+[Obsolete("items no longer use databases")]
 public interface IHandItemDatabase{
-    List<HandItemData> HandItemData { get; }
+    //List<HandItemData> HandItemData { get; }
 }

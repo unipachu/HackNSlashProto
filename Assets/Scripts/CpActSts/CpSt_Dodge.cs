@@ -1,56 +1,68 @@
+using System;
 using UnityEngine;
 
-public static class CpSt_Dodge {
-    public static void Enter(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
-        // TODO MINOR: Rename to yawinputrotallowed
-        data.actStSt_ImpactInputRotAllowed[id] = false;
-        data.actStSt_BufferedInputStSwitchAllowed[id] = false;
-        data.invul[id] = true;
+public class CpSt_Dodge : IFsmSt_Cp {
+    int cpId;
+
+    public CpSt_Dodge(int cpId) {
+        this.cpId = cpId;
+    }
+
+    public bool CanSwitchTo<TState>() where TState : IFsmSt
+        => true;
+
+    public CpSt_Dodge Enter() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        // TODO MINOR: Rename to more generic yawinputrotallowed
+        data.actStSt_ImpactInputRotAllowed[cpId] = false;
+        data.actStSt_BufferedInputStSwitchAllowed[cpId] = false;
+        data.invul[cpId] = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref animEventPlrData,
-            unityComps[id].anim,
-            // TODO MINOR: Rename from dodge to Dodge
+            ref CpMgr.inst.animEventPlrData[cpId],
+            CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.dodge,
             0.1f
         );
+        return this;
     }
 
-    public static void Exit(int id, Cp_BaseData data) {
-        data.invul[id] = false;
+    public void Exit() {
+        CpMgr.inst.soaData.invul[cpId] = false;
     }
 
-    public static void Tick(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps
-    ) {
+    public void Tick() {
+        Cp_SoaData data = CpMgr.inst.soaData;
         float angSpd = 0;
-        if (data.actStSt_ImpactInputRotAllowed[id])
-            angSpd = data.st_Dodge_YawSpd[id];
+        if (data.actStSt_ImpactInputRotAllowed[cpId])
+            angSpd = data.st_Dodge_YawSpd[cpId];
         CpUtils.UpdateMovData(
-            id,
+            cpId,
             data,
-            data.input_mov[id],
-            data.animDPos[id],
+            data.input_mov[cpId],
+            data.animDPos[cpId],
             0,
             angSpd,
             float.PositiveInfinity
         );
-        if (data.actStSt_BufferedInputStSwitchAllowed[id]){
-            // NOTE: not buffered input but whatever. TODO: REfactor
-            if (CpUtils.SwitchToFallingStIfNotGrounded(id, data))
-                return;
-            if (CpInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Light, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
-                CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_HorSlash1);
-            else if (CpInputBuffer.TryConsumeInput(id, BufferableInput.Atk_Heavy, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
-                CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_Jump);
-            else if (CpInputBuffer.TryConsumeInput(id, BufferableInput.Dodge, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime))
-                CpMgr.inst.ActSt_SwitchState(id, CpActSt.Dodge);
+        if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+            return;
+    }
+
+    public void LateTick() {
+    }
+
+    public void PhysicsTick() {
+    }
+
+    public void HandleAnimEvent(CpAnimEventT animEvent) {
+        var classRefs = CpMgr.inst.unityComps[cpId];
+        switch (animEvent) {
+            case CpAnimEventT.Finished:
+                CpUtils.TransitionToFallIdleOrWalk(cpId);
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {animEvent}");
+                break;
         }
     }
 }

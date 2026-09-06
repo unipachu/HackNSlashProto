@@ -1,48 +1,63 @@
 using Unity.Mathematics;
 
-public static class CpSt_Falling {
-    public static void Enter(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
-        data.actStSt_FallingStartHgt[id] = data.trf_pos[id].y;
+public class CpSt_Falling : IFsmSt_Cp {
+    int cpId;
+
+    public CpSt_Falling(int cpId) {
+        this.cpId = cpId;
+    }
+
+    public bool CanSwitchTo<TState>() where TState : IFsmSt
+        => true;
+
+    public CpSt_Falling Enter() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        data.actStSt_FallingStartHgt[cpId] = data.trf_pos[cpId].y;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref animEventPlrData,
-            unityComps[id].anim,
+            ref CpMgr.inst.animEventPlrData[cpId],
+            CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.falling,
             4 // TODO: So?
         );
+        return this;
     }
-    public static void Tick(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps
-    ) {
+
+    public void Exit() {}
+
+    public void HandleAnimEvent(CpAnimEventT animEvent) {}
+    
+    public void LateTick() {}
+
+    public void PhysicsTick() {}
+    
+    public void Tick() {
+        Cp_SoaData soaData = CpMgr.inst.soaData;
+        var unityComps = CpMgr.inst.unityComps[cpId];
+        var classRefs = CpMgr.inst.classRefs[cpId];
+        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         CpUtils.UpdateMovData(
-            id,
-            data,
+            cpId,
+            soaData,
             float2.zero,
             float3.zero,
             // TODO MINOR: You could use st_Falling_MaxLinSpd in here + hor input to
             // TODO MINOR: allow for slight air control.
             0,
             0,
-            data.st_Falling_LinAcc[id]
+            soaData.st_Falling_LinAcc[cpId]
         );
-        if (data.isGrounded[id]){
-            float fallDist = data.actStSt_FallingStartHgt[id] - data.trf_pos[id].y;
+        if (soaData.isGrounded[cpId]){
+            float fallDist = soaData.actStSt_FallingStartHgt[cpId] - soaData.trf_pos[cpId].y;
             // TODO: Make scriptable object field. This decides if the player will go to
             // TODO C: landing animation or straight to idle.
             if(fallDist > 2) {
-                CpMgr.inst.ActSt_SwitchState(id, CpActSt.FallLanding);
+                CpMgr.inst.SwitchToActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
                 return;
             }
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Idle);
+            CpUtils.TransitionToFallIdleOrWalk(cpId);
             return;
         }
-        if (data.curStDur[id] > 20) {
+        if (soaData.curStDur[cpId] > 20) {
             // TODO: Character stuck falling. Kill/reset character (maybe have a unique
             // TODO C: death state for when character dies like this where the player doesn't
             // TODO C: lose their souls).

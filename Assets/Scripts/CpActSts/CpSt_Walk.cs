@@ -1,65 +1,54 @@
 using Unity.Mathematics;
+using Unity.VisualScripting.FullSerializer;
 
-public static class CpSt_Walk {
-    public static void Enter(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
+public class CpSt_Walk : IFsmSt_Cp {
+    int cpId;
+
+    public CpSt_Walk(int cpId) {
+        this.cpId = cpId;
+    }
+
+    public bool CanSwitchTo<TState>() where TState : IFsmSt
+        => true;
+
+    public CpSt_Walk Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref animEventPlrData,
-            unityComps[id].anim,
+            ref CpMgr.inst.animEventPlrData[cpId],
+            CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.walk,
             0.5f
         );
+        return this;
     }
 
-    public static void Tick(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps
-    ) {
-        if (CpUtils.SwitchToFallingStIfNotGrounded(id, data))
+    public void Exit() {}
+
+    public void HandleAnimEvent(CpAnimEventT animEvent) {}
+
+    public void LateTick() {}
+
+    public void PhysicsTick() {}
+
+    public void Tick() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
+        var classRefs = CpMgr.inst.classRefs[cpId];
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
         CpUtils.UpdateMovData(
-            id,
+            cpId,
             data,
-            data.input_mov[id],
+            data.input_mov[cpId],
             float3.zero,
-            data.st_Walk_MaxLinSpd[id],
-            data.st_Walk_YawSpd[id],
-            data.st_Walk_LinAcc[id]
+            data.st_Walk_MaxLinSpd[cpId],
+            data.st_Walk_YawSpd[cpId],
+            data.st_Walk_LinAcc[cpId]
         );
-        if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Dodge,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Dodge);
-        else if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Atk_Light,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpUtils.GetLightAtkSt(id, data));
-        else if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Atk_Heavy,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_Jump);
-        else if (CpInputBuffer.TryConsumeInput(
-            id,
-            BufferableInput.Atk_Ult,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime)
-        )
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Atk_FlyingAtk);
-        else if (math.all(data.input_mov[id] == float2.zero))
-            CpMgr.inst.ActSt_SwitchState(id, CpActSt.Idle);
+        if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+            return;
+        if (math.all(data.input_mov[cpId] == float2.zero)) {
+            CpMgr.inst.SwitchToActSt(() => classRefs.actSts.idle.Enter(), cpId);
+            return;
+        }
     }
 }

@@ -1,50 +1,55 @@
 using Unity.Mathematics;
 using UnityEngine;
 
-public static class CpSt_Atk_FlyingAtk {
-    public static void Enter(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
-        data.invul[id] = true;
-        data.isAffectedByGravity[id] = false;
-        data.actStSt_AtkPhase[id] = AtkPhase.Windup;
-        data.actStSt_ImpactFinished[id] = false;
-        CpInputBuffer.Clear(id, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
+    int cpId;
+    HitDealer hitDealer;
+
+    public CpSt_Atk_FlyingAtk(int cpId) {
+        this.cpId = cpId;
+    }
+
+    public bool CanSwitchTo<TState>() where TState : IFsmSt 
+        => typeof(TState) == typeof(CpSt_Falling) ? false : true;
+
+    public CpSt_Atk_FlyingAtk Enter(HitDealer hitDealer) {
+        this.hitDealer = hitDealer;
+        Cp_SoaData data = CpMgr.inst.soaData;
+        data.invul[cpId] = true;
+        data.isAffectedByGravity[cpId] = false;
+        data.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
+        data.actStSt_ImpactFinished[cpId] = false;
+        CpInputBuffer.Clear(
+            cpId,
+            data.inputBuffer_BufferedInput,
+            data.inputBuffer_RemainingTime
+        );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref animEventPlrData,
-            unityComps[id].anim,
+            ref CpMgr.inst.animEventPlrData[cpId],
+            CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.atk_FlyingAtk_Windup,
             0.1f
         );
+        return this;
     }
 
-    public static void Exit(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps
-    ) {
-        data.invul[id] = false;
-        data.isAffectedByGravity[id] = true;
-        // TODO: Item
-        //unityComps[id].rHandItem.aoeHitDealer.Deactivate();
+    public void Exit() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        data.invul[cpId] = false;
+        data.isAffectedByGravity[cpId] = true;
+        hitDealer.Deactivate();
     }
 
-    public static void Tick(
-        int id,
-        Cp_BaseData data,
-        Cp_UnityComps[] unityComps,
-        ref AnimEventPlrData animEventPlrData
-    ) {
-        switch (data.actStSt_AtkPhase[id]) {
+    public void Tick() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
+        switch (data.actStSt_AtkPhase[cpId]) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovData(
-                    id,
+                    cpId,
                     data,
-                    data.input_mov[id],
-                    data.animDPos[id],
+                    data.input_mov[cpId],
+                    data.animDPos[cpId],
                     2, // TODO: To So field
                     0,
                     float.PositiveInfinity
@@ -52,29 +57,27 @@ public static class CpSt_Atk_FlyingAtk {
                 break;
             case AtkPhase.Impact:
                 CpUtils.UpdateMovData(
-                    id,
+                    cpId,
                     data,
-                    data.input_mov[id],
-                    data.animDPos[id],
+                    data.input_mov[cpId],
+                    data.animDPos[cpId],
                     2, // TODO: To So parameter.
                     0,
                     float.PositiveInfinity
                 );
-                if (data.isGrounded[id] && data.actStSt_ImpactFinished[id]) {
-                    // TODO: Item
-
-                    //unityComps[id].rHandItem.aoeHitDealer.Deactivate();
-                    data.actStSt_AtkPhase[id] = AtkPhase.Recovery;
+                if (data.isGrounded[cpId] && data.actStSt_ImpactFinished[cpId]) {
+                    hitDealer.Deactivate();
+                    data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                        ref animEventPlrData,
-                        unityComps[id].anim,
+                        ref CpMgr.inst.animEventPlrData[cpId],
+                        unityComps[cpId].anim,
                         CpAnimInfo.atk_FlyingAtk_Recovery
                     );
                 }
                 break;
             case AtkPhase.Recovery:
                 CpUtils.UpdateMovData(
-                    id,
+                    cpId,
                     data,
                     float2.zero,
                     float3.zero,
@@ -84,7 +87,73 @@ public static class CpSt_Atk_FlyingAtk {
                 );
                 break;
             default:
-                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[id]}.");
+                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}.");
+                break;
+        }
+    }
+
+    public void LateTick() {
+    }
+
+    public void PhysicsTick() {
+    }
+
+    public void HandleAnimEvent(CpAnimEventT animEvent) {
+        var data = CpMgr.inst.soaData;
+        var classRefs = CpMgr.inst.unityComps[cpId];
+        switch (animEvent) {
+            case CpAnimEventT.Finished:
+                switch (data.actStSt_AtkPhase[cpId]) {
+                    case AtkPhase.Windup:
+                        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+                            ref CpMgr.inst.animEventPlrData[cpId],
+                            classRefs.anim,
+                            CpAnimInfo.atk_FlyingAtk_Impact
+                        );
+                        data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
+                        break;
+                    case AtkPhase.Impact:
+                        data.isAffectedByGravity[cpId] = true;
+                        data.actStSt_ImpactFinished[cpId] = true;
+                        // TODO: Set this in base data.
+                        data.vel_Ver[cpId] = -40;
+                        break;
+                    case AtkPhase.Recovery:
+                        CpUtils.TransitionToFallIdleOrWalk(cpId);
+                        break;
+                    default:
+                        Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}");
+                        break;
+                }
+                CpUtils.TransitionToFallIdleOrWalk(cpId);
+                break;
+            case CpAnimEventT.BufferedInputStSwitchAllowed:
+                break;
+            case CpAnimEventT.ComboAllowed:
+                break;
+            case CpAnimEventT.ComboDisallowed:
+                break;
+            case CpAnimEventT.DodgeAllowed:
+                break;
+            case CpAnimEventT.HitDealerActivated:
+                // TODO: Item
+                //unityComps.rHandItem.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
+                //unityComps.rHandItem.aoeHitDealer.Activate();
+                break;
+            case CpAnimEventT.HitDealerDeactivated:
+                break;
+            case CpAnimEventT.InvulEnd:
+                break;
+            case CpAnimEventT.AirtimeEnded:
+                break;
+            case CpAnimEventT.AirtimeStarted:
+                break;
+            case CpAnimEventT.YawDisallowed:
+                break;
+            case CpAnimEventT.YawAllowed:
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {animEvent}");
                 break;
         }
     }

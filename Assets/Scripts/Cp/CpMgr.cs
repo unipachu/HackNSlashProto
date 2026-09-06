@@ -1,7 +1,10 @@
+using System;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Windows;
 
 /// <summary>
 /// Capsule pawn (i.e. player or ai controlled character that uses capsule collision for movement) manager.
@@ -13,21 +16,24 @@ public class CpMgr : Singleton<CpMgr> {
     public float movInputSqrDeadzone = 0.2f;
     public float inputBuffer_Dur = 0.3f;
 
-    [HideInInspector] public Cp_BaseData data;
-    [HideInInspector] public Cp_BrainData brainData;
-    // All game object components the capsule pawns use.
-    [HideInInspector] public Cp_UnityComps[] unityComps;
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
+    [HideInInspector] public Cp_AosData[] aosData;
+    [HideInInspector] public Cp_BrainData brainData;
+    [HideInInspector] public Cp_NonUnityCompClassRefs[] classRefs;
+    [HideInInspector] public Cp_SoaData soaData;
+    [HideInInspector] public Cp_UnityComps[] unityComps;
 
     public void Init() {
-        data = Cp_BaseData.Create(maxCps);
-        brainData = Cp_BrainData.Create(maxCps);
-        unityComps = new Cp_UnityComps[maxCps];
         animEventPlrData = new AnimEventPlrData[maxCps];
+        aosData = new Cp_AosData[maxCps];
+        brainData = Cp_BrainData.Create(maxCps);
+        classRefs = new Cp_NonUnityCompClassRefs[maxCps];
+        soaData = Cp_SoaData.Create(maxCps);
+        unityComps = new Cp_UnityComps[maxCps];
     }
 
     void OnDestroy() {
-        data.Dispose();
+        soaData.Dispose();
         brainData.Dispose();
     }
 
@@ -37,10 +43,10 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void FixedTick() {
         UpdateGroundCheck(
-            data.groundCastHitSomething,
-            data.groundCastNrm,
-            data.isGrounded,
-            data.occupied,
+            soaData.groundCastHitSomething,
+            soaData.groundCastNrm,
+            soaData.isGrounded,
+            soaData.occupied,
             unityComps
         );
         FixedTick_Fsm();
@@ -48,13 +54,10 @@ public class CpMgr : Singleton<CpMgr> {
 
     void FixedTick_Fsm() {
         for (int i = 0; i < unityComps.Length; i++) {
-            if (!data.occupied[i])
+            if (!soaData.occupied[i])
                 continue;
-            switch (data.actSt[i]) {
-                default:
-                    //Debug.LogError($"Switch defaulted with {data.actSt[i]}.", this);
-                    break;
-            }
+            Debug.Assert(classRefs[i].st_cur != null, $"cur st was null for {i}.");
+            classRefs[i].st_cur.PhysicsTick();
         }
     }
 
@@ -97,9 +100,9 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO: Update in Tick_FromNonNative
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
-        for (int i = 0; i < data.occupied.Length; i++) {
+        for (int i = 0; i < soaData.occupied.Length; i++) {
             //Dbg.Log($"{i} tgt: {unityComps[i].tgt}", data.enableDebugMsgs[i]);
-            if (!data.occupied[i] || unityComps[i].navMeshAgent == null)
+            if (!soaData.occupied[i] || unityComps[i].navMeshAgent == null)
                 continue;
             if (unityComps[i].tgt == null) {
                 //Dbg.Log(
@@ -184,133 +187,93 @@ public class CpMgr : Singleton<CpMgr> {
     /// Update data from non native sources, e.g. from Monobehavior components.
     /// </summary>
     void Tick_FromNonNative(float dt) {
-        for (int i = 0; i < unityComps.Length; i++) {
-            if (!data.occupied[i])
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
-            data.trf_pos[i] = unityComps[i].trf.position;
-            data.trf_rot[i] = unityComps[i].trf.rotation;
-            data.trf_lossyScl[i] = unityComps[i].trf.lossyScale;
-            data.lastCcVel[i] = unityComps[i].cc.velocity;
-            data.curStDur[i] += dt;
+            soaData.trf_pos[i] = unityComps[i].trf.position;
+            soaData.trf_rot[i] = unityComps[i].trf.rotation;
+            soaData.trf_lossyScl[i] = unityComps[i].trf.lossyScale;
+            soaData.lastCcVel[i] = unityComps[i].cc.velocity;
+            soaData.curStDur[i] += dt;
         }
     }
 
     void Tick_Fsm() {
-        for (int i = 0; i < unityComps.Length; i++) {
-            if (!data.occupied[i])
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
-            switch (data.actSt[i]) {
-                case CpActSt.Atk_FlyingAtk:
-                    CpSt_Atk_FlyingAtk.Tick(i, data, unityComps, ref animEventPlrData[i]);
-                    break;
-                case CpActSt.Atk_ShootHomingProj:
-                    CpSt_Atk_ShootHomingProj.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Atk_HorSlash1:
-                    CpSt_Atk_HorSlash1.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Atk_HorSlash2:
-                    CpSt_Atk_HorSlash2.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Atk_HorSlash3:
-                    CpSt_Atk_HorSlash3.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Atk_Jump:
-                    CpSt_Atk_Jump.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Dodge:
-                    CpSt_Dodge.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Falling:
-                    CpSt_Falling.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.FallLanding:
-                    CpSt_FallLanding.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Idle:
-                    CpSt_Idle.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Knockback_Weak:
-                    CpSt_Knockback_Weak.Tick(i, data, unityComps);
-                    break;
-                case CpActSt.Walk:
-                    CpSt_Walk.Tick(i, data, unityComps);
-                    break;
-                default:
-                    Debug.LogError($"Switch defaulted with {data.actSt[i]}", this);
-                    break;
-            }
+            classRefs[i].st_cur.Tick();
         }
     }
 
     void Tick_Input() {
-        for (int i = 0; i < unityComps.Length; i++) {
-            if (!data.occupied[i] || unityComps[i].cpCtrl == null)
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i] || unityComps[i].cpCtrl == null)
                 continue;
-            data.input_atk_Light[i] = unityComps[i].cpCtrl.TryConsume_Atk_Light();
-            data.input_atk_Heavy[i] = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
-            data.input_atk_Ult[i] = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
-            data.input_dodge[i] = unityComps[i].cpCtrl.TryConsume_Dodge();
+            soaData.input_atk_Light[i] = unityComps[i].cpCtrl.TryConsume_Atk_Light();
+            soaData.input_atk_Heavy[i] = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
+            soaData.input_atk_Ult[i] = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
+            soaData.input_dodge[i] = unityComps[i].cpCtrl.TryConsume_Dodge();
             if (unityComps[i].cpCtrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone) {
-                data.input_mov[i] = unityComps[i].cpCtrl.Input_Mov;
-                data.input_mov_LastNonZero[i] = data.input_mov[i];
+                soaData.input_mov[i] = unityComps[i].cpCtrl.Input_Mov;
+                soaData.input_mov_LastNonZero[i] = soaData.input_mov[i];
             }
             else {
-                data.input_mov[i] = Vector2.zero;
+                soaData.input_mov[i] = Vector2.zero;
             }
             //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
     }
 
     void Tick_InputBuffer(float dt) {
-        for (int i = 0; i < unityComps.Length; i++) {
-            if (!data.occupied[i])
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
-            if (data.input_atk_Light[i])
+            if (soaData.input_atk_Light[i])
                 CpInputBuffer.BufferInput(
                     i,
-                    BufferableInput.Atk_Light,
-                    data.inputBuffer_BufferedInput,
-                    data.inputBuffer_RemainingTime,
+                    BufferableInput.RShldr,
+                    soaData.inputBuffer_BufferedInput,
+                    soaData.inputBuffer_RemainingTime,
                     inputBuffer_Dur
                 );
-            else if (data.input_atk_Heavy[i])
+            else if (soaData.input_atk_Heavy[i])
                 CpInputBuffer.BufferInput(
                     i,
-                    BufferableInput.Atk_Heavy,
-                    data.inputBuffer_BufferedInput,
-                    data.inputBuffer_RemainingTime,
+                    BufferableInput.RTrg,
+                    soaData.inputBuffer_BufferedInput,
+                    soaData.inputBuffer_RemainingTime,
                     inputBuffer_Dur
                 );
-            else if (data.input_atk_Ult[i])
+            else if (soaData.input_atk_Ult[i])
                 CpInputBuffer.BufferInput(
                     i,
-                    BufferableInput.Atk_Ult,
-                    data.inputBuffer_BufferedInput,
-                    data.inputBuffer_RemainingTime,
+                    BufferableInput.LShldr,
+                    soaData.inputBuffer_BufferedInput,
+                    soaData.inputBuffer_RemainingTime,
                     inputBuffer_Dur
                 );
-            else if (data.input_dodge[i])
+            else if (soaData.input_dodge[i])
                 CpInputBuffer.BufferInput(
                     i,
-                    BufferableInput.Dodge,
-                    data.inputBuffer_BufferedInput,
-                    data.inputBuffer_RemainingTime, 
+                    BufferableInput.BtnE,
+                    soaData.inputBuffer_BufferedInput,
+                    soaData.inputBuffer_RemainingTime, 
                     inputBuffer_Dur
                 );
             // Clear input if buffer time passed.
-            if (data.inputBuffer_RemainingTime[i] <= 0)
+            if (soaData.inputBuffer_RemainingTime[i] <= 0)
                 continue;
-            data.inputBuffer_RemainingTime[i] -= dt;
+            soaData.inputBuffer_RemainingTime[i] -= dt;
             //Debug.Log("remaining time: " + remainingTime);
-            if (data.inputBuffer_RemainingTime[i] <= 0)
-                CpInputBuffer.Clear(i, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+            if (soaData.inputBuffer_RemainingTime[i] <= 0)
+                CpInputBuffer.Clear(i, soaData.inputBuffer_BufferedInput, soaData.inputBuffer_RemainingTime);
         }
     }
 
     void Tick_Mov() {
-        for (int i = 0; i < data.occupied.Length; i++) {
-            if (!data.occupied[i])
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
             //Debug.Log($"UpdateMov: horMov: {horMov} | animRootMot: {animRootMot} \n"
             //    + $"| maxLinSpd: {maxLinSpd} | linAcc: {linAcc}");
@@ -321,32 +284,32 @@ public class CpMgr : Singleton<CpMgr> {
             //    $"vel_hor had NaN: {vel_Hor[i]}"
             //);
             //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-            data.vel_Hor[i] = Vector2.MoveTowards(
-                data.vel_Hor[i],
-                data.mov_horMov[i] * data.mov_maxLinSpd[i],
-                data.mov_linAcc[i] * dt
+            soaData.vel_Hor[i] = Vector2.MoveTowards(
+                soaData.vel_Hor[i],
+                soaData.mov_horMov[i] * soaData.mov_maxLinSpd[i],
+                soaData.mov_linAcc[i] * dt
             );
-            data.vel_Yaw[i] = data.mov_yawSpd[i];
+            soaData.vel_Yaw[i] = soaData.mov_yawSpd[i];
             // Skip rotation if tgt dir vector (horMov) is too small.
-            if (math.lengthsq(data.mov_horMov[i]) > 0.0001f) {
-                data.trf_rot[i] = TrfMathUtils.RotateFwdToTgt(data.trf_rot[i], data.vel_Yaw[i], data.mov_horMov[i]);
+            if (math.lengthsq(soaData.mov_horMov[i]) > 0.0001f) {
+                soaData.trf_rot[i] = TrfMathUtils.RotateFwdToTgt(soaData.trf_rot[i], soaData.vel_Yaw[i], soaData.mov_horMov[i]);
                 // TODO: You could make a separate function that sets this later after all calculations
                 // TODO C: have finished. Though should each pawn be moved one at a time? Maybe. But
                 // TODO C: wait, they are! Is that ok or is some other logic tied to how the pawn
                 // TODO C: should move that should be done one pawn at a time?
-                unityComps[i].trf.rotation = data.trf_rot[i];
+                unityComps[i].trf.rotation = soaData.trf_rot[i];
             }
             // TODO: This should be its own Tick function I think. Then you didn't need to worry about ref
             // TODO C: keywords or such. Over multiple Tick_Mov_ you accumulate impulses and forces and
             // TODO C: then apply them all with a separate method to the pawn controller!
-            if (data.isAffectedByGravity[i])
+            if (soaData.isAffectedByGravity[i])
                 CcMov.ApplyGravityNSlideDownSlopes(i, dt);
             else
-                data.vel_Ver[i] = 0;
-            Vector3 totalMov = data.animDPos[i];
-            totalMov.x += data.vel_Hor[i].x * dt;
-            totalMov.y += data.vel_Ver[i] * dt;
-            totalMov.z += data.vel_Hor[i].y * dt;
+                soaData.vel_Ver[i] = 0;
+            Vector3 totalMov = soaData.animDPos[i];
+            totalMov.x += soaData.vel_Hor[i].x * dt;
+            totalMov.y += soaData.vel_Ver[i] * dt;
+            totalMov.z += soaData.vel_Hor[i].y * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
             unityComps[i].cc.Move(totalMov);
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
@@ -355,9 +318,9 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Sensing() {
-        for (int i = 0; i < data.occupied.Length; i++) {
+        for (int i = 0; i < soaData.occupied.Length; i++) {
             // TODO MINOR: Find out if skipping through elements like this affects cpu cache performance.
-            if (!data.occupied[i])
+            if (!soaData.occupied[i])
                 continue;
             if (unityComps[i].tgt != null) {
                 brainData.distToTgt[i] = Vector3.Distance(
@@ -388,11 +351,12 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO: Remember to call this from game manager.
     public void LateTick() {
         LateTick_AnimEventPlr();
+        LateTick_Fsm();
     }
 
     void LateTick_AnimEventPlr() {
-        for (int i = 0; i < data.occupied.Length; i++) {
-            if (!data.occupied[i])
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
             //Debug.Log($"{animEventPlrData[i]}");
             //Debug.Log($"{unityComps[i].anim == null}");
@@ -401,17 +365,25 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
+    void LateTick_Fsm() {
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
+                continue;
+            classRefs[i].st_cur.LateTick();
+        }
+    }
+
     // ------------------------------------------------------------
     // Other Methods
     // ------------------------------------------------------------
 
     /// <summary>
-    /// Returns the index of the registered data, or -1 on failure.
+    /// Registers new capsule pawn. Returns the index of the registered data, or -1 on failure.
     /// </summary>
     public int Register(So_CpData so, Cp_UnityComps unityComps, So_BtRootNode bt) {
         int freeI = -1;
-        for (int i = 0; i < data.occupied.Length; i++) {
-            if (!data.occupied[i]) {
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i]) {
                 freeI = i;
                 break;
             }
@@ -428,230 +400,106 @@ public class CpMgr : Singleton<CpMgr> {
         brainData.inAggroRange[freeI] = false;
         brainData.inAtkRange[freeI] = false;
         brainData.tgtPos[freeI] = float3.zero;
-        data.curStDur[freeI] = 0;
-        data.enableDebugMsgs[freeI] = so.enableDebugMsgs;
+        soaData.curStDur[freeI] = 0;
         // TODO: Item
         //data.equip_RHandEquippable[freeI] = so.rHandItem;
-        data.gravitationalAcc[freeI] = so.gravitationalAcc;
-        data.groundCastHitSomething[freeI] = false;
-        data.groundCastNrm[freeI] = float3.zero;
-        data.groundSnapVerDownSpd[freeI] = so.groundSnapVerDownSpd;
-        data.hp_Cur[freeI] = so.maxHP;
-        data.hp_Max[freeI] = so.maxHP;
-        data.input_mov[freeI] = float2.zero;
-        data.input_mov_LastNonZero[freeI] = float2.zero;
-        data.input_mov_WhenLastSwitchedSt[freeI] = float2.zero;
-        data.input_atk_Light[freeI] = false;
-        data.input_atk_Heavy[freeI] = false;
-        data.input_atk_Ult[freeI] = false;
-        data.input_dodge[freeI] = false;
-        data.invul[freeI] = false;
-        data.isAffectedByGravity[freeI] = true;
-        data.isGrounded[freeI] = true;
-        data.lastCcVel[freeI] = float3.zero;
-        data.lastKnockbackStr[freeI] = 0;
-        data.lastRecievedHitDir[freeI] = float3.zero;
-        data.maxFallSpd[freeI] = so.maxFallSpd;
-        data.st_AtkHorSlash_Impact_AngSpd[freeI] = so.st_AtkHorSlash_Impact_AngSpd;
-        data.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_MaxAngSpd;
-        data.st_AtkJump_DownSpeedAfterJumpFinished[freeI] = so.st_AtkJump_DownSpeedAfterJumpFinished;
-        data.st_Dodge_YawSpd[freeI] = so.st_Dodge_YawAngSpd;
-        data.st_Falling_LandingStFallDistThreshold[freeI] = so.st_Falling_LandingStFallDistThreshold;
-        data.st_Falling_LinAcc[freeI] = so.st_Falling_LinAcc;
-        data.st_Falling_MaxLinSpd[freeI] = so.st_Falling_MaxLinSpd;
-        data.st_Walk_LinAcc[freeI] = so.st_Walk_LinAcc;
-        data.st_Walk_MaxLinSpd[freeI] = so.st_Walk_MaxLinSpd;
-        data.st_Walk_YawSpd[freeI] = so.st_Walk_MaxAngSpd;
-        data.trf_pos[freeI] = float3.zero;
-        data.trf_rot[freeI] = quaternion.identity;
-        data.trf_lossyScl[freeI] = new float3(1);
-        data.vel_Hor[freeI] = float2.zero;
-        data.vel_Ver[freeI] = 0;
-        data.vel_Yaw[freeI] = 0;
-        data.occupied[freeI] = true;
-        this.unityComps[freeI] = unityComps; 
+        soaData.gravitationalAcc[freeI] = so.gravitationalAcc;
+        soaData.groundCastHitSomething[freeI] = false;
+        soaData.groundCastNrm[freeI] = float3.zero;
+        soaData.groundSnapVerDownSpd[freeI] = so.groundSnapVerDownSpd;
+        soaData.hp_Cur[freeI] = so.maxHP;
+        soaData.hp_Max[freeI] = so.maxHP;
+        soaData.input_mov[freeI] = float2.zero;
+        soaData.input_mov_LastNonZero[freeI] = float2.zero;
+        soaData.input_mov_WhenLastSwitchedSt[freeI] = float2.zero;
+        soaData.input_atk_Light[freeI] = false;
+        soaData.input_atk_Heavy[freeI] = false;
+        soaData.input_atk_Ult[freeI] = false;
+        soaData.input_dodge[freeI] = false;
+        soaData.invul[freeI] = false;
+        soaData.isAffectedByGravity[freeI] = true;
+        soaData.isGrounded[freeI] = true;
+        soaData.lastCcVel[freeI] = float3.zero;
+        soaData.lastKnockbackStr[freeI] = 0;
+        soaData.lastRecievedHitDir[freeI] = float3.zero;
+        soaData.maxFallSpd[freeI] = so.maxFallSpd;
+        soaData.st_AtkHorSlash_Impact_AngSpd[freeI] = so.st_AtkHorSlash_Impact_AngSpd;
+        soaData.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_MaxAngSpd;
+        soaData.st_AtkJump_DownSpeedAfterJumpFinished[freeI] = so.st_AtkJump_DownSpeedAfterJumpFinished;
+        soaData.st_Dodge_YawSpd[freeI] = so.st_Dodge_YawAngSpd;
+        soaData.st_Falling_LandingStFallDistThreshold[freeI] = so.st_Falling_LandingStFallDistThreshold;
+        soaData.st_Falling_LinAcc[freeI] = so.st_Falling_LinAcc;
+        soaData.st_Falling_MaxLinSpd[freeI] = so.st_Falling_MaxLinSpd;
+        soaData.st_Walk_LinAcc[freeI] = so.st_Walk_LinAcc;
+        soaData.st_Walk_MaxLinSpd[freeI] = so.st_Walk_MaxLinSpd;
+        soaData.st_Walk_YawSpd[freeI] = so.st_Walk_MaxAngSpd;
+        soaData.trf_pos[freeI] = float3.zero;
+        soaData.trf_rot[freeI] = quaternion.identity;
+        soaData.trf_lossyScl[freeI] = new float3(1);
+        soaData.vel_Hor[freeI] = float2.zero;
+        soaData.vel_Ver[freeI] = 0;
+        soaData.vel_Yaw[freeI] = 0;
+        soaData.occupied[freeI] = true;
+        // AoS data init.
+        this.aosData[freeI] = new();
+        aosData[freeI].enableDebugMsgs = so.enableDebugMsgs;
+        this.unityComps[freeI] = unityComps;
+        this.classRefs[freeI] = new Cp_NonUnityCompClassRefs(freeI);
+        // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
         if (bt != null)
             BtMgr.inst.Register(freeI, bt);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
-        ActSt_SwitchToInitSt(freeI, so.initSt);
+        SwitchToInitActSt(freeI);
         return freeI;
     }
 
-    public void Unregister(int id) {
-        if (!data.occupied[id]) {
-            Debug.LogError($"Capsule pawn with id {id} has not been registered!");
+    public void Unregister(int cpId) {
+        if (!soaData.occupied[cpId]) {
+            Debug.LogError($"Capsule pawn with id {cpId} has not been registered!");
             return;
         }
-        data.occupied[id] = false;
+        soaData.occupied[cpId] = false;
     }
 
-    public bool ActSt_CanSwitchTo(CpActSt newActSt) {
-        switch (newActSt) {
-            case CpActSt.Atk_FlyingAtk:
-                return newActSt == CpActSt.Falling ? false : true;
-            case CpActSt.Atk_HorSlash1:
-                return true;
-            case CpActSt.Atk_HorSlash2:
-                return true;
-            case CpActSt.Atk_HorSlash3:
-                return true;
-            case CpActSt.Atk_Jump:
-                if (newActSt == CpActSt.Falling)
-                    return false;
-                else
-                    return true;
-            case CpActSt.Atk_ShootHomingProj:
-                return true;
-            case CpActSt.Dodge:
-                return true;
-            case CpActSt.Falling:
-                return true;
-            case CpActSt.FallLanding:
-                return true;
-            case CpActSt.Idle:
-                return true;
-            case CpActSt.Knockback_Weak:
-                // TODO: To avoid stun locking, after some amount of consequtive knockbacks,
-                // TODO C: allow canceling knockback state.
-                if (newActSt == CpActSt.Knockback_Weak)
-                    return true;
-                // TODO: Allow switch to death state.
-                return false;
-            case CpActSt.Walk:
-                return true;
-            default:
-                Debug.LogError($"Switch defaulted with {newActSt}", this);
-                return false;
-        }
-    }
-
-    public void ActSt_EnterSt(int id, CpActSt newSt, CpActSt prevSt) {
-        //Debug.Log($"{id} EnterSt called! Prev st: {prevSt}. New st: {newSt}.", this);
-        switch (newSt) {
-            case CpActSt.Atk_FlyingAtk:
-                CpSt_Atk_FlyingAtk.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Atk_ShootHomingProj:
-                CpSt_Atk_ShootHomingProj.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Atk_HorSlash1:
-                CpSt_Atk_HorSlash1.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Atk_HorSlash2:
-                CpSt_Atk_HorSlash2.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Atk_HorSlash3:
-                CpSt_Atk_HorSlash3.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Atk_Jump:
-                CpSt_Atk_Jump.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Dodge:
-                CpSt_Dodge.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Falling:
-                CpSt_Falling.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.FallLanding:
-                CpSt_FallLanding.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Idle:
-                CpSt_Idle.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Knockback_Weak:
-                CpSt_Knockback_Weak.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            case CpActSt.Walk:
-                CpSt_Walk.Enter(id, data, unityComps, ref animEventPlrData[id]);
-                break;
-            default:
-                Debug.LogError($"Switch defaulted with {newSt}", this);
-                break;
-        }
-    }
-
-    public void ActSt_ExitSt(int id, CpActSt actSt) {
-        //Debug.Log($"{id} ExitSt called for: {actSt}.", this);
-        switch (actSt) {
-            case CpActSt.Atk_FlyingAtk:
-                CpSt_Atk_FlyingAtk.Exit(id, data, unityComps);
-                break;
-            case CpActSt.Atk_ShootHomingProj:
-                break;
-            case CpActSt.Atk_HorSlash1:
-                CpSt_Atk_HorSlash1.Exit(id, unityComps);
-                break;
-            case CpActSt.Atk_HorSlash2:
-                CpSt_Atk_HorSlash2.Exit(id, unityComps);
-                break;
-            case CpActSt.Atk_HorSlash3:
-                CpSt_Atk_HorSlash3.Exit(id, unityComps);
-                break;
-            case CpActSt.Atk_Jump:
-                CpSt_Atk_Jump.Exit(id, data, unityComps);
-                break;
-            case CpActSt.Dodge:
-                CpSt_Dodge.Exit(id, data);
-                break;
-            case CpActSt.Falling:
-                break;
-            case CpActSt.FallLanding:
-                break;
-            case CpActSt.Idle:
-                break;
-            case CpActSt.Knockback_Weak:
-                break;
-            case CpActSt.Walk:
-                break;
-            default:
-                Debug.LogError($"Switch defaulted with {actSt}", this);
-                break;
-        }
-    }
-
-    public void ActSt_SwitchToInitSt(int id, CpActSt initSt) {
-        Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {initSt}, but {id} was already changing"
-            + $"state!", this);
-        data.isSwitchingActSt[id] = true;
-        //Debug.Log($"{id} switching to init state: {initSt}", this);
-        data.actSt[id] = initSt;
-        ActSt_EnterSt(id, initSt, data.prevSt[id]);
-        data.curStDur[id] = 0;
-        if (unityComps[id].cpCtrl == null)
-            data.input_mov_WhenLastSwitchedSt[id]
-                = data.input_mov[id];
-        else {
-            if (unityComps[id].cpCtrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone)
-                data.input_mov_WhenLastSwitchedSt[id]
-                    = data.input_mov[id];
-            else
-                data.input_mov_WhenLastSwitchedSt[id] = float2.zero;
-        }
-        data.isSwitchingActSt[id] = false;
+    // NOTE: This is currently always enters to idle state. (6.9.2026)
+    public void SwitchToInitActSt(int cpId) {
+        Debug.Log($"{cpId} switching to init state", this);
+        SwitchToActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
-    // TODO MINOR: Rename to St"
-    public void ActSt_SwitchState(int id, CpActSt newSt) {
-        Debug.Assert(!data.isSwitchingActSt[id], $"Tried changing to {newSt}, but {id} was already changing"
-            + $"state!", this);
-        data.isSwitchingActSt[id] = true;
-        //Dbg.Log($"{id} switching state from {data.actSt[id]} to: {newSt}", this, data.enableDebugMsgs[id]);
-        data.prevSt[id] = data.actSt[id];
-        data.actSt[id] = newSt;
-        ActSt_ExitSt(id, data.prevSt[id]);
-        ActSt_EnterSt(id, newSt, data.prevSt[id]);
-        data.curStDur[id] = 0;
-        if (unityComps[id].cpCtrl == null)
-            data.input_mov_WhenLastSwitchedSt[id]
-                = data.input_mov[id];
+    public void SwitchToActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
+        Fsm.SwitchSt(
+            enterFunc,
+            ref classRefs[cpId].st_cur,
+            ref classRefs[cpId].st_prev,
+            ref aosData[cpId].isSwitchingSt,
+            aosData[cpId].enableDebugMsgs
+        );
+    }
+
+    public bool TrySwitchToActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
+        return Fsm.TrySwitchState(
+            enterFunc,
+            ref classRefs[cpId].st_cur,
+            ref classRefs[cpId].st_prev,
+            ref aosData[cpId].isSwitchingSt,
+            aosData[cpId].enableDebugMsgs
+        );
+    }
+
+    // TODO: Create per cp action for "state switched", then pass that to SwitchSt and subscribe this to it. Or. Idk. Could just invoke this directly with the SwitchSt function? Maybe like the Enter state methods?
+    public void OnStateSwitched(int cpId, IFsmSt newSt) {
+        soaData.curStDur[cpId] = 0;
+        if (unityComps[cpId].cpCtrl == null)
+            soaData.input_mov_WhenLastSwitchedSt[cpId]
+                = soaData.input_mov[cpId];
         else {
-            if (unityComps[id].cpCtrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone)
-                data.input_mov_WhenLastSwitchedSt[id]
-                    = data.input_mov[id];
+            if (unityComps[cpId].cpCtrl.Input_Mov.sqrMagnitude > movInputSqrDeadzone)
+                soaData.input_mov_WhenLastSwitchedSt[cpId]
+                    = soaData.input_mov[cpId];
             else
-                data.input_mov_WhenLastSwitchedSt[id] = float2.zero;
+                soaData.input_mov_WhenLastSwitchedSt[cpId] = float2.zero;
         }
-        data.isSwitchingActSt[id] = false;
     }
 }

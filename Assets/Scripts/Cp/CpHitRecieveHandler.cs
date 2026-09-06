@@ -3,6 +3,10 @@ using UnityEngine;
 /// <summary>
 /// Resolves recieved hits foe a capsule pawn.
 /// </summary>
+// TODO: This whole owner system is a little sketchy. Though hit reciever is a monobehavior and thus doesn't
+// TODO C: support constructor dependency injection. You could make a custom script that allows you to pass
+// TODO C: a hit reciever owner as a serialize field interface to the hit reciever.
+// TODO C: Also does this class need to be a monobehavior at all?
 public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
     [SerializeField] CpRegisterer pc;
     [SerializeField] HitReceiver bodyHitReciever;
@@ -12,19 +16,29 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
     }
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
-        CpMgr ccMgr = CpMgr.inst;
-        int id = pc.Id;
-        if (!ccMgr.data.invul[id]) {
-            ccMgr.data.hp_Cur[id] -= hitData.atkData.dmg;
+        int cpId = pc.Id;
+        var data = CpMgr.inst.soaData;
+        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
+        var classRefs = CpMgr.inst.classRefs[cpId];
+        if (!data.invul[cpId]) {
+            data.hp_Cur[cpId] -= hitData.atkData.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
-            ccMgr.data.lastRecievedHitDir[id] = hitData.hitWldDir;
-            ccMgr.data.lastKnockbackStr[id] = hitData.atkData.knockbackStr;
+            data.lastRecievedHitDir[cpId] = hitData.hitWldDir;
+            data.lastKnockbackStr[cpId] = hitData.atkData.knockbackStr;
             switch (hitData.atkData.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
-                    if (ccMgr.ActSt_CanSwitchTo(CpActSt.Knockback_Weak))
-                        ccMgr.ActSt_SwitchState(pc.Id, CpActSt.Knockback_Weak);
+                    Fsm.TrySwitchState(
+                        () => classRefs.actSts.knockback.Enter(
+                            CpAnimInfo.knockback_Weak_Fwd,
+                            CpAnimInfo.knockback_Weak_Bwd
+                        ),
+                        ref classRefs.st_cur,
+                        ref classRefs.st_prev,
+                        ref aosData.isSwitchingSt,
+                        aosData.enableDebugMsgs
+                    );
                     break;
                 case KnockbackT.Strong:
                     // TODO: Try enter strong knockback state.
@@ -34,6 +48,6 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                     break;
             }
         }
-        return new(ccMgr.data.invul[id], false);
+        return new(data.invul[cpId], false);
     }
 }

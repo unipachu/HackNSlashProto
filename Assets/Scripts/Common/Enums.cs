@@ -1,6 +1,8 @@
 // Add all public enums here.
 
 
+using System;
+
 public enum AtkPhase : byte {
     Windup,
     Impact,
@@ -9,80 +11,50 @@ public enum AtkPhase : byte {
 
 public enum BufferableInput : byte {
     None,
-    Atk_Light,
-    Atk_Heavy,
-    Atk_Ult,
-    Dodge
+    RShldr,
+    RTrg,
+    LShldr,
+    BtnE
 }
 
-/// <summary>
-/// Capsule pawn action state. These pair animations and animation events with gameplay logic.
-/// </summary>
-public enum CpActSt : byte {
-    Atk_FlyingAtk,
-    // TODO: start indexing from 0, ugh.
-    Atk_HorSlash1,
-    Atk_HorSlash2,
-    Atk_HorSlash3,
-    Atk_Jump,
-    Atk_ShootHomingProj,
-    Dodge,
-    Falling,
-    FallLanding,
-    Idle,
-    Knockback_Weak,
-    Walk
-}
+// TODO: remove.
+///// <summary>
+///// Capsule pawn action state. These pair animations and animation events with gameplay logic.
+///// </summary>
+//public enum CpActSt : byte {
+//    Atk_FlyingAtk,
+//    // TODO: start indexing from 0, ugh.
+//    Atk_HorSlash1,
+//    Atk_HorSlash2,
+//    Atk_HorSlash3,
+//    Atk_Jump,
+//    Atk_ShootHomingProj,
+//    Dodge,
+//    Falling,
+//    FallLanding,
+//    Idle,
+//    Knockback_Weak,
+//    Walk
+//}
 
 /// <summary>
 /// Animation events used by the capsule pawn Animator.
 /// </summary>
 public enum CpAnimEventT {
-    Atk_GunShoot_Recovery_Finished,
-    Atk_GunShoot_Windup_Finished,
-    Dodge_BufferedInputStSwitchAllowed,
-    Dodge_Finished,
-    Dodge_InvulEnd,
-    Dodge_YawAllowed,
-    FallLanding_CanSwitchSt,
-    FallLanding_Finished,
-    Atk_FlyingAtk_Impact_HitDealerActivated,
-    FlyingAtk_Impact_Finished,
-    Atk_FlyingAtk_Recovery_Finished,
-    Atk_FlyingAtk_Windup_Finished,
-    Atk_HorSlash1_Impact_RotationAllowed,
-    Atk_HorSlash1_Impact_RotationDisallowed,
-    Atk_HorSlash1_Impact_HitDealerActivated,
-    Atk_HorSlash1_Impact_HitDealerDeactivated,
-    Atk_HorSlash1_Impact_ComboAllowed,
-    Atk_HorSlash1_Impact_ComboDisallowed,
-    Atk_HorSlash1_Impact_Finished,
-    Atk_HorSlash1_Recovery_DodgeAllowed,
-    Atk_HorSlash1_Recovery_Finished,
-    Atk_HorSlash1_Windup_Finished,
-    Atk_HorSlash2_Impact_ComboAllowed,
-    Atk_HorSlash2_Impact_ComboDisallowed,
-    Atk_HorSlash2_Impact_Finished,
-    Atk_HorSlash2_Impact_HitDealerActivated,
-    Atk_HorSlash2_Impact_HitDealerDeactivated,
-    Atk_HorSlash2_Impact_RotationAllowed,
-    Atk_HorSlash2_Impact_RotationDisallowed,
-    Atk_HorSlash2_Recovery_DodgeAllowed,
-    Atk_HorSlash2_Recovery_Finished,
-    Atk_HorSlash3_Impact_ComboAllowed,
-    Atk_HorSlash3_Impact_ComboDisallowed,
-    Atk_HorSlash3_Impact_Finished,
-    Atk_HorSlash3_Impact_HitDealerActivated,
-    Atk_HorSlash3_Impact_HitDealerDeactivated,
-    Atk_HorSlash3_Impact_RotationAllowed,
-    Atk_HorSlash3_Impact_RotationDisallowed,
-    Atk_JumpVerSlam_Finished,
-    Atk_JumpVerSlam_HitboxActivated,
-    Atk_JumpVerSlam_HitboxDeactivated,
-    Atk_JumpVerSlam_JumpFinished,
-    Atk_JumpVerSlam_JumpStarted,
-    Knockback_Weak_Bwd_Finished,
-    Knockback_Weak_Fwd_Finished
+    // NOTE: This doesn't mean that the character is grounded, only that the animation reached the point
+    // NOTE C: where the vertical movement is no more controlled by the animation. (6.9.2026)
+    AirtimeEnded,
+    AirtimeStarted,
+    BufferedInputStSwitchAllowed,
+    ComboAllowed,
+    ComboDisallowed,
+    DodgeAllowed,
+    Finished,
+    HitDealerActivated,
+    HitDealerDeactivated,
+    InvulEnd,
+    YawDisallowed,
+    YawAllowed,
 }
 
 public enum BtNodeT : byte {

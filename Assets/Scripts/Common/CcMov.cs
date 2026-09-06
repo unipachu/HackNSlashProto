@@ -8,14 +8,14 @@ public static class CcMov {
     public static void ApplyGravityNSlideDownSlopes(int capsuleCharId, float dt){
         // TODO: This is cheating. Either use ref keywords, or take in all the arrays.
         CpMgr cpMgr = CpMgr.inst;
-        if (cpMgr.data.isGrounded[capsuleCharId])
-            cpMgr.data.vel_Ver[capsuleCharId] = -cpMgr.data.groundSnapVerDownSpd[capsuleCharId] * dt;
+        if (cpMgr.soaData.isGrounded[capsuleCharId])
+            cpMgr.soaData.vel_Ver[capsuleCharId] = -cpMgr.soaData.groundSnapVerDownSpd[capsuleCharId] * dt;
         // Freefalling and slope down sliding.
         else {
-            cpMgr.data.vel_Ver[capsuleCharId] = cpMgr.data.lastCcVel[capsuleCharId].y;
+            cpMgr.soaData.vel_Ver[capsuleCharId] = cpMgr.soaData.lastCcVel[capsuleCharId].y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (cpMgr.data.groundCastHitSomething[capsuleCharId]) {
+            if (cpMgr.soaData.groundCastHitSomething[capsuleCharId]) {
                 // TODO: Create float3 ProjectOnPlane math util.
                 //math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
                 // TODO: We project last velocity onto the slope normalized direction (we divide by newAcc
@@ -29,9 +29,9 @@ public static class CcMov {
                 float3 newAcc =
                     (math.down() - math.dot(
                         math.down(),
-                        cpMgr.data.groundCastNrm[capsuleCharId]) * cpMgr.data.groundCastNrm[capsuleCharId]
+                        cpMgr.soaData.groundCastNrm[capsuleCharId]) * cpMgr.soaData.groundCastNrm[capsuleCharId]
                     )
-                    * cpMgr.data.gravitationalAcc[capsuleCharId];
+                    * cpMgr.soaData.gravitationalAcc[capsuleCharId];
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
                 if (math.lengthsq(newAcc) > 0.0001f)
@@ -40,11 +40,11 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(cpMgr.data.lastCcVel[capsuleCharId], slideDir));
+                float slideSpd = math.max(0, math.dot(cpMgr.soaData.lastCcVel[capsuleCharId], slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                cpMgr.data.vel_Ver[capsuleCharId] = newVel.y;
-                cpMgr.data.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
+                cpMgr.soaData.vel_Ver[capsuleCharId] = newVel.y;
+                cpMgr.soaData.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -59,11 +59,11 @@ public static class CcMov {
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0.
-                cpMgr.data.vel_Ver[capsuleCharId] = Mathf.Min(cpMgr.data.vel_Ver[capsuleCharId], 0);
-                cpMgr.data.vel_Ver[capsuleCharId] -= cpMgr.data.gravitationalAcc[capsuleCharId] * dt;
-                cpMgr.data.vel_Ver[capsuleCharId] = Mathf.Clamp(
-                    cpMgr.data.vel_Ver[capsuleCharId],
-                    -cpMgr.data.maxFallSpd[capsuleCharId],
+                cpMgr.soaData.vel_Ver[capsuleCharId] = Mathf.Min(cpMgr.soaData.vel_Ver[capsuleCharId], 0);
+                cpMgr.soaData.vel_Ver[capsuleCharId] -= cpMgr.soaData.gravitationalAcc[capsuleCharId] * dt;
+                cpMgr.soaData.vel_Ver[capsuleCharId] = Mathf.Clamp(
+                    cpMgr.soaData.vel_Ver[capsuleCharId],
+                    -cpMgr.soaData.maxFallSpd[capsuleCharId],
                     0
                 );
                 //Debug.Log("In free fall.");

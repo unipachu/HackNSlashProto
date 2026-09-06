@@ -188,6 +188,8 @@ public static class AnimEventPlr {
     /// animation events for the next animation.<br/>
     /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
     /// </summary>
+    // TODO: There should probably be a bool which decides whether we should fire events before the startOffset
+    // TODO C: during the first tick and it should by default be true.
     static void InitAnimEventPlrData(
         ref AnimEventPlrData animEventPlrData,
         AnimInfo animInfo,

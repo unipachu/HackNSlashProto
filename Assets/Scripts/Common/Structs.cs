@@ -5,6 +5,7 @@ using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEditor.Experimental.GraphView.Port;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -86,6 +87,9 @@ public struct AnimEvent {
     }
 }
 
+/// <summary>
+/// Data used for one animation's animation events.
+/// </summary>
 public struct AnimEventPlrData {
     public AnimInfo animInfo;
     /// <summary>
@@ -110,6 +114,9 @@ public struct AnimEventPlrData {
     /// Has the animation finished (for non-looping only)?
     /// </summary>
     public bool finished;
+    /// <summary>
+    /// Is this the first tick of the animation?
+    /// </summary>
     public bool firstTick;
 }
 
@@ -142,8 +149,241 @@ public struct BtNodeData {
     public BtNodeT t;
 }
 
-public struct Cp_BaseData {
-    public NativeArray<CpActSt> actSt;
+/// <summary>
+/// Basic impact combo move using a hit dealer (e.g. a melee weapon hit box).<br/>
+/// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
+/// </summary>
+[Serializable]
+// TODO: Passing structs around with interfaces will constantly make copies out of them. Consider turning
+// TODO C: all combo nodes into classes!
+public struct ComboNode_BasicImpact : IComboNode {
+    AnimInfo animInfo;
+    ComboMoveTree comboGraph;
+    HitDealer hitDealer;
+    int node_BtnE;
+    int node_LShldr;
+    int node_NoInput;
+    int node_RShldr;
+    int node_RTrg;
+
+
+    public ComboNode_BasicImpact(
+        AnimInfo animInfo,
+        ComboMoveTree comboGraph,
+        HitDealer hitDealer,
+        int node_BtnE,
+        int node_LShldr,
+        int node_NoInput,
+        int node_RShldr,
+        int node_RTrg
+    ) {
+        // TODO: add weapon specific hit data.
+        this.animInfo = animInfo;
+        this.comboGraph = comboGraph;
+        this.hitDealer = hitDealer;
+        this.node_BtnE = node_BtnE;
+        this.node_LShldr = node_LShldr;
+        this.node_NoInput = node_NoInput;
+        this.node_RShldr = node_RShldr;
+        this.node_RTrg = node_RTrg;
+    }
+
+    public AnimInfo GetAnimInfo()
+        => animInfo;
+
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
+        // NOTE C: passing it to the Enter method. (5.9.2026)
+        ComboNode_BasicImpact thisNode = this;
+        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicImpact.Enter(thisNode, thisNode.hitDealer);
+    }
+
+    public IComboNode GetNextNode(BufferableInput input) {
+        switch (input) {
+            case BufferableInput.None: // NOTE: (In most cases) this is used for recovery animations (5.9.2026)
+                if (node_NoInput == -1)
+                    return null;
+                return comboGraph.GetNode(node_NoInput);
+            case BufferableInput.RShldr:
+                if (node_RShldr == -1)
+                    return null;
+                return comboGraph.GetNode(node_RShldr);
+            case BufferableInput.RTrg:
+                if (node_RTrg == -1)
+                    return null;
+                return comboGraph.GetNode(node_RTrg);
+            case BufferableInput.LShldr:
+                if (node_LShldr == -1)
+                    return null;
+                return comboGraph.GetNode(node_LShldr);
+            case BufferableInput.BtnE:
+                if (node_BtnE == -1)
+                    return null;
+                return comboGraph.GetNode(node_BtnE);
+            default:
+                Debug.LogError($"Switch defaulted with {input}");
+                return null;
+        }
+    }
+
+    public int NextNodeI(BufferableInput input) {
+        return input switch {
+            BufferableInput.None => node_NoInput,
+            BufferableInput.RShldr => node_RShldr,
+            BufferableInput.RTrg => node_RTrg,
+            BufferableInput.LShldr => node_LShldr,
+            BufferableInput.BtnE => node_BtnE,
+            _ => -1
+        };
+    }
+}
+
+/// <summary>
+/// Recovery move - ends a combo chain and cannot be input canceled to other moves.<br/>
+/// </summary>
+[Serializable]
+public struct ComboNode_BasicRecovery : IComboNode {
+    AnimInfo animInfo;
+
+    public ComboNode_BasicRecovery(AnimInfo animInfo) {
+        this.animInfo = animInfo;
+    }
+
+    public AnimInfo GetAnimInfo()
+        => animInfo;
+
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
+        // NOTE C: passing it to the Enter method. (5.9.2026)
+        ComboNode_BasicRecovery thisNode = this;
+        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicRecovery.Enter(thisNode.animInfo);
+    }
+
+    public IComboNode GetNextNode(BufferableInput input)
+        => null;
+
+    public int NextNodeI(BufferableInput input) {
+        return -1;
+    }
+}
+
+/// <summary>
+/// Windup combo move. Allows input canceling to other moves. <br/>
+/// NOTE: Most windup moves will not allow input canceling - set those node indexes to -1 (5.9.2026)
+/// </summary>
+[Serializable]
+public struct ComboNode_BasicWindup : IComboNode {
+    AnimInfo animInfo;
+    ComboMoveTree comboGraph;
+    int node_BtnE;
+    int node_LShldr;
+    int node_NoInput;
+    int node_RShldr;
+    int node_RTrg;
+
+
+    public ComboNode_BasicWindup(
+        AnimInfo animInfo,
+        ComboMoveTree comboGraph,
+        int node_BtnE,
+        int node_LShldr,
+        int node_NoInput,
+        int node_RShldr,
+        int node_RTrg
+    ) {
+        this.animInfo = animInfo;
+        this.comboGraph = comboGraph;
+        this.node_BtnE = node_BtnE;
+        this.node_LShldr = node_LShldr;
+        this.node_NoInput = node_NoInput;
+        this.node_RShldr = node_RShldr;
+        this.node_RTrg = node_RTrg;
+    }
+
+    public AnimInfo GetAnimInfo()
+        => animInfo;
+
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
+        // NOTE C: passing it to the Enter method. (5.9.2026)
+        ComboNode_BasicWindup thisNode = this;
+        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicWindup.Enter(thisNode);
+    }
+
+    public IComboNode GetNextNode(BufferableInput input) {
+        switch (input) {
+            case BufferableInput.None:
+                if (node_NoInput == -1)
+                    return null;
+                return comboGraph.GetNode(node_NoInput);
+            case BufferableInput.RShldr:
+                if (node_RShldr == -1)
+                    return null;
+                return comboGraph.GetNode(node_RShldr);
+            case BufferableInput.RTrg:
+                if (node_RTrg == -1)
+                    return null;
+                return comboGraph.GetNode(node_RTrg);
+            case BufferableInput.LShldr:
+                if (node_LShldr == -1)
+                    return null;
+                return comboGraph.GetNode(node_LShldr);
+            case BufferableInput.BtnE:
+                if (node_BtnE == -1)
+                    return null;
+                return comboGraph.GetNode(node_BtnE);
+            default:
+                Debug.LogError($"Switch defaulted with {input}");
+                return null;
+        }
+    }
+
+    public int NextNodeI(BufferableInput input) {
+        return input switch {
+            BufferableInput.None => node_NoInput,
+            BufferableInput.RShldr => node_RShldr,
+            BufferableInput.RTrg => node_RTrg,
+            BufferableInput.LShldr => node_LShldr,
+            BufferableInput.BtnE => node_BtnE,
+            _ => -1
+        };
+    }
+}
+
+/// <summary>
+/// All action states available for capsule pawn.
+/// </summary>
+public struct Cp_ActSts {
+    public CpSt_Atk_BasicActive atk_BasicImpact;
+    public CpSt_Atk_BasicWindup atk_BasicWindup;
+    public Cp_Atk_BasicRecovery atk_BasicRecovery;
+    public CpSt_Atk_FlyingAtk atk_FlyingAtk;
+    public CpSt_Atk_Jump atk_Jump;
+    public CpSt_Atk_ShootHomingProj atk_ShootHomingProj;
+    public CpSt_Dodge dodge;
+    public CpSt_Falling falling;
+    public CpSt_FallLanding fallLanding;
+    public CpSt_Idle idle;
+    public CpSt_Knockback_Weak knockback;
+    public CpSt_Walk walk;
+
+    public Cp_ActSts(int cpId) {
+        atk_BasicImpact = new(cpId);
+        atk_BasicWindup = new(cpId);
+        atk_BasicRecovery = new(cpId);
+        atk_FlyingAtk = new(cpId);
+        atk_Jump = new(cpId);
+        atk_ShootHomingProj = new(cpId);
+        dodge = new(cpId);
+        falling = new(cpId);
+        fallLanding = new(cpId);
+        idle = new(cpId);
+        knockback = new(cpId);
+        walk = new(cpId);
+    }
+}
+
+public struct Cp_SoaData {
     public NativeArray<AtkPhase> actStSt_AtkPhase;
     public NativeArray<bool> actStSt_BufferedInputStSwitchAllowed;
     public NativeArray<bool> actStSt_ComboAllowed;
@@ -155,7 +395,6 @@ public struct Cp_BaseData {
     public NativeArray<float3> animDPos;
     public NativeArray<quaternion> animDRot;
     public NativeArray<float> curStDur;
-    public NativeArray<bool> enableDebugMsgs;
     public NativeArray<float> gravitationalAcc;
     public NativeArray<bool> groundCastHitSomething;
     public NativeArray<float3> groundCastNrm;
@@ -181,7 +420,6 @@ public struct Cp_BaseData {
     public NativeArray<bool> invul;
     public NativeArray<bool> isAffectedByGravity;
     public NativeArray<bool> isGrounded;
-    public NativeArray<bool> isSwitchingActSt;
     public NativeArray<float3> lastCcVel;
     public NativeArray<float> lastKnockbackStr;
     public NativeArray<float3> lastRecievedHitDir;
@@ -194,7 +432,6 @@ public struct Cp_BaseData {
     public NativeArray<float> mov_linAcc;
     // To keep track of which indices are actually used for entitites.
     public NativeArray<bool> occupied; // <- This is important!
-    public NativeArray<CpActSt> prevSt;
     public NativeArray<float> st_AtkHorSlash_Impact_AngSpd;
     public NativeArray<float> st_AtkHorSlash_Windup_MaxAngSpd;
     public NativeArray<float> st_AtkJump_DownSpeedAfterJumpFinished;
@@ -213,9 +450,8 @@ public struct Cp_BaseData {
     public NativeArray<float> vel_Ver;
     public NativeArray<float> vel_Yaw;
 
-    public static Cp_BaseData Create(int capacity) {
-        return new Cp_BaseData {
-            actSt = StructUtils.Alloc<CpActSt>(capacity),
+    public static Cp_SoaData Create(int capacity) {
+        return new Cp_SoaData {
             actStSt_AtkPhase = StructUtils.Alloc<AtkPhase>(capacity),
             actStSt_BufferedInputStSwitchAllowed = StructUtils.Alloc<bool>(capacity),
             actStSt_ComboAllowed = StructUtils.Alloc<bool>(capacity),
@@ -227,7 +463,6 @@ public struct Cp_BaseData {
             animDPos = StructUtils.Alloc<float3>(capacity),
             animDRot = StructUtils.Alloc<quaternion>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
-            enableDebugMsgs = StructUtils.Alloc<bool>(capacity),
             gravitationalAcc = StructUtils.Alloc<float>(capacity),
             groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
             groundCastNrm = StructUtils.Alloc<float3>(capacity),
@@ -246,7 +481,6 @@ public struct Cp_BaseData {
             invul = StructUtils.Alloc<bool>(capacity),
             isAffectedByGravity = StructUtils.Alloc<bool>(capacity),
             isGrounded = StructUtils.Alloc<bool>(capacity),
-            isSwitchingActSt = StructUtils.Alloc<bool>(capacity),
             lastCcVel = StructUtils.Alloc<float3>(capacity),
             lastKnockbackStr = StructUtils.Alloc<float>(capacity),
             lastRecievedHitDir = StructUtils.Alloc<float3>(capacity),
@@ -257,7 +491,6 @@ public struct Cp_BaseData {
             mov_yawSpd = StructUtils.Alloc<float>(capacity),
             mov_linAcc = StructUtils.Alloc<float>(capacity),
             occupied = StructUtils.Alloc<bool>(capacity),
-            prevSt = StructUtils.Alloc<CpActSt>(capacity),
             st_AtkHorSlash_Impact_AngSpd = StructUtils.Alloc<float>(capacity),
             st_AtkHorSlash_Windup_MaxAngSpd = StructUtils.Alloc<float>(capacity),
             st_AtkJump_DownSpeedAfterJumpFinished = StructUtils.Alloc<float>(capacity),
@@ -278,7 +511,6 @@ public struct Cp_BaseData {
     }
 
     public void Dispose() {
-        actSt.Dispose();
         actStSt_AtkPhase.Dispose();
         actStSt_BufferedInputStSwitchAllowed.Dispose();
         actStSt_ComboAllowed.Dispose();
@@ -290,7 +522,6 @@ public struct Cp_BaseData {
         animDPos.Dispose();
         animDRot.Dispose();
         curStDur.Dispose();
-        enableDebugMsgs.Dispose();
         gravitationalAcc.Dispose();
         groundCastHitSomething.Dispose();
         groundCastNrm.Dispose();
@@ -309,7 +540,6 @@ public struct Cp_BaseData {
         invul.Dispose();
         isAffectedByGravity.Dispose();
         isGrounded.Dispose();
-        isSwitchingActSt.Dispose();
         lastCcVel.Dispose();
         lastKnockbackStr.Dispose();
         lastRecievedHitDir.Dispose();
@@ -320,7 +550,6 @@ public struct Cp_BaseData {
         mov_yawSpd.Dispose();
         mov_linAcc.Dispose();
         occupied.Dispose();
-        prevSt.Dispose();
         st_AtkHorSlash_Impact_AngSpd.Dispose();
         st_AtkHorSlash_Windup_MaxAngSpd.Dispose();
         st_AtkJump_DownSpeedAfterJumpFinished.Dispose();
@@ -340,6 +569,28 @@ public struct Cp_BaseData {
     }
 }
 
+public struct Cp_NonUnityCompClassRefs {
+    public Cp_ActSts actSts;
+    public IFsmSt_Cp st_cur;
+    public IFsmSt_Cp st_prev;
+
+    public Cp_NonUnityCompClassRefs(int cpId) {
+        actSts = new Cp_ActSts(cpId);
+        st_cur = null;
+        st_prev = null;
+    }
+}
+
+/// <summary>
+/// Per capsule pawn data.
+/// </summary>
+public struct Cp_AosData {
+    public bool isSwitchingSt;
+    public bool enableDebugMsgs;
+}
+
+// TODO: Enemy brain should be its own entity! Also a AoS data layout works better for heavily branching
+// TODO C: and reference-dependent behavior tree!
 public struct Cp_BrainData {
     public NativeArray<float3> agentDesiredVel;
     public NativeArray<float> aggroRange;
@@ -378,6 +629,9 @@ public struct Cp_BrainData {
     }
 }
 
+/// <summary>
+/// Monobehavior (and other Unity Component) references for capsule pawn.
+/// </summary>
 [Serializable]
 public struct Cp_UnityComps {
     public Animator anim;
@@ -387,7 +641,7 @@ public struct Cp_UnityComps {
     public CpHitRecieveHandler hitRecieverHandler;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
-    [HideInInspector] public IHandItemHandle rHandItem;
+    public IHandItem rHandItem;
     public Transform tgt;
     public Transform trf;
 }
@@ -418,25 +672,6 @@ public struct GunData {
 public struct GunCompRefs {
     public GunHandle gunHandle;
     public HitDealer hitDealer0;
-}
-
-public struct HandItemData {
-    public HandItemDataT t;
-    public CpActSt actSt0;
-    public CpActSt actSt1;
-    public CpActSt actSt2;
-
-    public HandItemData(
-        HandItemDataT t,
-        CpActSt actSt0,
-        CpActSt actSt1,
-        CpActSt actSt2
-    ) {
-        this.t = t;
-        this.actSt0 = actSt0;
-        this.actSt1 = actSt1;
-        this.actSt2 = actSt2;
-    }
 }
 
 public struct HitData {
