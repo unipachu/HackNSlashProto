@@ -77,7 +77,7 @@ public class Cp_Atk_BasicRecovery : IFsmSt_Cp {
                 data.inputBuffer_BufferedInput,
                 data.inputBuffer_RemainingTime)
             ) {
-                CpMgr.inst.SwitchToActSt(() => classRefs.actSts.dodge.Enter(),cpId);
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(),cpId);
                 return;
             }
         }

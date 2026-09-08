@@ -16,7 +16,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.falling,
+            CpAnimInfo.Get(CpAnimInfoT.falling),
             4 // TODO: So?
         );
         return this;
@@ -51,7 +51,7 @@ public class CpSt_Falling : IFsmSt_Cp {
             // TODO: Make scriptable object field. This decides if the player will go to
             // TODO C: landing animation or straight to idle.
             if(fallDist > 2) {
-                CpMgr.inst.SwitchToActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
                 return;
             }
             CpUtils.TransitionToFallIdleOrWalk(cpId);

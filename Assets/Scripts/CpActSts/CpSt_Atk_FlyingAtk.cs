@@ -27,7 +27,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.atk_FlyingAtk_Windup,
+            CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Windup),
             0.1f
         );
         return this;
@@ -71,7 +71,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref CpMgr.inst.animEventPlrData[cpId],
                         unityComps[cpId].anim,
-                        CpAnimInfo.atk_FlyingAtk_Recovery
+                        CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Recovery)
                     );
                 }
                 break;
@@ -108,7 +108,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.animEventPlrData[cpId],
                             classRefs.anim,
-                            CpAnimInfo.atk_FlyingAtk_Impact
+                            CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
                         data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
                         break;

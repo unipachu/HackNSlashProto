@@ -17,7 +17,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.fallLanding,
+            CpAnimInfo.Get(CpAnimInfoT.fallLanding),
             // TODO MINOR: You could make this transition faster if falling from higher/faster,
             // TODO MINOR C: e.g. 0.2 if hitting the ground with slow speed, and 0.1 if hitting
             // TODO MINOR C: the ground while fast falling speed.
@@ -55,7 +55,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
                     soaData.inputBuffer_RemainingTime
                 )
             ) {
-                CpMgr.inst.SwitchToActSt(() => classRefs.actSts.dodge.Enter(), cpId);
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cpId);
                 return;
             }
         }

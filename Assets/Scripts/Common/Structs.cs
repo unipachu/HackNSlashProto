@@ -1,11 +1,9 @@
 // TODO: Check if some ints can be converted to short or byte.
 using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.Experimental.GraphView.Port;
 
 /// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
@@ -149,47 +147,36 @@ public struct BtNodeData {
     public BtNodeT t;
 }
 
+public struct ComboNode_Transitions {
+    public IComboNode node_BtnE;
+    public IComboNode node_LShldr;
+    public IComboNode node_NoInput;
+    public IComboNode node_RShldr;
+    public IComboNode node_RTrg;
+}
+
 /// <summary>
 /// Basic impact combo move using a hit dealer (e.g. a melee weapon hit box).<br/>
 /// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
 /// </summary>
-[Serializable]
-// TODO: Passing structs around with interfaces will constantly make copies out of them. Consider turning
-// TODO C: all combo nodes into classes!
-public struct ComboNode_BasicImpact : IComboNode {
-    AnimInfo animInfo;
-    ComboMoveTree comboGraph;
+// TODO: This is a class! So are other combo nodes!
+public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
     HitDealer hitDealer;
-    int node_BtnE;
-    int node_LShldr;
-    int node_NoInput;
-    int node_RShldr;
-    int node_RTrg;
 
+    // TODO: Yeah, anim info currently useds hard coded static structs. Figure out a way.
+    public AnimInfo AnimInfo { get; }
+    public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_BasicImpact(
-        AnimInfo animInfo,
-        ComboMoveTree comboGraph,
-        HitDealer hitDealer,
-        int node_BtnE,
-        int node_LShldr,
-        int node_NoInput,
-        int node_RShldr,
-        int node_RTrg
-    ) {
-        // TODO: add weapon specific hit data.
-        this.animInfo = animInfo;
-        this.comboGraph = comboGraph;
-        this.hitDealer = hitDealer;
-        this.node_BtnE = node_BtnE;
-        this.node_LShldr = node_LShldr;
-        this.node_NoInput = node_NoInput;
-        this.node_RShldr = node_RShldr;
-        this.node_RTrg = node_RTrg;
+    public ComboNode_BasicImpact(UnityEngine.Object ctx, CpAnimInfoT animInfoT) {
+        AnimInfo = CpAnimInfo.Get(animInfoT);
+        IHandItem_HitDealer handItem_HitDealer = (IHandItem_HitDealer)ctx;
+        Debug.Assert(
+            handItem_HitDealer != null,
+            $"{ctx.name} didn't implement {nameof(IHandItem_HitDealer)}",
+            ctx
+        );
+        this.hitDealer = handItem_HitDealer.HitDealer;
     }
-
-    public AnimInfo GetAnimInfo()
-        => animInfo;
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
@@ -199,41 +186,13 @@ public struct ComboNode_BasicImpact : IComboNode {
     }
 
     public IComboNode GetNextNode(BufferableInput input) {
-        switch (input) {
-            case BufferableInput.None: // NOTE: (In most cases) this is used for recovery animations (5.9.2026)
-                if (node_NoInput == -1)
-                    return null;
-                return comboGraph.GetNode(node_NoInput);
-            case BufferableInput.RShldr:
-                if (node_RShldr == -1)
-                    return null;
-                return comboGraph.GetNode(node_RShldr);
-            case BufferableInput.RTrg:
-                if (node_RTrg == -1)
-                    return null;
-                return comboGraph.GetNode(node_RTrg);
-            case BufferableInput.LShldr:
-                if (node_LShldr == -1)
-                    return null;
-                return comboGraph.GetNode(node_LShldr);
-            case BufferableInput.BtnE:
-                if (node_BtnE == -1)
-                    return null;
-                return comboGraph.GetNode(node_BtnE);
-            default:
-                Debug.LogError($"Switch defaulted with {input}");
-                return null;
-        }
-    }
-
-    public int NextNodeI(BufferableInput input) {
         return input switch {
-            BufferableInput.None => node_NoInput,
-            BufferableInput.RShldr => node_RShldr,
-            BufferableInput.RTrg => node_RTrg,
-            BufferableInput.LShldr => node_LShldr,
-            BufferableInput.BtnE => node_BtnE,
-            _ => -1
+            BufferableInput.None => Transitions.node_NoInput,
+            BufferableInput.RShldr => Transitions.node_RShldr,
+            BufferableInput.RTrg => Transitions.node_RTrg,
+            BufferableInput.LShldr => Transitions.node_LShldr,
+            BufferableInput.BtnE => Transitions.node_BtnE,
+            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
         };
     }
 }
@@ -241,67 +200,37 @@ public struct ComboNode_BasicImpact : IComboNode {
 /// <summary>
 /// Recovery move - ends a combo chain and cannot be input canceled to other moves.<br/>
 /// </summary>
-[Serializable]
-public struct ComboNode_BasicRecovery : IComboNode {
-    AnimInfo animInfo;
-
-    public ComboNode_BasicRecovery(AnimInfo animInfo) {
-        this.animInfo = animInfo;
+public class ComboNode_BasicRecovery : IComboNode {
+    // TODO: serialize this
+    public AnimInfo AnimInfo { get; }
+    
+    public ComboNode_BasicRecovery(CpAnimInfoT animInfoT) {
+        AnimInfo = CpAnimInfo.Get(animInfoT);
     }
-
-    public AnimInfo GetAnimInfo()
-        => animInfo;
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicRecovery thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicRecovery.Enter(thisNode.animInfo);
+        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicRecovery.Enter(thisNode.AnimInfo);
     }
 
     public IComboNode GetNextNode(BufferableInput input)
         => null;
-
-    public int NextNodeI(BufferableInput input) {
-        return -1;
-    }
 }
 
 /// <summary>
 /// Windup combo move. Allows input canceling to other moves. <br/>
 /// NOTE: Most windup moves will not allow input canceling - set those node indexes to -1 (5.9.2026)
 /// </summary>
-[Serializable]
-public struct ComboNode_BasicWindup : IComboNode {
-    AnimInfo animInfo;
-    ComboMoveTree comboGraph;
-    int node_BtnE;
-    int node_LShldr;
-    int node_NoInput;
-    int node_RShldr;
-    int node_RTrg;
+public class ComboNode_BasicWindup : IComboNode, IComboNodeTransitionsHolder {
+    // TODO: Yeah, anim info currently useds hard coded static structs. Figure out a way.
+    public AnimInfo AnimInfo { get; set; }
+    public ComboNode_Transitions Transitions { get; set; }
 
-
-    public ComboNode_BasicWindup(
-        AnimInfo animInfo,
-        ComboMoveTree comboGraph,
-        int node_BtnE,
-        int node_LShldr,
-        int node_NoInput,
-        int node_RShldr,
-        int node_RTrg
-    ) {
-        this.animInfo = animInfo;
-        this.comboGraph = comboGraph;
-        this.node_BtnE = node_BtnE;
-        this.node_LShldr = node_LShldr;
-        this.node_NoInput = node_NoInput;
-        this.node_RShldr = node_RShldr;
-        this.node_RTrg = node_RTrg;
+    public ComboNode_BasicWindup(CpAnimInfoT animInfoT) {
+        AnimInfo = CpAnimInfo.Get(animInfoT);
     }
-
-    public AnimInfo GetAnimInfo()
-        => animInfo;
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
@@ -311,41 +240,13 @@ public struct ComboNode_BasicWindup : IComboNode {
     }
 
     public IComboNode GetNextNode(BufferableInput input) {
-        switch (input) {
-            case BufferableInput.None:
-                if (node_NoInput == -1)
-                    return null;
-                return comboGraph.GetNode(node_NoInput);
-            case BufferableInput.RShldr:
-                if (node_RShldr == -1)
-                    return null;
-                return comboGraph.GetNode(node_RShldr);
-            case BufferableInput.RTrg:
-                if (node_RTrg == -1)
-                    return null;
-                return comboGraph.GetNode(node_RTrg);
-            case BufferableInput.LShldr:
-                if (node_LShldr == -1)
-                    return null;
-                return comboGraph.GetNode(node_LShldr);
-            case BufferableInput.BtnE:
-                if (node_BtnE == -1)
-                    return null;
-                return comboGraph.GetNode(node_BtnE);
-            default:
-                Debug.LogError($"Switch defaulted with {input}");
-                return null;
-        }
-    }
-
-    public int NextNodeI(BufferableInput input) {
         return input switch {
-            BufferableInput.None => node_NoInput,
-            BufferableInput.RShldr => node_RShldr,
-            BufferableInput.RTrg => node_RTrg,
-            BufferableInput.LShldr => node_LShldr,
-            BufferableInput.BtnE => node_BtnE,
-            _ => -1
+            BufferableInput.None => Transitions.node_NoInput,
+            BufferableInput.RShldr => Transitions.node_RShldr,
+            BufferableInput.RTrg => Transitions.node_RTrg,
+            BufferableInput.LShldr => Transitions.node_LShldr,
+            BufferableInput.BtnE => Transitions.node_BtnE,
+            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
         };
     }
 }
@@ -659,21 +560,6 @@ public struct CapsuleShape {
     }
 }
 
-public struct GunData {
-    public int atk0Dmg;
-    public int atk1Dmg;
-
-    public GunData(int atk0Dmg, int atk1Dmg) {
-        this.atk0Dmg = atk0Dmg;
-        this.atk1Dmg = atk1Dmg;
-    }
-}
-
-public struct GunCompRefs {
-    public GunHandle gunHandle;
-    public HitDealer hitDealer0;
-}
-
 public struct HitData {
     public AtkData atkData;
     public Vector3 hitWldDir;
@@ -721,10 +607,4 @@ public struct MeleeWeaponData {
         this.atk1Dmg = atk1Dmg;
         this.atk2Dmg = atk2Dmg;
     }
-}
-
-public struct MeleeWeaponCompRefs {
-    public MeleeWeaponHandle meleeWeaponHandle;
-    public HitDealer hitDealer0;
-    public HitDealer hitDealer1;
 }

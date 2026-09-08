@@ -1,14 +1,12 @@
 using System;
 
+/// <summary>
+/// Node in a combo graph used by characters to do combo moves.
+/// </summary>
 public interface IComboNode {
-    AnimInfo GetAnimInfo();
+    AnimInfo AnimInfo { get; }
 
     Func<IFsmSt_Cp> GetEnterFunc(int cpId);
 
     IComboNode GetNextNode(BufferableInput input);
-
-    /// <summary>
-    /// If -1, then doesn't have node.
-    /// </summary>
-    int NextNodeI(BufferableInput input);
 }

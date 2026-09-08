@@ -33,8 +33,8 @@ public static class CpUtils{
         var unityComps = CpMgr.inst.unityComps[cpId];
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
-        if (unityComps.rHandItem is IComboUser) {
-            IComboUser meleeHitDealer = (IComboUser)CpMgr.inst.unityComps[cpId].rHandItem;
+        if (unityComps.rHandItem is IHandItem_Comboer) {
+            IHandItem_Comboer meleeHitDealer = (IHandItem_Comboer)CpMgr.inst.unityComps[cpId].rHandItem;
             switch (input) {
                 case BufferableInput.RShldr:
                     return meleeHitDealer.RShldrComboStart.GetEnterFunc(cpId);
@@ -58,9 +58,9 @@ public static class CpUtils{
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         SwitchToFallingStIfNotGrounded(cpId);
         if (math.all(CpMgr.inst.soaData.input_mov[cpId] != float2.zero))
-            CpMgr.inst.SwitchToActSt(() => classRefs.actSts.walk.Enter(), cpId);
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
         else
-            CpMgr.inst.SwitchToActSt(() => classRefs.actSts.idle.Enter(), cpId);
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public static class CpUtils{
         ) {
             var enterFunc = FindState(input, cpId);
             if (enterFunc != null) {
-                CpMgr.inst.SwitchToActSt(enterFunc, cpId);
+                CpMgr.inst.SwitchActSt(enterFunc, cpId);
                 return true;
             }
         }
@@ -99,7 +99,7 @@ public static class CpUtils{
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
-            CpMgr.inst.SwitchToActSt(() => classRefs.actSts.falling.Enter(), cpId);
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.falling.Enter(), cpId);
             return true;
         }
         return false;
@@ -132,7 +132,7 @@ public static class CpUtils{
             // TODO: This check if faster than trying to get the next node func. However for simplicity you
             // TODO C: could just consume the input, get the func and then check if it's null. You only gain
             // TODO C: perf only when the button actually doesn't change the state which is cheap anyway.
-            comboNode.NextNodeI(input) != -1
+            comboNode.GetNextNode(input) != null
                 && CpInputBuffer.TryConsumeInput(
                     cpId,
                     input,
@@ -140,7 +140,7 @@ public static class CpUtils{
                     data.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.SwitchToActSt(comboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);
+            CpMgr.inst.SwitchActSt(comboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);
             return true;
         }
         return false;

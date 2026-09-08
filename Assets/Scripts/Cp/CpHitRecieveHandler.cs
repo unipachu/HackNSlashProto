@@ -29,15 +29,12 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
-                    Fsm.TrySwitchState(
+                    CpMgr.inst.TrySwitchActSt(
                         () => classRefs.actSts.knockback.Enter(
-                            CpAnimInfo.knockback_Weak_Fwd,
-                            CpAnimInfo.knockback_Weak_Bwd
+                            CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Fwd),
+                            CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Bwd)
                         ),
-                        ref classRefs.st_cur,
-                        ref classRefs.st_prev,
-                        ref aosData.isSwitchingSt,
-                        aosData.enableDebugMsgs
+                        cpId
                     );
                     break;
                 case KnockbackT.Strong:

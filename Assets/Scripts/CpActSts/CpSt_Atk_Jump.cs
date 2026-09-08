@@ -16,7 +16,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.atk_JumpVerSlam,
+            CpAnimInfo.Get(CpAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
         return this;

@@ -20,7 +20,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.dodge,
+            CpAnimInfo.Get(CpAnimInfoT.dodge),
             0.1f
         );
         return this;

@@ -26,7 +26,7 @@ public class CpSt_Atk_BasicWindup : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
-            comboNode.GetAnimInfo(),
+            comboNode.AnimInfo,
             0.1f
         );
         return this;
@@ -39,8 +39,8 @@ public class CpSt_Atk_BasicWindup : IFsmSt_Cp {
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                if (comboNode.NextNodeI(BufferableInput.None) != -1) {
-                    CpMgr.inst.SwitchToActSt(
+                if (comboNode.GetNextNode(BufferableInput.None) != null) {
+                    CpMgr.inst.SwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpId),
                         cpId
                     );

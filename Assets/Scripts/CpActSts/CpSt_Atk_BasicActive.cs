@@ -1,7 +1,6 @@
-// TODO: Rename to BasicImpact.
-using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
+// TODO: Rename to BasicImpact.
 public class CpSt_Atk_BasicActive : IFsmSt_Cp {
     int cpId;
     HitDealer hitDealer;
@@ -27,7 +26,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
-            comboNode.GetAnimInfo(),
+            comboNode.AnimInfo,
             0.1f
         );
         return this;
@@ -42,11 +41,12 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var classRefs = CpMgr.inst.classRefs[cpId];
+        var unityComps = CpMgr.inst.unityComps[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                if (comboNode.NextNodeI(BufferableInput.None) != -1) {
-                    CpMgr.inst.SwitchToActSt(
+                if (comboNode.GetNextNode(BufferableInput.None) != null) {
+                    CpMgr.inst.SwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpId),
                         cpId
                     );
@@ -56,13 +56,13 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
                 // TODO: Item
-                //unityComps.rHandItem.hitDealer.atkData = new(1, KnockbackT.Weak, 1);
-                //unityComps.rHandItem.hitDealer.hitWldDir = unityComps.trf.forward;
-                //unityComps.rHandItem.hitDealer.Activate();
+                hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                hitDealer.hitWldDir = unityComps.trf.forward;
+                hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
-            // TODO: Item
-            //unityComps.rHandItem.hitDealer.Deactivate();
+                hitDealer.Deactivate();
+                break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
                 break;

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// Instantiated melee weapons.
 /// </summary>
 [Obsolete("items no longer use ecs managers")]
-public class MeleeWeaponDatabase : Singleton<MeleeWeaponDatabase>, IHandItemDatabase{
+public class MeleeWeaponDatabase : Singleton<MeleeWeaponDatabase>{
     //public List<MeleeWeaponData> meleeWeaponData;
     //public List<MeleeWeaponCompRefs> meleeWeaponCompRefs;
 

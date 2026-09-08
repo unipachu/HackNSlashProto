@@ -1,17 +1,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(
-    fileName = "HandItemCatalog",
-    menuName = "Hand Item/Catalog"
-)]
+[CreateAssetMenu(fileName = "HandItemCatalog", menuName = "Scriptable Object Data/HandItemCatalog")]
+// TODO: Rename to So_HandItemCatalog. Honestly might be easier if this was just a static/singleton class.
 public class HandItemCatalog : ScriptableObject {
-    [SerializeField] List<So_HandItem> items = new();
+    [SerializeField] List<GameObject> items = new();
 
-    public IReadOnlyList<So_HandItem> Items => items;
+    public IReadOnlyList<GameObject> Items => items;
 
 #if UNITY_EDITOR
-    public void SetItems(List<So_HandItem> newItems) {
+    /// <summary>
+    /// Used for catalogue asset generation.
+    /// </summary>
+    public void SetItems(List<GameObject> newItems) {
         items.Clear();
         items.AddRange(newItems);
     }

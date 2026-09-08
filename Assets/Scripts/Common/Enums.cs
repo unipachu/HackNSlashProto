@@ -1,8 +1,5 @@
 // Add all public enums here.
 
-
-using System;
-
 public enum AtkPhase : byte {
     Windup,
     Impact,
@@ -71,6 +68,12 @@ public enum BtResult : byte {
     Success,
     Failure,
     Running,
+}
+
+public enum ComboNodeT : byte {
+    BasicImpact,
+    BasicRecovery,
+    BasicWindup,
 }
 
 public enum Directions2DVertical : byte {

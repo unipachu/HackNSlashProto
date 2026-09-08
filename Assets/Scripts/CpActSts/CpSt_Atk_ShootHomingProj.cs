@@ -16,7 +16,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.atk_GunShoot_Windup,
+            CpAnimInfo.Get(CpAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
         return this;
@@ -50,7 +50,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.animEventPlrData[cpId],
                             CpMgr.inst.unityComps[cpId].anim,
-                            CpAnimInfo.atk_GunShoot_Recovery
+                            CpAnimInfo.Get(CpAnimInfoT.atk_GunShoot_Recovery)
                         );
                         break;
                     case AtkPhase.Recovery:

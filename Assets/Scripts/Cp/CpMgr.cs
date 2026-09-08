@@ -464,11 +464,12 @@ public class CpMgr : Singleton<CpMgr> {
     // NOTE: This is currently always enters to idle state. (6.9.2026)
     public void SwitchToInitActSt(int cpId) {
         Debug.Log($"{cpId} switching to init state", this);
-        SwitchToActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
+        SwitchActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
-    public void SwitchToActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
+    // TODO: Rename to SwitchActSt
+    public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
         Fsm.SwitchSt(
             enterFunc,
             ref classRefs[cpId].st_cur,
@@ -478,7 +479,8 @@ public class CpMgr : Singleton<CpMgr> {
         );
     }
 
-    public bool TrySwitchToActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
+    // TODO: Rename to TrySwitchActSt
+    public bool TrySwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
         return Fsm.TrySwitchState(
             enterFunc,
             ref classRefs[cpId].st_cur,

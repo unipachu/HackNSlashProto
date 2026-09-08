@@ -1,14 +1,45 @@
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicMeleeWeapon : MonoBehaviour, IComboUser {
-    ComboMoveTree comboTree;
+public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_HitDealer {
+    [SerializeField] HitDealer hitDealer;
+    [SerializeField] So_ComboGraph comboGraphConfig;
 
-    public IComboNode LShldrComboStart => throw new NotImplementedException();
+    List<IComboNode> comboGraph;
 
-    public IComboNode RShldrComboStart => throw new NotImplementedException();
+    public HitDealer HitDealer => hitDealer;
+    public IComboNode LShldrComboStart => null;
+    public IComboNode RShldrComboStart => comboGraph[0];
+    public IComboNode RTrgComboStart => null;
+    public Transform Trf => transform;
 
-    public IComboNode RTrgComboStart => throw new NotImplementedException();
+    void Awake() {
+        // TODO: Not sure if So_ComboGraph has been initialized as of yet.
+        comboGraph = comboGraphConfig.GenerateComboGraph(this);
+        //comboGraph.Add(
+        //    new ComboNode_BasicWindup(
+        //        CpAnimInfo.atk_HorSlash1_Windup,
+        //        comboGraph,
+        //        -1,
+        //        -1,
+        //        1,
+        //        -1,
+        //        -1
+        //    )
+        //);
+        //comboGraph.Add(
+        //    new ComboNode_BasicImpact(
+        //        CpAnimInfo.atk_HorSlash1_Impact,
+        //        comboGraph,
+        //        hitDealer,
+        //        -1,
+        //        -1,
+        //        2,
+        //        -1,
+        //        -1
+        //    )
+        //);
+        //comboGraph.Add(new ComboNode_BasicRecovery(CpAnimInfo.atk_HorSlash1_Recovery));
+    }
 
-    public Transform Trf => throw new NotImplementedException();
 }

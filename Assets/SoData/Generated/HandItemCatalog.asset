@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: HandItemCatalog
   m_EditorClassIdentifier: Assembly-CSharp::HandItemCatalog
   items:
-  - {fileID: 11400000, guid: 6e10a254087fb20469c3709542df5150, type: 2}
+  - {fileID: 4537164938953140185, guid: 97fc28ff73ec7b048ab6dc28b66fe39b, type: 3}
+  - {fileID: 8427959144526498737, guid: 181c3cbef99e68045a1cb907a5a30ac8, type: 3}
+  - {fileID: 8427959144526498737, guid: b8de8630f2e08724b88e4771418a7e39, type: 3}

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Obsolete("weapons no more use ecs managers")]
-public class GunDatabase : Singleton<GunDatabase>, IHandItemDatabase {
+public class GunDatabase : Singleton<GunDatabase> {
     //public List<GunData> gunData;
     //public List<GunCompRefs> gunCompRefs;
 
