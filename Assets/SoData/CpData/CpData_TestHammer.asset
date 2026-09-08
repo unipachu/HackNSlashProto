@@ -17,11 +17,10 @@ MonoBehaviour:
   maxFallSpd: 30
   inputBufferDuration: 0.3
   maxHP: 100
-  initSt: 9
   brain_AggroRange: 20
   brain_AtkRange: 3
-  equip_RHandEquippable: 2
-  enableDebugMsgs: 1
+  rHandItem: 0
+  enableDebugMsgs: 0
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000
   st_AtkHorSlash_Impact_AngSpd: 1200

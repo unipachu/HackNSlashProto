@@ -23,12 +23,18 @@ public static class AnimEventPlr {
     /// <summary>
     /// Starts crossfade and initializes animation event data.
     /// </summary>
+    /// <param name="nrmTransDur">Duration of the transition in the NEXT animation's normalized time.</param>
+    /// <param name="nrmStartOffset">Normalized start time of the next animation.</param>
+    /// <param name="fireEventsBeforeStartOffset">
+    /// Should we fire animations before start offset during first tick?
+    /// </param>
     public static void CrossfadeNInitAnimEventPlr(
         ref AnimEventPlrData animEventPlrData,
         Animator anim,
         AnimInfo animInfo,
         float nrmTransDur = 0.1f,
-        float startOffset = 0
+        float nrmStartOffset = 0,
+        bool fireEventsBeforeStartOffset = true
     ) {
         //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {nrmTransDur}, and "
         //    + $"startOffset: {startOffset}.");
@@ -36,12 +42,12 @@ public static class AnimEventPlr {
             animInfo.shortNameHash,
             nrmTransDur,
             animInfo.animLayer,
-            startOffset
+            nrmStartOffset
         );
         InitAnimEventPlrData(
             ref animEventPlrData,
             animInfo,
-            startOffset
+            nrmStartOffset
         );
     }
 
@@ -75,6 +81,21 @@ public static class AnimEventPlr {
             return;
         }
         float curTotalNrmT = info.normalizedTime;
+        if (firstTickHelper && data.fireEventsBeforeStartOffset) {
+            FireEventsInNrmRange(
+                caId,
+                data,
+                0,
+                data.cursor,
+                true,
+                animEventAction
+            );
+            // If event started new animation, return.
+            if (data.firstTick)
+                return;
+            // Prevent event at start offset from fireing again.
+            firstTickHelper = false;
+        }
         if (!data.animInfo.looping) {
             FireEventsInNrmRange(
                 caId,
@@ -84,7 +105,8 @@ public static class AnimEventPlr {
                 firstTickHelper,
                 animEventAction
             );
-            // NOTE: If data was reinitialized during firing of animation events, exit tick.
+            // NOTE: If data was reinitialized during firing of animation events (because we started new
+            // NOTE C: animation, exit tick.
             if (data.firstTick)
                 return;
             if (curTotalNrmT >= 1)
@@ -188,12 +210,11 @@ public static class AnimEventPlr {
     /// animation events for the next animation.<br/>
     /// NOTE: THE ANIMATION EVENTS NEED TO BE SORTED ASCENDING BY NORMALIZED TIME!!!
     /// </summary>
-    // TODO: There should probably be a bool which decides whether we should fire events before the startOffset
-    // TODO C: during the first tick and it should by default be true.
     static void InitAnimEventPlrData(
         ref AnimEventPlrData animEventPlrData,
         AnimInfo animInfo,
-        float startOffset = 0
+        float startOffset = 0,
+        bool fireEventsBeforeStartOffset = true
     ) {
         animEventPlrData.animInfo = animInfo;
         animEventPlrData.prevTotalNrmT = startOffset;
@@ -202,6 +223,7 @@ public static class AnimEventPlr {
         animEventPlrData.loopsSinceRebase = 0;
         animEventPlrData.finished = false;
         animEventPlrData.firstTick = true;
+        animEventPlrData.fireEventsBeforeStartOffset = fireEventsBeforeStartOffset;
     }
 
     /// <summary>

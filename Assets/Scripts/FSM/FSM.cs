@@ -1,20 +1,17 @@
 using System;
 using UnityEngine;
 
-// TODO: Ask chatgpt if this summary is correct.
 /// <summary>
-/// Reusable finite state machine. Allows states to be initialized with different data with a delegate enter
-/// state method.
+/// Reusable finite state machine.
 /// </summary>
-// TODO: You will likely need separate references to states since we want to keep them generic here (but not
-// TODO C: elsewhere), but for the other fields of this class: make them into a struct, move them to CpMgr,
-// TODO C: and make this class static.
 public static class Fsm {
     /// <summary>
-    /// Takes in a "EnterState" method which returns the state to be entered. Func supports parameters through
-    /// lambda expression: () => someState.Enter(SomeType someDataRequiredByState) <br/>
-    /// NOTE: This will force state transition. Before calling this you should probably check 
-    /// <see cref="IFsmSt.CanSwitchTo{TState}"/>. (4.9.2026)
+    /// Takes in a <paramref name="enterSt"/> which is supposed to initialize and return the state to be
+    /// entered. <see cref="Func{TResult}"/> supports parameters through lambda expression:<br/>
+    /// () => someState.Enter(SomeType someDataRequiredByState)<br/>
+    /// NOTE: Calling this will force state transition. Before calling this you should probably check 
+    /// <see cref="IFsmSt.CanSwitchTo{TState}"/>, or call <see cref="TrySwitchState{TState}"/>
+    /// instead. (8.9.2026)
     /// </summary>
     public static void SwitchSt<TState>(
         Func<TState> enterSt,

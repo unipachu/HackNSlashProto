@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class CpSt_Dodge : IFsmSt_Cp {
@@ -44,15 +43,13 @@ public class CpSt_Dodge : IFsmSt_Cp {
             angSpd,
             float.PositiveInfinity
         );
-        if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+        if (data.actStSt_BufferedInputStSwitchAllowed[cpId] && CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;
     }
 
-    public void LateTick() {
-    }
+    public void LateTick() {}
 
-    public void PhysicsTick() {
-    }
+    public void PhysicsTick() {}
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var classRefs = CpMgr.inst.unityComps[cpId];

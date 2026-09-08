@@ -1,6 +1,5 @@
 using System;
 using Unity.Mathematics;
-using Unity.VisualScripting.FullSerializer;
 
 /// <summary>
 /// Capsule pawn general util methods. Consider organizing these better!
@@ -35,18 +34,17 @@ public static class CpUtils{
             return () => classRefs.actSts.dodge.Enter();
         if (unityComps.rHandItem is IHandItem_Comboer) {
             IHandItem_Comboer meleeHitDealer = (IHandItem_Comboer)CpMgr.inst.unityComps[cpId].rHandItem;
-            switch (input) {
-                case BufferableInput.RShldr:
-                    return meleeHitDealer.RShldrComboStart.GetEnterFunc(cpId);
-                case BufferableInput.RTrg:
-                    return meleeHitDealer.RTrgComboStart.GetEnterFunc(cpId);
-                case BufferableInput.LShldr:
-                    return meleeHitDealer.LShldrComboStart.GetEnterFunc(cpId);
-                default:
-                    break;
-            }
+            return input switch {
+                BufferableInput.RShldr => GetEnterFunc(meleeHitDealer.RShldrComboStart, cpId),
+                BufferableInput.RTrg => GetEnterFunc(meleeHitDealer.RTrgComboStart, cpId),
+                BufferableInput.LShldr => GetEnterFunc(meleeHitDealer.LShldrComboStart, cpId),
+                _ => StructUtils.LogErrorForInput<BufferableInput, Func<IFsmSt_Cp>>(input)
+            };
         }
         return null;
+        // Helper
+        static Func<IFsmSt_Cp> GetEnterFunc(IComboNode comboStart, int cpId)
+            => comboStart == null ? null : comboStart.GetEnterFunc(cpId);
     }
 
     /// <summary>

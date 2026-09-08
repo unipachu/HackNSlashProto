@@ -4,28 +4,20 @@ using UnityEngine;
 /// <summary>
 /// Makes a public field visible, but readonly in the inspector.
 /// </summary>
-//TODO: For some reasons arrays and lists get always shown normally when public, even when this script tells inspector to show them otherwise.
-//TODO: You can make sure that if the object reference is a class, the inspector will show the lowest child in the inheritance tree of that class.
+//NOTE: For some reasons arrays and lists get always shown normally when public, even when this script tells inspector to show them otherwise.
+//NOTE C: You can make sure that if the object reference is a class, the inspector will show the lowest child in the inheritance tree of that class.
 [CustomPropertyDrawer(typeof(ShowOnlyAttribute))]
-public class ShowOnlyDrawer : PropertyDrawer
-{
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-    {
+public class ShowOnlyDrawer : PropertyDrawer{
+    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label){
         string valueStr = "";
-        if (property.propertyType == SerializedPropertyType.ObjectReference)
-        {
+        if (property.propertyType == SerializedPropertyType.ObjectReference){
             // For object reference properties, check if the value isn't null
             if (property.objectReferenceValue != null)
-            {
                 EditorGUI.LabelField(position, label.text, property.objectReferenceValue.name);
-            }
             else
-            {
                 EditorGUI.LabelField(position, label.text, "NULL");
-            }
         }
-        switch (property.propertyType)
-        {
+        switch (property.propertyType){
             /*
             case SerializedPropertyType.Generic:
                 //valueStr = property.name;
@@ -46,30 +38,20 @@ public class ShowOnlyDrawer : PropertyDrawer
             case SerializedPropertyType.Color:
                 valueStr = property.colorValue.ToString();
                 break;
-
             case SerializedPropertyType.ObjectReference:
                 valueStr = "(Rect property type not yet supported, you might want to uncomment the line below)";
                 // For object reference properties, check if the value isn't null
                 if (property.objectReferenceValue != null)
-                {
                     valueStr = property.objectReferenceValue.name;
-                }
                 else
-                {
                     valueStr = "NULL Object Reference";
-                }
                 break;
-
             case SerializedPropertyType.LayerMask:
                 int layerMaskValue = property.intValue;
                 valueStr = "Layers used: ";
                 for (int i = 0; i < 32; i++)
-                {
                     if (((1 << i) & layerMaskValue) != 0)
-                    {
                         valueStr += (LayerMask.LayerToName(i) + " ");
-                    }
-                }
                 break;
             case SerializedPropertyType.Enum:
                 valueStr = property.enumDisplayNames[property.enumValueIndex];
@@ -145,7 +127,6 @@ public class ShowOnlyDrawer : PropertyDrawer
                 valueStr = "(property type not supported)";
                 break;
         }
-
         EditorGUI.LabelField(position, label.text, valueStr);
     }
 }

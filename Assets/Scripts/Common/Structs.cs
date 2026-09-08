@@ -113,6 +113,10 @@ public struct AnimEventPlrData {
     /// </summary>
     public bool finished;
     /// <summary>
+    /// 
+    /// </summary>
+    public bool fireEventsBeforeStartOffset;
+    /// <summary>
     /// Is this the first tick of the animation?
     /// </summary>
     public bool firstTick;
