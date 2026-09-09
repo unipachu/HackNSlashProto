@@ -1,23 +1,19 @@
 using UnityEngine;
 
-// TODO: Rename to BasicImpact.
-public class CpSt_Atk_BasicActive : IFsmSt_Cp {
+public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
+    IComboNode comboNode;
     int cpId;
     HitDealer hitDealer;
-    IComboNode comboNode;
+    HitEffects hitEffects;
 
-    public CpSt_Atk_BasicActive(int cpId) {
+    public CpSt_Atk_BasicImpact(int cpId) {
         this.cpId = cpId;
     }
 
-    public CpSt_Atk_BasicActive Enter(
-        // TODO: Weapon stats should affect attack. Implement them to the combo node at some point.
-        //int baseDmg,
-        IComboNode comboNode,
-        HitDealer hitDealer
-    ) {
+    public CpSt_Atk_BasicImpact Enter(HitEffects hitEffects, IComboNode comboNode, HitDealer hitDealer) {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
+        this.hitEffects = hitEffects;
         var data = CpMgr.inst.soaData;
         var unityComps = CpMgr.inst.unityComps;
         data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
@@ -55,8 +51,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                // TODO: Item
-                hitDealer.atkData = new(1, KnockbackT.Weak, 1);
+                hitDealer.hitEffects = hitEffects;
                 hitDealer.hitWldDir = unityComps.trf.forward;
                 hitDealer.Activate();
                 break;
@@ -78,8 +73,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
         var classRefs = CpMgr.inst.unityComps[cpId];
         float angSpd = 0;
         if (data.actStSt_InputRotAllowed[cpId])
-            // TODO: Change the name of this to generic yaw speed.
-            angSpd = data.st_AtkHorSlash_Impact_AngSpd[cpId];
+            angSpd = data.actStSt_Impact_YawSpd[cpId];
         CpUtils.UpdateMovData(
             cpId,
             data,
@@ -91,13 +85,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (CpUtils.TryComboTransition(BufferableInput.RShldr, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.RTrg, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.BtnE, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.LShldr, comboNode, cpId))
+        if (data.actStSt_ComboAllowed[cpId] && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
             return;
     }
 }

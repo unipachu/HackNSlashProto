@@ -96,6 +96,8 @@ public static class AnimEventPlr {
             // Prevent event at start offset from fireing again.
             firstTickHelper = false;
         }
+        float dTotalNrmT = curTotalNrmT - data.prevTotalNrmT;
+        data.prevTotalNrmT = curTotalNrmT;
         if (!data.animInfo.looping) {
             FireEventsInNrmRange(
                 caId,
@@ -114,8 +116,6 @@ public static class AnimEventPlr {
             data.cursor = Mathf.Min(curTotalNrmT, 1);
             return;
         }
-        float dTotalNrmT = curTotalNrmT - data.prevTotalNrmT;
-        data.prevTotalNrmT = curTotalNrmT;
         int stepsTaken = 0;
         while (dTotalNrmT > 0) {
             float toLoopEnd = 1 - data.cursor;

@@ -14,6 +14,7 @@ public class CpSt_Knockback_Weak : IFsmSt_Cp{
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => typeof(TState) == typeof(CpSt_Knockback_Weak) ? true : false;
 
+    // TODO: Maybe choose the animation before entering?
     public CpSt_Knockback_Weak Enter(AnimInfo knockbackAnimInfoFwd, AnimInfo knockbackAnimInfoBwd) {
         Cp_SoaData data = CpMgr.inst.soaData;
         Vector3 viewVec = new Vector3(
@@ -33,22 +34,21 @@ public class CpSt_Knockback_Weak : IFsmSt_Cp{
                 knockbackAnimInfoFwd,
                 0.1f
             );
-        }
-        else {
+        }else
             AnimEventPlr.CrossfadeNInitAnimEventPlr(
                 ref CpMgr.inst.animEventPlrData[cpId],
                 CpMgr.inst.unityComps[cpId].anim,
                 knockbackAnimInfoBwd,
                 0.1f
             );
-        }
         return this;
     }
 
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
-        //if (CapsuleCharActStUtils.SwitchToFallingStIfNotGrounded(id, data))
+        //if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
         //    return;
+        //Debug.Log($"knocback: {data.lastKnockbackStr[cpId]}\nanim delta: {data.animDPos[cpId]}");
         CpUtils.UpdateMovData(
             cpId,
             data,

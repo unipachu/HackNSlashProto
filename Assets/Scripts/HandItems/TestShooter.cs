@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public class TestShooter : MonoBehaviour {
     [SerializeField] bool shoot = true;
-    [SerializeField] AtkData atkData = new(10, KnockbackT.Weak, 0.5f);
+    [SerializeField] HitEffects atkData = new(10, KnockbackT.Weak, 0.5f);
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;

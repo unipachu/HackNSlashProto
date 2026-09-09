@@ -84,8 +84,11 @@ public struct AnimEvent {
 public struct AnimEventPlrData {
     public AnimInfo animInfo;
     /// <summary>
-    /// Last frame's normalized time from the animator.
-    /// NOTE: This will go over 1.
+    /// Last frame's normalized time from the animator.<br/>
+    /// NOTE: This will go over 1 if animation loops.<br/>
+    /// NOTE 2: This resets to 0 when <see cref="AnimEventPlr.CrossfadeNInitAnimEventPlr"/> is called and thus is
+    /// safe to use after a state switch even if <see cref="Animator"/> has not been updated
+    /// for the new state yet.
     /// </summary>
     public float prevTotalNrmT;
     /// <summary>
@@ -106,7 +109,8 @@ public struct AnimEventPlrData {
     /// </summary>
     public bool finished;
     /// <summary>
-    /// 
+    /// When starting new animation with offset start time, should we still fire the event from
+    /// earlier in the animation?
     /// </summary>
     public bool fireEventsBeforeStartOffset;
     /// <summary>
@@ -116,7 +120,7 @@ public struct AnimEventPlrData {
 }
 
 [Serializable]
-public struct AtkData {
+public struct HitEffects {
     public int dmg;
     public KnockbackT knockbackT;
     /// <summary>
@@ -124,7 +128,7 @@ public struct AtkData {
     /// </summary>
     public float knockbackStr;
 
-    public AtkData(int dmg, KnockbackT knockbackT, float knockbackStr) {
+    public HitEffects(int dmg, KnockbackT knockbackT, float knockbackStr) {
         this.dmg = dmg;
         this.knockbackT = knockbackT;
         this.knockbackStr = knockbackStr;
@@ -144,6 +148,17 @@ public struct BtNodeData {
     public BtNodeT t;
 }
 
+[Serializable]
+public struct ComboNodeConfig {
+    public ComboNodeT t;
+    public CpAnimInfoT animInfo;
+    public byte node_BtnE;
+    public byte node_LShldr;
+    public byte node_NoInput;
+    public byte node_RShldr;
+    public byte node_RTrg;
+}
+
 public struct ComboNode_Transitions {
     public IComboNode node_BtnE;
     public IComboNode node_LShldr;
@@ -156,9 +171,9 @@ public struct ComboNode_Transitions {
 /// All action states available for capsule pawn.
 /// </summary>
 public struct Cp_ActSts {
-    public CpSt_Atk_BasicActive atk_BasicImpact;
-    public CpSt_Atk_BasicWindup atk_BasicWindup;
-    public Cp_Atk_BasicRecovery atk_BasicRecovery;
+    public CpSt_Atk_BasicImpact atk_BasicImpact;
+    public CpSt_Atk_BasicBranch atk_BasicWindup;
+    public CpSt_Atk_BasicRecovery atk_BasicRecovery;
     public CpSt_Atk_FlyingAtk atk_FlyingAtk;
     public CpSt_Atk_Jump atk_Jump;
     public CpSt_Atk_ShootHomingProj atk_ShootHomingProj;
@@ -191,7 +206,7 @@ public struct Cp_SoaData {
     public NativeArray<bool> actStSt_ComboAllowed;
     public NativeArray<bool> actStSt_DodgeAllowed;
     public NativeArray<float> actStSt_FallingStartHgt;
-    public NativeArray<bool> actStSt_ImpactFinished;
+    public NativeArray<float> actStSt_Impact_YawSpd;
     public NativeArray<bool> actStSt_InputRotAllowed;
     public NativeArray<float> actStSt_RecoveryMotInterpTimer;
     public NativeArray<float3> animDPos;
@@ -224,22 +239,22 @@ public struct Cp_SoaData {
     public NativeArray<float> lastKnockbackStr;
     public NativeArray<float3> lastRecievedHitDir;
     public NativeArray<float2> movInput_tgtHorDir;
-    public NativeArray<float3> mov_animRootMot;
+    /// <summary>
+    /// Action states can set this to the delta animation, or any other value. It is then applied (ignoring
+    /// acceleration) after other linear movement calculations (ignoring acceleration).
+    /// </summary>
+    public NativeArray<float3> movInput_additionalLinMov;
     public NativeArray<float> movInput_tgtHorSpd;
     public NativeArray<float> movInput_yawSpd;
     public NativeArray<float> movInput_horAcc;
     // To keep track of which indices are actually used for entitites.
     public NativeArray<bool> occupied; // <- This is important!
-    public NativeArray<float> st_AtkHorSlash_Impact_AngSpd;
     public NativeArray<float> st_AtkHorSlash_Windup_MaxAngSpd;
     public NativeArray<float> st_AtkJump_DownSpeedAfterJumpFinished;
     public NativeArray<float> st_Dodge_YawSpd;
     public NativeArray<float> st_Falling_LandingStFallDistThreshold;
-    public NativeArray<float> st_Falling_LinAcc;
-    public NativeArray<float> st_Falling_MaxLinSpd;
-    public NativeArray<float> st_Walk_LinAcc;
-    public NativeArray<float> st_Walk_MaxLinSpd;
-    public NativeArray<float> st_Walk_YawSpd;
+    public NativeArray<float> st_Falling_HorAcc;
+    public NativeArray<float> st_Falling_TgtHorSpd;
     public NativeArray<float3> trf_lossyScl;
     public NativeArray<float3> trf_pos;
     public NativeArray<quaternion> trf_rot;
@@ -251,61 +266,63 @@ public struct Cp_SoaData {
     /// Current vertical (Y) velocity.
     /// </summary>
     public NativeArray<float> vel_Ver;
+    public NativeArray<float> walkLinAcc;
+    public NativeArray<float> walkMaxLinSpd;
+    public NativeArray<float> walkYawSpd;
 
     public static Cp_SoaData Create(int capacity) {
         return new Cp_SoaData {
-            actStSt_AtkPhase = StructUtils.Alloc<AtkPhase>(capacity),
-            actStSt_BufferedInputStSwitchAllowed = StructUtils.Alloc<bool>(capacity),
-            actStSt_ComboAllowed = StructUtils.Alloc<bool>(capacity),
-            actStSt_DodgeAllowed = StructUtils.Alloc<bool>(capacity),
-            actStSt_FallingStartHgt = StructUtils.Alloc<float>(capacity),
-            actStSt_ImpactFinished = StructUtils.Alloc<bool>(capacity),
-            actStSt_InputRotAllowed = StructUtils.Alloc<bool>(capacity),
-            actStSt_RecoveryMotInterpTimer = StructUtils.Alloc<float>(capacity),
-            animDPos = StructUtils.Alloc<float3>(capacity),
-            animDRot = StructUtils.Alloc<quaternion>(capacity),
-            curStDur = StructUtils.Alloc<float>(capacity),
-            groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
-            groundCastNrm = StructUtils.Alloc<float3>(capacity),
-            groundSnapVerDownSpd = StructUtils.Alloc<float>(capacity),
-            hp_Cur = StructUtils.Alloc<int>(capacity),
-            hp_Max = StructUtils.Alloc<int>(capacity),
-            input_mov = StructUtils.Alloc<float2>(capacity),
-            input_mov_LastNonZero = StructUtils.Alloc<float2>(capacity),
-            input_mov_WhenLastSwitchedSt = StructUtils.Alloc<float2>(capacity),
-            input_atk_Light = StructUtils.Alloc<bool>(capacity),
-            input_atk_Heavy = StructUtils.Alloc<bool>(capacity),
-            input_atk_Ult = StructUtils.Alloc<bool>(capacity),
-            input_dodge = StructUtils.Alloc<bool>(capacity),
-            inputBuffer_BufferedInput = StructUtils.Alloc<BufferableInput>(capacity),
-            inputBuffer_RemainingTime = StructUtils.Alloc<float>(capacity),
-            invul = StructUtils.Alloc<bool>(capacity),
-            isAffectedByGravity = StructUtils.Alloc<bool>(capacity),
-            isGrounded = StructUtils.Alloc<bool>(capacity),
-            lastCcVel = StructUtils.Alloc<float3>(capacity),
-            lastKnockbackStr = StructUtils.Alloc<float>(capacity),
-            lastRecievedHitDir = StructUtils.Alloc<float3>(capacity),
-            movInput_tgtHorDir = StructUtils.Alloc<float2>(capacity),
-            mov_animRootMot = StructUtils.Alloc<float3>(capacity),
-            movInput_tgtHorSpd = StructUtils.Alloc<float>(capacity),
-            movInput_yawSpd = StructUtils.Alloc<float>(capacity),
-            movInput_horAcc = StructUtils.Alloc<float>(capacity),
-            occupied = StructUtils.Alloc<bool>(capacity),
-            st_AtkHorSlash_Impact_AngSpd = StructUtils.Alloc<float>(capacity),
-            st_AtkHorSlash_Windup_MaxAngSpd = StructUtils.Alloc<float>(capacity),
-            st_AtkJump_DownSpeedAfterJumpFinished = StructUtils.Alloc<float>(capacity),
-            st_Dodge_YawSpd = StructUtils.Alloc<float>(capacity),
-            st_Falling_LandingStFallDistThreshold = StructUtils.Alloc<float>(capacity),
-            st_Falling_LinAcc = StructUtils.Alloc<float>(capacity),
-            st_Falling_MaxLinSpd = StructUtils.Alloc<float>(capacity),
-            st_Walk_LinAcc = StructUtils.Alloc<float>(capacity),
-            st_Walk_MaxLinSpd = StructUtils.Alloc<float>(capacity),
-            st_Walk_YawSpd = StructUtils.Alloc<float>(capacity),
-            trf_pos = StructUtils.Alloc<float3>(capacity),
-            trf_rot = StructUtils.Alloc<quaternion>(capacity),
-            trf_lossyScl = StructUtils.Alloc<float3>(capacity),
-            vel_Hor = StructUtils.Alloc<float2>(capacity),
-            vel_Ver = StructUtils.Alloc<float>(capacity),
+            actStSt_AtkPhase = GeneralUtils.Alloc<AtkPhase>(capacity),
+            actStSt_BufferedInputStSwitchAllowed = GeneralUtils.Alloc<bool>(capacity),
+            actStSt_ComboAllowed = GeneralUtils.Alloc<bool>(capacity),
+            actStSt_DodgeAllowed = GeneralUtils.Alloc<bool>(capacity),
+            actStSt_FallingStartHgt = GeneralUtils.Alloc<float>(capacity),
+            actStSt_InputRotAllowed = GeneralUtils.Alloc<bool>(capacity),
+            actStSt_RecoveryMotInterpTimer = GeneralUtils.Alloc<float>(capacity),
+            animDPos = GeneralUtils.Alloc<float3>(capacity),
+            animDRot = GeneralUtils.Alloc<quaternion>(capacity),
+            curStDur = GeneralUtils.Alloc<float>(capacity),
+            groundCastHitSomething = GeneralUtils.Alloc<bool>(capacity),
+            groundCastNrm = GeneralUtils.Alloc<float3>(capacity),
+            groundSnapVerDownSpd = GeneralUtils.Alloc<float>(capacity),
+            hp_Cur = GeneralUtils.Alloc<int>(capacity),
+            hp_Max = GeneralUtils.Alloc<int>(capacity),
+            input_mov = GeneralUtils.Alloc<float2>(capacity),
+            input_mov_LastNonZero = GeneralUtils.Alloc<float2>(capacity),
+            input_mov_WhenLastSwitchedSt = GeneralUtils.Alloc<float2>(capacity),
+            input_atk_Light = GeneralUtils.Alloc<bool>(capacity),
+            input_atk_Heavy = GeneralUtils.Alloc<bool>(capacity),
+            input_atk_Ult = GeneralUtils.Alloc<bool>(capacity),
+            input_dodge = GeneralUtils.Alloc<bool>(capacity),
+            inputBuffer_BufferedInput = GeneralUtils.Alloc<BufferableInput>(capacity),
+            inputBuffer_RemainingTime = GeneralUtils.Alloc<float>(capacity),
+            invul = GeneralUtils.Alloc<bool>(capacity),
+            isAffectedByGravity = GeneralUtils.Alloc<bool>(capacity),
+            isGrounded = GeneralUtils.Alloc<bool>(capacity),
+            lastCcVel = GeneralUtils.Alloc<float3>(capacity),
+            lastKnockbackStr = GeneralUtils.Alloc<float>(capacity),
+            lastRecievedHitDir = GeneralUtils.Alloc<float3>(capacity),
+            movInput_tgtHorDir = GeneralUtils.Alloc<float2>(capacity),
+            movInput_additionalLinMov = GeneralUtils.Alloc<float3>(capacity),
+            movInput_tgtHorSpd = GeneralUtils.Alloc<float>(capacity),
+            movInput_yawSpd = GeneralUtils.Alloc<float>(capacity),
+            movInput_horAcc = GeneralUtils.Alloc<float>(capacity),
+            occupied = GeneralUtils.Alloc<bool>(capacity),
+            actStSt_Impact_YawSpd = GeneralUtils.Alloc<float>(capacity),
+            st_AtkHorSlash_Windup_MaxAngSpd = GeneralUtils.Alloc<float>(capacity),
+            st_AtkJump_DownSpeedAfterJumpFinished = GeneralUtils.Alloc<float>(capacity),
+            st_Dodge_YawSpd = GeneralUtils.Alloc<float>(capacity),
+            st_Falling_LandingStFallDistThreshold = GeneralUtils.Alloc<float>(capacity),
+            st_Falling_HorAcc = GeneralUtils.Alloc<float>(capacity),
+            st_Falling_TgtHorSpd = GeneralUtils.Alloc<float>(capacity),
+            walkLinAcc = GeneralUtils.Alloc<float>(capacity),
+            walkMaxLinSpd = GeneralUtils.Alloc<float>(capacity),
+            walkYawSpd = GeneralUtils.Alloc<float>(capacity),
+            trf_pos = GeneralUtils.Alloc<float3>(capacity),
+            trf_rot = GeneralUtils.Alloc<quaternion>(capacity),
+            trf_lossyScl = GeneralUtils.Alloc<float3>(capacity),
+            vel_Hor = GeneralUtils.Alloc<float2>(capacity),
+            vel_Ver = GeneralUtils.Alloc<float>(capacity),
         };
     }
 
@@ -315,7 +332,6 @@ public struct Cp_SoaData {
         actStSt_ComboAllowed.Dispose();
         actStSt_DodgeAllowed.Dispose();
         actStSt_FallingStartHgt.Dispose();
-        actStSt_ImpactFinished.Dispose();
         actStSt_InputRotAllowed.Dispose();
         actStSt_RecoveryMotInterpTimer.Dispose();
         animDPos.Dispose();
@@ -342,21 +358,21 @@ public struct Cp_SoaData {
         lastKnockbackStr.Dispose();
         lastRecievedHitDir.Dispose();
         movInput_tgtHorDir.Dispose();
-        mov_animRootMot.Dispose();
+        movInput_additionalLinMov.Dispose();
         movInput_tgtHorSpd.Dispose();
         movInput_yawSpd.Dispose();
         movInput_horAcc.Dispose();
         occupied.Dispose();
-        st_AtkHorSlash_Impact_AngSpd.Dispose();
+        actStSt_Impact_YawSpd.Dispose();
         st_AtkHorSlash_Windup_MaxAngSpd.Dispose();
         st_AtkJump_DownSpeedAfterJumpFinished.Dispose();
         st_Dodge_YawSpd.Dispose();
         st_Falling_LandingStFallDistThreshold.Dispose();
-        st_Falling_LinAcc.Dispose();
-        st_Falling_MaxLinSpd.Dispose();
-        st_Walk_LinAcc.Dispose();
-        st_Walk_MaxLinSpd.Dispose();
-        st_Walk_YawSpd.Dispose();
+        st_Falling_HorAcc.Dispose();
+        st_Falling_TgtHorSpd.Dispose();
+        walkLinAcc.Dispose();
+        walkMaxLinSpd.Dispose();
+        walkYawSpd.Dispose();
         trf_lossyScl.Dispose();
         trf_pos.Dispose();
         trf_rot.Dispose();
@@ -383,10 +399,9 @@ public struct Cp_NonUnityCompClassRefs {
 public struct Cp_AosData {
     public bool isSwitchingSt;
     public bool enableDebugMsgs;
+    public float st_AtkFlying_TgtHorSpd;
 }
 
-// TODO: Enemy brain should be its own entity! Also a AoS data layout works better for heavily branching
-// TODO C: and reference-dependent behavior tree!
 public struct Cp_BrainData {
     public float3 agentDesiredVel;
     public float aggroRange;
@@ -430,17 +445,16 @@ public struct CapsuleShape {
 }
 
 public struct HitData {
-    public AtkData atkData;
+    public HitEffects atkData;
     public Vector3 hitWldDir;
 
-    public HitData(AtkData atkData, Vector3 hitWldDir) {
+    public HitData(HitEffects atkData, Vector3 hitWldDir) {
         this.atkData = atkData;
         this.hitWldDir = hitWldDir;
     }
 }
 
 public struct HitResult {
-    // TODO:
     public bool wasInvul;
     public bool wasBlocked;
 

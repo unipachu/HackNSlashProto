@@ -33,7 +33,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                     case AtkPhase.Windup:
                         // TODO: Make into So data
                         HomingProjMovData projData;
-                        AtkData atkData = new(10, KnockbackT.Weak, 0.5f);
+                        HitEffects atkData = new(10, KnockbackT.Weak, 0.5f);
                         float spd = 5;
                         float maxLifetime = 10;
                         float homingStr = 2;

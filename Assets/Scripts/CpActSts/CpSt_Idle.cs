@@ -41,7 +41,7 @@ public class CpSt_Idle : IFsmSt_Cp {
                 data.input_mov_LastNonZero[cpId],
                 float3.zero,
                 0,
-                data.st_Walk_YawSpd[cpId],
+                data.walkYawSpd[cpId],
                 float.PositiveInfinity
             );
         else

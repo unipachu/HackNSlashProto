@@ -4,6 +4,7 @@ using UnityEngine;
 public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     int cpId;
     HitDealer hitDealer;
+    HitEffects hitEffects;
 
     public CpSt_Atk_FlyingAtk(int cpId) {
         this.cpId = cpId;
@@ -12,17 +13,17 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     public bool CanSwitchTo<TState>() where TState : IFsmSt 
         => typeof(TState) == typeof(CpSt_Falling) ? false : true;
 
-    public CpSt_Atk_FlyingAtk Enter(HitDealer hitDealer) {
+    public CpSt_Atk_FlyingAtk Enter(HitEffects hitEffects, HitDealer hitDealer) {
+        this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
-        Cp_SoaData data = CpMgr.inst.soaData;
-        data.invul[cpId] = true;
-        data.isAffectedByGravity[cpId] = false;
-        data.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
-        data.actStSt_ImpactFinished[cpId] = false;
+        Cp_SoaData soaData = CpMgr.inst.soaData;
+        soaData.invul[cpId] = true;
+        soaData.isAffectedByGravity[cpId] = false;
+        soaData.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
         CpInputBuffer.Clear(
             cpId,
-            data.inputBuffer_BufferedInput,
-            data.inputBuffer_RemainingTime
+            soaData.inputBuffer_BufferedInput,
+            soaData.inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
@@ -42,7 +43,8 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
 
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
-        Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
+        Cp_UnityComps unityComps = CpMgr.inst.unityComps[cpId];
+        var aosData = CpMgr.inst.aosData[cpId];
         switch (data.actStSt_AtkPhase[cpId]) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovData(
@@ -50,7 +52,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     data,
                     data.input_mov[cpId],
                     data.animDPos[cpId],
-                    2, // TODO: To So field
+                    aosData.st_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
                 );
@@ -61,16 +63,16 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     data,
                     data.input_mov[cpId],
                     data.animDPos[cpId],
-                    2, // TODO: To So parameter.
+                    aosData.st_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
                 );
-                if (data.isGrounded[cpId] && data.actStSt_ImpactFinished[cpId]) {
+                if (data.isGrounded[cpId]) {
                     hitDealer.Deactivate();
                     data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref CpMgr.inst.animEventPlrData[cpId],
-                        unityComps[cpId].anim,
+                        unityComps.anim,
                         CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Recovery)
                     );
                 }
@@ -92,65 +94,44 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         }
     }
 
-    public void LateTick() {
-    }
+    public void LateTick() {}
 
-    public void PhysicsTick() {
-    }
+    public void PhysicsTick() {}
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var data = CpMgr.inst.soaData;
-        var classRefs = CpMgr.inst.unityComps[cpId];
+        var soaData = CpMgr.inst.soaData;
+        var unityComps = CpMgr.inst.unityComps[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (data.actStSt_AtkPhase[cpId]) {
+                switch (soaData.actStSt_AtkPhase[cpId]) {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.animEventPlrData[cpId],
-                            classRefs.anim,
+                            unityComps.anim,
                             CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
-                        data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
+                        soaData.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
                         break;
                     case AtkPhase.Impact:
-                        data.isAffectedByGravity[cpId] = true;
-                        data.actStSt_ImpactFinished[cpId] = true;
-                        // TODO: Set this in base data.
-                        data.vel_Ver[cpId] = -40;
+                        // NOTE: During impact we stop applying vertical animation root motion, and intead
+                        // NOTE C: use gravity. Because of the animation logic however, the vertical movement
+                        // NOTE C: caused by root motion is saved and used next tick as the starting downwards
+                        // NOTE C: velocity when gravity acceleration is applied.
+                        soaData.isAffectedByGravity[cpId] = true;
                         break;
                     case AtkPhase.Recovery:
                         CpUtils.TransitionToFallIdleOrWalk(cpId);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}");
+                        Debug.LogError($"Switch defaulted with {soaData.actStSt_AtkPhase[cpId]}");
                         break;
                 }
-                CpUtils.TransitionToFallIdleOrWalk(cpId);
-                break;
-            case CpAnimEventT.BufferedInputStSwitchAllowed:
-                break;
-            case CpAnimEventT.ComboAllowed:
-                break;
-            case CpAnimEventT.ComboDisallowed:
-                break;
-            case CpAnimEventT.DodgeAllowed:
                 break;
             case CpAnimEventT.HitDealerActivated:
-                // TODO: Item
-                //unityComps.rHandItem.aoeHitDealer.atkData = new(1, KnockbackT.Weak, 5);
-                //unityComps.rHandItem.aoeHitDealer.Activate();
-                break;
-            case CpAnimEventT.HitDealerDeactivated:
-                break;
-            case CpAnimEventT.InvulEnd:
-                break;
-            case CpAnimEventT.AirtimeEnded:
-                break;
-            case CpAnimEventT.AirtimeStarted:
-                break;
-            case CpAnimEventT.YawDisallowed:
-                break;
-            case CpAnimEventT.YawAllowed:
+                // TODO: below
+                hitDealer.hitEffects = hitEffects;
+                hitDealer.hitWldDir = unityComps.trf.forward;
+                hitDealer.Activate();
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

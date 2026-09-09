@@ -1,5 +1,4 @@
 using System;
-using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
@@ -36,13 +35,7 @@ public class CpMgr : Singleton<CpMgr> {
     // ------------------------------------------------------------
 
     public void FixedTick() {
-        UpdateGroundCheck(
-            soaData.groundCastHitSomething,
-            soaData.groundCastNrm,
-            soaData.isGrounded,
-            soaData.occupied,
-            unityComps
-        );
+        UpdateGroundCheck();
         FixedTick_Fsm();
     }
 
@@ -55,25 +48,17 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
-    static void UpdateGroundCheck(
-        NativeArray<bool> groundCastHitSomething,
-        NativeArray<float3> groundCastNrm,
-        NativeArray<bool> isGrounded,
-        NativeArray<bool> occupied,
-        Cp_UnityComps[] unityComp
-    ) {
-        for (int i = 0; i < unityComp.Length; i++) {
-            if (!occupied[i])
+    void UpdateGroundCheck() {
+        for (int i = 0; i < soaData.occupied.Length; i++) {
+            if (!soaData.occupied[i])
                 continue;
-            // TODO MINOR: Maybe there's a way not not use a local variable?
-            bool hitSomething = false;
-            isGrounded[i] = CcMov.IsGrounded(
-                unityComp[i].cc,
-                out hitSomething,
+            soaData.isGrounded[i] = CcMov.IsGrounded(
+                unityComps[i].cc,
+                out bool hitSomething,
                 out RaycastHit groundCastResult
             );
-            groundCastHitSomething[i] = hitSomething;
-            groundCastNrm[i] = groundCastResult.normal;
+            soaData.groundCastHitSomething[i] = hitSomething;
+            soaData.groundCastNrm[i] = groundCastResult.normal;
         }
     }
 
@@ -294,14 +279,18 @@ public class CpMgr : Singleton<CpMgr> {
                 // NOTE C: sliding down a slope. (9.9.2026)
                 CcMov.ApplyGravityNSlideDownSlopes(i, dt);
             else
+                // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
+                // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
+                // NOTE C: for vertical movement.
                 soaData.vel_Ver[i] = 0;
-            // NOTE: Currently animation root delta only affects linear movement.
-            Vector3 totalMov = soaData.animDPos[i];
-            totalMov.x += soaData.vel_Hor[i].x * dt;
-            totalMov.y += soaData.vel_Ver[i] * dt;
-            totalMov.z += soaData.vel_Hor[i].y * dt;
+            // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
+            Vector3 totalMov = (Vector3)soaData.movInput_additionalLinMov[i]
+                + new Vector3(soaData.vel_Hor[i].x, soaData.vel_Ver[i], soaData.vel_Hor[i].y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
             unityComps[i].cc.Move(totalMov);
+            // Save final velocity back to cp data.
+            soaData.vel_Hor[i] = new float2(totalMov.x, totalMov.z) / dt;
+            soaData.vel_Ver[i] = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
             unityComps[i].navMeshAgent.nextPosition = unityComps[i].trf.position;
         }
@@ -397,6 +386,7 @@ public class CpMgr : Singleton<CpMgr> {
         brainData[freeI].inAtkRange = false;
         brainData[freeI].tgtPos = float3.zero;
         // Structure of arrays data
+        soaData.actStSt_Impact_YawSpd[freeI] = so.impact_YawSpd;
         soaData.curStDur[freeI] = 0;
         soaData.groundCastHitSomething[freeI] = false;
         soaData.groundCastNrm[freeI] = float3.zero;
@@ -416,25 +406,25 @@ public class CpMgr : Singleton<CpMgr> {
         soaData.lastCcVel[freeI] = float3.zero;
         soaData.lastKnockbackStr[freeI] = 0;
         soaData.lastRecievedHitDir[freeI] = float3.zero;
-        soaData.st_AtkHorSlash_Impact_AngSpd[freeI] = so.st_AtkHorSlash_Impact_AngSpd;
-        soaData.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_MaxAngSpd;
+        soaData.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_YawSpd;
         soaData.st_AtkJump_DownSpeedAfterJumpFinished[freeI] = so.st_AtkJump_DownSpeedAfterJumpFinished;
         soaData.st_Dodge_YawSpd[freeI] = so.st_Dodge_YawAngSpd;
         soaData.st_Falling_LandingStFallDistThreshold[freeI] = so.st_Falling_LandingStFallDistThreshold;
-        soaData.st_Falling_LinAcc[freeI] = so.st_Falling_LinAcc;
-        soaData.st_Falling_MaxLinSpd[freeI] = so.st_Falling_MaxLinSpd;
-        soaData.st_Walk_LinAcc[freeI] = so.st_Walk_LinAcc;
-        soaData.st_Walk_MaxLinSpd[freeI] = so.st_Walk_MaxLinSpd;
-        soaData.st_Walk_YawSpd[freeI] = so.st_Walk_MaxAngSpd;
+        soaData.st_Falling_HorAcc[freeI] = so.st_Falling_HorAcc;
+        soaData.st_Falling_TgtHorSpd[freeI] = so.st_Falling_TgtHorSpd;
         soaData.trf_pos[freeI] = float3.zero;
         soaData.trf_rot[freeI] = quaternion.identity;
         soaData.trf_lossyScl[freeI] = new float3(1);
         soaData.vel_Hor[freeI] = float2.zero;
         soaData.vel_Ver[freeI] = 0;
         soaData.occupied[freeI] = true;
+        soaData.walkLinAcc[freeI] = so.walkHorAcc;
+        soaData.walkMaxLinSpd[freeI] = so.walkTgtHorSpd;
+        soaData.walkYawSpd[freeI] = so.walkYawSpd;
         // Array of structs data.
         this.aosData[freeI] = new();
         aosData[freeI].enableDebugMsgs = so.enableDebugMsgs;
+        aosData[freeI].st_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
         this.unityComps[freeI] = unityComps;
         this.classRefs[freeI] = new Cp_NonUnityCompClassRefs(freeI);
         // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
@@ -460,25 +450,23 @@ public class CpMgr : Singleton<CpMgr> {
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
-    // TODO: Rename to SwitchActSt
     public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
         Fsm.SwitchSt(
             enterFunc,
             ref classRefs[cpId].st_cur,
             ref classRefs[cpId].st_prev,
-            ref aosData[cpId].isSwitchingSt,
-            aosData[cpId].enableDebugMsgs
+            ref aosData[cpId].isSwitchingSt
+            //aosData[cpId].enableDebugMsgs
         );
     }
 
-    // TODO: Rename to TrySwitchActSt
     public bool TrySwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
         return Fsm.TrySwitchState(
             enterFunc,
             ref classRefs[cpId].st_cur,
             ref classRefs[cpId].st_prev,
-            ref aosData[cpId].isSwitchingSt,
-            aosData[cpId].enableDebugMsgs
+            ref aosData[cpId].isSwitchingSt
+            //aosData[cpId].enableDebugMsgs
         );
     }
 

@@ -322,7 +322,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   maxColliders: 100
-  atkData:
+  hitEffects:
     dmg: 0
     knockbackT: 0
     knockbackStr: 0
@@ -372,14 +372,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitDealer
   capsules:
-  - pt0: {x: 0, y: 0.25, z: 1.36}
-    pt1: {x: 0, y: 0.25, z: 1.36}
+  - pt0: {x: 0, y: 0, z: 1.36}
+    pt1: {x: 0, y: 0, z: 1.36}
     r: 2
   capsuleLayerMask:
     serializedVersion: 2
     m_Bits: 512
   maxColliders: 50
-  atkData:
+  hitEffects:
     dmg: 0
     knockbackT: 0
     knockbackStr: 0
@@ -556,5 +556,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d74ecfbc5336f043b65c8cfdeb30013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicMeleeWeapon
+  hitEffects:
+    dmg: 1
+    knockbackT: 1
+    knockbackStr: 2
   hitDealer: {fileID: 5092167040023849340}
-  comboGraphConfig: {fileID: 11400000, guid: d1ec75a1036a5b748aec2a2c07c9b000, type: 2}
+  comboGraphConfig: {fileID: 11400000, guid: 02bcf95f24773d446b057837fabd71b7, type: 2}

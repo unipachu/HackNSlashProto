@@ -3695,7 +3695,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: avoidancePriority
@@ -4127,6 +4127,7 @@ MonoBehaviour:
   isGroundedChkDist: 0.1
   inputBuffer_Dur: 0.3
   maxFallSpd: 30
+  gravitationalAcc: 10
 --- !u!4 &900887753
 Transform:
   m_ObjectHideFlags: 0
@@ -4174,7 +4175,7 @@ MonoBehaviour:
   camMovByInputAllowed: 1
   horSpd: 360
   verSpd: 360
-  tiltOfs: 30
+  tiltOfs: 25
   tiltMult: 0.25
   invY: 1
   plrCtrl: {fileID: 83296388}
@@ -7950,7 +7951,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!54 &1874560243
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -8071,7 +8072,7 @@ MonoBehaviour:
   pingPong: 1
   smoothMov: 1
   pingPongPt0: {x: 8.23, y: -0.36, z: -23.24}
-  pingPongPt1: {x: 8.23, y: 8.45, z: -22.72}
+  pingPongPt1: {x: 8.23, y: 20, z: -22.72}
   pingPongDur: 2
   rotate: 0
   axis: {x: 0, y: 1, z: 0}

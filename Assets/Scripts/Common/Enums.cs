@@ -34,6 +34,31 @@ public enum CpAnimEventT {
     YawAllowed,
 }
 
+/// <summary>
+/// All animation states of capsule pawn.
+/// </summary>
+public enum CpAnimInfoT {
+    atk_FlyingAtk_Impact,
+    atk_FlyingAtk_Recovery,
+    atk_FlyingAtk_Windup,
+    atk_GunShoot_Recovery,
+    atk_GunShoot_Windup,
+    atk_HorSlash0_Impact,
+    atk_HorSlash0_Recovery,
+    atk_HorSlash0_Windup,
+    atk_HorSlash1_Impact,
+    atk_HorSlash1_Recovery,
+    atk_HorSlash2_Impact,
+    atk_JumpVerSlam,
+    dodge,
+    falling,
+    fallLanding,
+    idle,
+    knockback_Weak_Bwd,
+    knockback_Weak_Fwd,
+    walk
+}
+
 public enum BtNodeT : byte {
     Cmd_Atk1,
     Cmd_Idle,
@@ -53,7 +78,7 @@ public enum BtResult : byte {
 public enum ComboNodeT : byte {
     BasicImpact,
     BasicRecovery,
-    BasicWindup,
+    BasicBranch,
 }
 
 public enum Directions2DVertical : byte {

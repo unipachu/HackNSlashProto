@@ -25,6 +25,7 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
             data.lastRecievedHitDir[cpId] = hitData.hitWldDir;
             data.lastKnockbackStr[cpId] = hitData.atkData.knockbackStr;
+            //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");
             switch (hitData.atkData.knockbackT) {
                 case KnockbackT.None:
                     break;
@@ -38,6 +39,7 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                     );
                     break;
                 case KnockbackT.Strong:
+                    Debug.LogError("Strong knockback not implemented!", this);
                     // TODO: Try enter strong knockback state.
                     break;
                 default:

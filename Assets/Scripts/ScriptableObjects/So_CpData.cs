@@ -9,6 +9,10 @@ public class So_CpData : ScriptableObject {
     [Tooltip("If pawn succeeds isGrounded check, this is the vertical velocity "
         + "used to snap slightly hovering pawn to the ground.")]
     public float groundSnapVerDownSpd = 1000;
+    public float impact_YawSpd = 1200;
+    public float walkHorAcc = 100;
+    public int walkTgtHorSpd = 5;
+    public float walkYawSpd = 1000;
 
     [Header("Input Settings")]
     [Tooltip("How long should inputs stay in the buffer (in sec)?")]
@@ -27,28 +31,24 @@ public class So_CpData : ScriptableObject {
     [Header("Debug")]
     public bool enableDebugMsgs = false;
 
+    [Header("St_AtkFlying")]
+    public float st_AtkFlying_TgtHorSpeed = 2;
+
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
     public float st_AtkJump_DownSpeedAfterJumpFinished = 10;
 
     [Header("St_AtkHorSlash")]
-    public float st_AtkHorSlash_Windup_MaxAngSpd = 1000;
-    public float st_AtkHorSlash_Impact_AngSpd = 1200;
+    public float st_AtkHorSlash_Windup_YawSpd = 1000;
 
     [Header("St_Falling")]
     [Tooltip("The distance the pawn needs to fall to enter landing animation when "
         + "hitting the ground.")]
-    public float st_Falling_LandingStFallDistThreshold = 3;
-    // TODO: Probably should be called "horizontal input based acceleration". Same for
-    // TODO C: other params like this.
-    public float st_Falling_LinAcc = 10;
-    public float st_Falling_MaxLinSpd = 1;
+    public float st_Falling_LandingStFallDistThreshold = 2;
+    public float st_Falling_HorAcc = 10;
+    [Tooltip("Gives horizontal air control.")]
+    public float st_Falling_TgtHorSpd = 1;
 
     [Header("St_Dodge")]
     public float st_Dodge_YawAngSpd = 400;
-
-    [Header("St_Walk")]
-    public float st_Walk_LinAcc = 100;
-    public int st_Walk_MaxLinSpd = 5;
-    public float st_Walk_MaxAngSpd = 1000;
 }

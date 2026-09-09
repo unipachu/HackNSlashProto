@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +14,7 @@ public class So_ComboGraph : ScriptableObject {
         }
     };
 
-public List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx) {
+    public List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx) {
         List<IComboNode> nodeList = new();
         for (int i = 0; i < nodes.Count; i++) {
             switch (nodes[i].t) {
@@ -25,7 +24,7 @@ public List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx) {
                 case ComboNodeT.BasicRecovery:
                     nodeList.Add(new ComboNode_BasicRecovery(nodes[i].animInfo));
                     break;
-                case ComboNodeT.BasicWindup:
+                case ComboNodeT.BasicBranch:
                     nodeList.Add(new ComboNode_BasicWindup(nodes[i].animInfo));
                     break;
                 default:
@@ -50,17 +49,4 @@ public List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx) {
         // Helper
         IComboNode GetNode(byte index) => index == byte.MaxValue ? null : nodeList[index];
     }
-}
-
-// TODO: Move to structs file after you figure out property drawers.
-[Serializable]
-public struct ComboNodeConfig {
-    public ComboNodeT t;
-    public CpAnimInfoT animInfo;
-    // TODO: Not all nodes use transitions. Could I make property drawers for this?
-    public byte node_BtnE;
-    public byte node_LShldr;
-    public byte node_NoInput;
-    public byte node_RShldr;
-    public byte node_RTrg;
 }

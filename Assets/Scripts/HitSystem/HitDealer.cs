@@ -11,7 +11,7 @@ public class HitDealer : MonoBehaviour {
     [SerializeField] int maxColliders = 100;
 
     // Update these before activating the hit dealer and during activation if needed.
-    [HideInInspector] public AtkData atkData;
+    [HideInInspector] public HitEffects hitEffects;
     [HideInInspector] public Vector3 hitWldDir;
 
     bool isActive;
@@ -92,7 +92,7 @@ public class HitDealer : MonoBehaviour {
                 HitReceiver hitReceiver =
                     overlapCapsuleResults[colliderIndex].GetComponent<HitReceiver>();
                 if (hitReceiver != null)
-                    TryDealHit(hitReceiver, new HitData(atkData, hitWldDir));
+                    TryDealHit(hitReceiver, new HitData(hitEffects, hitWldDir));
             }
         }
     }

@@ -39,9 +39,9 @@ public class CpSt_Walk : IFsmSt_Cp {
             data,
             data.input_mov[cpId],
             float3.zero,
-            data.st_Walk_MaxLinSpd[cpId],
-            data.st_Walk_YawSpd[cpId],
-            data.st_Walk_LinAcc[cpId]
+            data.walkMaxLinSpd[cpId],
+            data.walkYawSpd[cpId],
+            data.walkLinAcc[cpId]
         );
         if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;

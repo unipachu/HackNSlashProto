@@ -1,23 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// Basic attack windup state.
+/// Basic branching combo state. Basically any combo move that doesn't have any extra functionality (in
+/// addition to the animation events) except to switch to next combo node (by input or by animation events).
 /// </summary>
-// TODO: Maybe rename this to "BasicCombo" because it could be used by other than windups as well,
-// TODO C: basically any combo move that doesn't have any extra functionality except to switch to next
-// TODO C: combo move by action or by animation finished. (6.9.2025)
-public class CpSt_Atk_BasicWindup : IFsmSt_Cp {
+public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     int cpId;
     IComboNode comboNode;
 
-    public CpSt_Atk_BasicWindup(int cpId) {
+    public CpSt_Atk_BasicBranch(int cpId) {
         this.cpId = cpId;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_Atk_BasicWindup Enter(IComboNode comboNode) {
+    public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
         Cp_SoaData data = CpMgr.inst.soaData;
         Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
@@ -71,13 +69,7 @@ public class CpSt_Atk_BasicWindup : IFsmSt_Cp {
         // NOTE: Windup can be optionally canceled. (5.9.2026)
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (CpUtils.TryComboTransition(BufferableInput.RShldr, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.RTrg, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.BtnE, comboNode, cpId))
-            return;
-        if (CpUtils.TryComboTransition(BufferableInput.LShldr, comboNode, cpId))
+        if (data.actStSt_ComboAllowed[cpId] && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
             return;
     }
 }

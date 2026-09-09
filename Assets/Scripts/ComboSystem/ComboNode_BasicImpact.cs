@@ -6,27 +6,31 @@ using UnityEngine;
 /// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
 /// </summary>
 public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
-    HitDealer hitDealer;
+    IHandItem_Hitter hitter;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
     public ComboNode_BasicImpact(UnityEngine.Object ctx, CpAnimInfoT animInfoT) {
         AnimInfo = CpAnimInfo.Get(animInfoT);
-        IHandItem_HitDealer handItem_HitDealer = (IHandItem_HitDealer)ctx;
+        IHandItem_Hitter handItem_HitDealer = (IHandItem_Hitter)ctx;
         Debug.Assert(
             handItem_HitDealer != null,
-            $"{ctx.name} didn't implement {nameof(IHandItem_HitDealer)}",
+            $"{ctx.name} didn't implement {nameof(IHandItem_Hitter)}",
             ctx
         );
-        hitDealer = handItem_HitDealer.HitDealer;
+        hitter = handItem_HitDealer;
     }
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicImpact thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicImpact.Enter(thisNode, thisNode.hitDealer);
+        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicImpact.Enter(
+            thisNode.hitter.HitEffects,
+            thisNode,
+            thisNode.hitter.HitDealer
+        );
     }
 
     public IComboNode GetNextNode(BufferableInput input) {
@@ -36,7 +40,7 @@ public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
             BufferableInput.RTrg => Transitions.node_RTrg,
             BufferableInput.LShldr => Transitions.node_LShldr,
             BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
+            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
         };
     }
 }

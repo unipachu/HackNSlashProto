@@ -93,7 +93,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     /// </summary>
     public void ShootProj(
         HomingProjMovData projData,
-        AtkData atkData,
+        HitEffects atkData,
         Vector3 wldStartPos,
         Vector3 wldStartDir,
         Transform tgt
@@ -116,7 +116,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
             Quaternion.LookRotation(wldStartDir)
         );
         proj.gameObject.SetActive(true);
-        proj.hitDealer.atkData = atkData;
+        proj.hitDealer.hitEffects = atkData;
         proj.hitDealer.Activate();
     }
 

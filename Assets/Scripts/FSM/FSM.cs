@@ -18,7 +18,7 @@ public static class Fsm {
         ref TState curSt,
         ref TState prevSt,
         ref bool isSwitchingSt,
-        bool logMsg,
+        bool logMsg = false,
         Action<TState> stSwitched = null
     ) where TState : IFsmSt {
 #if UNITY_EDITOR
@@ -49,7 +49,7 @@ public static class Fsm {
         ref TState curSt,
         ref TState prevSt,
         ref bool isSwitchingSt,
-        bool logMsg,
+        bool logMsg = false,
         Action<TState> stSwitched = null
     ) where TState : IFsmSt{
         if (curSt != null && !curSt.CanSwitchTo<TState>())

@@ -26,7 +26,7 @@ public class ComboNode_BasicWindup : IComboNode, IComboNodeTransitionsHolder {
             BufferableInput.RTrg => Transitions.node_RTrg,
             BufferableInput.LShldr => Transitions.node_LShldr,
             BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
+            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
         };
     }
 }

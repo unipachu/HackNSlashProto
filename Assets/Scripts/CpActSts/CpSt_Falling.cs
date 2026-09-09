@@ -40,17 +40,13 @@ public class CpSt_Falling : IFsmSt_Cp {
             soaData,
             float2.zero,
             float3.zero,
-            // TODO MINOR: You could use st_Falling_MaxLinSpd in here + hor input to
-            // TODO MINOR: allow for slight air control.
+            soaData.st_Falling_TgtHorSpd[cpId],
             0,
-            0,
-            soaData.st_Falling_LinAcc[cpId]
+            soaData.st_Falling_HorAcc[cpId]
         );
         if (soaData.isGrounded[cpId]){
             float fallDist = soaData.actStSt_FallingStartHgt[cpId] - soaData.trf_pos[cpId].y;
-            // TODO: Make scriptable object field. This decides if the player will go to
-            // TODO C: landing animation or straight to idle.
-            if(fallDist > 2) {
+            if(fallDist > soaData.st_Falling_LandingStFallDistThreshold[cpId]) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
                 return;
             }

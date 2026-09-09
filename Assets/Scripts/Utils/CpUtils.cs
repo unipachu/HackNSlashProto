@@ -25,22 +25,38 @@ public static class CpUtils{
     /// <summary>
     /// Finds next state to transition to based on input and held items. Returns null if no applicable
     /// state found.<br/>
-    /// NOTE: For combo chain transitions, use: <see cref="TryComboTransition"/>. (6.9.2026)
+    /// NOTE: Use this when transitioning from neutral states like walk or idle. For combo chain transitions,
+    /// use: <see cref="TryComboTransition"/>. (6.9.2026)
     /// </summary>
-    public static Func<IFsmSt_Cp> FindState(BufferableInput input, int cpId) {
+    public static Func<IFsmSt_Cp> FindStateEnterFunc(BufferableInput input, int cpId) {
         var classRefs = CpMgr.inst.classRefs[cpId];
         var unityComps = CpMgr.inst.unityComps[cpId];
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
-        if (unityComps.rHandItem is IHandItem_Comboer) {
-            IHandItem_Comboer meleeHitDealer = (IHandItem_Comboer)CpMgr.inst.unityComps[cpId].rHandItem;
-            return input switch {
-                BufferableInput.RShldr => GetEnterFunc(meleeHitDealer.RShldrComboStart, cpId),
-                BufferableInput.RTrg => GetEnterFunc(meleeHitDealer.RTrgComboStart, cpId),
-                BufferableInput.LShldr => GetEnterFunc(meleeHitDealer.LShldrComboStart, cpId),
-                _ => StructUtils.LogErrorForInput<BufferableInput, Func<IFsmSt_Cp>>(input)
+        if (unityComps.rHandItem is IHandItem_Comboer comboer) {
+            Func<IFsmSt_Cp> enter = input switch {
+                BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpId),
+                BufferableInput.RTrg => GetEnterFunc(comboer.RTrgComboStart, cpId),
+                BufferableInput.LShldr => GetEnterFunc(comboer.LShldrComboStart, cpId),
+                _ => GeneralUtils.LogErrorForInput<BufferableInput, Func<IFsmSt_Cp>>(input)
             };
+            if (enter != null)
+                return enter;
         }
+        // TODO: You should make these "combo" moves, this is just a temp solution.
+        if (unityComps.rHandItem is IHandItem_Hitter hitter) {
+            if(input == BufferableInput.LShldr)
+                return () => classRefs.actSts.atk_FlyingAtk.Enter(
+                    new HitEffects(1, KnockbackT.Weak, 5),
+                    hitter.HitDealer
+                );
+            if(input == BufferableInput.RTrg)
+                return () => classRefs.actSts.atk_Jump.Enter(
+                    new HitEffects(1, KnockbackT.Weak, 1),
+                    hitter.HitDealer
+                );
+        }
+
         return null;
         // Helper
         static Func<IFsmSt_Cp> GetEnterFunc(IComboNode comboStart, int cpId)
@@ -69,19 +85,18 @@ public static class CpUtils{
         var classRefs = CpMgr.inst.classRefs[cpId];
         var soaData = CpMgr.inst.soaData;
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
+        Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
         if (
-            CpInputBuffer.TryConsumeInput(
-                cpId,
-                input,
-                soaData.inputBuffer_BufferedInput,
-                soaData.inputBuffer_RemainingTime
-            )
+            enterFunc != null
+                && CpInputBuffer.TryConsumeInput(
+                    cpId,
+                    input,
+                    soaData.inputBuffer_BufferedInput,
+                    soaData.inputBuffer_RemainingTime
+                )
         ) {
-            var enterFunc = FindState(input, cpId);
-            if (enterFunc != null) {
-                CpMgr.inst.SwitchActSt(enterFunc, cpId);
-                return true;
-            }
+            CpMgr.inst.SwitchActSt(enterFunc, cpId);
+            return true;
         }
         return false;
     }
@@ -106,23 +121,33 @@ public static class CpUtils{
     public static void UpdateMovData(
         int id,
         Cp_SoaData data,
-        in float2 horMov,
-        in float3 animRootMov,
-        float tgtLinSpd,
+        in float2 tgtHorDir,
+        in float3 additionalLinMov,
+        float tgtHorSpd,
         float yawSpd,
-        float linAcc
+        float horAcc
     ) {
-        data.movInput_tgtHorDir[id] = horMov;
-        data.mov_animRootMot[id] = animRootMov;
-        data.movInput_tgtHorSpd[id] = tgtLinSpd;
+        data.movInput_tgtHorDir[id] = tgtHorDir;
+        data.movInput_additionalLinMov[id] = additionalLinMov;
+        data.movInput_tgtHorSpd[id] = tgtHorSpd;
         data.movInput_yawSpd[id] = yawSpd;
-        data.movInput_horAcc[id] = linAcc;
+        data.movInput_horAcc[id] = horAcc;
     }
+
+    /// <summary>
+    /// Transitions to any existing next combo node that require input if such input was buffered.
+    /// Immediately returns true if successfully switched state.
+    /// </summary>
+    public static bool TryAnyComboInputTransition(int cpId, IComboNode curComboNode)
+    => TryComboTransition(BufferableInput.RShldr, curComboNode, cpId)
+        || TryComboTransition(BufferableInput.RTrg, curComboNode, cpId)
+        || TryComboTransition(BufferableInput.BtnE, curComboNode, cpId)
+        || TryComboTransition(BufferableInput.LShldr, curComboNode, cpId);
 
     /// <summary>
     /// Returns true if successfully transitioned to the next action state of the combo.
     /// </summary>
-    public static bool TryComboTransition(BufferableInput input, IComboNode comboNode, int cpId) {
+    static bool TryComboTransition(BufferableInput input, IComboNode curComboNode, int cpId) {
         var data = CpMgr.inst.soaData;
         var classRefs = CpMgr.inst.classRefs[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
@@ -130,7 +155,7 @@ public static class CpUtils{
             // TODO: This check if faster than trying to get the next node func. However for simplicity you
             // TODO C: could just consume the input, get the func and then check if it's null. You only gain
             // TODO C: perf only when the button actually doesn't change the state which is cheap anyway.
-            comboNode.GetNextNode(input) != null
+            curComboNode.GetNextNode(input) != null
                 && CpInputBuffer.TryConsumeInput(
                     cpId,
                     input,
@@ -138,7 +163,7 @@ public static class CpUtils{
                     data.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.SwitchActSt(comboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);
+            CpMgr.inst.SwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);
             return true;
         }
         return false;

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e09ef816e9b34bf449f2fd21a20782d9, type: 3}
-  m_Name: ComboGraph_MeleeTest
+  m_Name: ComboGraph_3HitMelee
   m_EditorClassIdentifier: Assembly-CSharp::So_ComboGraph
   nodes:
   - t: 2
@@ -25,12 +25,33 @@ MonoBehaviour:
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 2
-    node_RShldr: 255
+    node_RShldr: 3
     node_RTrg: 255
   - t: 1
     animInfo: 6
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 255
+    node_RShldr: 255
+    node_RTrg: 255
+  - t: 0
+    animInfo: 8
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 4
+    node_RShldr: 5
+    node_RTrg: 255
+  - t: 1
+    animInfo: 9
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 255
+    node_RShldr: 255
+    node_RTrg: 255
+  - t: 0
+    animInfo: 10
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 2
     node_RShldr: 255
     node_RTrg: 255

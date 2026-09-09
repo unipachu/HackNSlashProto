@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e09ef816e9b34bf449f2fd21a20782d9, type: 3}
+  m_Name: ComboGraph_MeleeSingleHit
+  m_EditorClassIdentifier: Assembly-CSharp::So_ComboGraph
+  nodes:
+  - t: 2
+    animInfo: 7
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 1
+    node_RShldr: 255
+    node_RTrg: 255
+  - t: 0
+    animInfo: 5
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 2
+    node_RShldr: 255
+    node_RTrg: 255
+  - t: 1
+    animInfo: 6
+    node_BtnE: 255
+    node_LShldr: 255
+    node_NoInput: 255
+    node_RShldr: 255
+    node_RTrg: 255
