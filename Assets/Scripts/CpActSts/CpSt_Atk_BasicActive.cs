@@ -22,7 +22,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
         var unityComps = CpMgr.inst.unityComps;
         data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
         data.actStSt_ComboAllowed[cpId] = false;
-        data.actStSt_ImpactInputRotAllowed[cpId] = false;
+        data.actStSt_InputRotAllowed[cpId] = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
@@ -77,7 +77,7 @@ public class CpSt_Atk_BasicActive : IFsmSt_Cp {
         var data = CpMgr.inst.soaData;
         var classRefs = CpMgr.inst.unityComps[cpId];
         float angSpd = 0;
-        if (data.actStSt_ImpactInputRotAllowed[cpId])
+        if (data.actStSt_InputRotAllowed[cpId])
             // TODO: Change the name of this to generic yaw speed.
             angSpd = data.st_AtkHorSlash_Impact_AngSpd[cpId];
         CpUtils.UpdateMovData(

@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using Unity.VisualScripting.FullSerializer;
 
 public class CpSt_Walk : IFsmSt_Cp {
     int cpId;

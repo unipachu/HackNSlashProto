@@ -19,10 +19,8 @@ public class KinematicRbMover : MonoBehaviour{
     [Header("Refs")]
     [SerializeField] Rigidbody rb;
 
-    // TODO: Use this to choose which target to go towards with ping ponging
     bool movingToPt0;
     float pingPongTimer;
-
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -45,8 +43,7 @@ public class KinematicRbMover : MonoBehaviour{
                 }
             }
         }
-        if (rotate) {
+        if (rotate)
             rb.MoveRotation(Quaternion.AngleAxis(rotSpd * Time.fixedDeltaTime, axis) * rb.rotation);
-        }
     }
 }

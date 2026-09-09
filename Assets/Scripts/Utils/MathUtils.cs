@@ -10,11 +10,8 @@ public static class MathUtils {
     /// <summary>
     /// Applies a rotation offset to a base rotation.
     /// </summary>
-    public static Quaternion AddRotOfs(
-        Quaternion baseRot,
-        Quaternion ofsRot) {
-        return ofsRot * baseRot;
-    }
+    public static Quaternion AddRotOfs(this Quaternion baseRot, Quaternion ofsRot)
+        => ofsRot * baseRot;
 
     /// <summary>
     /// Calculates the parent world pose that aligns the child with the target world pose.
@@ -29,8 +26,8 @@ public static class MathUtils {
         Quaternion tgtWldRot
     ) {
         // Compute the child's current local pose relative to the parent
-        Vector3 childParentSpcPos = InvTrfPtUnscaled(parentPos, parentRot, childWldPos);
-        Quaternion childParentSpcRot = InvTrfRot(parentRot, childWldRot);
+        Vector3 childParentSpcPos = childWldPos.InvTrfPtUnscaled(parentPos, parentRot);
+        Quaternion childParentSpcRot = childWldRot.InvTrfRot(parentRot);
         return AlignLclPoseToTgtPose(childParentSpcPos, childParentSpcRot, tgtWldPos, tgtWldRot);
     }
 
@@ -52,27 +49,21 @@ public static class MathUtils {
     /// Returns the parent's new origin pos whose local space point is at the given world space position.
     /// Basically, this finds a position for parent where its child (localPoint) is aligned with the worldPoint. 
     /// </summary>
-    public static Vector3 AlignLclPtToWldPt(Vector3 wldPt, Quaternion trfRot, Vector3 lclPt) {
-        return wldPt - trfRot * lclPt;
-    }
+    public static Vector3 AlignLclPtToWldPt(Vector3 wldPt, Quaternion trfRot, Vector3 lclPt)
+        => wldPt - trfRot * lclPt;
 
     /// <summary>
     /// Returns the new parent rotation whose local-space rotation matches the given world-space rotation.
     /// Basically, this finds a rotation for the parent where its child (localRot) is aligned with the worldRot.
     /// NOTE: This is equivalent to <see cref="DRot"/>.
     /// </summary>
-    public static Quaternion AlignLclRotToWldRot(Quaternion wldRot, Quaternion lclRot) {
-        return wldRot * Quaternion.Inverse(lclRot);
-    }
+    public static Quaternion AlignLclRotToWldRot(Quaternion wldRot, Quaternion lclRot)
+        => wldRot * Quaternion.Inverse(lclRot);
 
     /// <summary>
     /// Calculates angular velocity from the change between two rotations. Small velocities are rounded to 0.
     /// </summary>
-    public static Vector3 AngVel(
-        Quaternion prevRot,
-        Quaternion curRot,
-        float dt
-    ) {
+    public static Vector3 AngVel(Quaternion prevRot, Quaternion curRot, float dt) {
         Quaternion dRot = DRot(prevRot, curRot);
         dRot.ToAngleAxis(out float angDeg, out Vector3 axis);
         if (angDeg > 180f)
@@ -102,11 +93,7 @@ public static class MathUtils {
     /// <paramref name="axis"/> that exists between <paramref name="fromRot"/>
     /// and <paramref name="toRot"/>.
     /// </summary>
-    public static Quaternion CalculateRelativeTwist(
-        Quaternion fromRot,
-        Quaternion toRot,
-        Vector3 axis
-    ) {
+    public static Quaternion CalculateRelativeTwist(Quaternion fromRot, Quaternion toRot, Vector3 axis) {
         float twistDeg = ExtractSignedTwistAng(fromRot, toRot, axis) * Mathf.Rad2Deg;
         return Quaternion.AngleAxis(twistDeg, axis) * fromRot;
     }
@@ -115,9 +102,8 @@ public static class MathUtils {
     /// Compute the relative rotation between two world space orientations.<br/>
     /// NOTE: This is equivalent to <see cref="AlignLclRotToWldRot"/>.
     /// </summary>
-    public static Quaternion DRot(Quaternion fromRot, Quaternion toRot) {
-        return toRot * Quaternion.Inverse(fromRot);
-    }
+    public static Quaternion DRot(Quaternion fromRot, Quaternion toRot)
+        => toRot * Quaternion.Inverse(fromRot);
 
     /// <summary>
     /// Returns signed angle around an axis (in radians).<br/>
@@ -166,8 +152,8 @@ public static class MathUtils {
     /// Integrates rotation using angular velocity over a time step.
     /// Basically returns new rotation that is rot rotated by the angVel for dt seconds.
     /// </summary>
-    public static Quaternion IntegrateRot(Quaternion rot, Vector3 angVel, float dt) {
-        if (IsNearlyZero(angVel))
+    public static Quaternion IntegrateRot(this Quaternion rot, Vector3 angVel, float dt) {
+        if (angVel.IsNearlyZero())
             return rot;
         return Quaternion.AngleAxis(angVel.magnitude * Mathf.Rad2Deg * dt, angVel.normalized) * rot;
     }
@@ -175,16 +161,14 @@ public static class MathUtils {
     /// <summary>
     /// Transforms a point from world space to frame pose's local space.
     /// </summary>
-    public static Vector3 InvTrfPtUnscaled(Vector3 framePos, Quaternion frameRot, Vector3 ptInWldSpc) {
-        return Quaternion.Inverse(frameRot) * (ptInWldSpc - framePos);
-    }
+    public static Vector3 InvTrfPtUnscaled(this Vector3 ptInWldSpc, Vector3 framePos, Quaternion frameRot)
+        => Quaternion.Inverse(frameRot) * (ptInWldSpc - framePos);
 
     /// <summary>
     /// Converts a world space rotation into the frame rotations's local space rotation.
     /// </summary>
-    public static Quaternion InvTrfRot(Quaternion frameRot, Quaternion worldRot) {
-        return Quaternion.Inverse(frameRot) * worldRot;
-    }
+    public static Quaternion InvTrfRot(this Quaternion worldRot, Quaternion frameRot)
+        => Quaternion.Inverse(frameRot) * worldRot;
 
     /// <summary>
     /// Returns whether <paramref name="x"/> is within the specified inclusive range.
@@ -210,9 +194,8 @@ public static class MathUtils {
     /// Checks whether a vector is approximately zero using its squared
     /// magnitude, avoiding the less performant <see cref="Vector3.magnitude"/>.
     /// </summary>
-    public static bool IsNearlyZero(Vector3 vec, float magThld = 1e-8f) {
-        return vec.sqrMagnitude < magThld;
-    }
+    public static bool IsNearlyZero(this Vector3 vec, float magThld = 1e-8f)
+        => vec.sqrMagnitude < magThld;
 
     /// <summary>
     /// Calculates linear velocity from a previous and current position over a time step.
@@ -229,28 +212,31 @@ public static class MathUtils {
         return ang;
     }
 
+    /// <summary>
+    /// Projects vector onto a plane defined by the planes's normal.
+    /// </summary>
+    public static float3 ProjectOnPlane(this float3 vec, float3 planeNrm)
+        => vec - math.dot(vec, planeNrm) * planeNrm;
+
+    /// <summary>
+    /// Projects vector onto a plane defined by the planes's normal.
+    /// </summary>
+    public static Vector3 ProjectOnPlane(this Vector3 vec, Vector3 planeNrm)
+        => vec - Vector3.Dot(vec, planeNrm) * planeNrm;
+
     /// <returns>
     /// Value mapped from range 1 to range 2.
     /// </returns>
-    public static float Remap(float value, float from1, float to1, float from2, float to2) {
-        return Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, value));
-    }
+    public static float Remap(float value, float from1, float to1, float from2, float to2)
+        => Mathf.Lerp(from2, to2, Mathf.InverseLerp(from1, to1, value));
 
-    public static quaternion RotateTowards(
-        quaternion current,
-        quaternion target,
-        float maxDegreesDelta
-    ) {
+    public static quaternion RotateTowards(this quaternion curRot, quaternion tgtRot, float maxDegreesDelta) {
         float angle = math.degrees(
-            2f * math.acos(math.clamp(
-                math.abs(math.dot(current.value, target.value)),
-                -1f,
-                1f
-            ))
+            2f * math.acos(math.clamp(math.abs(math.dot(curRot.value, tgtRot.value)), -1f, 1f))
         );
         if (angle <= maxDegreesDelta)
-            return target;
-        return math.slerp(current, target, maxDegreesDelta / angle);
+            return tgtRot;
+        return math.slerp(curRot, tgtRot, maxDegreesDelta / angle);
     }
 
     /// <summary>
@@ -313,16 +299,14 @@ public static class MathUtils {
     /// Returns a transformed point from local space to world space using the specified
     /// origin and rotation.
     /// </summary>
-    public static Vector3 TrfPt(Vector3 framePos, Quaternion frameRot, Vector3 lclPt) {
-        return frameRot * lclPt + framePos;
-    }
+    public static Vector3 TrfPt(this Vector3 lclPt, Vector3 framePos, Quaternion frameRot)
+        => frameRot * lclPt + framePos;
 
     /// <summary>
     /// Transforms a local-space rotation into world space using the given frame rotation.
     /// </summary>
-    public static Quaternion TrfRot(Quaternion frameWldRot, Quaternion lclRot) {
-        return frameWldRot * lclRot;
-    }
+    public static Quaternion TrfRot(this Quaternion lclRot, Quaternion frameWldRot)
+        => frameWldRot * lclRot;
 
     /// <summary>
     /// Updates spring object position and rotation using spring-like movement towards a moving target.<br/>
@@ -411,10 +395,6 @@ public static class MathUtils {
         );
         angAcc = Vector3.ClampMagnitude(angAcc, maxTotalAngAcc);
         springObjAngVel += angAcc * dt;
-        springObjRot = IntegrateRot(
-            springObjRot,
-            springObjAngVel,
-            dt
-        );
+        springObjRot = springObjRot.IntegrateRot(springObjAngVel, dt);
     }
 }

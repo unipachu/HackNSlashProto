@@ -5,7 +5,7 @@ using UnityEngine;
 /// Math utility methods for Transform type.<br/>
 /// NOTE: Math utilities for non-Object types are in MathUtils!
 /// </summary>
-public class TrfMathUtils : MonoBehaviour {
+public static class TrfMathUtils {
     /// <summary>
     /// Calculates the parent world pose that aligns the child with the target world pose.
     /// </summary>
@@ -42,11 +42,11 @@ public class TrfMathUtils : MonoBehaviour {
         //Debug.Log("delta x angle: " + deltaXAngle);
         // TODO: Make the local axis of the pivot a parameter.
         Quaternion dRotAroundPivRight = Quaternion.AngleAxis(dXAng, pivTrf.right);
-        Vector3 movedTrfPosInPivSpace = InvTrfPtUnscaled(pivTrf, movedTrf.position);
-        Quaternion movedTrfRotInPivSpace = InvTrfRot(pivTrf, movedTrf.rotation);
+        Vector3 movedTrfPosInPivSpace = movedTrf.position.InvTrfPtUnscaled(pivTrf);
+        Quaternion movedTrfRotInPivSpace = movedTrf.rotation.InvTrfRot(pivTrf);
         Quaternion pivFutureRot = dRotAroundPivRight * pivTrf.rotation;
-        Vector3 movedTrfNextWorldPos = MathUtils.TrfPt(pivTrf.position, pivFutureRot, movedTrfPosInPivSpace);
-        Quaternion movedTrfNextRot = MathUtils.TrfRot(pivFutureRot, movedTrfRotInPivSpace);
+        Vector3 movedTrfNextWorldPos = movedTrfPosInPivSpace.TrfPt(pivTrf.position, pivFutureRot);
+        Quaternion movedTrfNextRot = movedTrfRotInPivSpace.TrfRot(pivFutureRot);
         return (movedTrfNextWorldPos, movedTrfNextRot);
     }
 
@@ -54,16 +54,14 @@ public class TrfMathUtils : MonoBehaviour {
     /// Transforms a point from world space to unscaled local space,
     /// ignoring the transform's scale (unlike Transform.InverseTransformPoint).
     /// </summary>
-    public static Vector3 InvTrfPtUnscaled(Transform trf, Vector3 ptInWldSpc) {
-        return MathUtils.InvTrfPtUnscaled(trf.position, trf.rotation, ptInWldSpc);
-    }
+    public static Vector3 InvTrfPtUnscaled(this Vector3 ptInWldSpc, Transform trf)
+        => ptInWldSpc.InvTrfPtUnscaled(trf.position, trf.rotation);
 
     /// <summary>
     /// Converts a world space rotation into the transform's local space rotation.
     /// </summary>
-    public static Quaternion InvTrfRot(Transform trf, Quaternion rotInWorldSpace) {
-        return MathUtils.InvTrfRot(trf.rotation, rotInWorldSpace);
-    }
+    public static Quaternion InvTrfRot(this Quaternion rotInWorldSpace, Transform trf)
+        => rotInWorldSpace.InvTrfRot(trf.rotation);
 
     /// <summary>
     /// Rotates forward towards the target vector in xz-plane.
@@ -77,26 +75,20 @@ public class TrfMathUtils : MonoBehaviour {
             Debug.LogWarning("Look rotation viewing vector was zero");
             return rot;
         }
-        quaternion targetRotation = quaternion.LookRotation(dir3D, Vector3.up);
-        return MathUtils.RotateTowards(
-            rot,
-            targetRotation,
-            maxAngSpd * Time.deltaTime
-        );
+        quaternion tgtRot = quaternion.LookRotation(dir3D, Vector3.up);
+        return rot.RotateTowards(tgtRot, maxAngSpd * Time.deltaTime);
     }
 
     /// <summary>
     /// Transforms a point from unscaled local space to world space,
     /// ignoring the transform's scale (unlike Transform.TransformPoint).
     /// </summary>
-    public static Vector3 TrfPtUnscaled(Transform trf, Vector3 ptInTrfSpace) {
-        return MathUtils.TrfPt(trf.position, trf.rotation, ptInTrfSpace);
-    }
+    public static Vector3 TrfPtUnscaled(this Vector3 ptInTrfSpace, Transform trf)
+        => ptInTrfSpace.TrfPt(trf.position, trf.rotation);
 
     /// <summary>
     /// Converts a transforms's local space rotation into world space rotation.
     /// </summary>
-    public static Quaternion TrfRot(Transform trf, Quaternion rotInTrfSpace) {
-        return MathUtils.TrfRot(trf.rotation, rotInTrfSpace);
-    }
+    public static Quaternion TrfRot(this Quaternion rotInTrfSpace, Transform trf)
+        => rotInTrfSpace.TrfRot(trf.rotation);
 }

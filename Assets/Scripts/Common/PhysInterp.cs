@@ -3,7 +3,8 @@ using UnityEngine;
 /// <summary>
 /// Interpolates Transform pos/rot based on rb movement in LateUpdate.
 /// </summary>
-// TODO: Test this.
+// NOTE: This has not been throughoutly tested and thought through. If you use this you should probably
+// NOTE C: test that this works!
 public class PhysInterp : MonoBehaviour {
     [Header("Settings")]
     [SerializeField] bool interpPos = true;
@@ -33,19 +34,9 @@ public class PhysInterp : MonoBehaviour {
         // Normalized time since last physics update.
         float t = (Time.time - Time.fixedTime) / Time.fixedDeltaTime;
         t = Mathf.Clamp01(t);
-        if (interpPos){
-            tgtTrf.position = Vector3.Lerp(
-                prevPos,
-                curPos,
-                t
-            );
-        }
-        if (interpRot){
-            tgtTrf.rotation = Quaternion.Slerp(
-                prevRot,
-                curRot,
-                t
-            );
-        }
+        if (interpPos)
+            tgtTrf.position = Vector3.Lerp(prevPos, curPos, t);
+        if (interpRot)
+            tgtTrf.rotation = Quaternion.Slerp(prevRot, curRot, t);
     }
 }

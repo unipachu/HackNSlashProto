@@ -5,33 +5,23 @@ using UnityEngine;
 /// Movement for character controller.
 /// </summary>
 public static class CcMov {
+    /// <summary>
+    /// Moves the character controller downwards, simulating gravity. If grounded check fails but there's
+    /// still ground beneath the capsule (because floor is too steep to walk on) this slides the CC downhill.
+    /// </summary>
     public static void ApplyGravityNSlideDownSlopes(int capsuleCharId, float dt){
-        // TODO: This is cheating. Either use ref keywords, or take in all the arrays.
-        CpMgr cpMgr = CpMgr.inst;
-        if (cpMgr.soaData.isGrounded[capsuleCharId])
-            cpMgr.soaData.vel_Ver[capsuleCharId] = -cpMgr.soaData.groundSnapVerDownSpd[capsuleCharId] * dt;
+        Cp_SoaData soaData = CpMgr.inst.soaData;
+        if (soaData.isGrounded[capsuleCharId])
+            soaData.vel_Ver[capsuleCharId] = -soaData.groundSnapVerDownSpd[capsuleCharId] * dt;
         // Freefalling and slope down sliding.
         else {
-            cpMgr.soaData.vel_Ver[capsuleCharId] = cpMgr.soaData.lastCcVel[capsuleCharId].y;
+            soaData.vel_Ver[capsuleCharId] = soaData.lastCcVel[capsuleCharId].y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (cpMgr.soaData.groundCastHitSomething[capsuleCharId]) {
-                // TODO: Create float3 ProjectOnPlane math util.
-                //math.down() - math.dot(math.down(), data.groundCastNrm) * data.groundCastNrm
-                // TODO: We project last velocity onto the slope normalized direction (we divide by newAcc
-                // TODO C: squared length to compensate for it's length, instead of just doing dir * dor(v, dir).
-                // TODO C: Create math util.
-                //float3 newVel = newAcc * (math.dot(data.lastCharCtrlVel, newAcc) / math.lengthsq(newAcc));
-
-
+            if (soaData.groundCastHitSomething[capsuleCharId]) {
                 // Find the gravitational acceleration component along the slope.
-                // TODO: Create float3 ProjectOnPlane math util.
-                float3 newAcc =
-                    (math.down() - math.dot(
-                        math.down(),
-                        cpMgr.soaData.groundCastNrm[capsuleCharId]) * cpMgr.soaData.groundCastNrm[capsuleCharId]
-                    )
-                    * cpMgr.soaData.gravitationalAcc[capsuleCharId];
+                float3 newAcc = math.down().ProjectOnPlane(soaData.groundCastNrm[capsuleCharId])
+                    * GlobalData.inst.gravitationalAcc;
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
                 if (math.lengthsq(newAcc) > 0.0001f)
@@ -40,30 +30,29 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(cpMgr.soaData.lastCcVel[capsuleCharId], slideDir));
+                float slideSpd = math.max(0, math.dot(soaData.lastCcVel[capsuleCharId], slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                cpMgr.soaData.vel_Ver[capsuleCharId] = newVel.y;
-                cpMgr.soaData.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
+                soaData.vel_Ver[capsuleCharId] = newVel.y;
+                soaData.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
                 //    ));
                 //Debug.Log($"angle deg: {ang}");
                 //Debug.Log($"last char ctrl vel: {data.lastCharCtrlVel}");
-                //Debug.Log($"New hor vel to apply: {data.vel_Hor}"
-                //    + $"\n New ver vel to apply: {data.vel_Ver}");
+                //Debug.Log($"New hor vel to apply: {soaData.vel_Hor}\nNew ver vel to apply: {soaData.vel_Ver}");
                 // No slope to slide down so free fall.
             } else {
                 // NOTE: Character controller has a "step offset" functionality which can
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
-                // NOTE C: we clamp the vertical vel to min 0.
-                cpMgr.soaData.vel_Ver[capsuleCharId] = Mathf.Min(cpMgr.soaData.vel_Ver[capsuleCharId], 0);
-                cpMgr.soaData.vel_Ver[capsuleCharId] -= cpMgr.soaData.gravitationalAcc[capsuleCharId] * dt;
-                cpMgr.soaData.vel_Ver[capsuleCharId] = Mathf.Clamp(
-                    cpMgr.soaData.vel_Ver[capsuleCharId],
-                    -cpMgr.soaData.maxFallSpd[capsuleCharId],
+                // NOTE C: we clamp the vertical vel to min 0. I'm pretty sure it's like this.
+                soaData.vel_Ver[capsuleCharId] = Mathf.Min(soaData.vel_Ver[capsuleCharId], 0);
+                soaData.vel_Ver[capsuleCharId] -= GlobalData.inst.gravitationalAcc * dt;
+                soaData.vel_Ver[capsuleCharId] = Mathf.Clamp(
+                    soaData.vel_Ver[capsuleCharId],
+                    -GlobalData.inst.maxFallSpd,
                     0
                 );
                 //Debug.Log("In free fall.");
@@ -74,25 +63,19 @@ public static class CcMov {
     /// <summary>
     /// Uses Physics.CapsuelCast to do a ground check. Returns true if cast hit something.
     /// </summary>
-    // TODO: Maybe just do a sphere cast from capusle
-    // TODO C: bottom to avoid hits with walls/ceilings?
     public static bool CastForGround(CharacterController cc, out RaycastHit groundHit) {
-        float castDist = GlobalData.inst.data.isGroundedChkDist;
+        float castDist = GlobalData.inst.isGroundedChkDist;
         float r = cc.radius;
         float height = Mathf.Max(cc.height, r * 2f);
         Vector3 center = cc.transform.position + cc.center;
         Vector3 bottom = center + Vector3.down * (height / 2f - r);
-        Vector3 top = center + Vector3.up * (height / 2f - r);
-        // TODO: I'm not 100% sure if SkinWidth should be used in here but it is very small so what ever.
-        castDist = castDist + cc.skinWidth;
-        return Physics.CapsuleCast(
-            top,
+        return Physics.SphereCast(
             bottom,
             r,
             Vector3.down,
             out groundHit,
             castDist,
-            GlobalData.inst.data.groundMask,
+            GlobalData.inst.groundMask,
             QueryTriggerInteraction.Ignore
         );
     }

@@ -132,14 +132,14 @@ public class BtMgr : Singleton<BtMgr>{
         float2 horDesiredVel;
         Cp_SoaData ccMgr = CpMgr.inst.soaData;
         CpMgr caMgr = CpMgr.inst;
-        Cp_BrainData brainData = CpMgr.inst.brainData;
+        Cp_BrainData brainData = CpMgr.inst.brainData[cpId];
         switch (t) {
             case BtNodeT.Cmd_Idle:
                 ccMgr.input_atk_Heavy[cpId] = false;
                 ccMgr.input_atk_Light[cpId] = false;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if(math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                if(math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 ccMgr.input_mov[cpId] = float2.zero;
                 return BtResult.Success;
@@ -148,11 +148,11 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[cpId] = true;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if (math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
-                        brainData.agentDesiredVel[cpId].x,
-                        brainData.agentDesiredVel[cpId].z
+                        brainData.agentDesiredVel.x,
+                        brainData.agentDesiredVel.z
                 );
                 //Debug.Log($"{cpId} agent desired hor vel: {horDesiredVel}", this);
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
@@ -165,11 +165,11 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[cpId] = false;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if (math.lengthsq(ccMgr.input_mov[cpId]) > caMgr.movInputSqrDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
-                        brainData.agentDesiredVel[cpId].x,
-                        brainData.agentDesiredVel[cpId].z
+                        brainData.agentDesiredVel.x,
+                        brainData.agentDesiredVel.z
                 );
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if (math.lengthsq(horDesiredVel) > 0.0001f)
@@ -180,10 +180,9 @@ public class BtMgr : Singleton<BtMgr>{
                     //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:
-                // TODO: aggro and atk ranges should be calculated using navmesh path finding. Or maybe not.
-                return brainData.inAggroRange[cpId] ? BtResult.Success : BtResult.Failure;
+                return brainData.inAggroRange ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Cond_InAtkRange:
-                return brainData.inAtkRange[cpId] ? BtResult.Success : BtResult.Failure;
+                return brainData.inAtkRange ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Selector:
                 Debug.LogError("Selector is a composite not a leaf!", this);
                 return BtResult.Running;
@@ -199,8 +198,6 @@ public class BtMgr : Singleton<BtMgr>{
     /// <summary>
     /// Evaluate each node of a bt.
     /// </summary>
-    // TODO: Create some optional debugging system that writes data about what nodes were
-    // TODO C: visited and what they returned.
     void TickBt(int capsuleCharId) {
         int outerIterations = 0;
         int innerIterations = 0;

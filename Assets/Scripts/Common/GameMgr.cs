@@ -1,5 +1,5 @@
 // NOTE: Make sure singleton execution order is so that the singletons are Awoken before
-// NOTE C: a dependent singleton manager is awoken.
+// NOTE C: a dependent singleton manager is awoken!
 using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
@@ -14,7 +14,6 @@ public class GameMgr : Singleton<GameMgr>{
     }
     
     void Update() {
-        // TODO: Tick CapsuleCharMgr here too.
         BtMgr.inst.Tick();
         CpMgr.inst.Tick(Time.deltaTime);
     }

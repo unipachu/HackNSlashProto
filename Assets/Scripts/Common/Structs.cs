@@ -1,4 +1,3 @@
-// TODO: Check if some ints can be converted to short or byte.
 using System;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -6,8 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Grouped Animator state info used by <see cref="AnimEventPlr"/>.<br/>
-/// NOTE: <see cref=""/> 
+/// Grouped Animator state info used by <see cref="AnimEventPlr"/>.
 /// </summary>
 public struct AnimInfo {
     public int shortNameHash;
@@ -17,11 +15,6 @@ public struct AnimInfo {
     /// </summary>
     public bool looping;
     public int lastFrame;
-    // TODO MINOR: This struct cannot be used in native arrays because of this managed array. This could
-    // TODO MINOR C: be fixed by either making this array a fixed list - meaning more memory overhead. Or
-    // TODO MINOR C: possibly better option: have all anim event data in a list and in here have an index
-    // TODO MINOR C: to the first and the last events. But both of these options seem more complicated than
-    // TODO MINOR C: this and I'm already running out of time...
     public AnimEvent[] sortedAnimEvents;
 
     /// <param name="sortedEvents">
@@ -41,8 +34,8 @@ public struct AnimInfo {
         this.lastFrame = lastFrame;
         // NOTE: We cannot automaticize sorting since some events might happen on the same frame and yet
         // their order matters.
-        // TODO: However we could make an Assert etc to make sure they are at least in ascending order.
         sortedAnimEvents = new AnimEvent[sortedEvents.Length];
+        // Assert that the animation events are in ascending order based on their timing.
         for (int i = 0; i < sortedEvents.Length; i++) {
             sortedAnimEvents[i] = new AnimEvent(sortedEvents[i].frame, lastFrame, sortedEvents[i].id);
             if (i != 0)
@@ -160,102 +153,6 @@ public struct ComboNode_Transitions {
 }
 
 /// <summary>
-/// Basic impact combo move using a hit dealer (e.g. a melee weapon hit box).<br/>
-/// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
-/// </summary>
-// TODO: This is a class! So are other combo nodes!
-public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
-    HitDealer hitDealer;
-
-    // TODO: Yeah, anim info currently useds hard coded static structs. Figure out a way.
-    public AnimInfo AnimInfo { get; }
-    public ComboNode_Transitions Transitions { get; set; }
-
-    public ComboNode_BasicImpact(UnityEngine.Object ctx, CpAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfo.Get(animInfoT);
-        IHandItem_HitDealer handItem_HitDealer = (IHandItem_HitDealer)ctx;
-        Debug.Assert(
-            handItem_HitDealer != null,
-            $"{ctx.name} didn't implement {nameof(IHandItem_HitDealer)}",
-            ctx
-        );
-        this.hitDealer = handItem_HitDealer.HitDealer;
-    }
-
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
-        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
-        // NOTE C: passing it to the Enter method. (5.9.2026)
-        ComboNode_BasicImpact thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicImpact.Enter(thisNode, thisNode.hitDealer);
-    }
-
-    public IComboNode GetNextNode(BufferableInput input) {
-        return input switch {
-            BufferableInput.None => Transitions.node_NoInput,
-            BufferableInput.RShldr => Transitions.node_RShldr,
-            BufferableInput.RTrg => Transitions.node_RTrg,
-            BufferableInput.LShldr => Transitions.node_LShldr,
-            BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
-        };
-    }
-}
-
-/// <summary>
-/// Recovery move - ends a combo chain and cannot be input canceled to other moves.<br/>
-/// </summary>
-public class ComboNode_BasicRecovery : IComboNode {
-    // TODO: serialize this
-    public AnimInfo AnimInfo { get; }
-    
-    public ComboNode_BasicRecovery(CpAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfo.Get(animInfoT);
-    }
-
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
-        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
-        // NOTE C: passing it to the Enter method. (5.9.2026)
-        ComboNode_BasicRecovery thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicRecovery.Enter(thisNode.AnimInfo);
-    }
-
-    public IComboNode GetNextNode(BufferableInput input)
-        => null;
-}
-
-/// <summary>
-/// Windup combo move. Allows input canceling to other moves. <br/>
-/// NOTE: Most windup moves will not allow input canceling - set those node indexes to -1 (5.9.2026)
-/// </summary>
-public class ComboNode_BasicWindup : IComboNode, IComboNodeTransitionsHolder {
-    // TODO: Yeah, anim info currently useds hard coded static structs. Figure out a way.
-    public AnimInfo AnimInfo { get; set; }
-    public ComboNode_Transitions Transitions { get; set; }
-
-    public ComboNode_BasicWindup(CpAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfo.Get(animInfoT);
-    }
-
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
-        // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
-        // NOTE C: passing it to the Enter method. (5.9.2026)
-        ComboNode_BasicWindup thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicWindup.Enter(thisNode);
-    }
-
-    public IComboNode GetNextNode(BufferableInput input) {
-        return input switch {
-            BufferableInput.None => Transitions.node_NoInput,
-            BufferableInput.RShldr => Transitions.node_RShldr,
-            BufferableInput.RTrg => Transitions.node_RTrg,
-            BufferableInput.LShldr => Transitions.node_LShldr,
-            BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => StructUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
-        };
-    }
-}
-
-/// <summary>
 /// All action states available for capsule pawn.
 /// </summary>
 public struct Cp_ActSts {
@@ -295,18 +192,16 @@ public struct Cp_SoaData {
     public NativeArray<bool> actStSt_DodgeAllowed;
     public NativeArray<float> actStSt_FallingStartHgt;
     public NativeArray<bool> actStSt_ImpactFinished;
-    public NativeArray<bool> actStSt_ImpactInputRotAllowed;
+    public NativeArray<bool> actStSt_InputRotAllowed;
     public NativeArray<float> actStSt_RecoveryMotInterpTimer;
     public NativeArray<float3> animDPos;
     public NativeArray<quaternion> animDRot;
     public NativeArray<float> curStDur;
-    public NativeArray<float> gravitationalAcc;
     public NativeArray<bool> groundCastHitSomething;
     public NativeArray<float3> groundCastNrm;
     public NativeArray<float> groundSnapVerDownSpd;
-    // TODO: make these int.
-    public NativeArray<float> hp_Cur;
-    public NativeArray<float> hp_Max;
+    public NativeArray<int> hp_Cur;
+    public NativeArray<int> hp_Max;
     public NativeArray<float2> input_mov;
     /// <summary>
     /// Last nonzero movement input (in world space).
@@ -328,13 +223,11 @@ public struct Cp_SoaData {
     public NativeArray<float3> lastCcVel;
     public NativeArray<float> lastKnockbackStr;
     public NativeArray<float3> lastRecievedHitDir;
-    public NativeArray<float> maxFallSpd;
-    public NativeArray<float2> mov_horMov;
+    public NativeArray<float2> movInput_tgtHorDir;
     public NativeArray<float3> mov_animRootMot;
-    public NativeArray<float> mov_maxLinSpd;
-    public NativeArray<float> mov_yawSpd;
-    // TODO MINOR: Should this be called hor acc instead?
-    public NativeArray<float> mov_linAcc;
+    public NativeArray<float> movInput_tgtHorSpd;
+    public NativeArray<float> movInput_yawSpd;
+    public NativeArray<float> movInput_horAcc;
     // To keep track of which indices are actually used for entitites.
     public NativeArray<bool> occupied; // <- This is important!
     public NativeArray<float> st_AtkHorSlash_Impact_AngSpd;
@@ -350,10 +243,14 @@ public struct Cp_SoaData {
     public NativeArray<float3> trf_lossyScl;
     public NativeArray<float3> trf_pos;
     public NativeArray<quaternion> trf_rot;
-    // TODO: Maybe you don't need these since you have the mov_ arrays?
+    /// <summary>
+    /// Current horisontal (XZ) velocity.
+    /// </summary>
     public NativeArray<float2> vel_Hor;
+    /// <summary>
+    /// Current vertical (Y) velocity.
+    /// </summary>
     public NativeArray<float> vel_Ver;
-    public NativeArray<float> vel_Yaw;
 
     public static Cp_SoaData Create(int capacity) {
         return new Cp_SoaData {
@@ -363,17 +260,16 @@ public struct Cp_SoaData {
             actStSt_DodgeAllowed = StructUtils.Alloc<bool>(capacity),
             actStSt_FallingStartHgt = StructUtils.Alloc<float>(capacity),
             actStSt_ImpactFinished = StructUtils.Alloc<bool>(capacity),
-            actStSt_ImpactInputRotAllowed = StructUtils.Alloc<bool>(capacity),
+            actStSt_InputRotAllowed = StructUtils.Alloc<bool>(capacity),
             actStSt_RecoveryMotInterpTimer = StructUtils.Alloc<float>(capacity),
             animDPos = StructUtils.Alloc<float3>(capacity),
             animDRot = StructUtils.Alloc<quaternion>(capacity),
             curStDur = StructUtils.Alloc<float>(capacity),
-            gravitationalAcc = StructUtils.Alloc<float>(capacity),
             groundCastHitSomething = StructUtils.Alloc<bool>(capacity),
             groundCastNrm = StructUtils.Alloc<float3>(capacity),
             groundSnapVerDownSpd = StructUtils.Alloc<float>(capacity),
-            hp_Cur = StructUtils.Alloc<float>(capacity),
-            hp_Max = StructUtils.Alloc<float>(capacity),
+            hp_Cur = StructUtils.Alloc<int>(capacity),
+            hp_Max = StructUtils.Alloc<int>(capacity),
             input_mov = StructUtils.Alloc<float2>(capacity),
             input_mov_LastNonZero = StructUtils.Alloc<float2>(capacity),
             input_mov_WhenLastSwitchedSt = StructUtils.Alloc<float2>(capacity),
@@ -389,12 +285,11 @@ public struct Cp_SoaData {
             lastCcVel = StructUtils.Alloc<float3>(capacity),
             lastKnockbackStr = StructUtils.Alloc<float>(capacity),
             lastRecievedHitDir = StructUtils.Alloc<float3>(capacity),
-            maxFallSpd = StructUtils.Alloc<float>(capacity),
-            mov_horMov = StructUtils.Alloc<float2>(capacity),
+            movInput_tgtHorDir = StructUtils.Alloc<float2>(capacity),
             mov_animRootMot = StructUtils.Alloc<float3>(capacity),
-            mov_maxLinSpd = StructUtils.Alloc<float>(capacity),
-            mov_yawSpd = StructUtils.Alloc<float>(capacity),
-            mov_linAcc = StructUtils.Alloc<float>(capacity),
+            movInput_tgtHorSpd = StructUtils.Alloc<float>(capacity),
+            movInput_yawSpd = StructUtils.Alloc<float>(capacity),
+            movInput_horAcc = StructUtils.Alloc<float>(capacity),
             occupied = StructUtils.Alloc<bool>(capacity),
             st_AtkHorSlash_Impact_AngSpd = StructUtils.Alloc<float>(capacity),
             st_AtkHorSlash_Windup_MaxAngSpd = StructUtils.Alloc<float>(capacity),
@@ -411,7 +306,6 @@ public struct Cp_SoaData {
             trf_lossyScl = StructUtils.Alloc<float3>(capacity),
             vel_Hor = StructUtils.Alloc<float2>(capacity),
             vel_Ver = StructUtils.Alloc<float>(capacity),
-            vel_Yaw = StructUtils.Alloc<float>(capacity)
         };
     }
 
@@ -422,12 +316,11 @@ public struct Cp_SoaData {
         actStSt_DodgeAllowed.Dispose();
         actStSt_FallingStartHgt.Dispose();
         actStSt_ImpactFinished.Dispose();
-        actStSt_ImpactInputRotAllowed.Dispose();
+        actStSt_InputRotAllowed.Dispose();
         actStSt_RecoveryMotInterpTimer.Dispose();
         animDPos.Dispose();
         animDRot.Dispose();
         curStDur.Dispose();
-        gravitationalAcc.Dispose();
         groundCastHitSomething.Dispose();
         groundCastNrm.Dispose();
         groundSnapVerDownSpd.Dispose();
@@ -448,12 +341,11 @@ public struct Cp_SoaData {
         lastCcVel.Dispose();
         lastKnockbackStr.Dispose();
         lastRecievedHitDir.Dispose();
-        maxFallSpd.Dispose();
-        mov_horMov.Dispose();
+        movInput_tgtHorDir.Dispose();
         mov_animRootMot.Dispose();
-        mov_maxLinSpd.Dispose();
-        mov_yawSpd.Dispose();
-        mov_linAcc.Dispose();
+        movInput_tgtHorSpd.Dispose();
+        movInput_yawSpd.Dispose();
+        movInput_horAcc.Dispose();
         occupied.Dispose();
         st_AtkHorSlash_Impact_AngSpd.Dispose();
         st_AtkHorSlash_Windup_MaxAngSpd.Dispose();
@@ -470,7 +362,6 @@ public struct Cp_SoaData {
         trf_rot.Dispose();
         vel_Hor.Dispose();
         vel_Ver.Dispose();
-        vel_Yaw.Dispose();
     }
 }
 
@@ -497,41 +388,15 @@ public struct Cp_AosData {
 // TODO: Enemy brain should be its own entity! Also a AoS data layout works better for heavily branching
 // TODO C: and reference-dependent behavior tree!
 public struct Cp_BrainData {
-    public NativeArray<float3> agentDesiredVel;
-    public NativeArray<float> aggroRange;
-    public NativeArray<float> atkRange;
-    public NativeArray<float> distToTgt;
-    public NativeArray<bool> hasTgt;
-    public NativeArray<bool> inAggroRange;
-    public NativeArray<bool> inAtkRange;
-    public NativeArray<bool> prevCalculatePathSucceeded;
-    public NativeArray<float3> tgtPos;
-
-    public static Cp_BrainData Create(int capacity) {
-        return new Cp_BrainData {
-            agentDesiredVel = StructUtils.Alloc<float3>(capacity),
-            aggroRange = StructUtils.Alloc<float>(capacity),
-            atkRange = StructUtils.Alloc<float>(capacity),
-            distToTgt = StructUtils.Alloc<float>(capacity),
-            hasTgt = StructUtils.Alloc<bool>(capacity),
-            inAggroRange = StructUtils.Alloc<bool>(capacity),
-            inAtkRange = StructUtils.Alloc<bool>(capacity),
-            prevCalculatePathSucceeded = StructUtils.Alloc<bool>(capacity),
-            tgtPos = StructUtils.Alloc<float3>(capacity)
-        };
-    }
-
-    public void Dispose() {
-        agentDesiredVel.Dispose();
-        aggroRange.Dispose();
-        atkRange.Dispose();
-        distToTgt.Dispose();
-        hasTgt.Dispose();
-        inAggroRange.Dispose();
-        inAtkRange.Dispose();
-        prevCalculatePathSucceeded.Dispose();
-        tgtPos.Dispose();
-    }
+    public float3 agentDesiredVel;
+    public float aggroRange;
+    public float atkRange;
+    public float distToTgt;
+    public bool hasTgt;
+    public bool inAggroRange;
+    public bool inAtkRange;
+    public bool prevCalculatePathSucceeded;
+    public float3 tgtPos;
 }
 
 /// <summary>

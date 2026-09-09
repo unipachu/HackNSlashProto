@@ -9,7 +9,7 @@ public class CpRegisterer : MonoBehaviour{
     [SerializeField] So_BtRootNode so_BtRootNode;
     
     [Header("Unity Comp Refs")]
-    public Cp_UnityComps unityComps;
+    [SerializeField] Cp_UnityComps unityComps;
 
     public int Id { get; private set; } = -1;
 

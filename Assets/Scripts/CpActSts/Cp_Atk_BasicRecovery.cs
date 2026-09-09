@@ -26,7 +26,7 @@ public class Cp_Atk_BasicRecovery : IFsmSt_Cp {
         var unityComps = CpMgr.inst.unityComps;
         data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
         data.actStSt_ComboAllowed[cpId] = false;
-        data.actStSt_ImpactInputRotAllowed[cpId] = false;
+        data.actStSt_InputRotAllowed[cpId] = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,

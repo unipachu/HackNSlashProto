@@ -139,7 +139,7 @@ public class SpringMov : MonoBehaviour {
     Vector3 TgtPos()
         => tgt.position
         + tgtPosWldOfs
-        + TrfMathUtils.TrfPtUnscaled(tgt, tgtPosOfsInTgtSpc) - tgt.position;
+        + tgtPosOfsInTgtSpc.TrfPtUnscaled(tgt) - tgt.position;
 
     /// <summary>
     /// Saves target linear and angular velocities.

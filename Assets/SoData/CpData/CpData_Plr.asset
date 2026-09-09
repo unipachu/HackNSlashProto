@@ -12,14 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
   m_Name: CpData_Plr
   m_EditorClassIdentifier: Assembly-CSharp::So_CpData
-  gravitationalAcc: 10
   groundSnapVerDownSpd: 1000
-  maxFallSpd: 30
   inputBufferDuration: 0.3
   maxHP: 100
   brain_AggroRange: 8
   brain_AtkRange: 4
-  rHandItem: 0
+  rHandItem: 2
   enableDebugMsgs: 1
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_MaxAngSpd: 1000

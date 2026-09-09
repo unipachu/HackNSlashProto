@@ -12,8 +12,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
 
     public CpSt_Dodge Enter() {
         Cp_SoaData data = CpMgr.inst.soaData;
-        // TODO MINOR: Rename to more generic yawinputrotallowed
-        data.actStSt_ImpactInputRotAllowed[cpId] = false;
+        data.actStSt_InputRotAllowed[cpId] = false;
         data.actStSt_BufferedInputStSwitchAllowed[cpId] = false;
         data.invul[cpId] = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
@@ -32,7 +31,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
         float angSpd = 0;
-        if (data.actStSt_ImpactInputRotAllowed[cpId])
+        if (data.actStSt_InputRotAllowed[cpId])
             angSpd = data.st_Dodge_YawSpd[cpId];
         CpUtils.UpdateMovData(
             cpId,

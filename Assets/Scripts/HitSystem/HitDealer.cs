@@ -29,11 +29,8 @@ public class HitDealer : MonoBehaviour {
     }
 
     void Update() {
-        if (isActive) {
-            TryHitAllOverlappingHitRecievers(
-                capsuleLayerMask
-            );
-        }
+        if (isActive)
+            TryHitAllOverlappingHitRecievers(capsuleLayerMask);
     }
 
     void OnDrawGizmos() {
@@ -41,8 +38,8 @@ public class HitDealer : MonoBehaviour {
         for (int i = 0; i < capsules.Length; i++) {
             CapsuleShape capsule = capsules[i];
             DebugUtils.OnDrawGizmos_DrawCapsule(
-                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt0),
-                TrfMathUtils.TrfPtUnscaled(transform, capsule.pt1),
+                capsule.pt0.TrfPtUnscaled(transform),
+                capsule.pt1.TrfPtUnscaled(transform),
                 capsule.r,
                 color
             );
@@ -81,8 +78,8 @@ public class HitDealer : MonoBehaviour {
     ) {
         for (int capsuleIndex = 0; capsuleIndex < capsules.Length; capsuleIndex++) {
             CapsuleShape capsule = capsules[capsuleIndex];
-            Vector3 pt0 = TrfMathUtils.TrfPtUnscaled(transform, capsule.pt0);
-            Vector3 pt1 = TrfMathUtils.TrfPtUnscaled(transform, capsule.pt1);
+            Vector3 pt0 = capsule.pt0.TrfPtUnscaled(transform);
+            Vector3 pt1 = capsule.pt1.TrfPtUnscaled(transform);
             int numCols = Physics.OverlapCapsuleNonAlloc(
                 pt0,
                 pt1,

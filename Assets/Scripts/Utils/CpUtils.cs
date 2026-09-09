@@ -108,15 +108,15 @@ public static class CpUtils{
         Cp_SoaData data,
         in float2 horMov,
         in float3 animRootMov,
-        float maxLinSpd,
+        float tgtLinSpd,
         float yawSpd,
         float linAcc
     ) {
-        data.mov_horMov[id] = horMov;
+        data.movInput_tgtHorDir[id] = horMov;
         data.mov_animRootMot[id] = animRootMov;
-        data.mov_maxLinSpd[id] = maxLinSpd;
-        data.mov_yawSpd[id] = yawSpd;
-        data.mov_linAcc[id] = linAcc;
+        data.movInput_tgtHorSpd[id] = tgtLinSpd;
+        data.movInput_yawSpd[id] = yawSpd;
+        data.movInput_horAcc[id] = linAcc;
     }
 
     /// <summary>

@@ -52,10 +52,10 @@ public class CpAnimEventHandler : MonoBehaviour {
                 data.isAffectedByGravity[id] = false;
                 break;
             case CpAnimEventT.YawAllowed:
-                data.actStSt_ImpactInputRotAllowed[id] = true;
+                data.actStSt_InputRotAllowed[id] = true;
                 break;
             case CpAnimEventT.YawDisallowed:
-                data.actStSt_ImpactInputRotAllowed[id] = false;
+                data.actStSt_InputRotAllowed[id] = false;
                 break;
             default:
                 Debug.Log($"Switch defaulted with {animEvent}.", this);

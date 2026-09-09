@@ -14,26 +14,6 @@ public enum BufferableInput : byte {
     BtnE
 }
 
-// TODO: remove.
-///// <summary>
-///// Capsule pawn action state. These pair animations and animation events with gameplay logic.
-///// </summary>
-//public enum CpActSt : byte {
-//    Atk_FlyingAtk,
-//    // TODO: start indexing from 0, ugh.
-//    Atk_HorSlash1,
-//    Atk_HorSlash2,
-//    Atk_HorSlash3,
-//    Atk_Jump,
-//    Atk_ShootHomingProj,
-//    Dodge,
-//    Falling,
-//    FallLanding,
-//    Idle,
-//    Knockback_Weak,
-//    Walk
-//}
-
 /// <summary>
 /// Animation events used by the capsule pawn Animator.
 /// </summary>
@@ -115,23 +95,10 @@ public enum Faces : byte {
     Far,
 }
 
-/// <summary>
-/// Represent the type of data a hand item uses (and what handle and database it uses).
-/// </summary>
-public enum HandItemDataT : byte {
-    MeleeWeapon,
-    Gun,
-}
-
 public enum KnockbackT : byte {
     None,
     Weak,
     Strong
-}
-
-public enum LocomotionType : byte {
-    VelocityByDirectionalInput,
-    DirectMotion,
 }
 
 public enum Side : byte {

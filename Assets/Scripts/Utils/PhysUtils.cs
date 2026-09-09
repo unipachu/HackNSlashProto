@@ -35,16 +35,14 @@ public static class PhysUtils{
     /// Transforms a point from world space to unscaled Rigidbody local space,
     /// ignoring Rigidbody's scale.
     /// </summary>
-    public static Vector3 InvTrfPtUnscaled(Rigidbody rb, Vector3 ptInWldSpc) {
-        return MathUtils.InvTrfPtUnscaled(rb.position, rb.rotation, ptInWldSpc);
-    }
+    public static Vector3 InvTrfPtUnscaled(this Vector3 ptInWldSpc, Rigidbody rb)
+        => ptInWldSpc.InvTrfPtUnscaled(rb.position, rb.rotation);
 
     /// <summary>
     /// Converts a world space rotation into the rigidbody's local space rotation.
     /// </summary>
-    public static Quaternion InvTrfRot(Rigidbody rb, Quaternion rotInWorldSpace) {
-        return MathUtils.InvTrfRot(rb.rotation, rotInWorldSpace);
-    }
+    public static Quaternion InvTrfRot(this Quaternion rotInWorldSpace, Rigidbody rb)
+        => rotInWorldSpace.InvTrfRot(rb.rotation);
 
     /// <summary>
     /// Draws small sphere where the joint anchor is.<br/>
@@ -56,10 +54,7 @@ public static class PhysUtils{
             return;
         }
         Gizmos.color = Color.yellow;
-        Vector3 worldAnchorPos = TrfMathUtils.TrfPtUnscaled(
-            jnt.transform,
-            jnt.anchor
-        );
+        Vector3 worldAnchorPos = jnt.anchor.TrfPtUnscaled(jnt.transform);
         Gizmos.DrawWireSphere(worldAnchorPos, 0.01f);
     }
 
@@ -70,10 +65,7 @@ public static class PhysUtils{
     public static void OnDrawGizmos_DrawJntConnectedAnch(ConfigurableJoint jnt) {
         if (jnt != null && jnt.connectedBody != null) {
             Gizmos.color = Color.darkOrange;
-            Vector3 worldAnchorPos = TrfMathUtils.TrfPtUnscaled(
-                jnt.connectedBody.transform,
-                jnt.connectedAnchor
-            );
+            Vector3 worldAnchorPos = jnt.connectedAnchor.TrfPtUnscaled(jnt.connectedBody.transform);
             Gizmos.DrawWireSphere(worldAnchorPos, 0.01f);
         }
     }
@@ -82,14 +74,12 @@ public static class PhysUtils{
     /// Transforms a point from unscaled Rigidbody local space to world space,
     /// using the Rigidbody's position and rotation.
     /// </summary>
-    public static Vector3 TrfPtUnscaled(Rigidbody rb, Vector3 ptInRbSpace) {
-        return MathUtils.TrfPt(rb.position, rb.rotation, ptInRbSpace);
-    }
+    public static Vector3 TrfPtUnscaled(this Vector3 ptInRbSpace, Rigidbody rb)
+        => ptInRbSpace.TrfPt(rb.position, rb.rotation);
 
     /// <summary>
     /// Converts a rigidbody's local space rotation into world space rotation.
     /// </summary>
-    public static Quaternion TrfRot(Rigidbody rb, Quaternion rotInRbSpace) {
-        return MathUtils.TrfRot(rb.rotation, rotInRbSpace);
-    }
+    public static Quaternion TrfRot(this Quaternion rotInRbSpace, Rigidbody rb)
+        => rotInRbSpace.TrfRot(rb.rotation);
 }

@@ -6,13 +6,9 @@ public class So_CpData : ScriptableObject {
         + "\nNOTE: State specific data starts with \"St_[state name]_\".")]
 
     [Header("General Movement Settings")]
-    [Tooltip("In m/s^2. Should be around 9.81.")]
-    public float gravitationalAcc = 10;
     [Tooltip("If pawn succeeds isGrounded check, this is the vertical velocity "
         + "used to snap slightly hovering pawn to the ground.")]
     public float groundSnapVerDownSpd = 1000;
-    [Tooltip("Max vertical speed when in falling state.")]
-    public float maxFallSpd = 30;
 
     [Header("Input Settings")]
     [Tooltip("How long should inputs stay in the buffer (in sec)?")]
