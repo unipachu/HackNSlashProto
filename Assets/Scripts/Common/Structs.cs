@@ -200,6 +200,9 @@ public struct Cp_ActSts {
     }
 }
 
+/// <summary>
+/// NOTE: When looping over SoA data, YOU MUST NOT REMOVE OR ADD NEW ENTITIES TO NOT CAUSE ERRORS WITH THE LOOP!! (10.9.2026) 
+/// </summary>
 public struct Cp_SoaData {
     public NativeArray<AtkPhase> actStSt_AtkPhase;
     public NativeArray<bool> actStSt_BufferedInputStSwitchAllowed;
@@ -400,6 +403,7 @@ public struct Cp_AosData {
     public bool isSwitchingSt;
     public bool enableDebugMsgs;
     public float st_AtkFlying_TgtHorSpd;
+    public Cp_NavTgtInfo navTgtInfo;
 }
 
 public struct Cp_BrainData {
@@ -411,7 +415,33 @@ public struct Cp_BrainData {
     public bool inAggroRange;
     public bool inAtkRange;
     public bool prevCalculatePathSucceeded;
-    public float3 tgtPos;
+    public LockOnTgt lockedOnTgt;
+}
+
+/// <summary>
+/// Info so that this pawn can be used as a navigation target BY OTHER PAWNS.
+/// </summary>
+[Serializable]
+public struct Cp_NavTgtInfo {
+    /// <summary>
+    /// Helper bool so that we only check ONCE A FRAME if a pawn is on a navmesh.
+    /// </summary>
+    public bool hasUpdatedNavTgtInfoThisTick;
+    public bool isCpOnNavmesh;
+    /// <summary>
+    /// Max distance from navTgt to navmesh
+    /// </summary>
+    public float maxDistToNavMesh;
+
+    public Cp_NavTgtInfo(
+        bool hasUpdatedNavTgtInfoThisTick,
+        bool isCpOnNavmesh,
+        float maxDistToNavMesh
+    ) {
+        this.hasUpdatedNavTgtInfoThisTick = hasUpdatedNavTgtInfoThisTick;
+        this.isCpOnNavmesh = isCpOnNavmesh;
+        this.maxDistToNavMesh = maxDistToNavMesh;
+    }
 }
 
 /// <summary>
@@ -427,8 +457,8 @@ public struct Cp_UnityComps {
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
     public IHandItem rHandItem;
-    public Transform tgt;
-    public Transform trf;
+    public Transform rootTrf;
+    public Transform lockOnTrf;
 }
 
 [Serializable]
@@ -464,12 +494,13 @@ public struct HitResult {
     }
 }
 
-public struct HomingProjMovData {
+[Serializable]
+public struct HomingProjData {
     public float spd;
     public float maxLifetime;
     public float homingStr;
 
-    public HomingProjMovData(float spd, float maxLifetime, float homingStr) {
+    public HomingProjData(float spd, float maxLifetime, float homingStr) {
         this.spd = spd;
         this.maxLifetime = maxLifetime;
         this.homingStr = homingStr;

@@ -57,7 +57,7 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov_WhenLastSwitchedSt[cpId],

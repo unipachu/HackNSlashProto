@@ -35,7 +35,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         if (classRefs.st_prev == classRefs.actSts.walk)
-            CpUtils.UpdateMovData(
+            CpUtils.UpdateMovInputData(
                 cpId,
                 data,
                 data.input_mov_LastNonZero[cpId],
@@ -45,7 +45,7 @@ public class CpSt_Idle : IFsmSt_Cp {
                 float.PositiveInfinity
             );
         else
-            CpUtils.UpdateMovData(
+            CpUtils.UpdateMovInputData(
                 cpId,
                 data,
                 float2.zero,

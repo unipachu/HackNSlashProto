@@ -592,7 +592,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   maxColliders: 100
-  atkData:
+  hitEffects:
     dmg: 0
     knockbackT: 0
     knockbackStr: 0
@@ -765,7 +765,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2010874956325773651}
-  - component: {fileID: -8921950983338526016}
+  - component: {fileID: 952424525799555821}
   m_Layer: 0
   m_Name: Pistol
   m_TagString: Untagged
@@ -791,7 +791,7 @@ Transform:
   - {fileID: 4093082790708201532}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-8921950983338526016
+--- !u!114 &952424525799555821
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -800,8 +800,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 8427959144526498737}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1d74ecfbc5336f043b65c8cfdeb30013, type: 3}
+  m_Script: {fileID: 11500000, guid: b6aa224c800f6ef4cbf997d38da59d3b, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BasicMeleeWeapon
-  hitDealer: {fileID: 5092167040023849340}
-  comboGraphConfig: {fileID: 11400000, guid: d1ec75a1036a5b748aec2a2c07c9b000, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::BasicGun
+  meleeHitDealer: {fileID: 5092167040023849340}
+  hitEffects:
+    dmg: 1
+    knockbackT: 1
+    knockbackStr: 1
+  homingProjData:
+    spd: 10
+    maxLifetime: 4
+    homingStr: 1
+  projHitEffects:
+    dmg: 1
+    knockbackT: 1
+    knockbackStr: 1
+  projSpawnPose: {fileID: 4093082790708201532}

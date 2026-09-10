@@ -67,6 +67,9 @@ public class CpMgr : Singleton<CpMgr> {
     // ------------------------------------------------------------
 
     public void Tick(float dt) {
+        // Navigation target info is calculated only once per frame (if any request it).
+        for (int i = 0; i < soaData.occupied.Length; i++)
+            aosData[i].navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
         Tick_FromNonNative(dt);
         Tick_Input();
         Tick_InputBuffer(dt);
@@ -80,54 +83,53 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
         for (int i = 0; i < soaData.occupied.Length; i++) {
-            //Dbg.Log($"{i} tgt: {unityComps[i].tgt}", data.enableDebugMsgs[i]);
             if (!soaData.occupied[i] || unityComps[i].navMeshAgent == null)
                 continue;
-            if (unityComps[i].tgt == null) {
-                //Dbg.Log(
-                //    $"{i} Set agent desired vel to 0 because tgt was null: {unityComps[i].tgt}",
-                //    data.enableDebugMsgs[i]
-                //);
+            if (brainData[i].lockedOnTgt.Trf == null) {
+                Dbg.Log(
+                    $"{i} Set agent desired vel to 0 because tgt was null: {brainData[i].lockedOnTgt.Trf}",
+                    aosData[i].enableDebugMsgs
+                );
                 unityComps[i].navMeshAgent.ResetPath();
                 brainData[i].agentDesiredVel = float3.zero;
                 continue;
             }
             // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
-            unityComps[i].navMeshAgent.nextPosition = unityComps[i].trf.position;
-            bool tgtOnNavMesh = NavMesh.SamplePosition(
-                unityComps[i].tgt.position,
-                out NavMeshHit hit,
-                // TODO: Make So.
-                0.2f,
-                unityComps[i].navMeshAgent.areaMask
-            );
-            // NOTE: We need to check this manually since SetDestination does not have option to set target sample
-            // NOTE C: position max distance.
-            if (!tgtOnNavMesh) {
-                //Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.", data.enableDebugMsgs[i]);
+            unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
+                // NOTE: We need to check this manually since SetDestination does not have option to set
+                // NOTE C: target sample position max distance.
+                if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.CpId)) {
+                Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.",
+                    aosData[i].enableDebugMsgs);
                 unityComps[i].navMeshAgent.ResetPath();
                 brainData[i].agentDesiredVel = float3.zero;
                 continue;
             }
-            // TODO: The point of this is to START path finding calculation if there is no previous path calculation
-            // TODO C: (e.g. no path status) and if the agent is not currenly calculating a path. I think this might
-            // TODO C: be incorrect way to do it but the agent navigation seems to work well enough for now.
+            // TODO: The point of this is to START path finding calculation if there is no previous path
+            // TODO C: calculation (e.g. no path status) and if the agent is not currenly calculating a path.
+            // TODO C: I think this might be incorrect way to do it but the agent navigation seems to work
+            // TODO C: well enough for now.
             if (!unityComps[i].navMeshAgent.hasPath) {
                 //Dbg.Log($"{i} Agent had no path. Set destination.", data.enableDebugMsgs[i]);
-                unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
+                unityComps[i].navMeshAgent.SetDestination(brainData[i].lockedOnTgt.Trf.position);
                 continue;
             }
             // If we are close enough to the destination, stop desiring movement.
             // TODO: Make So.
-            if(Vector3.SqrMagnitude(unityComps[i].navMeshAgent.destination - unityComps[i].trf.position) < 0.1f) {
-                //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.", data.enableDebugMsgs[i]);
+            if(
+                Vector3.SqrMagnitude(
+                    unityComps[i].navMeshAgent.destination - unityComps[i].rootTrf.position
+                ) < 0.1f
+            ) {
+                //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.",
+                //data.enableDebugMsgs[i]);
                 unityComps[i].navMeshAgent.ResetPath();
                 brainData[i].agentDesiredVel = float3.zero;
                 continue;
             }
-            // NOTE: We only use the current unfinished path if last path calculation was completed. This way if we
-            // NOTE C: get sequential failed path finding attempts, the character will not move at all (instead of
-            // NOTE C: jittering a little because of the partial paths).
+            // NOTE: We only use the current unfinished path if last path calculation was completed. This way
+            // NOTE C: if we get sequential failed path finding attempts, the character will not move at all
+            // NOTE C: (instead of jittering a little because of the partial paths).
             if (unityComps[i].navMeshAgent.pathPending) {
                 //Dbg.Log($"{i} Path was pending.", data.enableDebugMsgs[i]);
                 if (brainData[i].prevCalculatePathSucceeded)
@@ -158,7 +160,7 @@ public class CpMgr : Singleton<CpMgr> {
                 brainData[i].prevCalculatePathSucceeded = false;
                 brainData[i].agentDesiredVel = float3.zero;
             }
-            unityComps[i].navMeshAgent.SetDestination(unityComps[i].tgt.position);
+            unityComps[i].navMeshAgent.SetDestination(brainData[i].lockedOnTgt.Trf.position);
         }
     }
 
@@ -169,9 +171,9 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < soaData.occupied.Length; i++) {
             if (!soaData.occupied[i])
                 continue;
-            soaData.trf_pos[i] = unityComps[i].trf.position;
-            soaData.trf_rot[i] = unityComps[i].trf.rotation;
-            soaData.trf_lossyScl[i] = unityComps[i].trf.lossyScale;
+            soaData.trf_pos[i] = unityComps[i].rootTrf.position;
+            soaData.trf_rot[i] = unityComps[i].rootTrf.rotation;
+            soaData.trf_lossyScl[i] = unityComps[i].rootTrf.lossyScale;
             soaData.lastCcVel[i] = unityComps[i].cc.velocity;
             soaData.curStDur[i] += dt;
         }
@@ -193,7 +195,7 @@ public class CpMgr : Singleton<CpMgr> {
             soaData.input_atk_Heavy[i] = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
             soaData.input_atk_Ult[i] = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
             soaData.input_dodge[i] = unityComps[i].cpCtrl.TryConsume_Dodge();
-            if (unityComps[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigsManager.inst.movInputSqrDeadzone) {
+            if (unityComps[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
                 soaData.input_mov[i] = unityComps[i].cpCtrl.Input_Mov;
                 soaData.input_mov_LastNonZero[i] = soaData.input_mov[i];
             } else {
@@ -253,8 +255,14 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < soaData.occupied.Length; i++) {
             if (!soaData.occupied[i])
                 continue;
-            //Debug.Log($"UpdateMov: horMov: {horMov} | animRootMot: {animRootMot} \n"
-            //    + $"| maxLinSpd: {maxLinSpd} | linAcc: {linAcc}");
+            //Dbg.Log(
+            //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
+            //    + $"| additionalLinMov: {soaData.movInput_additionalLinMov[i]} \n"
+            //    + $"| tgtHorDir: {soaData.movInput_tgtHorDir[i]} "
+            //    + $"| horAcc: {soaData.movInput_horAcc[i]} "
+            //    + $"| yawSpd {soaData.movInput_yawSpd[i]}",
+            //    aosData[i].enableDebugMsgs
+            //);
             Debug.Assert(
                 !float.IsNaN(soaData.vel_Hor[i].x) && !float.IsNaN(soaData.vel_Hor[i].y),
                 $"{i} vel_hor had NaN: {soaData.vel_Hor[i]}"
@@ -272,7 +280,7 @@ public class CpMgr : Singleton<CpMgr> {
                     soaData.movInput_yawSpd[i],
                     soaData.movInput_tgtHorDir[i]
                 );
-                unityComps[i].trf.rotation = soaData.trf_rot[i];
+                unityComps[i].rootTrf.rotation = soaData.trf_rot[i];
             }
             if (soaData.isAffectedByGravity[i])
                 // NOTE: This will override previously calculated horizontal velocity if the player is
@@ -292,31 +300,34 @@ public class CpMgr : Singleton<CpMgr> {
             soaData.vel_Hor[i] = new float2(totalMov.x, totalMov.z) / dt;
             soaData.vel_Ver[i] = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            unityComps[i].navMeshAgent.nextPosition = unityComps[i].trf.position;
+            unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
         }
     }
 
     void Tick_Sensing() {
         for (int i = 0; i < soaData.occupied.Length; i++) {
-            // TODO MINOR: Find out if skipping through elements like this affects cpu cache performance.
             if (!soaData.occupied[i])
                 continue;
-            if (unityComps[i].tgt != null) {
+            // TODO: Use better logic for sensing player.
+            brainData[i].lockedOnTgt
+                = GameObject.Find("Cp_Plr").GetComponent<LockOnTgt>();
+            //Debug.Log(brainData[i].tgtPose.position);
+            if (brainData[i].lockedOnTgt != null) {
                 brainData[i].distToTgt = Vector3.Distance(
-                    unityComps[i].trf.position,
-                    unityComps[i].tgt.position
+                    unityComps[i].rootTrf.position,
+                    brainData[i].lockedOnTgt.Trf.position
                 );
                 brainData[i].hasTgt = true;
                 brainData[i].inAggroRange
                     = Vector3.Distance(
-                        unityComps[i].trf.position,
-                    unityComps[i].tgt.position) < brainData[i].aggroRange;
+                        unityComps[i].rootTrf.position,
+                    brainData[i].lockedOnTgt.Trf.position) < brainData[i].aggroRange;
                 brainData[i].inAtkRange
                     = Vector3.Distance(
-                        unityComps[i].trf.position,
-                    unityComps[i].tgt.position
+                        unityComps[i].rootTrf.position,
+                    brainData[i].lockedOnTgt.Trf.position
                 ) < brainData[i].atkRange;
-                brainData[i].tgtPos = unityComps[i].tgt.position;
+                //Dbg.Log($"in atk range: {brainData[i].inAtkRange}", aosData[i].enableDebugMsgs);
             }
             else
                 brainData[i].hasTgt = false;
@@ -384,7 +395,7 @@ public class CpMgr : Singleton<CpMgr> {
         brainData[freeI].hasTgt = false;
         brainData[freeI].inAggroRange = false;
         brainData[freeI].inAtkRange = false;
-        brainData[freeI].tgtPos = float3.zero;
+        brainData[freeI].lockedOnTgt = null;
         // Structure of arrays data
         soaData.actStSt_Impact_YawSpd[freeI] = so.impact_YawSpd;
         soaData.curStDur[freeI] = 0;
@@ -425,6 +436,8 @@ public class CpMgr : Singleton<CpMgr> {
         this.aosData[freeI] = new();
         aosData[freeI].enableDebugMsgs = so.enableDebugMsgs;
         aosData[freeI].st_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
+        // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
+        aosData[freeI].navTgtInfo = new(false, false, 0.2f); 
         this.unityComps[freeI] = unityComps;
         this.classRefs[freeI] = new Cp_NonUnityCompClassRefs(freeI);
         // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
@@ -477,7 +490,7 @@ public class CpMgr : Singleton<CpMgr> {
             soaData.input_mov_WhenLastSwitchedSt[cpId]
                 = soaData.input_mov[cpId];
         else {
-            if (unityComps[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigsManager.inst.movInputSqrDeadzone)
+            if (unityComps[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
                 soaData.input_mov_WhenLastSwitchedSt[cpId]
                     = soaData.input_mov[cpId];
             else

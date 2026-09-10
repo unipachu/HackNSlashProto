@@ -52,7 +52,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.trf.forward;
+                hitDealer.hitWldDir = unityComps.rootTrf.forward;
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -74,7 +74,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         float angSpd = 0;
         if (data.actStSt_InputRotAllowed[cpId])
             angSpd = data.actStSt_Impact_YawSpd[cpId];
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov[cpId],

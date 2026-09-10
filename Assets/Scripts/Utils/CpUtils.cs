@@ -1,5 +1,8 @@
 using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.AI;
 
 /// <summary>
 /// Capsule pawn general util methods. Consider organizing these better!
@@ -33,6 +36,18 @@ public static class CpUtils{
         var unityComps = CpMgr.inst.unityComps[cpId];
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
+        // TODO: Make projectile attack a combo attakc.
+        if(
+            unityComps.rHandItem is IHandItem_ProjectileSpawner projectileSpawner
+                && (input == BufferableInput.RTrg || input == BufferableInput.RShldr)
+        ) {
+            return () => classRefs.actSts.atk_ShootHomingProj.Enter(
+                projectileSpawner.ProjHitEffects,
+                projectileSpawner.HomingProjData,
+                projectileSpawner.ProjSpawnPose,
+                CpMgr.inst.brainData[cpId].lockedOnTgt.Trf
+            );
+        }
         if (unityComps.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
                 BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpId),
@@ -56,11 +71,28 @@ public static class CpUtils{
                     hitter.HitDealer
                 );
         }
-
         return null;
         // Helper
         static Func<IFsmSt_Cp> GetEnterFunc(IComboNode comboStart, int cpId)
             => comboStart == null ? null : comboStart.GetEnterFunc(cpId);
+    }
+
+    /// <summary>
+    /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
+    /// </summary>
+    public static bool IsOnNavMesh(int cpId) {
+        ref Cp_NavTgtInfo navMeshInfo = ref CpMgr.inst.aosData[cpId].navTgtInfo;
+        if (navMeshInfo.hasUpdatedNavTgtInfoThisTick)
+            return navMeshInfo.isCpOnNavmesh;
+        Transform trf = CpMgr.inst.unityComps[cpId].rootTrf;
+        navMeshInfo.hasUpdatedNavTgtInfoThisTick = true;
+        navMeshInfo.isCpOnNavmesh = NavMesh.SamplePosition(
+            trf.position,
+            out NavMeshHit hit,
+            navMeshInfo.maxDistToNavMesh,
+            CpMgr.inst.unityComps[cpId].navMeshAgent.areaMask
+        );
+        return navMeshInfo.isCpOnNavmesh;
     }
 
     /// <summary>
@@ -118,7 +150,11 @@ public static class CpUtils{
         return false;
     }
 
-    public static void UpdateMovData(
+    /// <summary>
+    /// NOTE: controller inputs do not directly affect movement data - instead they're read by the action
+    /// state of the pawn which then sends inputs to the movement system with this method.
+    /// </summary>
+    public static void UpdateMovInputData(
         int id,
         Cp_SoaData data,
         in float2 tgtHorDir,

@@ -58,12 +58,11 @@ MonoBehaviour:
     animEventHandler: {fileID: 4596513238272593172}
     cc: {fileID: 5079058612890601784}
     cpCtrl: {fileID: 3037795622728005573}
-    fsm: {fileID: 0}
     hitRecieverHandler: {fileID: 9141355615762476700}
     navMeshAgent: {fileID: 8087861647241408892}
     rHand: {fileID: 6462226994868355226}
-    tgt: {fileID: 0}
-    trf: {fileID: 1582683670335378908}
+    rootTrf: {fileID: 1582683670335378908}
+    lockOnTrf: {fileID: 4401862854214746052}
 --- !u!114 &9141355615762476700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -160,7 +159,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4401862854214746052}
   m_Layer: 0
-  m_Name: PlrMiddlePt
+  m_Name: CenterPt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

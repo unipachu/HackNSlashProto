@@ -139,16 +139,17 @@ public class BtMgr : Singleton<BtMgr>{
                 ccMgr.input_atk_Light[cpId] = false;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if(math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
+                if(math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigs.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 ccMgr.input_mov[cpId] = float2.zero;
                 return BtResult.Success;
             case BtNodeT.Cmd_Atk1:
+                //Debug.Log("Atk1");
                 ccMgr.input_atk_Heavy[cpId] = false;
                 ccMgr.input_atk_Light[cpId] = true;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigs.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel.x,
@@ -161,11 +162,12 @@ public class BtMgr : Singleton<BtMgr>{
                     ccMgr.input_mov[cpId] = math.normalize(horDesiredVel);
                 return BtResult.Success;
             case BtNodeT.Cmd_MovToTgt:
+                //Debug.Log("Moving to tgt");
                 ccMgr.input_atk_Heavy[cpId] = false;
                 ccMgr.input_atk_Light[cpId] = false;
                 ccMgr.input_atk_Ult[cpId] = false;
                 ccMgr.input_dodge[cpId] = false;
-                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigsManager.inst.movInputSqrDeadzone)
+                if (math.lengthsq(ccMgr.input_mov[cpId]) > PlrConfigs.inst.movInputSqrDeadzone)
                     ccMgr.input_mov_LastNonZero[cpId] = ccMgr.input_mov[cpId];
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel.x,
@@ -182,6 +184,7 @@ public class BtMgr : Singleton<BtMgr>{
             case BtNodeT.Cond_InAggroRange:
                 return brainData.inAggroRange ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Cond_InAtkRange:
+                //Debug.Log($"In atk range leaf: {brainData.inAtkRange}");
                 return brainData.inAtkRange ? BtResult.Success : BtResult.Failure;
             case BtNodeT.Selector:
                 Debug.LogError("Selector is a composite not a leaf!", this);

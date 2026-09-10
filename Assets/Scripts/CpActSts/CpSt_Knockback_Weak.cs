@@ -27,7 +27,7 @@ public class CpSt_Knockback_Weak : IFsmSt_Cp{
             viewVec = Vector3.down;
         else
             viewVec.Normalize();
-        if (Vector3.Dot(data.lastRecievedHitDir[cpId], CpMgr.inst.unityComps[cpId].trf.forward) > 0) {
+        if (Vector3.Dot(data.lastRecievedHitDir[cpId], CpMgr.inst.unityComps[cpId].rootTrf.forward) > 0) {
             AnimEventPlr.CrossfadeNInitAnimEventPlr(
                 ref CpMgr.inst.animEventPlrData[cpId],
                 CpMgr.inst.unityComps[cpId].anim,
@@ -49,7 +49,7 @@ public class CpSt_Knockback_Weak : IFsmSt_Cp{
         //if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
         //    return;
         //Debug.Log($"knocback: {data.lastKnockbackStr[cpId]}\nanim delta: {data.animDPos[cpId]}");
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             float2.zero,

@@ -17,7 +17,7 @@ public class CpSt_Falling : IFsmSt_Cp {
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.Get(CpAnimInfoT.falling),
-            4 // TODO: So?
+            4 // TODO: So? Also it seems that the length of the crossfade differs sometimes for some reason.
         );
         return this;
     }
@@ -35,7 +35,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         var unityComps = CpMgr.inst.unityComps[cpId];
         var classRefs = CpMgr.inst.classRefs[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             soaData,
             float2.zero,

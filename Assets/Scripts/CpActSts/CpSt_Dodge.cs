@@ -33,11 +33,12 @@ public class CpSt_Dodge : IFsmSt_Cp {
         float angSpd = 0;
         if (data.actStSt_InputRotAllowed[cpId])
             angSpd = data.st_Dodge_YawSpd[cpId];
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov[cpId],
-            data.animDPos[cpId],
+            // TODO: Make So of hor spd multiplier
+            data.animDPos[cpId] * 1.5f,
             0,
             angSpd,
             float.PositiveInfinity

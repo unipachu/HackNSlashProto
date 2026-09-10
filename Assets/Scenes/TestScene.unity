@@ -459,7 +459,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: avoidancePriority
@@ -2500,6 +2500,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_BtRootNode
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 3037795622728005573, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: plrCtrl
       value: 
@@ -3695,7 +3699,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: avoidancePriority
@@ -7533,7 +7537,7 @@ MonoBehaviour:
   TargetOffset: {x: 0, y: 1, z: 0}
   TrackerSettings:
     BindingMode: 4
-    PositionDamping: {x: 1, y: 1, z: 1}
+    PositionDamping: {x: 0.5, y: 0.5, z: 0.5}
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
@@ -7641,7 +7645,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1745552594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2a73fbc4edfae214986382a3a091526f, type: 3}
+  m_Script: {fileID: 11500000, guid: dfe6243ddd8022c499bf1e833a9be5db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrConfigsManager
   movInputSqrDeadzone: 0.2

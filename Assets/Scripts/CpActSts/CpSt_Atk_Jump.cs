@@ -48,7 +48,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.trf.forward;
+                hitDealer.hitWldDir = unityComps.rootTrf.forward;
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -67,7 +67,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
         Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             float2.zero,

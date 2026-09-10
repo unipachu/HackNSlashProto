@@ -56,7 +56,7 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         data.actStSt_RecoveryMotInterpTimer[cpId] += Time.deltaTime;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);
         float interpValue = Mathf.Clamp01(animEventPlrData.prevTotalNrmT);
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov[cpId],

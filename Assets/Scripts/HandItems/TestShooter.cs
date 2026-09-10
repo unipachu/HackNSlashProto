@@ -13,7 +13,7 @@ public class TestShooter : MonoBehaviour {
     [SerializeField] Transform plr;
 
     float timer = 0;
-    HomingProjMovData projData;
+    HomingProjData projData;
 
     private void Awake() {
         projData = new(spd, maxLifetime, homingStr);

@@ -2,17 +2,31 @@ using UnityEngine;
 
 public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     int cpId;
+    HitEffects hitEffects;
+    HomingProjData homingProjData;
+    Transform projSpawnPose;
+    Transform homingProjTgt;
 
     public CpSt_Atk_ShootHomingProj(int cpId) {
         this.cpId = cpId;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
-    => true;
+        => true;
 
     // TODO: Use IGun info to get info about what kind of projectile will be spawned and to where. Then
     // TODO C: handle it in an animation event.
-    public CpSt_Atk_ShootHomingProj Enter() {
+    public CpSt_Atk_ShootHomingProj Enter(
+        HitEffects hitEffects,
+        HomingProjData homingProjData,
+        Transform projSpawnPose,
+        Transform homingProjTgt
+    ) {
+        this.hitEffects = hitEffects;
+        this.homingProjData = homingProjData;
+        this.projSpawnPose = projSpawnPose;
+        this.homingProjTgt = homingProjTgt;
+        CpMgr.inst.soaData.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
@@ -22,31 +36,22 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         return this;
     }
 
-    public void Exit() {
-    }
+    public void Exit() {}
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var data = CpMgr.inst.soaData;
+        var soaData = CpMgr.inst.soaData;
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (data.actStSt_AtkPhase[cpId]) {
+                switch (soaData.actStSt_AtkPhase[cpId]) {
                     case AtkPhase.Windup:
-                        // TODO: Make into So data
-                        HomingProjMovData projData;
-                        HitEffects atkData = new(10, KnockbackT.Weak, 0.5f);
-                        float spd = 5;
-                        float maxLifetime = 10;
-                        float homingStr = 2;
-                        projData = new(spd, maxLifetime, homingStr);
-                        // TODO: Item
-                        //HomingProjMgr.inst.ShootProj(
-                        //    projData,
-                        //    atkData,
-                        //    unityComps.rHandItem.projSpawnPose.position,
-                        //    unityComps.rHandItem.projSpawnPose.forward,
-                        //    // TODO: Set homing target.
-                        //    null
-                        //);
+                        soaData.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
+                        HomingProjMgr.inst.ShootProj(
+                            homingProjData,
+                            hitEffects,
+                            projSpawnPose.position,
+                            projSpawnPose.forward,
+                            homingProjTgt
+                        );
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.animEventPlrData[cpId],
                             CpMgr.inst.unityComps[cpId].anim,
@@ -57,7 +62,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         CpUtils.TransitionToFallIdleOrWalk(cpId);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}");
+                        Debug.LogError($"Switch defaulted with {soaData.actStSt_AtkPhase[cpId]}");
                         break;
                 }
                 break;
@@ -67,15 +72,13 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         }
     }
 
-    public void LateTick() {
-    }
+    public void LateTick() {}
 
-    public void PhysicsTick() {
-    }
+    public void PhysicsTick() {}
 
     public void Tick() {
         Cp_SoaData data = CpMgr.inst.soaData;
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov_LastNonZero[cpId],

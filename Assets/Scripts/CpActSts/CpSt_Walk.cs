@@ -34,7 +34,7 @@ public class CpSt_Walk : IFsmSt_Cp {
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             data,
             data.input_mov[cpId],

@@ -41,63 +41,6 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         hitDealer.Deactivate();
     }
 
-    public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
-        Cp_UnityComps unityComps = CpMgr.inst.unityComps[cpId];
-        var aosData = CpMgr.inst.aosData[cpId];
-        switch (data.actStSt_AtkPhase[cpId]) {
-            case AtkPhase.Windup:
-                CpUtils.UpdateMovData(
-                    cpId,
-                    data,
-                    data.input_mov[cpId],
-                    data.animDPos[cpId],
-                    aosData.st_AtkFlying_TgtHorSpd,
-                    0,
-                    float.PositiveInfinity
-                );
-                break;
-            case AtkPhase.Impact:
-                CpUtils.UpdateMovData(
-                    cpId,
-                    data,
-                    data.input_mov[cpId],
-                    data.animDPos[cpId],
-                    aosData.st_AtkFlying_TgtHorSpd,
-                    0,
-                    float.PositiveInfinity
-                );
-                if (data.isGrounded[cpId]) {
-                    hitDealer.Deactivate();
-                    data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
-                    AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                        ref CpMgr.inst.animEventPlrData[cpId],
-                        unityComps.anim,
-                        CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Recovery)
-                    );
-                }
-                break;
-            case AtkPhase.Recovery:
-                CpUtils.UpdateMovData(
-                    cpId,
-                    data,
-                    float2.zero,
-                    float3.zero,
-                    0,
-                    0,
-                    float.PositiveInfinity
-                );
-                break;
-            default:
-                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}.");
-                break;
-        }
-    }
-
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var soaData = CpMgr.inst.soaData;
         var unityComps = CpMgr.inst.unityComps[cpId];
@@ -128,9 +71,8 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
-                // TODO: below
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.trf.forward;
+                hitDealer.hitWldDir = unityComps.rootTrf.forward;
                 hitDealer.Activate();
                 break;
             default:
@@ -138,5 +80,62 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 break;
         }
     }
+
+    public void Tick() {
+        Cp_SoaData data = CpMgr.inst.soaData;
+        Cp_UnityComps unityComps = CpMgr.inst.unityComps[cpId];
+        var aosData = CpMgr.inst.aosData[cpId];
+        switch (data.actStSt_AtkPhase[cpId]) {
+            case AtkPhase.Windup:
+                CpUtils.UpdateMovInputData(
+                    cpId,
+                    data,
+                    data.input_mov[cpId],
+                    data.animDPos[cpId],
+                    aosData.st_AtkFlying_TgtHorSpd,
+                    0,
+                    float.PositiveInfinity
+                );
+                break;
+            case AtkPhase.Impact:
+                CpUtils.UpdateMovInputData(
+                    cpId,
+                    data,
+                    data.input_mov[cpId],
+                    data.animDPos[cpId],
+                    aosData.st_AtkFlying_TgtHorSpd,
+                    0,
+                    float.PositiveInfinity
+                );
+                if (data.isGrounded[cpId]) {
+                    hitDealer.Deactivate();
+                    data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
+                    AnimEventPlr.CrossfadeNInitAnimEventPlr(
+                        ref CpMgr.inst.animEventPlrData[cpId],
+                        unityComps.anim,
+                        CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Recovery)
+                    );
+                }
+                break;
+            case AtkPhase.Recovery:
+                CpUtils.UpdateMovInputData(
+                    cpId,
+                    data,
+                    float2.zero,
+                    float3.zero,
+                    0,
+                    0,
+                    float.PositiveInfinity
+                );
+                break;
+            default:
+                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}.");
+                break;
+        }
+    }
+
+    public void LateTick() {}
+
+    public void PhysicsTick() {}
 }
 

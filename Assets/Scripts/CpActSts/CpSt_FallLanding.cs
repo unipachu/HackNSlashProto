@@ -38,7 +38,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        CpUtils.UpdateMovData(
+        CpUtils.UpdateMovInputData(
             cpId,
             soaData,
             float2.zero,

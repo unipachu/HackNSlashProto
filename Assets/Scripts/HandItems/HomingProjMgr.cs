@@ -92,7 +92,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     /// Shoot a homing projectile.
     /// </summary>
     public void ShootProj(
-        HomingProjMovData projData,
+        HomingProjData projData,
         HitEffects atkData,
         Vector3 wldStartPos,
         Vector3 wldStartDir,

@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Used to register and unregister capsule pawn to <see cref="CpMgr"/>.
 /// </summary>
-public class CpRegisterer : MonoBehaviour{
+public class CpRegisterer : MonoBehaviour, LockOnTgt{
     [Header("Scriptable Object Data")]
     [SerializeField] So_CpData so_cpData;
     [SerializeField] So_BtRootNode so_BtRootNode;
@@ -12,6 +12,10 @@ public class CpRegisterer : MonoBehaviour{
     [SerializeField] Cp_UnityComps unityComps;
 
     public int Id { get; private set; } = -1;
+
+    public int CpId => Id;
+
+    public Transform Trf => unityComps.lockOnTrf;
 
     void OnEnable(){
         // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
