@@ -29,21 +29,21 @@ public class CpSt_Dodge : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
+        Cp_SoaData soaData = CpMgr.inst.soaData;
+        Cp_AosData aosData = CpMgr.inst.aosData[cpId];
         float angSpd = 0;
-        if (data.actStSt_InputRotAllowed[cpId])
-            angSpd = data.st_Dodge_YawSpd[cpId];
+        if (soaData.actStSt_InputRotAllowed[cpId])
+            angSpd = soaData.st_Dodge_YawSpd[cpId];
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
-            data.input_mov[cpId],
-            // TODO: Make So of hor spd multiplier
-            data.animDPos[cpId] * 1.5f,
+            soaData,
+            soaData.input_mov[cpId],
+            soaData.animDPos[cpId] * aosData.dodgeHorMovSpdMult,
             0,
             angSpd,
             float.PositiveInfinity
         );
-        if (data.actStSt_BufferedInputStSwitchAllowed[cpId] && CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+        if (soaData.actStSt_BufferedInputStSwitchAllowed[cpId] && CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;
     }
 

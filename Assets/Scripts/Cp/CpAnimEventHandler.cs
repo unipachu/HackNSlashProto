@@ -12,9 +12,6 @@ public class CpAnimEventHandler : MonoBehaviour {
         animEvent -= OnAnimEvent;
     }
 
-    // TODO: Combine similar functionality into one general event. Would it be possible to have the
-    // TODO C: animation events to point more directly into some methods so that this switch case would
-    // TODO C: not be needed?
     void OnAnimEvent(int id, CpAnimEventT animEvent) {
         //Debug.Log($"Anim event {animEvent} for {id} called!", this);
         var classRefs = CpMgr.inst.classRefs[id];

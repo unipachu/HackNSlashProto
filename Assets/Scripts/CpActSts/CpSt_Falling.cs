@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using UnityEngine;
 
 public class CpSt_Falling : IFsmSt_Cp {
     int cpId;
@@ -17,7 +18,7 @@ public class CpSt_Falling : IFsmSt_Cp {
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.Get(CpAnimInfoT.falling),
-            4 // TODO: So? Also it seems that the length of the crossfade differs sometimes for some reason.
+            4 // NOTE: Transition is long to give a sense of accleration during falling.
         );
         return this;
     }
@@ -53,10 +54,8 @@ public class CpSt_Falling : IFsmSt_Cp {
             CpUtils.TransitionToFallIdleOrWalk(cpId);
             return;
         }
-        if (soaData.curStDur[cpId] > 20) {
-            // TODO: Character stuck falling. Kill/reset character (maybe have a unique
-            // TODO C: death state for when character dies like this where the player doesn't
-            // TODO C: lose their souls).
+        if (soaData.curStDur[cpId] > 15) {
+            Debug.LogError($"{cpId} likely stuck falling as curStDur was: {soaData.curStDur[cpId]}.");
         }
     }
 }

@@ -86,10 +86,10 @@ public class CpMgr : Singleton<CpMgr> {
             if (!soaData.occupied[i] || unityComps[i].navMeshAgent == null)
                 continue;
             if (brainData[i].lockedOnTgt.Trf == null) {
-                Dbg.Log(
-                    $"{i} Set agent desired vel to 0 because tgt was null: {brainData[i].lockedOnTgt.Trf}",
-                    aosData[i].enableDebugMsgs
-                );
+                //Dbg.Log(
+                //    $"{i} Set agent desired vel to 0 because tgt was null: {brainData[i].lockedOnTgt.Trf}",
+                //    aosData[i].enableDebugMsgs
+                //);
                 unityComps[i].navMeshAgent.ResetPath();
                 brainData[i].agentDesiredVel = float3.zero;
                 continue;
@@ -99,8 +99,8 @@ public class CpMgr : Singleton<CpMgr> {
                 // NOTE: We need to check this manually since SetDestination does not have option to set
                 // NOTE C: target sample position max distance.
                 if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.CpId)) {
-                Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.",
-                    aosData[i].enableDebugMsgs);
+                //Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.",
+                //    aosData[i].enableDebugMsgs);
                 unityComps[i].navMeshAgent.ResetPath();
                 brainData[i].agentDesiredVel = float3.zero;
                 continue;
@@ -115,11 +115,10 @@ public class CpMgr : Singleton<CpMgr> {
                 continue;
             }
             // If we are close enough to the destination, stop desiring movement.
-            // TODO: Make So.
             if(
                 Vector3.SqrMagnitude(
                     unityComps[i].navMeshAgent.destination - unityComps[i].rootTrf.position
-                ) < 0.1f
+                ) < 0.1f // NOTE: Stopping distane is hard coded.
             ) {
                 //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.",
                 //data.enableDebugMsgs[i]);
@@ -434,6 +433,7 @@ public class CpMgr : Singleton<CpMgr> {
         soaData.walkYawSpd[freeI] = so.walkYawSpd;
         // Array of structs data.
         this.aosData[freeI] = new();
+        aosData[freeI].dodgeHorMovSpdMult = 1.5f; // NOTE: hard coded.
         aosData[freeI].enableDebugMsgs = so.enableDebugMsgs;
         aosData[freeI].st_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
@@ -456,13 +456,17 @@ public class CpMgr : Singleton<CpMgr> {
         soaData.occupied[cpId] = false;
     }
 
-    // NOTE: This is currently always enters to idle state. (6.9.2026)
     public void SwitchToInitActSt(int cpId) {
         Debug.Log($"{cpId} switching to init state", this);
+        // NOTE: This is currently always enters to idle state. (6.9.2026)
         SwitchActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
+    /// <summary>
+    /// NOTE: Never directly call Fsm.Switch state since that will bypass calling
+    /// <see cref="OnStateSwitched"/>. (10.9.2026)
+    /// </summary>
     public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
         Fsm.SwitchSt(
             enterFunc,
@@ -471,19 +475,32 @@ public class CpMgr : Singleton<CpMgr> {
             ref aosData[cpId].isSwitchingSt
             //aosData[cpId].enableDebugMsgs
         );
+        OnStateSwitched(cpId, classRefs[cpId].st_cur);
     }
 
+    /// <summary>
+    /// NOTE: Never directly call Fsm.Switch state since that will bypass calling
+    /// <see cref="OnStateSwitched"/>. (10.9.2026)
+    /// </summary>
     public bool TrySwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
-        return Fsm.TrySwitchState(
-            enterFunc,
-            ref classRefs[cpId].st_cur,
-            ref classRefs[cpId].st_prev,
-            ref aosData[cpId].isSwitchingSt
-            //aosData[cpId].enableDebugMsgs
-        );
+        if(
+            Fsm.TrySwitchState(
+                enterFunc,
+                ref classRefs[cpId].st_cur,
+                ref classRefs[cpId].st_prev,
+                ref aosData[cpId].isSwitchingSt
+                //aosData[cpId].enableDebugMsgs
+            )
+        ) {
+            OnStateSwitched(cpId, classRefs[cpId].st_cur);
+            return true;
+        }
+        return false;
     }
 
-    // TODO: Create per cp action for "state switched", then pass that to SwitchSt and subscribe this to it. Or. Idk. Could just invoke this directly with the SwitchSt function? Maybe like the Enter state methods?
+    /// <summary>
+    /// This should always be called when cp act state is switched!
+    /// </summary>
     public void OnStateSwitched(int cpId, IFsmSt newSt) {
         soaData.curStDur[cpId] = 0;
         if (unityComps[cpId].cpCtrl == null)

@@ -18,9 +18,6 @@ public class CpSt_FallLanding : IFsmSt_Cp {
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
             CpAnimInfo.Get(CpAnimInfoT.fallLanding),
-            // TODO MINOR: You could make this transition faster if falling from higher/faster,
-            // TODO MINOR C: e.g. 0.2 if hitting the ground with slow speed, and 0.1 if hitting
-            // TODO MINOR C: the ground while fast falling speed.
             0.2f
         );
         return this;

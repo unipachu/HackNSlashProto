@@ -14,8 +14,6 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    // TODO: Use IGun info to get info about what kind of projectile will be spawned and to where. Then
-    // TODO C: handle it in an animation event.
     public CpSt_Atk_ShootHomingProj Enter(
         HitEffects hitEffects,
         HomingProjData homingProjData,
@@ -77,16 +75,33 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
-        CpUtils.UpdateMovInputData(
-            cpId,
-            data,
-            data.input_mov_LastNonZero[cpId],
-            data.animDPos[cpId],
-            0,
-            // TODO: Add to So
-            180,
-            float.PositiveInfinity
-        );
+        Cp_SoaData soaData = CpMgr.inst.soaData;
+        switch (soaData.actStSt_AtkPhase[cpId]) {
+            case AtkPhase.Windup:
+                CpUtils.UpdateMovInputData(
+                    cpId,
+                    soaData,
+                    soaData.input_mov_LastNonZero[cpId],
+                    soaData.animDPos[cpId],
+                    0,
+                    180, // NOTE: Yaw speed is set here.
+                    float.PositiveInfinity
+                );
+                break;
+            case AtkPhase.Recovery:
+                CpUtils.UpdateMovInputData(
+                    cpId,
+                    soaData,
+                    soaData.input_mov_LastNonZero[cpId],
+                    soaData.animDPos[cpId],
+                    0,
+                    0,
+                    float.PositiveInfinity
+                );
+                break;
+            default:
+                Debug.LogError($"{cpId} Switch defaulted with {soaData.actStSt_AtkPhase[cpId]}.");
+                break;
+        }
     }
 }

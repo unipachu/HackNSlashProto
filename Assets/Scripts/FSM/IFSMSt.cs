@@ -4,15 +4,16 @@
 /// </summary>
 public interface IFsmSt {
     /// <summary>
-    /// Can we switch to the specified state type?
+    /// A state can change to any state from within its own logic, but if you want to switch state from outside
+    /// the state logic, then call this first.
     /// </summary>
     bool CanSwitchTo<TState>() where TState : IFsmSt;
     
     void Exit();
     
+    void LateTick();
+    
     void PhysicsTick();
     
     void Tick();
-
-    void LateTick();
 }

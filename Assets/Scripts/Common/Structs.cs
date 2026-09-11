@@ -171,6 +171,7 @@ public struct ComboNode_Transitions {
 /// All action states available for capsule pawn.
 /// </summary>
 public struct Cp_ActSts {
+    public CpSt_Death death;
     public CpSt_Atk_BasicImpact atk_BasicImpact;
     public CpSt_Atk_BasicBranch atk_BasicWindup;
     public CpSt_Atk_BasicRecovery atk_BasicRecovery;
@@ -181,10 +182,11 @@ public struct Cp_ActSts {
     public CpSt_Falling falling;
     public CpSt_FallLanding fallLanding;
     public CpSt_Idle idle;
-    public CpSt_Knockback_Weak knockback;
+    public CpSt_Knockback knockback;
     public CpSt_Walk walk;
 
     public Cp_ActSts(int cpId) {
+        death = new(cpId);
         atk_BasicImpact = new(cpId);
         atk_BasicWindup = new(cpId);
         atk_BasicRecovery = new(cpId);
@@ -400,6 +402,7 @@ public struct Cp_NonUnityCompClassRefs {
 /// Per capsule pawn data.
 /// </summary>
 public struct Cp_AosData {
+    public float dodgeHorMovSpdMult;
     public bool isSwitchingSt;
     public bool enableDebugMsgs;
     public float st_AtkFlying_TgtHorSpd;

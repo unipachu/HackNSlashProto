@@ -30,17 +30,28 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
+                    Vector3 horHitDir = new Vector3(
+                        data.lastRecievedHitDir[cpId].x,
+                        0,
+                        data.lastRecievedHitDir[cpId].z
+                    );
+                    // If you, for some reason, set the hit direction to Vector3.zero.
+                    if (horHitDir.sqrMagnitude < 0.0001f)
+                        horHitDir = Vector3.down;
+                    else
+                        horHitDir.Normalize();
+                    AnimInfo knockbackAnim;
+                    if (Vector3.Dot(horHitDir, CpMgr.inst.unityComps[cpId].rootTrf.forward) > 0)
+                        knockbackAnim = CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Fwd);
+                    else
+                        knockbackAnim = CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Bwd);
                     CpMgr.inst.TrySwitchActSt(
-                        () => classRefs.actSts.knockback.Enter(
-                            CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Fwd),
-                            CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Bwd)
-                        ),
+                        () => classRefs.actSts.knockback.Enter(knockbackAnim),
                         cpId
                     );
                     break;
                 case KnockbackT.Strong:
                     Debug.LogError("Strong knockback not implemented!", this);
-                    // TODO: Try enter strong knockback state.
                     break;
                 default:
                     Debug.LogError("Switch defaulted", this);
