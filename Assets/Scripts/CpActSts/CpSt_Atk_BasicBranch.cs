@@ -17,10 +17,12 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
-        Cp_SoaData data = CpMgr.inst.soaData;
         Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
-        data.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
-        CpInputBuffer.Clear(cpId, data.inputBuffer_BufferedInput, data.inputBuffer_RemainingTime);
+        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Windup;
+        CpInputBuffer.Clear(
+            ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
+            ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
+        );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
@@ -56,20 +58,18 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
-            data.input_mov_WhenLastSwitchedSt[cpId],
-            data.animDPos[cpId],
+            CpMgr.GetSoa(cpId).input_mov_WhenLastSwitchedSt,
+            CpMgr.GetSoa(cpId).animDPos,
             0,
-            data.st_AtkHorSlash_Windup_MaxAngSpd[cpId],
+            CpMgr.GetSoa(cpId).st_AtkHorSlash_Windup_MaxAngSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (data.actStSt_ComboAllowed[cpId] && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
+        if (CpMgr.GetSoa(cpId).actStSt_ComboAllowed && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
             return;
     }
 }

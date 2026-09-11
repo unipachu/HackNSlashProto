@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using UnityEngine;
 
 public class CpSt_Idle : IFsmSt_Cp {
     int cpId;
@@ -30,24 +29,21 @@ public class CpSt_Idle : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         var classRefs = CpMgr.inst.classRefs[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
                 cpId,
-                data,
-                data.input_mov_LastNonZero[cpId],
+                CpMgr.GetSoa(cpId).input_mov_LastNonZero,
                 float3.zero,
                 0,
-                data.walkYawSpd[cpId],
+                CpMgr.GetSoa(cpId).walkYawSpd,
                 float.PositiveInfinity
             );
         else
             CpUtils.UpdateMovInputData(
                 cpId,
-                data,
                 float2.zero,
                 float3.zero,
                 0,
@@ -59,7 +55,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         // Try consume input
         if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;
-        if (math.all(data.input_mov[cpId] != float2.zero)) {
+        if (math.all(CpMgr.GetSoa(cpId).input_mov != float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
             return;
         }

@@ -1,47 +1,36 @@
-using Unity.Collections;
-
+// TODO: Rename to ...Utils
 public static class CpInputBuffer {
     public static void BufferInput(
-        int id,
-        BufferableInput input,
-        NativeArray<BufferableInput> bufferedInput,
-        NativeArray<float> remainingTime,
+        ref BufferableInput bufferedInput,
+        ref float remainingTime,
+        BufferableInput inputToBuffer,
         float inputBufferDur
     ) {
-        bufferedInput[id] = input;
-        remainingTime[id] = inputBufferDur;
+        bufferedInput = inputToBuffer;
+        remainingTime = inputBufferDur;
     }
 
     public static void Clear(
-        int id,
-        NativeArray<BufferableInput> bufferedInput,
-        NativeArray<float> remainingTime
+        ref BufferableInput bufferedInput,
+        ref float remainingTime
     ){
-        bufferedInput[id] = BufferableInput.None;
-        remainingTime[id] = 0;
+        bufferedInput = BufferableInput.None;
+        remainingTime = 0;
     }
 
     /// <returns>
     /// True if action was in the input buffer and was consumed.
     /// </returns>
     public static bool TryConsumeInput(
-        int id,
         BufferableInput input,
-        NativeArray<BufferableInput> bufferedInput,
-        NativeArray<float> remainingTime
+        ref BufferableInput bufferedInput,
+        ref float remainingTime
 
     ){
-        if(HasInput(id, input, bufferedInput)){
-            Clear(id, bufferedInput, remainingTime);
+        if(input == bufferedInput){
+            Clear(ref bufferedInput, ref remainingTime);
             return true;
         }
         return false;
     }
-
-    public static bool HasInput(
-        int id,
-        BufferableInput input,
-        NativeArray<BufferableInput> bufferedInput
-    )
-        => input == bufferedInput[id];
 }

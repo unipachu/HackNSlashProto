@@ -16,15 +16,9 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     public CpSt_Atk_FlyingAtk Enter(HitEffects hitEffects, HitDealer hitDealer) {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
-        Cp_SoaData soaData = CpMgr.inst.soaData;
-        soaData.invul[cpId] = true;
-        soaData.isAffectedByGravity[cpId] = false;
-        soaData.actStSt_AtkPhase[cpId] = AtkPhase.Windup;
-        CpInputBuffer.Clear(
-            cpId,
-            soaData.inputBuffer_BufferedInput,
-            soaData.inputBuffer_RemainingTime
-        );
+        CpMgr.GetSoa(cpId).invul = true;
+        CpMgr.GetSoa(cpId).isAffectedByGravity = false;
+        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
@@ -35,9 +29,8 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Exit() {
-        Cp_SoaData data = CpMgr.inst.soaData;
-        data.invul[cpId] = false;
-        data.isAffectedByGravity[cpId] = true;
+        CpMgr.GetSoa(cpId).invul = false;
+        CpMgr.GetSoa(cpId).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }
 
@@ -46,27 +39,27 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         var unityComps = CpMgr.inst.unityComps[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (soaData.actStSt_AtkPhase[cpId]) {
+                switch (CpMgr.GetSoa(cpId).actStSt_AtkPhase) {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.animEventPlrData[cpId],
                             unityComps.anim,
                             CpAnimInfo.Get(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
-                        soaData.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
+                        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Impact;
                         break;
                     case AtkPhase.Impact:
                         // NOTE: During impact we stop applying vertical animation root motion, and intead
                         // NOTE C: use gravity. Because of the animation logic however, the vertical movement
                         // NOTE C: caused by root motion is saved and used next tick as the starting downwards
                         // NOTE C: velocity when gravity acceleration is applied.
-                        soaData.isAffectedByGravity[cpId] = true;
+                        CpMgr.GetSoa(cpId).isAffectedByGravity = true;
                         break;
                     case AtkPhase.Recovery:
                         CpUtils.TransitionToFallIdleOrWalk(cpId);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {soaData.actStSt_AtkPhase[cpId]}");
+                        Debug.LogError($"Switch defaulted with {CpMgr.GetSoa(cpId).actStSt_AtkPhase}");
                         break;
                 }
                 break;
@@ -82,16 +75,14 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         Cp_UnityComps unityComps = CpMgr.inst.unityComps[cpId];
         var aosData = CpMgr.inst.aosData[cpId];
-        switch (data.actStSt_AtkPhase[cpId]) {
+        switch (CpMgr.GetSoa(cpId).actStSt_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(
                     cpId,
-                    data,
-                    data.input_mov[cpId],
-                    data.animDPos[cpId],
+                    CpMgr.GetSoa(cpId).input_mov,
+                    CpMgr.GetSoa(cpId).animDPos,
                     aosData.st_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
@@ -100,16 +91,15 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
             case AtkPhase.Impact:
                 CpUtils.UpdateMovInputData(
                     cpId,
-                    data,
-                    data.input_mov[cpId],
-                    data.animDPos[cpId],
+                    CpMgr.GetSoa(cpId).input_mov,
+                    CpMgr.GetSoa(cpId).animDPos,
                     aosData.st_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
                 );
-                if (data.isGrounded[cpId]) {
+                if (CpMgr.GetSoa(cpId).isGrounded) {
                     hitDealer.Deactivate();
-                    data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
+                    CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref CpMgr.inst.animEventPlrData[cpId],
                         unityComps.anim,
@@ -120,7 +110,6 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
             case AtkPhase.Recovery:
                 CpUtils.UpdateMovInputData(
                     cpId,
-                    data,
                     float2.zero,
                     float3.zero,
                     0,
@@ -129,7 +118,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 );
                 break;
             default:
-                Debug.LogError($"Switch defaulted with {data.actStSt_AtkPhase[cpId]}.");
+                Debug.LogError($"Switch defaulted with {CpMgr.GetSoa(cpId).actStSt_AtkPhase}.");
                 break;
         }
     }

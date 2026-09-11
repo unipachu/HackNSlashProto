@@ -26,21 +26,19 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void Exit() {
-        Cp_SoaData data = CpMgr.inst.soaData;
-        data.isAffectedByGravity[cpId] = true;
+        CpMgr.GetSoa(cpId).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var unityComps = CpMgr.inst.unityComps[cpId];
-        Cp_SoaData data = CpMgr.inst.soaData;
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
-                data.isAffectedByGravity[cpId] = true;
-                data.vel_Ver[cpId] = -data.st_AtkJump_DownSpeedAfterJumpFinished[cpId];
+                CpMgr.GetSoa(cpId).isAffectedByGravity = true;
+                CpMgr.GetSoa(cpId).vel_Ver = -CpMgr.GetSoa(cpId).st_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                data.isAffectedByGravity[cpId] = false;
+                CpMgr.GetSoa(cpId).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
                 Debug.Log("Went here asdasdasd");
@@ -65,13 +63,11 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
             float2.zero,
-            data.animDPos[cpId],
+            CpMgr.GetSoa(cpId).animDPos,
             0,
             0,
             float.PositiveInfinity

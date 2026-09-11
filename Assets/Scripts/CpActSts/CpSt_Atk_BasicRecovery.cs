@@ -19,11 +19,10 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
     public void Exit() {}
 
     public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
-        var data = CpMgr.inst.soaData;
         var unityComps = CpMgr.inst.unityComps;
-        data.actStSt_AtkPhase[cpId] = AtkPhase.Recovery;
-        data.actStSt_ComboAllowed[cpId] = false;
-        data.actStSt_InputRotAllowed[cpId] = false;
+        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Recovery;
+        CpMgr.GetSoa(cpId).actStSt_ComboAllowed = false;
+        CpMgr.GetSoa(cpId).actStSt_InputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
@@ -49,30 +48,27 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         var classRefs = CpMgr.inst.classRefs[cpId];
         var animEventPlrData = CpMgr.inst.animEventPlrData[cpId];
         // interpolate to walking speed.
-        data.actStSt_RecoveryMotInterpTimer[cpId] += Time.deltaTime;
+        CpMgr.GetSoa(cpId).actStSt_RecoveryMotInterpTimer += Time.deltaTime;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);
         float interpValue = Mathf.Clamp01(animEventPlrData.prevTotalNrmT);
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
-            data.input_mov[cpId],
+            CpMgr.GetSoa(cpId).input_mov,
             float3.zero,
-            data.walkMaxLinSpd[cpId] * interpValue,
-            data.walkYawSpd[cpId] * interpValue,
-            data.walkLinAcc[cpId]
+            CpMgr.GetSoa(cpId).walkMaxLinSpd * interpValue,
+            CpMgr.GetSoa(cpId).walkYawSpd * interpValue,
+            CpMgr.GetSoa(cpId).walkLinAcc
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (data.actStSt_DodgeAllowed[cpId]) {
+        if (CpMgr.GetSoa(cpId).actStSt_DodgeAllowed) {
             if (CpInputBuffer.TryConsumeInput(
-                cpId,
                 BufferableInput.BtnE,
-                data.inputBuffer_BufferedInput,
-                data.inputBuffer_RemainingTime)
+                ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
+                ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime)
             ) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(),cpId);
                 return;

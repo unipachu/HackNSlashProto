@@ -29,23 +29,21 @@ public class CpSt_Walk : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
-            data.input_mov[cpId],
+            CpMgr.GetSoa(cpId).input_mov,
             float3.zero,
-            data.walkMaxLinSpd[cpId],
-            data.walkYawSpd[cpId],
-            data.walkLinAcc[cpId]
+            CpMgr.GetSoa(cpId).walkMaxLinSpd,
+            CpMgr.GetSoa(cpId).walkYawSpd,
+            CpMgr.GetSoa(cpId).walkLinAcc
         );
         if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;
-        if (math.all(data.input_mov[cpId] == float2.zero)) {
+        if (math.all(CpMgr.GetSoa(cpId).input_mov == float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
             return;
         }

@@ -103,7 +103,7 @@ public static class CpUtils{
         var classRefs = CpMgr.inst.classRefs[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         SwitchToFallingStIfNotGrounded(cpId);
-        if (math.all(CpMgr.inst.soaData.input_mov[cpId] != float2.zero))
+        if (math.all(CpMgr.GetSoa(cpId).input_mov != float2.zero))
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
         else
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
@@ -115,16 +115,14 @@ public static class CpUtils{
     /// </summary>
     public static bool TrySwitchSt(int cpId, BufferableInput input) {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        var soaData = CpMgr.inst.soaData;
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
         if (
             enterFunc != null
                 && CpInputBuffer.TryConsumeInput(
-                    cpId,
                     input,
-                    soaData.inputBuffer_BufferedInput,
-                    soaData.inputBuffer_RemainingTime
+                    ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(enterFunc, cpId);
@@ -140,7 +138,7 @@ public static class CpUtils{
         var classRefs = CpMgr.inst.classRefs[cpId];
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         if (
-            !CpMgr.inst.soaData.isGrounded[cpId]
+            !CpMgr.GetSoa(cpId).isGrounded
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
@@ -155,19 +153,18 @@ public static class CpUtils{
     /// state of the pawn which then sends inputs to the movement system with this method.
     /// </summary>
     public static void UpdateMovInputData(
-        int id,
-        Cp_SoaData data,
-        in float2 tgtHorDir,
-        in float3 additionalLinMov,
+        int cpId,
+        float2 tgtHorDir,
+        float3 additionalLinMov,
         float tgtHorSpd,
         float yawSpd,
         float horAcc
     ) {
-        data.movInput_tgtHorDir[id] = tgtHorDir;
-        data.movInput_additionalLinMov[id] = additionalLinMov;
-        data.movInput_tgtHorSpd[id] = tgtHorSpd;
-        data.movInput_yawSpd[id] = yawSpd;
-        data.movInput_horAcc[id] = horAcc;
+        CpMgr.GetSoa(cpId).movInput_tgtHorDir = tgtHorDir;
+        CpMgr.GetSoa(cpId).movInput_additionalLinMov = additionalLinMov;
+        CpMgr.GetSoa(cpId).movInput_tgtHorSpd = tgtHorSpd;
+        CpMgr.GetSoa(cpId).movInput_yawSpd = yawSpd;
+        CpMgr.GetSoa(cpId).movInput_horAcc = horAcc;
     }
 
     /// <summary>
@@ -193,10 +190,9 @@ public static class CpUtils{
             // TODO C: perf only when the button actually doesn't change the state which is cheap anyway.
             curComboNode.GetNextNode(input) != null
                 && CpInputBuffer.TryConsumeInput(
-                    cpId,
                     input,
-                    data.inputBuffer_BufferedInput,
-                    data.inputBuffer_RemainingTime
+                    ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);

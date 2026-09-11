@@ -1,4 +1,5 @@
 using System;
+using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,27 +9,34 @@ using UnityEngine.AI;
 /// </summary>
 public class CpMgr : Singleton<CpMgr> {
     [Header("Settings")]
+    // TODO: Make private after creating ai controller factory.
     public int maxCps = 1;
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_AosData[] aosData;
     [HideInInspector] public Cp_BrainData[] brainData;
     [HideInInspector] public Cp_NonUnityCompClassRefs[] classRefs;
-    [HideInInspector] public Cp_SoaData soaData;
+    [HideInInspector] public CpRegisterer[] cp;
+    [HideInInspector] public NativeList<Cp_SoaData> soaData;
     [HideInInspector] public Cp_UnityComps[] unityComps;
 
     public void Init() {
+        cp = new CpRegisterer[maxCps];
         animEventPlrData = new AnimEventPlrData[maxCps];
         aosData = new Cp_AosData[maxCps];
         brainData = new Cp_BrainData[maxCps];
         classRefs = new Cp_NonUnityCompClassRefs[maxCps];
-        soaData = Cp_SoaData.Create(maxCps);
+        soaData = GeneralUtils.AllocList<Cp_SoaData>(maxCps);
+        Debug.Log($"soa length in init: {soaData.Length}");
         unityComps = new Cp_UnityComps[maxCps];
     }
 
     void OnDestroy() {
         soaData.Dispose();
     }
+
+    public static ref Cp_SoaData GetSoa(int cpId)
+        => ref inst.soaData.ElementAt(cpId);
 
     // ------------------------------------------------------------
     // Fixed Tick Methods
@@ -40,8 +48,8 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void FixedTick_Fsm() {
-        for (int i = 0; i < unityComps.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             Debug.Assert(classRefs[i].st_cur != null, $"cur st was null for {i}.");
             classRefs[i].st_cur.PhysicsTick();
@@ -49,16 +57,16 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void UpdateGroundCheck() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
-            soaData.isGrounded[i] = CcMov.IsGrounded(
+            GetSoa(i).isGrounded = CcMov.IsGrounded(
                 unityComps[i].cc,
                 out bool hitSomething,
                 out RaycastHit groundCastResult
             );
-            soaData.groundCastHitSomething[i] = hitSomething;
-            soaData.groundCastNrm[i] = groundCastResult.normal;
+            GetSoa(i).groundCastHitSomething = hitSomething;
+            GetSoa(i).groundCastNrm = groundCastResult.normal;
         }
     }
 
@@ -68,7 +76,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
-        for (int i = 0; i < soaData.occupied.Length; i++)
+        for (int i = 0; i < cp.Length; i++)
             aosData[i].navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
         Tick_FromNonNative(dt);
         Tick_Input();
@@ -82,8 +90,8 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO: Update in Tick_FromNonNative
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i] || unityComps[i].navMeshAgent == null)
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null || unityComps[i].navMeshAgent == null) // TODO: Remove nav mesh check and only tick this in ai controller.
                 continue;
             if (brainData[i].lockedOnTgt.Trf == null) {
                 //Dbg.Log(
@@ -167,92 +175,91 @@ public class CpMgr : Singleton<CpMgr> {
     /// Update data from non native sources, e.g. from Monobehavior components.
     /// </summary>
     void Tick_FromNonNative(float dt) {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
-            soaData.trf_pos[i] = unityComps[i].rootTrf.position;
-            soaData.trf_rot[i] = unityComps[i].rootTrf.rotation;
-            soaData.trf_lossyScl[i] = unityComps[i].rootTrf.lossyScale;
-            soaData.lastCcVel[i] = unityComps[i].cc.velocity;
-            soaData.curStDur[i] += dt;
+            GetSoa(i).trf_pos = unityComps[i].rootTrf.position;
+            GetSoa(i).trf_rot = unityComps[i].rootTrf.rotation;
+            GetSoa(i).trf_lossyScl = unityComps[i].rootTrf.lossyScale;
+            GetSoa(i).lastCcVel = unityComps[i].cc.velocity;
+            GetSoa(i).curStDur += dt;
         }
     }
 
     void Tick_Fsm() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.Tick();
         }
     }
 
     void Tick_Input() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i] || unityComps[i].cpCtrl == null)
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null || unityComps[i].cpCtrl == null)
                 continue;
-            soaData.input_atk_Light[i] = unityComps[i].cpCtrl.TryConsume_Atk_Light();
-            soaData.input_atk_Heavy[i] = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
-            soaData.input_atk_Ult[i] = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
-            soaData.input_dodge[i] = unityComps[i].cpCtrl.TryConsume_Dodge();
+            GetSoa(i).input_atk_Light = unityComps[i].cpCtrl.TryConsume_Atk_Light();
+            GetSoa(i).input_atk_Heavy = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
+            GetSoa(i).input_atk_Ult = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
+            GetSoa(i).input_dodge = unityComps[i].cpCtrl.TryConsume_Dodge();
             if (unityComps[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
-                soaData.input_mov[i] = unityComps[i].cpCtrl.Input_Mov;
-                soaData.input_mov_LastNonZero[i] = soaData.input_mov[i];
+                GetSoa(i).input_mov = unityComps[i].cpCtrl.Input_Mov;
+                GetSoa(i).input_mov_LastNonZero = GetSoa(i).input_mov;
             } else {
-                soaData.input_mov[i] = Vector2.zero;
+                GetSoa(i).input_mov = Vector2.zero;
             }
             //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
     }
 
     void Tick_InputBuffer(float dt) {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
-            if (soaData.input_atk_Light[i])
+            if (GetSoa(i).input_atk_Light)
                 CpInputBuffer.BufferInput(
-                    i,
+                    ref GetSoa(i).inputBuffer_BufferedInput,
+                    ref GetSoa(i).inputBuffer_RemainingTime,
                     BufferableInput.RShldr,
-                    soaData.inputBuffer_BufferedInput,
-                    soaData.inputBuffer_RemainingTime,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (soaData.input_atk_Heavy[i])
+            else if (GetSoa(i).input_atk_Heavy)
                 CpInputBuffer.BufferInput(
-                    i,
+                    ref GetSoa(i).inputBuffer_BufferedInput,
+                    ref GetSoa(i).inputBuffer_RemainingTime,
                     BufferableInput.RTrg,
-                    soaData.inputBuffer_BufferedInput,
-                    soaData.inputBuffer_RemainingTime,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (soaData.input_atk_Ult[i])
+            else if (GetSoa(i).input_atk_Ult)
                 CpInputBuffer.BufferInput(
-                    i,
+                    ref GetSoa(i).inputBuffer_BufferedInput,
+                    ref GetSoa(i).inputBuffer_RemainingTime,
                     BufferableInput.LShldr,
-                    soaData.inputBuffer_BufferedInput,
-                    soaData.inputBuffer_RemainingTime,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (soaData.input_dodge[i])
+            else if (GetSoa(i).input_dodge)
                 CpInputBuffer.BufferInput(
-                    i,
+                    ref GetSoa(i).inputBuffer_BufferedInput,
+                    ref GetSoa(i).inputBuffer_RemainingTime, 
                     BufferableInput.BtnE,
-                    soaData.inputBuffer_BufferedInput,
-                    soaData.inputBuffer_RemainingTime, 
                     GlobalData.inst.inputBuffer_Dur
                 );
             // Clear input if buffer time passed.
-            if (soaData.inputBuffer_RemainingTime[i] <= 0)
+            if (GetSoa(i).inputBuffer_RemainingTime <= 0)
                 continue;
-            soaData.inputBuffer_RemainingTime[i] -= dt;
+            GetSoa(i).inputBuffer_RemainingTime -= dt;
             //Debug.Log("remaining time: " + remainingTime);
-            if (soaData.inputBuffer_RemainingTime[i] <= 0)
-                CpInputBuffer.Clear(i, soaData.inputBuffer_BufferedInput, soaData.inputBuffer_RemainingTime);
+            if (GetSoa(i).inputBuffer_RemainingTime <= 0)
+                CpInputBuffer.Clear(
+                    ref GetSoa(i).inputBuffer_BufferedInput,
+                    ref GetSoa(i).inputBuffer_RemainingTime
+                );
         }
     }
 
     void Tick_Mov(float dt) {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             //Dbg.Log(
             //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
@@ -263,25 +270,25 @@ public class CpMgr : Singleton<CpMgr> {
             //    aosData[i].enableDebugMsgs
             //);
             Debug.Assert(
-                !float.IsNaN(soaData.vel_Hor[i].x) && !float.IsNaN(soaData.vel_Hor[i].y),
-                $"{i} vel_hor had NaN: {soaData.vel_Hor[i]}"
+                !float.IsNaN(GetSoa(i).vel_Hor.x) && !float.IsNaN(GetSoa(i).vel_Hor.y),
+                $"{i} vel_hor had NaN: {GetSoa(i).vel_Hor}"
             );
             //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-            soaData.vel_Hor[i] = Vector2.MoveTowards(
-                soaData.vel_Hor[i],
-                soaData.movInput_tgtHorDir[i] * soaData.movInput_tgtHorSpd[i],
-                soaData.movInput_horAcc[i] * dt
+            GetSoa(i).vel_Hor = Vector2.MoveTowards(
+                GetSoa(i).vel_Hor,
+                GetSoa(i).movInput_tgtHorDir * GetSoa(i).movInput_tgtHorSpd,
+                GetSoa(i).movInput_horAcc * dt
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
-            if (math.lengthsq(soaData.movInput_tgtHorDir[i]) > 0.0001f) {
-                soaData.trf_rot[i] = TrfMathUtils.RotateFwdToTgt(
-                    soaData.trf_rot[i],
-                    soaData.movInput_yawSpd[i],
-                    soaData.movInput_tgtHorDir[i]
+            if (math.lengthsq(GetSoa(i).movInput_tgtHorDir) > 0.0001f) {
+                GetSoa(i).trf_rot = TrfMathUtils.RotateFwdToTgt(
+                    GetSoa(i).trf_rot,
+                    GetSoa(i).movInput_yawSpd,
+                    GetSoa(i).movInput_tgtHorDir
                 );
-                unityComps[i].rootTrf.rotation = soaData.trf_rot[i];
+                unityComps[i].rootTrf.rotation = GetSoa(i).trf_rot;
             }
-            if (soaData.isAffectedByGravity[i])
+            if (GetSoa(i).isAffectedByGravity)
                 // NOTE: This will override previously calculated horizontal velocity if the player is
                 // NOTE C: sliding down a slope. (9.9.2026)
                 CcMov.ApplyGravityNSlideDownSlopes(i, dt);
@@ -289,23 +296,23 @@ public class CpMgr : Singleton<CpMgr> {
                 // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
                 // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
                 // NOTE C: for vertical movement.
-                soaData.vel_Ver[i] = 0;
+                GetSoa(i).vel_Ver = 0;
             // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
-            Vector3 totalMov = (Vector3)soaData.movInput_additionalLinMov[i]
-                + new Vector3(soaData.vel_Hor[i].x, soaData.vel_Ver[i], soaData.vel_Hor[i].y) * dt;
+            Vector3 totalMov = (Vector3)GetSoa(i).movInput_additionalLinMov
+                + new Vector3(GetSoa(i).vel_Hor.x, GetSoa(i).vel_Ver, GetSoa(i).vel_Hor.y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
             unityComps[i].cc.Move(totalMov);
             // Save final velocity back to cp data.
-            soaData.vel_Hor[i] = new float2(totalMov.x, totalMov.z) / dt;
-            soaData.vel_Ver[i] = totalMov.y / dt;
+            GetSoa(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
+            GetSoa(i).vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
             unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
         }
     }
 
     void Tick_Sensing() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             // TODO: Use better logic for sensing player.
             brainData[i].lockedOnTgt
@@ -344,8 +351,8 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_AnimEventPlr() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             //Debug.Log($"{animEventPlrData[i]}");
             //Debug.Log($"{unityComps[i].anim == null}");
@@ -360,8 +367,8 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_Fsm() {
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i])
+        for (int i = 0; i < cp.Length; i++) {
+            if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.LateTick();
         }
@@ -374,10 +381,11 @@ public class CpMgr : Singleton<CpMgr> {
     /// <summary>
     /// Registers new capsule pawn. Returns the index of the registered data, or -1 on failure.
     /// </summary>
-    public int Register(So_CpData so, Cp_UnityComps unityComps, So_BtRootNode bt) {
+    public int Register(CpRegisterer cp, So_CpData so, Cp_UnityComps unityComps, So_BtRootNode bt) {
+        //Debug.Log($"Start registering {cp}", cp);
         int freeI = -1;
-        for (int i = 0; i < soaData.occupied.Length; i++) {
-            if (!soaData.occupied[i]) {
+        for (int i = 0; i < this.cp.Length; i++) {
+            if (this.cp[i] == null) {
                 freeI = i;
                 break;
             }
@@ -386,6 +394,7 @@ public class CpMgr : Singleton<CpMgr> {
             Debug.LogError($"Capsule Pawn Entities at capacity ({maxCps})");
             return -1;
         }
+        this.cp[freeI] = cp; 
         // Brain data
         brainData[freeI].agentDesiredVel = float3.zero;
         brainData[freeI].aggroRange = so.brain_AggroRange;
@@ -396,41 +405,43 @@ public class CpMgr : Singleton<CpMgr> {
         brainData[freeI].inAtkRange = false;
         brainData[freeI].lockedOnTgt = null;
         // Structure of arrays data
-        soaData.actStSt_Impact_YawSpd[freeI] = so.impact_YawSpd;
-        soaData.curStDur[freeI] = 0;
-        soaData.groundCastHitSomething[freeI] = false;
-        soaData.groundCastNrm[freeI] = float3.zero;
-        soaData.groundSnapVerDownSpd[freeI] = so.groundSnapVerDownSpd;
-        soaData.hp_Cur[freeI] = so.maxHP;
-        soaData.hp_Max[freeI] = so.maxHP;
-        soaData.input_mov[freeI] = float2.zero;
-        soaData.input_mov_LastNonZero[freeI] = float2.zero;
-        soaData.input_mov_WhenLastSwitchedSt[freeI] = float2.zero;
-        soaData.input_atk_Light[freeI] = false;
-        soaData.input_atk_Heavy[freeI] = false;
-        soaData.input_atk_Ult[freeI] = false;
-        soaData.input_dodge[freeI] = false;
-        soaData.invul[freeI] = false;
-        soaData.isAffectedByGravity[freeI] = true;
-        soaData.isGrounded[freeI] = true;
-        soaData.lastCcVel[freeI] = float3.zero;
-        soaData.lastKnockbackStr[freeI] = 0;
-        soaData.lastRecievedHitDir[freeI] = float3.zero;
-        soaData.st_AtkHorSlash_Windup_MaxAngSpd[freeI] = so.st_AtkHorSlash_Windup_YawSpd;
-        soaData.st_AtkJump_DownSpeedAfterJumpFinished[freeI] = so.st_AtkJump_DownSpeedAfterJumpFinished;
-        soaData.st_Dodge_YawSpd[freeI] = so.st_Dodge_YawAngSpd;
-        soaData.st_Falling_LandingStFallDistThreshold[freeI] = so.st_Falling_LandingStFallDistThreshold;
-        soaData.st_Falling_HorAcc[freeI] = so.st_Falling_HorAcc;
-        soaData.st_Falling_TgtHorSpd[freeI] = so.st_Falling_TgtHorSpd;
-        soaData.trf_pos[freeI] = float3.zero;
-        soaData.trf_rot[freeI] = quaternion.identity;
-        soaData.trf_lossyScl[freeI] = new float3(1);
-        soaData.vel_Hor[freeI] = float2.zero;
-        soaData.vel_Ver[freeI] = 0;
-        soaData.occupied[freeI] = true;
-        soaData.walkLinAcc[freeI] = so.walkHorAcc;
-        soaData.walkMaxLinSpd[freeI] = so.walkTgtHorSpd;
-        soaData.walkYawSpd[freeI] = so.walkYawSpd;
+        Cp_SoaData newData = new();
+        newData.actStSt_Impact_YawSpd = so.impact_YawSpd;
+        newData.curStDur = 0;
+        newData.groundCastHitSomething = false;
+        newData.groundCastNrm = float3.zero;
+        newData.groundSnapVerDownSpd = so.groundSnapVerDownSpd;
+        newData.hp_Cur = so.maxHP;
+        newData.hp_Max = so.maxHP;
+        newData.input_mov = float2.zero;
+        newData.input_mov_LastNonZero = float2.zero;
+        newData.input_mov_WhenLastSwitchedSt = float2.zero;
+        newData.input_atk_Light = false;
+        newData.input_atk_Heavy = false;
+        newData.input_atk_Ult = false;
+        newData.input_dodge = false;
+        newData.invul = false;
+        newData.isAffectedByGravity = true;
+        newData.isGrounded = true;
+        newData.lastCcVel = float3.zero;
+        newData.lastKnockbackStr = 0;
+        newData.lastRecievedHitDir = float3.zero;
+        newData.st_AtkHorSlash_Windup_MaxAngSpd = so.st_AtkHorSlash_Windup_YawSpd;
+        newData.st_AtkJump_DownSpeedAfterJumpFinished = so.st_AtkJump_DownSpeedAfterJumpFinished;
+        newData.st_Dodge_YawSpd = so.st_Dodge_YawAngSpd;
+        newData.st_Falling_LandingStFallDistThreshold = so.st_Falling_LandingStFallDistThreshold;
+        newData.st_Falling_HorAcc = so.st_Falling_HorAcc;
+        newData.st_Falling_TgtHorSpd = so.st_Falling_TgtHorSpd;
+        newData.trf_pos = float3.zero;
+        newData.trf_rot = quaternion.identity;
+        newData.trf_lossyScl = new float3(1);
+        newData.vel_Hor = float2.zero;
+        newData.vel_Ver = 0;
+        newData.occupied = true;
+        newData.walkLinAcc = so.walkHorAcc;
+        newData.walkMaxLinSpd = so.walkTgtHorSpd;
+        newData.walkYawSpd = so.walkYawSpd;
+        soaData.Add(newData);
         // Array of structs data.
         this.aosData[freeI] = new();
         aosData[freeI].dodgeHorMovSpdMult = 1.5f; // NOTE: hard coded.
@@ -448,12 +459,13 @@ public class CpMgr : Singleton<CpMgr> {
         return freeI;
     }
 
+    // TODO: If you use cp ref to mark entity as unoccupied, then
     public void Unregister(int cpId) {
-        if (!soaData.occupied[cpId]) {
+        if (cp[cpId] == null) {
             Debug.LogError($"Capsule pawn with id {cpId} has not been registered!");
             return;
         }
-        soaData.occupied[cpId] = false;
+        GetSoa(cpId).occupied = false;
     }
 
     public void SwitchToInitActSt(int cpId) {
@@ -502,16 +514,16 @@ public class CpMgr : Singleton<CpMgr> {
     /// This should always be called when cp act state is switched!
     /// </summary>
     public void OnStateSwitched(int cpId, IFsmSt newSt) {
-        soaData.curStDur[cpId] = 0;
+        GetSoa(cpId).curStDur = 0;
         if (unityComps[cpId].cpCtrl == null)
-            soaData.input_mov_WhenLastSwitchedSt[cpId]
-                = soaData.input_mov[cpId];
+            GetSoa(cpId).input_mov_WhenLastSwitchedSt
+                = GetSoa(cpId).input_mov;
         else {
             if (unityComps[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
-                soaData.input_mov_WhenLastSwitchedSt[cpId]
-                    = soaData.input_mov[cpId];
+                GetSoa(cpId).input_mov_WhenLastSwitchedSt
+                    = GetSoa(cpId).input_mov;
             else
-                soaData.input_mov_WhenLastSwitchedSt[cpId] = float2.zero;
+                GetSoa(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
         }
     }
 }

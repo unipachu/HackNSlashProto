@@ -237,6 +237,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+      propertyPath: cp
+      value: 
+      objectReference: {fileID: 1730021812194126965}
+    - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cpReg
       value: 
       objectReference: {fileID: 1730021812194126965}

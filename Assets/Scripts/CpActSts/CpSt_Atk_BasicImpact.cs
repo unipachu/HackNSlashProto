@@ -14,11 +14,10 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
-        var data = CpMgr.inst.soaData;
         var unityComps = CpMgr.inst.unityComps;
-        data.actStSt_AtkPhase[cpId] = AtkPhase.Impact;
-        data.actStSt_ComboAllowed[cpId] = false;
-        data.actStSt_InputRotAllowed[cpId] = false;
+        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Impact;
+        CpMgr.GetSoa(cpId).actStSt_ComboAllowed = false;
+        CpMgr.GetSoa(cpId).actStSt_InputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             unityComps[cpId].anim,
@@ -69,23 +68,21 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        var data = CpMgr.inst.soaData;
         var classRefs = CpMgr.inst.unityComps[cpId];
         float angSpd = 0;
-        if (data.actStSt_InputRotAllowed[cpId])
-            angSpd = data.actStSt_Impact_YawSpd[cpId];
+        if (CpMgr.GetSoa(cpId).actStSt_InputRotAllowed)
+            angSpd = CpMgr.GetSoa(cpId).actStSt_Impact_YawSpd;
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
-            data.input_mov[cpId],
-            data.animDPos[cpId],
+            CpMgr.GetSoa(cpId).input_mov,
+            CpMgr.GetSoa(cpId).animDPos,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (data.actStSt_ComboAllowed[cpId] && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
+        if (CpMgr.GetSoa(cpId).actStSt_ComboAllowed && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
             return;
     }
 }

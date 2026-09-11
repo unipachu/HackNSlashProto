@@ -40,15 +40,13 @@ public class CpSt_Knockback : IFsmSt_Cp{
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         //if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
         //    return;
         //Debug.Log($"knocback: {data.lastKnockbackStr[cpId]}\nanim delta: {data.animDPos[cpId]}");
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
             float2.zero,
-            data.animDPos[cpId] * data.lastKnockbackStr[cpId],
+            CpMgr.GetSoa(cpId).animDPos * CpMgr.GetSoa(cpId).lastKnockbackStr,
             0,
             0,
             float.PositiveInfinity

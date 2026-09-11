@@ -39,12 +39,10 @@ public class CpSt_Death : IFsmSt_Cp {
     public void PhysicsTick() { }
 
     public void Tick() {
-        Cp_SoaData data = CpMgr.inst.soaData;
         CpUtils.UpdateMovInputData(
             cpId,
-            data,
             float2.zero,
-            data.animDPos[cpId],
+            CpMgr.GetSoa(cpId).animDPos,
             0,
             0,
             float.PositiveInfinity

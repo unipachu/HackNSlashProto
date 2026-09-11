@@ -10,17 +10,16 @@ public static class CcMov {
     /// still ground beneath the capsule (because floor is too steep to walk on) this slides the CC downhill.
     /// </summary>
     public static void ApplyGravityNSlideDownSlopes(int capsuleCharId, float dt){
-        Cp_SoaData soaData = CpMgr.inst.soaData;
-        if (soaData.isGrounded[capsuleCharId])
-            soaData.vel_Ver[capsuleCharId] = -soaData.groundSnapVerDownSpd[capsuleCharId] * dt;
+        if (CpMgr.GetSoa(capsuleCharId).isGrounded)
+            CpMgr.GetSoa(capsuleCharId).vel_Ver = -CpMgr.GetSoa(capsuleCharId).groundSnapVerDownSpd * dt;
         // Freefalling and slope down sliding.
         else {
-            soaData.vel_Ver[capsuleCharId] = soaData.lastCcVel[capsuleCharId].y;
+            CpMgr.GetSoa(capsuleCharId).vel_Ver = CpMgr.GetSoa(capsuleCharId).lastCcVel.y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (soaData.groundCastHitSomething[capsuleCharId]) {
+            if (CpMgr.GetSoa(capsuleCharId).groundCastHitSomething) {
                 // Find the gravitational acceleration component along the slope.
-                float3 newAcc = math.down().ProjectOnPlane(soaData.groundCastNrm[capsuleCharId])
+                float3 newAcc = math.down().ProjectOnPlane(CpMgr.GetSoa(capsuleCharId).groundCastNrm)
                     * GlobalData.inst.gravitationalAcc;
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
@@ -30,11 +29,11 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(soaData.lastCcVel[capsuleCharId], slideDir));
+                float slideSpd = math.max(0, math.dot(CpMgr.GetSoa(capsuleCharId).lastCcVel, slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                soaData.vel_Ver[capsuleCharId] = newVel.y;
-                soaData.vel_Hor[capsuleCharId] = new float2(newVel.x, newVel.z);
+                CpMgr.GetSoa(capsuleCharId).vel_Ver = newVel.y;
+                CpMgr.GetSoa(capsuleCharId).vel_Hor = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -48,10 +47,10 @@ public static class CcMov {
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0. I'm pretty sure it's like this.
-                soaData.vel_Ver[capsuleCharId] = Mathf.Min(soaData.vel_Ver[capsuleCharId], 0);
-                soaData.vel_Ver[capsuleCharId] -= GlobalData.inst.gravitationalAcc * dt;
-                soaData.vel_Ver[capsuleCharId] = Mathf.Clamp(
-                    soaData.vel_Ver[capsuleCharId],
+                CpMgr.GetSoa(capsuleCharId).vel_Ver = Mathf.Min(CpMgr.GetSoa(capsuleCharId).vel_Ver, 0);
+                CpMgr.GetSoa(capsuleCharId).vel_Ver -= GlobalData.inst.gravitationalAcc * dt;
+                CpMgr.GetSoa(capsuleCharId).vel_Ver = Mathf.Clamp(
+                    CpMgr.GetSoa(capsuleCharId).vel_Ver,
                     -GlobalData.inst.maxFallSpd,
                     0
                 );

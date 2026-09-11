@@ -17,23 +17,22 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         int cpId = pc.Id;
-        var data = CpMgr.inst.soaData;
         ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         var classRefs = CpMgr.inst.classRefs[cpId];
-        if (!data.invul[cpId]) {
-            data.hp_Cur[cpId] -= hitData.atkData.dmg;
+        if (!CpMgr.GetSoa(cpId).invul) {
+            CpMgr.GetSoa(cpId).hp_Cur -= hitData.atkData.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
-            data.lastRecievedHitDir[cpId] = hitData.hitWldDir;
-            data.lastKnockbackStr[cpId] = hitData.atkData.knockbackStr;
+            CpMgr.GetSoa(cpId).lastRecievedHitDir = hitData.hitWldDir;
+            CpMgr.GetSoa(cpId).lastKnockbackStr = hitData.atkData.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");
             switch (hitData.atkData.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
                     Vector3 horHitDir = new Vector3(
-                        data.lastRecievedHitDir[cpId].x,
+                        CpMgr.GetSoa(cpId).lastRecievedHitDir.x,
                         0,
-                        data.lastRecievedHitDir[cpId].z
+                        CpMgr.GetSoa(cpId).lastRecievedHitDir.z
                     );
                     // If you, for some reason, set the hit direction to Vector3.zero.
                     if (horHitDir.sqrMagnitude < 0.0001f)
@@ -58,6 +57,6 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                     break;
             }
         }
-        return new(data.invul[cpId], false);
+        return new(CpMgr.GetSoa(cpId).invul, false);
     }
 }

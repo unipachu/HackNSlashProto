@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Used to register and unregister capsule pawn to <see cref="CpMgr"/>.
 /// </summary>
+// Rename to just Cp.
 public class CpRegisterer : MonoBehaviour, LockOnTgt{
     [Header("Scriptable Object Data")]
     [SerializeField] So_CpData so_cpData;
@@ -32,7 +33,7 @@ public class CpRegisterer : MonoBehaviour, LockOnTgt{
             unityComps.rHand.rotation
         );
         unityComps.rHandItem.Trf.parent = unityComps.rHand;
-        Id = CpMgr.inst.Register(so_cpData, unityComps, so_BtRootNode);
+        Id = CpMgr.inst.Register(this, so_cpData, unityComps, so_BtRootNode);
     }
 
     void OnDisable(){
