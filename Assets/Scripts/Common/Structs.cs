@@ -15,6 +15,7 @@ public struct AnimInfo {
     /// </summary>
     public bool looping;
     public int lastFrame;
+    // NOTE: Struct includes an array reference and thus this cannot be used with native containers! (11.9.2026)
     public AnimEvent[] sortedAnimEvents;
 
     /// <param name="sortedEvents">
@@ -205,20 +206,29 @@ public struct Cp_ActSts {
 /// <summary>
 /// NOTE: When looping over SoA data, YOU MUST NOT REMOVE OR ADD NEW ENTITIES TO NOT CAUSE ERRORS WITH THE LOOP!! (10.9.2026) 
 /// </summary>
-public struct Cp_SoaData {
-    public AtkPhase actStSt_AtkPhase;
-    public bool actStSt_BufferedInputStSwitchAllowed;
-    public bool actStSt_ComboAllowed;
-    public bool actStSt_DodgeAllowed;
-    public float actStSt_FallingStartHgt;
-    public float actStSt_Impact_YawSpd;
-    public bool actStSt_InputRotAllowed;
-    public float actStSt_RecoveryMotInterpTimer;
+public struct Cp_AosData {
+    public AtkPhase act_AtkPhase;
+    // NOTE: "act_" means action state specific data (11.9.2026)
+    public float act_AtkFlying_TgtHorSpd;
+    public float act_AtkJump_DownSpeedAfterJumpFinished;
+    public float act_Dodge_HorMovSpdMult;
+    public float act_Dodge_YawSpd;
+    public float act_Falling_HorAcc;
+    public float act_Falling_LandingStFallDistThreshold;
+    public float act_Falling_StartHgt;
+    public float act_Falling_TgtHorSpd;
+    public float act_BasicImpact_YawSpd;
+    public float act_BasicRecovery_MotInterpTimer;
+    public float act_BasicWindup_MaxAngSpd;
     public float3 animDPos;
     public quaternion animDRot;
+    public bool bufferedInputStSwitchAllowed;
+    public bool comboAllowed;
     public float curStDur;
-    public  bool groundCastHitSomething;
-    public  float3 groundCastNrm;
+    public bool dodgeAllowed;
+    public bool enableDebugMsgs;
+    public bool groundCastHitSomething;
+    public float3 groundCastNrm;
     public float groundSnapVerDownSpd;
     public int hp_Cur;
     public int hp_Max;
@@ -237,9 +247,11 @@ public struct Cp_SoaData {
     public bool input_dodge;
     public BufferableInput inputBuffer_BufferedInput;
     public float inputBuffer_RemainingTime;
+    public bool inputRotAllowed;
     public bool invul;
     public bool isAffectedByGravity;
     public bool isGrounded;
+    public bool isSwitchingSt;
     public float3 lastCcVel;
     public float lastKnockbackStr;
     public float3 lastRecievedHitDir;
@@ -252,14 +264,9 @@ public struct Cp_SoaData {
     public float movInput_tgtHorSpd;
     public float movInput_yawSpd;
     public float movInput_horAcc;
+    public Cp_NavTgtInfo navTgtInfo;
     // To keep track of which indices are actually used for entitites.
-    public bool occupied; // <- This is important!
-    public float st_AtkHorSlash_Windup_MaxAngSpd;
-    public float st_AtkJump_DownSpeedAfterJumpFinished;
-    public float st_Dodge_YawSpd;
-    public float st_Falling_LandingStFallDistThreshold;
-    public float st_Falling_HorAcc;
-    public float st_Falling_TgtHorSpd;
+    public bool occupied; // TODO: Delete!
     public float3 trf_lossyScl;
     public float3 trf_pos;
     public quaternion trf_rot;
@@ -274,18 +281,6 @@ public struct Cp_SoaData {
     public float walkLinAcc;
     public float walkMaxLinSpd;
     public float walkYawSpd;
-}
-
-
-/// <summary>
-/// Per capsule pawn data.
-/// </summary>
-public struct Cp_AosData {
-    public float dodgeHorMovSpdMult;
-    public bool isSwitchingSt;
-    public bool enableDebugMsgs;
-    public float st_AtkFlying_TgtHorSpd;
-    public Cp_NavTgtInfo navTgtInfo;
 }
 
 public struct Cp_BrainData {

@@ -30,15 +30,14 @@ public class CpSt_Idle : IFsmSt_Cp {
 
     public void Tick() {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
                 cpId,
-                CpMgr.GetSoa(cpId).input_mov_LastNonZero,
+                CpMgr.GetAos(cpId).input_mov_LastNonZero,
                 float3.zero,
                 0,
-                CpMgr.GetSoa(cpId).walkYawSpd,
+                CpMgr.GetAos(cpId).walkYawSpd,
                 float.PositiveInfinity
             );
         else
@@ -55,7 +54,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         // Try consume input
         if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
             return;
-        if (math.all(CpMgr.GetSoa(cpId).input_mov != float2.zero)) {
+        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
             return;
         }

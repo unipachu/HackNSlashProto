@@ -26,7 +26,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetSoa(cpId).isAffectedByGravity = true;
+        CpMgr.GetAos(cpId).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }
 
@@ -34,11 +34,11 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         var unityComps = CpMgr.inst.unityComps[cpId];
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetSoa(cpId).isAffectedByGravity = true;
-                CpMgr.GetSoa(cpId).vel_Ver = -CpMgr.GetSoa(cpId).st_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetAos(cpId).isAffectedByGravity = true;
+                CpMgr.GetAos(cpId).vel_Ver = -CpMgr.GetAos(cpId).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetSoa(cpId).isAffectedByGravity = false;
+                CpMgr.GetAos(cpId).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
                 Debug.Log("Went here asdasdasd");
@@ -67,7 +67,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         CpUtils.UpdateMovInputData(
             cpId,
             float2.zero,
-            CpMgr.GetSoa(cpId).animDPos,
+            CpMgr.GetAos(cpId).animDPos,
             0,
             0,
             float.PositiveInfinity

@@ -133,22 +133,22 @@ public class BtMgr : Singleton<BtMgr>{
         Cp_BrainData brainData = CpMgr.inst.brainData[cpId];
         switch (t) {
             case BtNodeT.Cmd_Idle:
-                CpMgr.GetSoa(cpId).input_atk_Heavy = false;
-                CpMgr.GetSoa(cpId).input_atk_Light = false;
-                CpMgr.GetSoa(cpId).input_atk_Ult = false;
-                CpMgr.GetSoa(cpId).input_dodge = false;
-                if(math.lengthsq(CpMgr.GetSoa(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
-                    CpMgr.GetSoa(cpId).input_mov_LastNonZero = CpMgr.GetSoa(cpId).input_mov;
-                CpMgr.GetSoa(cpId).input_mov = float2.zero;
+                CpMgr.GetAos(cpId).input_atk_Heavy = false;
+                CpMgr.GetAos(cpId).input_atk_Light = false;
+                CpMgr.GetAos(cpId).input_atk_Ult = false;
+                CpMgr.GetAos(cpId).input_dodge = false;
+                if(math.lengthsq(CpMgr.GetAos(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
+                    CpMgr.GetAos(cpId).input_mov_LastNonZero = CpMgr.GetAos(cpId).input_mov;
+                CpMgr.GetAos(cpId).input_mov = float2.zero;
                 return BtResult.Success;
             case BtNodeT.Cmd_Atk1:
                 //Debug.Log("Atk1");
-                CpMgr.GetSoa(cpId).input_atk_Heavy = false;
-                CpMgr.GetSoa(cpId).input_atk_Light = true;
-                CpMgr.GetSoa(cpId).input_atk_Ult = false;
-                CpMgr.GetSoa(cpId).input_dodge = false;
-                if (math.lengthsq(CpMgr.GetSoa(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
-                    CpMgr.GetSoa(cpId).input_mov_LastNonZero = CpMgr.GetSoa(cpId).input_mov;
+                CpMgr.GetAos(cpId).input_atk_Heavy = false;
+                CpMgr.GetAos(cpId).input_atk_Light = true;
+                CpMgr.GetAos(cpId).input_atk_Ult = false;
+                CpMgr.GetAos(cpId).input_dodge = false;
+                if (math.lengthsq(CpMgr.GetAos(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
+                    CpMgr.GetAos(cpId).input_mov_LastNonZero = CpMgr.GetAos(cpId).input_mov;
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel.x,
                         brainData.agentDesiredVel.z
@@ -157,16 +157,16 @@ public class BtMgr : Singleton<BtMgr>{
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if (math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    CpMgr.GetSoa(cpId).input_mov = math.normalize(horDesiredVel);
+                    CpMgr.GetAos(cpId).input_mov = math.normalize(horDesiredVel);
                 return BtResult.Success;
             case BtNodeT.Cmd_MovToTgt:
                 //Debug.Log("Moving to tgt");
-                CpMgr.GetSoa(cpId).input_atk_Heavy = false;
-                CpMgr.GetSoa(cpId).input_atk_Light = false;
-                CpMgr.GetSoa(cpId).input_atk_Ult = false;
-                CpMgr.GetSoa(cpId).input_dodge = false;
-                if (math.lengthsq(CpMgr.GetSoa(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
-                    CpMgr.GetSoa(cpId).input_mov_LastNonZero = CpMgr.GetSoa(cpId).input_mov;
+                CpMgr.GetAos(cpId).input_atk_Heavy = false;
+                CpMgr.GetAos(cpId).input_atk_Light = false;
+                CpMgr.GetAos(cpId).input_atk_Ult = false;
+                CpMgr.GetAos(cpId).input_dodge = false;
+                if (math.lengthsq(CpMgr.GetAos(cpId).input_mov) > PlrConfigs.inst.movInputSqrDeadzone)
+                    CpMgr.GetAos(cpId).input_mov_LastNonZero = CpMgr.GetAos(cpId).input_mov;
                 horDesiredVel = new float2(
                         brainData.agentDesiredVel.x,
                         brainData.agentDesiredVel.z
@@ -174,9 +174,9 @@ public class BtMgr : Singleton<BtMgr>{
                 // Agent can have 0 desired velocity, thus to avoid NaNs:
                 if (math.lengthsq(horDesiredVel) > 0.0001f)
                     // Movement input should always be max 1 length.
-                    CpMgr.GetSoa(cpId).input_mov = math.normalize(horDesiredVel);
+                    CpMgr.GetAos(cpId).input_mov = math.normalize(horDesiredVel);
                 else
-                    CpMgr.GetSoa(cpId).input_mov = float2.zero;
+                    CpMgr.GetAos(cpId).input_mov = float2.zero;
                     //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
                 return BtResult.Success;
             case BtNodeT.Cond_InAggroRange:

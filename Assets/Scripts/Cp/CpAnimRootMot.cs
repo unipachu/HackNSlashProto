@@ -5,7 +5,7 @@ public class CpAnimRootMot : MonoBehaviour {
     [SerializeField] CpRegisterer cp;
 
     void OnAnimatorMove() {
-        CpMgr.GetSoa(cp.Id).animDPos = anim.deltaPosition;
-        CpMgr.GetSoa(cp.Id).animDRot = anim.deltaRotation;
+        CpMgr.GetAos(cp.Id).animDPos = anim.deltaPosition;
+        CpMgr.GetAos(cp.Id).animDRot = anim.deltaRotation;
     }
 }

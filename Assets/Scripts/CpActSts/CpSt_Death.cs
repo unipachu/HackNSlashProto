@@ -42,7 +42,7 @@ public class CpSt_Death : IFsmSt_Cp {
         CpUtils.UpdateMovInputData(
             cpId,
             float2.zero,
-            CpMgr.GetSoa(cpId).animDPos,
+            CpMgr.GetAos(cpId).animDPos,
             0,
             0,
             float.PositiveInfinity

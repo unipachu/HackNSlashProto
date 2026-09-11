@@ -17,16 +17,16 @@ public class CpAnimEventHandler : MonoBehaviour {
         var classRefs = CpMgr.inst.classRefs[id];
         switch (animEvent) {
             case CpAnimEventT.BufferedInputStSwitchAllowed:
-                CpMgr.GetSoa(id).actStSt_BufferedInputStSwitchAllowed = true;
+                CpMgr.GetAos(id).bufferedInputStSwitchAllowed = true;
                 break;
             case CpAnimEventT.ComboAllowed:
-                CpMgr.GetSoa(id).actStSt_ComboAllowed = true;
+                CpMgr.GetAos(id).comboAllowed = true;
                 break;
             case CpAnimEventT.ComboDisallowed:
-                CpMgr.GetSoa(id).actStSt_ComboAllowed = false;
+                CpMgr.GetAos(id).comboAllowed = false;
                 break;
             case CpAnimEventT.DodgeAllowed:
-                CpMgr.GetSoa(id).actStSt_DodgeAllowed = true;
+                CpMgr.GetAos(id).dodgeAllowed = true;
                 break;
             case CpAnimEventT.Finished:
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.Finished);
@@ -38,20 +38,20 @@ public class CpAnimEventHandler : MonoBehaviour {
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.HitDealerDeactivated);
                 break;
             case CpAnimEventT.InvulEnd:
-                CpMgr.GetSoa(id).invul = false;
+                CpMgr.GetAos(id).invul = false;
                 break;
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetSoa(id).isAffectedByGravity = true;
-                CpMgr.GetSoa(id).vel_Ver = -CpMgr.GetSoa(id).st_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetAos(id).isAffectedByGravity = true;
+                CpMgr.GetAos(id).vel_Ver = -CpMgr.GetAos(id).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetSoa(id).isAffectedByGravity = false;
+                CpMgr.GetAos(id).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.YawAllowed:
-                CpMgr.GetSoa(id).actStSt_InputRotAllowed = true;
+                CpMgr.GetAos(id).inputRotAllowed = true;
                 break;
             case CpAnimEventT.YawDisallowed:
-                CpMgr.GetSoa(id).actStSt_InputRotAllowed = false;
+                CpMgr.GetAos(id).inputRotAllowed = false;
                 break;
             default:
                 Debug.Log($"Switch defaulted with {animEvent}.", this);

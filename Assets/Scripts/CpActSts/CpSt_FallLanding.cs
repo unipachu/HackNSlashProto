@@ -12,7 +12,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         => true;
 
     public CpSt_FallLanding Enter() {
-        CpMgr.GetSoa(cpId).actStSt_DodgeAllowed = false;
+        CpMgr.GetAos(cpId).dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
@@ -29,7 +29,6 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
@@ -41,12 +40,12 @@ public class CpSt_FallLanding : IFsmSt_Cp {
             0,
             float.PositiveInfinity
         );
-        if (CpMgr.GetSoa(cpId).actStSt_DodgeAllowed) {
+        if (CpMgr.GetAos(cpId).dodgeAllowed) {
             if (
                 CpInputBuffer.TryConsumeInput(
                     BufferableInput.BtnE,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
                 )
             ) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cpId);

@@ -11,9 +11,9 @@ public class CpSt_Dodge : IFsmSt_Cp {
         => true;
 
     public CpSt_Dodge Enter() {
-        CpMgr.GetSoa(cpId).actStSt_InputRotAllowed = false;
-        CpMgr.GetSoa(cpId).actStSt_BufferedInputStSwitchAllowed = false;
-        CpMgr.GetSoa(cpId).invul = true;
+        CpMgr.GetAos(cpId).inputRotAllowed = false;
+        CpMgr.GetAos(cpId).bufferedInputStSwitchAllowed = false;
+        CpMgr.GetAos(cpId).invul = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
@@ -24,24 +24,23 @@ public class CpSt_Dodge : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetSoa(cpId).invul = false;
+        CpMgr.GetAos(cpId).invul = false;
     }
 
     public void Tick() {
-        Cp_AosData aosData = CpMgr.inst.aosData[cpId];
         float angSpd = 0;
-        if (CpMgr.GetSoa(cpId).actStSt_InputRotAllowed)
-            angSpd = CpMgr.GetSoa(cpId).st_Dodge_YawSpd;
+        if (CpMgr.GetAos(cpId).inputRotAllowed)
+            angSpd = CpMgr.GetAos(cpId).act_Dodge_YawSpd;
         CpUtils.UpdateMovInputData(
             cpId,
-            CpMgr.GetSoa(cpId).input_mov,
-            CpMgr.GetSoa(cpId).animDPos * aosData.dodgeHorMovSpdMult,
+            CpMgr.GetAos(cpId).input_mov,
+            CpMgr.GetAos(cpId).animDPos * CpMgr.GetAos(cpId).act_Dodge_HorMovSpdMult,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (
-            CpMgr.GetSoa(cpId).actStSt_BufferedInputStSwitchAllowed
+            CpMgr.GetAos(cpId).bufferedInputStSwitchAllowed
                 && CpUtils.BaseTrySwitchStByBufferedInput(cpId)
         )
             return;

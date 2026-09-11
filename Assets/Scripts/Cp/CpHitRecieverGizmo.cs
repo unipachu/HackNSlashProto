@@ -18,7 +18,7 @@ public class CpHitRecieverGizmo : MonoBehaviour{
         // NOTE: No warning, no error. You need to remember to set the references!
         if (cp == null || col == null || !drawGizmo || CpMgr.inst == null)
             return;
-        Color color = CpMgr.GetSoa(cp.Id).invul ? invulnerableColor : vulnerableColor;
+        Color color = CpMgr.GetAos(cp.Id).invul ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {
             float radius = capsuleCollider.radius;
             float height = Mathf.Max(capsuleCollider.height, radius * 2f);

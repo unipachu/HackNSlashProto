@@ -24,7 +24,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.homingProjTgt = homingProjTgt;
-        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
@@ -37,12 +37,12 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     public void Exit() {}
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var soaData = CpMgr.inst.soaData;
+        var soaData = CpMgr.inst.aosData;
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (CpMgr.GetSoa(cpId).actStSt_AtkPhase) {
+                switch (CpMgr.GetAos(cpId).act_AtkPhase) {
                     case AtkPhase.Windup:
-                        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Recovery;
+                        CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Recovery;
                         HomingProjMgr.inst.ShootProj(
                             homingProjData,
                             hitEffects,
@@ -60,7 +60,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         CpUtils.TransitionToFallIdleOrWalk(cpId);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {CpMgr.GetSoa(cpId).actStSt_AtkPhase}");
+                        Debug.LogError($"Switch defaulted with {CpMgr.GetAos(cpId).act_AtkPhase}");
                         break;
                 }
                 break;
@@ -75,12 +75,12 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     public void PhysicsTick() {}
 
     public void Tick() {
-        switch (CpMgr.GetSoa(cpId).actStSt_AtkPhase) {
+        switch (CpMgr.GetAos(cpId).act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(
                     cpId,
-                    CpMgr.GetSoa(cpId).input_mov_LastNonZero,
-                    CpMgr.GetSoa(cpId).animDPos,
+                    CpMgr.GetAos(cpId).input_mov_LastNonZero,
+                    CpMgr.GetAos(cpId).animDPos,
                     0,
                     180, // NOTE: Yaw speed is set here.
                     float.PositiveInfinity
@@ -89,15 +89,15 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
             case AtkPhase.Recovery:
                 CpUtils.UpdateMovInputData(
                     cpId,
-                    CpMgr.GetSoa(cpId).input_mov_LastNonZero,
-                    CpMgr.GetSoa(cpId).animDPos,
+                    CpMgr.GetAos(cpId).input_mov_LastNonZero,
+                    CpMgr.GetAos(cpId).animDPos,
                     0,
                     0,
                     float.PositiveInfinity
                 );
                 break;
             default:
-                Debug.LogError($"{cpId} Switch defaulted with {CpMgr.GetSoa(cpId).actStSt_AtkPhase}.");
+                Debug.LogError($"{cpId} Switch defaulted with {CpMgr.GetAos(cpId).act_AtkPhase}.");
                 break;
         }
     }

@@ -18,10 +18,10 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
         Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetSoa(cpId).actStSt_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Windup;
         CpInputBuffer.Clear(
-            ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
-            ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
+            ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
+            ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
@@ -36,7 +36,6 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
@@ -60,16 +59,16 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     public void Tick() {
         CpUtils.UpdateMovInputData(
             cpId,
-            CpMgr.GetSoa(cpId).input_mov_WhenLastSwitchedSt,
-            CpMgr.GetSoa(cpId).animDPos,
+            CpMgr.GetAos(cpId).input_mov_WhenLastSwitchedSt,
+            CpMgr.GetAos(cpId).animDPos,
             0,
-            CpMgr.GetSoa(cpId).st_AtkHorSlash_Windup_MaxAngSpd,
+            CpMgr.GetAos(cpId).act_BasicWindup_MaxAngSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
-        if (CpMgr.GetSoa(cpId).actStSt_ComboAllowed && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
+        if (CpMgr.GetAos(cpId).comboAllowed && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
             return;
     }
 }

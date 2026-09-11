@@ -81,18 +81,17 @@ public static class CpUtils{
     /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
     /// </summary>
     public static bool IsOnNavMesh(int cpId) {
-        ref Cp_NavTgtInfo navMeshInfo = ref CpMgr.inst.aosData[cpId].navTgtInfo;
-        if (navMeshInfo.hasUpdatedNavTgtInfoThisTick)
-            return navMeshInfo.isCpOnNavmesh;
+        if (CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick)
+            return CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh;
         Transform trf = CpMgr.inst.unityComps[cpId].rootTrf;
-        navMeshInfo.hasUpdatedNavTgtInfoThisTick = true;
-        navMeshInfo.isCpOnNavmesh = NavMesh.SamplePosition(
+        CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
+        CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
             trf.position,
             out NavMeshHit hit,
-            navMeshInfo.maxDistToNavMesh,
+            CpMgr.GetAos(cpId).navTgtInfo.maxDistToNavMesh,
             CpMgr.inst.unityComps[cpId].navMeshAgent.areaMask
         );
-        return navMeshInfo.isCpOnNavmesh;
+        return CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh;
     }
 
     /// <summary>
@@ -101,9 +100,8 @@ public static class CpUtils{
     // TODO: rename?
     public static void TransitionToFallIdleOrWalk(int cpId) {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         SwitchToFallingStIfNotGrounded(cpId);
-        if (math.all(CpMgr.GetSoa(cpId).input_mov != float2.zero))
+        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero))
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
         else
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
@@ -115,14 +113,13 @@ public static class CpUtils{
     /// </summary>
     public static bool TrySwitchSt(int cpId, BufferableInput input) {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
         if (
             enterFunc != null
                 && CpInputBuffer.TryConsumeInput(
                     input,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(enterFunc, cpId);
@@ -136,9 +133,8 @@ public static class CpUtils{
     /// </summary>
     public static bool SwitchToFallingStIfNotGrounded(int cpId) {
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         if (
-            !CpMgr.GetSoa(cpId).isGrounded
+            !CpMgr.GetAos(cpId).isGrounded
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
@@ -160,11 +156,11 @@ public static class CpUtils{
         float yawSpd,
         float horAcc
     ) {
-        CpMgr.GetSoa(cpId).movInput_tgtHorDir = tgtHorDir;
-        CpMgr.GetSoa(cpId).movInput_additionalLinMov = additionalLinMov;
-        CpMgr.GetSoa(cpId).movInput_tgtHorSpd = tgtHorSpd;
-        CpMgr.GetSoa(cpId).movInput_yawSpd = yawSpd;
-        CpMgr.GetSoa(cpId).movInput_horAcc = horAcc;
+        CpMgr.GetAos(cpId).movInput_tgtHorDir = tgtHorDir;
+        CpMgr.GetAos(cpId).movInput_additionalLinMov = additionalLinMov;
+        CpMgr.GetAos(cpId).movInput_tgtHorSpd = tgtHorSpd;
+        CpMgr.GetAos(cpId).movInput_yawSpd = yawSpd;
+        CpMgr.GetAos(cpId).movInput_horAcc = horAcc;
     }
 
     /// <summary>
@@ -181,9 +177,8 @@ public static class CpUtils{
     /// Returns true if successfully transitioned to the next action state of the combo.
     /// </summary>
     static bool TryComboTransition(BufferableInput input, IComboNode curComboNode, int cpId) {
-        var data = CpMgr.inst.soaData;
+        var data = CpMgr.inst.aosData;
         var classRefs = CpMgr.inst.classRefs[cpId];
-        ref Cp_AosData aosData = ref CpMgr.inst.aosData[cpId];
         if (
             // TODO: This check if faster than trying to get the next node func. However for simplicity you
             // TODO C: could just consume the input, get the func and then check if it's null. You only gain
@@ -191,8 +186,8 @@ public static class CpUtils{
             curComboNode.GetNextNode(input) != null
                 && CpInputBuffer.TryConsumeInput(
                     input,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetSoa(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);
