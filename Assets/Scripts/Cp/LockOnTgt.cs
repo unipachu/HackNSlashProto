@@ -5,6 +5,6 @@ using UnityEngine;
 /// Capsule pawn that has a lock on point for attacks etc.<br/>
 /// </summary>
 public interface LockOnTgt {
-    int CpId { get; }
+    int Id { get; }
     Transform Trf { get; }
 }

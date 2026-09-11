@@ -16,7 +16,13 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
     }
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
-        int cpId = pc.Id;
+        Debug.Log(
+            $"HitData:\n" +
+            $"  atkData.dmg: {hitData.atkData.dmg}\n" +
+            $"  atkData.knockbackT: {hitData.atkData.knockbackT}\n" +
+            $"  atkData.knockbackStr: {hitData.atkData.knockbackStr}\n" +
+            $"  hitWldDir: {hitData.hitWldDir}"
+        ); int cpId = pc.Id;
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (!CpMgr.GetAos(cpId).invul) {
             CpMgr.GetAos(cpId).hp_Cur -= hitData.atkData.dmg;

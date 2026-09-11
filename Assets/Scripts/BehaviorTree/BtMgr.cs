@@ -82,18 +82,18 @@ public class BtMgr : Singleton<BtMgr>{
 
     void AllocateNodeStorage() {
         nodes = new NativeArray<BtNodeData>(
-            CpMgr.inst.maxCps * maxNodesPerTree,
+            CpMgr.inst.initCapacity * maxNodesPerTree,
             Allocator.Persistent
         );
     }
 
     void AllocateRuntimeData() {
         curRunningNode = new NativeArray<int>(
-            CpMgr.inst.maxCps,
+            CpMgr.inst.initCapacity,
             Allocator.Persistent
         );
         occupied = new NativeArray<bool>(
-            CpMgr.inst.maxCps,
+            CpMgr.inst.initCapacity,
             Allocator.Persistent
         );
     }

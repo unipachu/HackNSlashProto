@@ -1,6 +1,7 @@
 using System;
 using Unity.Collections;
 using Unity.Mathematics;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -9,8 +10,11 @@ using UnityEngine.AI;
 /// </summary>
 public class CpMgr : Singleton<CpMgr> {
     [Header("Settings")]
-    // TODO: Make private after creating ai controller factory.
-    public int maxCps = 1;
+    // TODO: Make private after creating ai controller factory. Maybe call it "InitCpCapacity"
+
+    [Tooltip("Initial capacity of arrays. They allocate more space if needed (but do not deallocate even" +
+        "if pawns are unregistered.)")]
+    public int initCapacity = 1;
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_BrainData[] brainData;
@@ -19,14 +23,21 @@ public class CpMgr : Singleton<CpMgr> {
     [HideInInspector] public NativeList<Cp_AosData> aosData;
     [HideInInspector] public Cp_UnityComps[] unityComps;
 
+    /// <summary>
+    /// Used to set the used length of the arrays (since they do not reallocate when elements are removed).
+    /// </summary>
+    int cpCount;
+
+    public int CpCount => cpCount;
+
     public void Init() {
-        cp = new CpRegisterer[maxCps];
-        animEventPlrData = new AnimEventPlrData[maxCps];
-        brainData = new Cp_BrainData[maxCps];
-        classRefs = new Cp_NonUnityCompClassRefs[maxCps];
-        aosData = GeneralUtils.AllocList<Cp_AosData>(maxCps);
+        animEventPlrData = new AnimEventPlrData[initCapacity];
+        brainData = new Cp_BrainData[initCapacity];
+        classRefs = new Cp_NonUnityCompClassRefs[initCapacity];
+        cp = new CpRegisterer[initCapacity];
+        aosData = GeneralUtils.AllocList<Cp_AosData>(initCapacity);
         //Debug.Log($"soa length in init: {aosData.Length}");
-        unityComps = new Cp_UnityComps[maxCps];
+        unityComps = new Cp_UnityComps[initCapacity];
     }
 
     void OnDestroy() {
@@ -104,7 +115,7 @@ public class CpMgr : Singleton<CpMgr> {
             unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
                 // NOTE: We need to check this manually since SetDestination does not have option to set
                 // NOTE C: target sample position max distance.
-                if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.CpId)) {
+                if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.Id)) {
                 //Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.",
                 //    aosData[i].enableDebugMsgs);
                 unityComps[i].navMeshAgent.ResetPath();
@@ -377,91 +388,98 @@ public class CpMgr : Singleton<CpMgr> {
     // ------------------------------------------------------------
 
     /// <summary>
-    /// Registers new capsule pawn. Returns the index of the registered data, or -1 on failure.
+    /// Registers new capsule pawn.
     /// </summary>
-    public int Register(CpRegisterer cp, So_CpData so, Cp_UnityComps unityComps, So_BtRootNode bt) {
+    public void Register(CpRegisterer newCp, So_CpData so, Cp_UnityComps newUnityComps, So_BtRootNode newBt) {
+        // NOTE: Index = new count - 1.
         //Debug.Log($"Start registering {cp}", cp);
-        int freeI = -1;
-        for (int i = 0; i < this.cp.Length; i++) {
-            if (this.cp[i] == null) {
-                freeI = i;
-                break;
-            }
-        }
-        if (freeI == -1) {
-            Debug.LogError($"Capsule Pawn Entities at capacity ({maxCps})");
-            return -1;
-        }
-        this.cp[freeI] = cp; 
+        ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
+        ArrayUtils.Add(ref cp, cpCount, newCp);
         // Brain data
-        brainData[freeI].agentDesiredVel = float3.zero;
-        brainData[freeI].aggroRange = so.brain_AggroRange;
-        brainData[freeI].atkRange = so.brain_AtkRange;
-        brainData[freeI].distToTgt = 0;
-        brainData[freeI].hasTgt = false;
-        brainData[freeI].inAggroRange = false;
-        brainData[freeI].inAtkRange = false;
-        brainData[freeI].lockedOnTgt = null;
+        var newBrainData = new Cp_BrainData();
+        newBrainData.agentDesiredVel = float3.zero;
+        newBrainData.aggroRange = so.brain_AggroRange;
+        newBrainData.atkRange = so.brain_AtkRange;
+        newBrainData.distToTgt = 0;
+        newBrainData.hasTgt = false;
+        newBrainData.inAggroRange = false;
+        newBrainData.inAtkRange = false;
+        newBrainData.lockedOnTgt = null;
+        ArrayUtils.Add(ref brainData, cpCount, newBrainData);
         // Structure of arrays data
-        Cp_AosData newData = new();
-        newData.act_BasicImpact_YawSpd = so.impact_YawSpd;
-        newData.curStDur = 0;
-        newData.groundCastHitSomething = false;
-        newData.groundCastNrm = float3.zero;
-        newData.groundSnapVerDownSpd = so.groundSnapVerDownSpd;
-        newData.hp_Cur = so.maxHP;
-        newData.hp_Max = so.maxHP;
-        newData.input_mov = float2.zero;
-        newData.input_mov_LastNonZero = float2.zero;
-        newData.input_mov_WhenLastSwitchedSt = float2.zero;
-        newData.input_atk_Light = false;
-        newData.input_atk_Heavy = false;
-        newData.input_atk_Ult = false;
-        newData.input_dodge = false;
-        newData.invul = false;
-        newData.isAffectedByGravity = true;
-        newData.isGrounded = true;
-        newData.lastCcVel = float3.zero;
-        newData.lastKnockbackStr = 0;
-        newData.lastRecievedHitDir = float3.zero;
-        newData.act_BasicWindup_MaxAngSpd = so.st_AtkHorSlash_Windup_YawSpd;
-        newData.act_AtkJump_DownSpeedAfterJumpFinished = so.st_AtkJump_DownSpeedAfterJumpFinished;
-        newData.act_Dodge_YawSpd = so.st_Dodge_YawAngSpd;
-        newData.act_Falling_LandingStFallDistThreshold = so.st_Falling_LandingStFallDistThreshold;
-        newData.act_Falling_HorAcc = so.st_Falling_HorAcc;
-        newData.act_Falling_TgtHorSpd = so.st_Falling_TgtHorSpd;
-        newData.trf_pos = float3.zero;
-        newData.trf_rot = quaternion.identity;
-        newData.trf_lossyScl = new float3(1);
-        newData.vel_Hor = float2.zero;
-        newData.vel_Ver = 0;
-        newData.occupied = true;
-        newData.walkLinAcc = so.walkHorAcc;
-        newData.walkMaxLinSpd = so.walkTgtHorSpd;
-        newData.walkYawSpd = so.walkYawSpd;
-        newData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
-        newData.enableDebugMsgs = so.enableDebugMsgs;
-        newData.act_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
+        Cp_AosData newAosData = new();
+        newAosData.act_BasicImpact_YawSpd = so.impact_YawSpd;
+        newAosData.curStDur = 0;
+        newAosData.groundCastHitSomething = false;
+        newAosData.groundCastNrm = float3.zero;
+        newAosData.groundSnapVerDownSpd = so.groundSnapVerDownSpd;
+        newAosData.hp_Cur = so.maxHP;
+        newAosData.hp_Max = so.maxHP;
+        newAosData.input_mov = float2.zero;
+        newAosData.input_mov_LastNonZero = float2.zero;
+        newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
+        newAosData.input_atk_Light = false;
+        newAosData.input_atk_Heavy = false;
+        newAosData.input_atk_Ult = false;
+        newAosData.input_dodge = false;
+        newAosData.invul = false;
+        newAosData.isAffectedByGravity = true;
+        newAosData.isGrounded = true;
+        newAosData.lastCcVel = float3.zero;
+        newAosData.lastKnockbackStr = 0;
+        newAosData.lastRecievedHitDir = float3.zero;
+        newAosData.act_BasicWindup_MaxAngSpd = so.st_AtkHorSlash_Windup_YawSpd;
+        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = so.st_AtkJump_DownSpeedAfterJumpFinished;
+        newAosData.act_Dodge_YawSpd = so.st_Dodge_YawAngSpd;
+        newAosData.act_Falling_LandingStFallDistThreshold = so.st_Falling_LandingStFallDistThreshold;
+        newAosData.act_Falling_HorAcc = so.st_Falling_HorAcc;
+        newAosData.act_Falling_TgtHorSpd = so.st_Falling_TgtHorSpd;
+        newAosData.trf_pos = float3.zero;
+        newAosData.trf_rot = quaternion.identity;
+        newAosData.trf_lossyScl = new float3(1);
+        newAosData.vel_Hor = float2.zero;
+        newAosData.vel_Ver = 0;
+        newAosData.walkLinAcc = so.walkHorAcc;
+        newAosData.walkMaxLinSpd = so.walkTgtHorSpd;
+        newAosData.walkYawSpd = so.walkYawSpd;
+        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
+        newAosData.enableDebugMsgs = so.enableDebugMsgs;
+        newAosData.act_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
-        newData.navTgtInfo = new(false, false, 0.2f); 
-        aosData.Add(newData);
-        this.unityComps[freeI] = unityComps;
-        this.classRefs[freeI] = new Cp_NonUnityCompClassRefs(freeI);
+        newAosData.navTgtInfo = new(false, false, 0.2f); 
+        aosData.Add(newAosData);
+        ArrayUtils.Add(ref unityComps, cpCount, newUnityComps);
+        ArrayUtils.Add(ref classRefs, cpCount, new Cp_NonUnityCompClassRefs(cpCount));
         // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
-        if (bt != null)
-            BtMgr.inst.Register(freeI, bt);
+        if (newBt != null)
+            BtMgr.inst.Register(cpCount, newBt);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
-        SwitchToInitActSt(freeI);
-        return freeI;
+        newCp.Id = cpCount;
+        SwitchToInitActSt(cpCount);
+        cpCount++;
     }
 
-    // TODO: If you use cp ref to mark entity as unoccupied, then
+    /// <summary>
+    /// Call this before destroying a cp.
+    /// </summary>
+    /// <param name="cpId"></param>
     public void Unregister(int cpId) {
-        if (cp[cpId] == null) {
-            Debug.LogError($"Capsule pawn with id {cpId} has not been registered!");
+        if (cpId >= cpCount) {
+            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
             return;
         }
-        GetAos(cpId).occupied = false;
+        int lastId = cpCount - 1;
+        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
+        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(brainData, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
+        aosData.RemoveAtSwapBack(cpId);
+        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
+        cpCount--;
+        if (swappedCp != null)
+            // Last Cp was swapped to cpId, so update Id.
+            swappedCp.Id = cpId;
     }
 
     public void SwitchToInitActSt(int cpId) {

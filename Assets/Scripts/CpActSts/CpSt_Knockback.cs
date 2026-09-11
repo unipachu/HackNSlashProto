@@ -8,11 +8,14 @@ public class CpSt_Knockback : IFsmSt_Cp{
         this.cpId = cpId;
     }
 
-    public bool CanSwitchTo<TState>() where TState : IFsmSt
-        => typeof(TState) == typeof(CpSt_Knockback)
+    public bool CanSwitchTo<TState>() where TState : IFsmSt {
+        Debug.Log($"type of TState: {typeof(TState).Name}");
+        return typeof(TState) == typeof(CpSt_Knockback)
             || typeof(TState) == typeof(CpSt_Death);
+    }
 
     public CpSt_Knockback Enter(AnimInfo knockbackAnimInfo) {
+        Debug.Log("Went to kb enter");
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,

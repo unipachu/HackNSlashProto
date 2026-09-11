@@ -12,9 +12,7 @@ public class CpRegisterer : MonoBehaviour, LockOnTgt{
     [Header("Unity Comp Refs")]
     [SerializeField] Cp_UnityComps unityComps;
 
-    public int Id { get; private set; } = -1;
-
-    public int CpId => Id;
+    public int Id { get; set; }
 
     public Transform Trf => unityComps.lockOnTrf;
 
@@ -33,7 +31,7 @@ public class CpRegisterer : MonoBehaviour, LockOnTgt{
             unityComps.rHand.rotation
         );
         unityComps.rHandItem.Trf.parent = unityComps.rHand;
-        Id = CpMgr.inst.Register(this, so_cpData, unityComps, so_BtRootNode);
+        CpMgr.inst.Register(this, so_cpData, unityComps, so_BtRootNode);
     }
 
     void OnDisable(){

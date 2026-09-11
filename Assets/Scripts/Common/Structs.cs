@@ -265,8 +265,6 @@ public struct Cp_AosData {
     public float movInput_yawSpd;
     public float movInput_horAcc;
     public Cp_NavTgtInfo navTgtInfo;
-    // To keep track of which indices are actually used for entitites.
-    public bool occupied; // TODO: Delete!
     public float3 trf_lossyScl;
     public float3 trf_pos;
     public quaternion trf_rot;
