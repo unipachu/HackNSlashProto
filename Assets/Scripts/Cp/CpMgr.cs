@@ -505,10 +505,12 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// NOTE: Never directly call Fsm.Switch state since that will bypass calling
-    /// <see cref="OnStateSwitched"/>. (10.9.2026)
+    /// NOTE: Never directly call <see cref="Fsm.TrySwitchState"/> since that will bypass calling
+    /// <see cref="OnStateSwitched"/>, so call this instead!. (10.9.2026)
+    /// NOTE 2: <paramref name="enterFunc"/> return type needs to be generic (instead of IFsmSt_Cp), otherwise
+    /// information of the new state type is lost. (12.9.2026)
     /// </summary>
-    public bool TrySwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId) {
+    public bool TrySwitchActSt<TNewState>(Func<TNewState> enterFunc, int cpId) where TNewState : IFsmSt_Cp {
         if(
             Fsm.TrySwitchState(
                 enterFunc,

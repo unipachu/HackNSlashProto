@@ -44,17 +44,19 @@ public static class Fsm {
     /// <summary>
     /// Only switched state if current state allows it.
     /// </summary>
-    public static bool TrySwitchState<TState>(
-        Func<TState> enterSt,
+    public static bool TrySwitchState<TNewState, TState>(
+        Func<TNewState> enterSt,
         ref TState curSt,
         ref TState prevSt,
         ref bool isSwitchingSt,
         bool logMsg = false,
         Action<TState> stSwitched = null
-    ) where TState : IFsmSt{
-        if (curSt != null && !curSt.CanSwitchTo<TState>())
+    ) where TState : IFsmSt where TNewState : TState{
+        if (curSt != null && !curSt.CanSwitchTo<TNewState>())
             return false;
-        SwitchSt(enterSt, ref curSt, ref prevSt, ref isSwitchingSt, logMsg, stSwitched);
+        // NOTE: We need to wrap enterSt to a new lambda because passing it straight won't convert it
+        // NOTE C: from Func<TNewState> to Func<TState> for some reason. (12.9.2026)
+        SwitchSt(() => enterSt(), ref curSt, ref prevSt, ref isSwitchingSt, logMsg, stSwitched);
         return true;
     }
 }
