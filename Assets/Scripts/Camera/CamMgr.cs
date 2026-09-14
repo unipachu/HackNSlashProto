@@ -4,7 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Camera manager. Handles camera movement by player input.
 /// </summary>
-public class CamMgr : MonoBehaviour{
+public class CamMgr : Singleton<CamMgr>{
     [Header("Cam Rotation Settings")]
     [SerializeField] bool camMovByInputAllowed = true;
     [SerializeField] float horSpd = 360;
@@ -17,6 +17,7 @@ public class CamMgr : MonoBehaviour{
 
     [Header("Refs")]
     [SerializeField] PlrCtrl plrCtrl;
+    public CinemachineCamera cam;
     [SerializeField] CinemachineOrbitalFollow orbitalFollow;
     [SerializeField] CinemachinePanTilt panTilt;
     [SerializeField] CinemachineBrain brain;

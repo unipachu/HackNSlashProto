@@ -63,7 +63,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public void PhysicsTick() {}
 
     public void Tick() {
-        Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
+        Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         CpUtils.UpdateMovInputData(
             cpId,
             float2.zero,

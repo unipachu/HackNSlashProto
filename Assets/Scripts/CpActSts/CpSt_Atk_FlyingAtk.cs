@@ -75,7 +75,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_UnityComps unityComps = CpMgr.inst.unityComps[cpId];
+        Cp_UnityObjs unityComps = CpMgr.inst.unityComps[cpId];
         switch (CpMgr.GetAos(cpId).act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(

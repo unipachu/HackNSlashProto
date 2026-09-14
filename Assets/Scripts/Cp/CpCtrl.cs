@@ -1,7 +1,9 @@
+using System;
 using UnityEngine;
 
 
 // TODO: Maybe this is not needed.
+[Obsolete("Pawn directly depends on the ICpCtrlInputter")]
 public class CpCtrl : MonoBehaviour{
     [SerializeField] PlrCtrl plrCtrl;
 

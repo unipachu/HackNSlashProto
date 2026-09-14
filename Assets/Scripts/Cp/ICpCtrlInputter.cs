@@ -5,6 +5,11 @@ public interface ICpCtrlInputter{
     public Vector2 Input_Look_Pointer { get; }
     public Vector2 Input_Mov { get; }
 
+    /// <summary>
+    /// Should be called when a pawn starts to listen to the inputs of the controller. 
+    /// </summary>
+    void Possess(IPawn pawn);
+
     public bool TryConsume_Atk_Light();
 
     public bool TryConsume_Atk_Heavy();
@@ -12,4 +17,9 @@ public interface ICpCtrlInputter{
     public bool TryConsume_Atk_Ult();
 
     public bool TryConsume_Dodge();
+
+    /// <summary>
+    /// Should be called when a pawn stops listening to the inputs of the controller.
+    /// </summary>
+    void Unpossess();
 }

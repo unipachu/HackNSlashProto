@@ -319,31 +319,36 @@ public struct Cp_NavTgtInfo {
     }
 }
 
-public struct Cp_NonUnityCompClassRefs {
+/// <summary>
+/// Cp class dependencies that do not derive from Unity's Object class.
+/// </summary>
+public struct Cp_NonUnityObjClassRefs {
     public Cp_ActSts actSts;
+    public ICpCtrlInputter cpCtrl;
+    public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
 
-    public Cp_NonUnityCompClassRefs(int cpId) {
+    public Cp_NonUnityObjClassRefs(int cpId, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
         actSts = new Cp_ActSts(cpId);
+        this.cpCtrl = cpCtrl;
+        this.rHandItem = rHandItem;
         st_cur = null;
         st_prev = null;
     }
 }
 
 /// <summary>
-/// Monobehavior (and other Unity Component) references for capsule pawn.
+/// Unity Object references for capsule pawn.
 /// </summary>
 [Serializable]
-public struct Cp_UnityComps {
+public struct Cp_UnityObjs {
     public Animator anim;
     public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
-    public CpCtrl cpCtrl;
     public CpHitRecieveHandler hitRecieverHandler;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
-    public IHandItem rHandItem;
     public Transform rootTrf;
     public Transform lockOnTrf;
 }

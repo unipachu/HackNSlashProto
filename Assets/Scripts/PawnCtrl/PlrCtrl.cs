@@ -41,6 +41,8 @@ public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
     public Vector2 Input_Look_Pointer => input_Look_Pointer;
     public Vector2 Input_Mov => input_Mov;
 
+    public IPawn Pawn => throw new System.NotImplementedException();
+
     void OnEnable() {
         inputActs.FindActionMap(actionMapName).Enable();
     }
@@ -87,4 +89,12 @@ public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
     public bool TryConsume_Atk_Ult() => TryConsume(ref input_Atk_Ult);
 
     public bool TryConsume_Dodge() => TryConsume(ref input_Dodge);
+
+    public void Possess(IPawn pawn) {
+        throw new System.NotImplementedException();
+    }
+
+    public void Unpossess() {
+        throw new System.NotImplementedException();
+    }
 }

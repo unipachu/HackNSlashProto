@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 1582683670335378908}
   - component: {fileID: 1730021812194126965}
   - component: {fileID: 9141355615762476700}
-  - component: {fileID: 3037795622728005573}
   - component: {fileID: 4596513238272593172}
   - component: {fileID: 5079058612890601784}
   - component: {fileID: 8087861647241408892}
@@ -57,7 +56,6 @@ MonoBehaviour:
     anim: {fileID: 1091843080481240901}
     animEventHandler: {fileID: 4596513238272593172}
     cc: {fileID: 5079058612890601784}
-    cpCtrl: {fileID: 3037795622728005573}
     hitRecieverHandler: {fileID: 9141355615762476700}
     navMeshAgent: {fileID: 8087861647241408892}
     rHand: {fileID: 6462226994868355226}
@@ -77,19 +75,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CapsuleCharHitRecieveHandler
   pc: {fileID: 1730021812194126965}
   bodyHitReciever: {fileID: 7647208197661411789}
---- !u!114 &3037795622728005573
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6101628137683636955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b970c682620f4244a168c09950ee838, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CpCtrl
-  plrCtrl: {fileID: 0}
 --- !u!114 &4596513238272593172
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -38,7 +38,7 @@ public static class CpUtils{
             return () => classRefs.actSts.dodge.Enter();
         // TODO: Make projectile attack a combo attakc.
         if(
-            unityComps.rHandItem is IHandItem_ProjectileSpawner projectileSpawner
+            classRefs.rHandItem is IHandItem_ProjectileSpawner projectileSpawner
                 && (input == BufferableInput.RTrg || input == BufferableInput.RShldr)
         ) {
             return () => classRefs.actSts.atk_ShootHomingProj.Enter(
@@ -48,7 +48,7 @@ public static class CpUtils{
                 CpMgr.inst.brainData[cpId].lockedOnTgt.Trf
             );
         }
-        if (unityComps.rHandItem is IHandItem_Comboer comboer) {
+        if (classRefs.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
                 BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpId),
                 BufferableInput.RTrg => GetEnterFunc(comboer.RTrgComboStart, cpId),
@@ -59,7 +59,7 @@ public static class CpUtils{
                 return enter;
         }
         // TODO: You should make these "combo" moves, this is just a temp solution.
-        if (unityComps.rHandItem is IHandItem_Hitter hitter) {
+        if (classRefs.rHandItem is IHandItem_Hitter hitter) {
             if(input == BufferableInput.LShldr)
                 return () => classRefs.actSts.atk_FlyingAtk.Enter(
                     new HitEffects(1, KnockbackT.Weak, 5),

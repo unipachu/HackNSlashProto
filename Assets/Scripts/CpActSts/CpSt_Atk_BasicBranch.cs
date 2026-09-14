@@ -17,7 +17,7 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
-        Cp_UnityComps[] unityComps = CpMgr.inst.unityComps;
+        Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Windup;
         CpInputBuffer.Clear(
             ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,

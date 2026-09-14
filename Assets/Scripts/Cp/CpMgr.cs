@@ -1,7 +1,6 @@
 using System;
 using Unity.Collections;
 using Unity.Mathematics;
-using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,10 +17,10 @@ public class CpMgr : Singleton<CpMgr> {
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_BrainData[] brainData;
-    [HideInInspector] public Cp_NonUnityCompClassRefs[] classRefs;
+    [HideInInspector] public Cp_NonUnityObjClassRefs[] classRefs;
     [HideInInspector] public CpRegisterer[] cp;
     [HideInInspector] public NativeList<Cp_AosData> aosData;
-    [HideInInspector] public Cp_UnityComps[] unityComps;
+    [HideInInspector] public Cp_UnityObjs[] unityComps;
 
     /// <summary>
     /// Used to set the used length of the arrays (since they do not reallocate when elements are removed).
@@ -33,11 +32,11 @@ public class CpMgr : Singleton<CpMgr> {
     public void Init() {
         animEventPlrData = new AnimEventPlrData[initCapacity];
         brainData = new Cp_BrainData[initCapacity];
-        classRefs = new Cp_NonUnityCompClassRefs[initCapacity];
+        classRefs = new Cp_NonUnityObjClassRefs[initCapacity];
         cp = new CpRegisterer[initCapacity];
         aosData = GeneralUtils.AllocList<Cp_AosData>(initCapacity);
         //Debug.Log($"soa length in init: {aosData.Length}");
-        unityComps = new Cp_UnityComps[initCapacity];
+        unityComps = new Cp_UnityObjs[initCapacity];
     }
 
     void OnDestroy() {
@@ -57,7 +56,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void FixedTick_Fsm() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             Debug.Assert(classRefs[i].st_cur != null, $"cur st was null for {i}.");
@@ -66,7 +65,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void UpdateGroundCheck() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             GetAos(i).isGrounded = CcMov.IsGrounded(
@@ -85,7 +84,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
-        for (int i = 0; i < cp.Length; i++)
+        for (int i = 0; i < cpCount; i++)
             aosData.ElementAt(i).navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
         Tick_FromNonNative(dt);
         Tick_Input();
@@ -99,8 +98,11 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO: Update in Tick_FromNonNative
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null || unityComps[i].navMeshAgent == null) // TODO: Remove nav mesh check and only tick this in ai controller.
+                continue;
+            // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
+            if (brainData[i].lockedOnTgt == null)
                 continue;
             if (brainData[i].lockedOnTgt.Trf == null) {
                 //Dbg.Log(
@@ -184,7 +186,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// Update data from non native sources, e.g. from Monobehavior components.
     /// </summary>
     void Tick_FromNonNative(float dt) {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             GetAos(i).trf_pos = unityComps[i].rootTrf.position;
@@ -196,7 +198,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Fsm() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.Tick();
@@ -204,15 +206,15 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Input() {
-        for (int i = 0; i < cp.Length; i++) {
-            if (cp[i] == null || unityComps[i].cpCtrl == null)
+        for (int i = 0; i < cpCount; i++) {
+            if (cp[i] == null || classRefs[i].cpCtrl == null)
                 continue;
-            GetAos(i).input_atk_Light = unityComps[i].cpCtrl.TryConsume_Atk_Light();
-            GetAos(i).input_atk_Heavy = unityComps[i].cpCtrl.TryConsume_Atk_Heavy();
-            GetAos(i).input_atk_Ult = unityComps[i].cpCtrl.TryConsume_Atk_Ult();
-            GetAos(i).input_dodge = unityComps[i].cpCtrl.TryConsume_Dodge();
-            if (unityComps[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
-                GetAos(i).input_mov = unityComps[i].cpCtrl.Input_Mov;
+            GetAos(i).input_atk_Light = classRefs[i].cpCtrl.TryConsume_Atk_Light();
+            GetAos(i).input_atk_Heavy = classRefs[i].cpCtrl.TryConsume_Atk_Heavy();
+            GetAos(i).input_atk_Ult = classRefs[i].cpCtrl.TryConsume_Atk_Ult();
+            GetAos(i).input_dodge = classRefs[i].cpCtrl.TryConsume_Dodge();
+            if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
+                GetAos(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
                 GetAos(i).input_mov_LastNonZero = GetAos(i).input_mov;
             } else {
                 GetAos(i).input_mov = Vector2.zero;
@@ -222,7 +224,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_InputBuffer(float dt) {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             if (GetAos(i).input_atk_Light)
@@ -267,7 +269,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Mov(float dt) {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             //Dbg.Log(
@@ -320,8 +322,11 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Sensing() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
+                continue;
+            // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
+            if (brainData[i].lockedOnTgt == null)
                 continue;
             // TODO: Use better logic for sensing player.
             brainData[i].lockedOnTgt
@@ -360,7 +365,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_AnimEventPlr() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             //Debug.Log($"{animEventPlrData[i]}");
@@ -376,7 +381,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_Fsm() {
-        for (int i = 0; i < cp.Length; i++) {
+        for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.LateTick();
@@ -390,7 +395,15 @@ public class CpMgr : Singleton<CpMgr> {
     /// <summary>
     /// Registers new capsule pawn.
     /// </summary>
-    public void Register(CpRegisterer newCp, So_CpData so, Cp_UnityComps newUnityComps, So_BtRootNode newBt) {
+    public void Register(
+        ICpCtrlInputter ctrl,
+        CpRegisterer newCp, 
+        Cp_UnityObjs newUnityComps,
+        IHandItem rHandItem,
+        So_CpData so,
+        //Cp_NonUnityObjClassRefs newClassRefs,
+        So_BtRootNode newBt
+    ) {
         // NOTE: Index = new count - 1.
         //Debug.Log($"Start registering {cp}", cp);
         ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
@@ -449,7 +462,8 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.navTgtInfo = new(false, false, 0.2f); 
         aosData.Add(newAosData);
         ArrayUtils.Add(ref unityComps, cpCount, newUnityComps);
-        ArrayUtils.Add(ref classRefs, cpCount, new Cp_NonUnityCompClassRefs(cpCount));
+        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, ctrl, rHandItem);
+        ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
         // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
         if (newBt != null)
             BtMgr.inst.Register(cpCount, newBt);
@@ -531,11 +545,11 @@ public class CpMgr : Singleton<CpMgr> {
     /// </summary>
     public void OnStateSwitched(int cpId, IFsmSt newSt) {
         GetAos(cpId).curStDur = 0;
-        if (unityComps[cpId].cpCtrl == null)
+        if (classRefs[cpId].cpCtrl == null)
             GetAos(cpId).input_mov_WhenLastSwitchedSt
                 = GetAos(cpId).input_mov;
         else {
-            if (unityComps[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
+            if (classRefs[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
                 GetAos(cpId).input_mov_WhenLastSwitchedSt
                     = GetAos(cpId).input_mov;
             else

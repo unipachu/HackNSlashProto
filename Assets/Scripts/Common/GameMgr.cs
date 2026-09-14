@@ -1,12 +1,20 @@
 // NOTE: Make sure singleton execution order is so that the singletons are Awoken before
 // NOTE C: a dependent singleton manager is awoken!
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
+    [SerializeField] PlrCtrl plrCtrl;
+    [SerializeField] CpRegisterer plrPrefab;
+    [SerializeField] Transform spawnPoint;
+
     override protected void Awake(){
         base.Awake();
         CpMgr.inst.Init();
         BtMgr.inst.Init();
+    }
+    private void Start() {
+        PlayerSpawner.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
     }
 
     void FixedUpdate() {
