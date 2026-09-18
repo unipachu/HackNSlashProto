@@ -23,7 +23,28 @@ public struct AiCtrlData {
     public float3 agentDesiredVel;
     public float aggroRange;
     public float atkRange;
+    public IBtNode bt;
+    public CpRegisterer cp;
+    public CtrlInputData ctrlInputData;
+    public AiCtrl handle;
     public bool prevCalculatePathSucceeded;
+
+    public AiCtrlData(
+        float aggroRange,
+        float atkRange, 
+        IBtNode bt,
+        CpRegisterer cp,
+        AiCtrl handle
+    ) {
+        agentDesiredVel = Vector3.zero;
+        this.aggroRange = aggroRange;
+        this.atkRange = atkRange;
+        this.bt = bt;
+        this.cp = cp;
+        ctrlInputData = default;
+        this.handle = handle;
+        prevCalculatePathSucceeded = false;
+    }
 }
 
 /// <summary>

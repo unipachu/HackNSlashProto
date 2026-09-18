@@ -1,15 +1,15 @@
 // TODO: Rename to TryLockOnTgt
 public class BtNode_TryFindLockOnTgt : IBtNode {
-    CpRegisterer cp;
+    AiCtrl aiCtrl;
 
-    public BtNode_TryFindLockOnTgt(CpRegisterer cp) {
-        this.cp = cp;
+    public BtNode_TryFindLockOnTgt(AiCtrl aiCtrl) {
+        this.aiCtrl = aiCtrl;
     }
 
     public string DbgName => typeof(BtNode_TryFindLockOnTgt).Name;
 
     public BtResult Eval() {
-        bool result = CpMgr.TryFindTgt(cp.Id);
+        bool result = CpMgr.TryFindTgt(AiCtrlMgr.GetData(aiCtrl).cp.Id);
         //Dbg.Log(
         //    $"{cp.Id} bt node: {typeof(BtNode_TryFindLockOnTgt).Name}: "
         //        + $"{result}",

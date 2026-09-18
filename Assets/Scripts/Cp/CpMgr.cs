@@ -48,9 +48,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// Registers new capsule pawn.
     /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
     /// </summary>
-    public void Register(
-        CpRegisterer newCp
-    ) {
+    public void Register(CpRegisterer newCp) {
         // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
         // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
         // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
@@ -408,7 +406,7 @@ public class CpMgr : Singleton<CpMgr> {
             inst.cp[cpId].transform.position,
             inst.classRefs[cpId].lockedOnTgt.Trf.position
         );
-        //Debug.Log($"Distance to tgt: {dist}.", inst.cp[cpId]);
+        //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpId], inst.aosData[cpId].enableDbgMsgs);
         return dist < maxDist;
     }
 
@@ -464,10 +462,10 @@ public class CpMgr : Singleton<CpMgr> {
         if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
             return true;
         inst.classRefs[cpId].lockedOnTgt = inst.cp[0].GetComponent<LockOnTgt>();
-        Dbg.Log(
-            $"locked on tgt pos: {inst.classRefs[cpId].lockedOnTgt.Trf.position}",
-            inst.aosData[cpId].enableDbgMsgs
-        );
+        //Dbg.Log(
+        //    $"locked on tgt pos: {inst.classRefs[cpId].lockedOnTgt.Trf.position}",
+        //    inst.aosData[cpId].enableDbgMsgs
+        //);
         return true;
     }
 

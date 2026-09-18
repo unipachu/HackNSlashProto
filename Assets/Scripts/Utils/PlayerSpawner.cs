@@ -36,7 +36,7 @@ public static class PlayerSpawner {
         CpRegisterer cp;
         IBtNode bt;
         cp = SpawnCpAtSpawnPt(aiCpConfig.cpPrefab, spawnPt);
-        bt = CpBehaviorTreeData.Get(aiCpConfig.btT, cp, aiCtrl);
+        bt = CpBehaviorTreeData.Get(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCtrl, bt, cp, aiCpConfig.data);
         CpMgr.StartListeningToCtrlInput(cp.Id, aiCtrl);
     }

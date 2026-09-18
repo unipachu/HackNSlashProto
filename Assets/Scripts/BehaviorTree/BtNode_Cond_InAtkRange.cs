@@ -1,24 +1,24 @@
-using UnityEngine;
-
 public class BtNode_Cond_InAtkRange : IBtNode{
-    CpRegisterer cp;
     AiCtrl aiCtrl;
 
-    public BtNode_Cond_InAtkRange(AiCtrl aiCtrl, CpRegisterer cp) {
+    public BtNode_Cond_InAtkRange(AiCtrl aiCtrl) {
         this.aiCtrl = aiCtrl;
-        this.cp = cp;
     }
 
     public string DbgName => typeof(BtNode_Cond_InAtkRange).Name;
 
     public BtResult Eval() {
+        ref AiCtrlData data = ref AiCtrlMgr.GetData(aiCtrl);
         //Dbg.Log(
-        //    $"{cp.Id} bt node: {typeof(BtNode_Cond_InAtkRange).Name}: "
-        //        + $"{CpMgr.IsWithinDistToLockOnTgt(cp.Id, AiCtrlMgr.GetData(aiCtrl).atkRange)}",
-        //    cp,
-        //    CpMgr.GetAos(cp.Id).enableDbgMsgs
+        //    $"{data.cp.Id} bt node: {typeof(BtNode_Cond_InAtkRange).Name}: "
+        //        + $"{CpMgr.IsWithinDistToLockOnTgt(data.cp.Id, data.atkRange)}",
+        //    data.cp,
+        //    CpMgr.GetAos(data.cp.Id).enableDbgMsgs
         //);
-        return CpMgr.IsWithinDistToLockOnTgt(cp.Id, AiCtrlMgr.GetData(aiCtrl).atkRange)
+        return CpMgr.IsWithinDistToLockOnTgt(
+            data.cp.Id,
+            data.atkRange
+        )
             ? BtResult.Success
             : BtResult.Failure;
     }
