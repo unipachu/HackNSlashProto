@@ -14,7 +14,7 @@ public class BtNode_Cmd_Atk1 : BtNode{
     public BtResult Eval() {
         int cpId = cp.Id;
         int aiCtrlId = aiCtrl.Id;
-        CpMgr.GetAos(cpId).input_atk_Light = true;
+        AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Atk_Light = true;
         float2 horDesiredVel = new(
             CpMgr.inst.brainData[cpId].agentDesiredVel.x,
             CpMgr.inst.brainData[cpId].agentDesiredVel.z
@@ -25,7 +25,12 @@ public class BtNode_Cmd_Atk1 : BtNode{
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = math.normalize(horDesiredVel);
         else
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = float2.zero;
-        //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
+        Dbg.Log(
+            $"{cpId} bt node: {typeof(BtNode_Cmd_Atk1).Name} mov input: "
+                + $"{AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov}",
+            cp,
+            CpMgr.GetAos(cpId).enableDbgMsgs
+        );
         return BtResult.Success;
     }
 }

@@ -29,6 +29,10 @@ public enum BtResult : byte {
     Running,
 }
 
+public enum BtT {
+    FollowNAttack,
+}
+
 public enum BufferableInput : byte {
     None,
     RShldr,

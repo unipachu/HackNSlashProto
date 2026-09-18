@@ -1,4 +1,3 @@
-using Unity.Collections;
 using UnityEngine;
 
 public class AiCtrlMgr : Singleton<AiCtrlMgr>{
@@ -63,8 +62,22 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     }
 
     void TickBehaviorTrees() {
-        for ( int i = 0; i < bt.Length; i++ )
-            bt[i].Eval();
+        for ( int i = 0; i < bt.Length; i++) {
+            switch (bt[i].Eval()) {
+                case BtResult.Success:
+                    bt[i].Reset();
+                    break;
+                case BtResult.Failure:
+                    bt[i].Reset();
+                    break;
+                case BtResult.Running:
+                    Dbg.Log($"Bt {i} running.");
+                    break;
+                default:
+                    Debug.LogError($"Switch defaulted");
+                    break;
+            }
+        }
     }
 
     /// <summary>
@@ -88,6 +101,5 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         entityCount--;
         if (swappedCtrl != null)
             swappedCtrl.Id = id;
-        GameObject.Destroy(handle[id].gameObject);
     }
 }

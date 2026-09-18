@@ -1,20 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BtNode_Sequence : BtNode{
-    List<BtNode> children;
+    BtNode[] children;
     int curChild;
     string dbgName;
 
     public string DbgName => dbgName;
 
-    public BtNode_Sequence(string dbgName, List<BtNode> children) {
+    public BtNode_Sequence(string dbgName, params BtNode[] children) {
         this.dbgName = dbgName;
         this.children = children;
     }
 
     public BtResult Eval() {
-        while (curChild < children.Count) {
+        while (curChild < children.Length) {
             switch (children[curChild].Eval()) {
                 case BtResult.Success:
                     curChild++;

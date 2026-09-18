@@ -37,6 +37,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var soaData = CpMgr.inst.aosData;
         var unityComps = CpMgr.inst.unityComps[cpId];
+        var cp = CpMgr.inst.cp[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 switch (CpMgr.GetAos(cpId).act_AtkPhase) {
@@ -65,7 +66,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                hitDealer.hitWldDir = cp.transform.forward;
                 hitDealer.Activate();
                 break;
             default:

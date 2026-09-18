@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class AiCtrl : MonoBehaviour, ICpCtrlInputter {
+public class AiCtrl : ICpCtrlInputter {
     public int Id { get; set; }
 
     public Vector2 Input_Look_Gamepad => AiCtrlMgr.inst.ctrlInputData[Id].input_Look_Gamepad;
@@ -18,7 +18,7 @@ public class AiCtrl : MonoBehaviour, ICpCtrlInputter {
 
     public bool TryConsume_Dodge() => CtrlUtils.TryConsume(ref AiCtrlMgr.inst.ctrlInputData[Id].input_Dodge);
 
-    public void Unpossess() {
+    public void LostListener() {
         AiCtrlMgr.inst.Unregister(Id);
     }
 }

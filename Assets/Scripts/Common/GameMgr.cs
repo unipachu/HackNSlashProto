@@ -1,6 +1,5 @@
 // NOTE: Make sure singleton execution order is so that the singletons are Awoken before
 // NOTE C: a dependent singleton manager is awoken!
-using Unity.Cinemachine;
 using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
@@ -15,6 +14,7 @@ public class GameMgr : Singleton<GameMgr>{
     }
     private void Start() {
         PlayerSpawner.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
+        EnemyServer.inst.SpawnEnemies();
     }
 
     void FixedUpdate() {

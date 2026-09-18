@@ -5,7 +5,7 @@ public interface ICpCtrlInputter{
     public Vector2 Input_Look_Pointer { get; }
     public Vector2 Input_Mov { get; }
 
-    public bool TryConsume_Atk_Light();
+    bool TryConsume_Atk_Light();
 
     public bool TryConsume_Atk_Heavy();
 
@@ -16,7 +16,7 @@ public interface ICpCtrlInputter{
     /// <summary>
     /// Should be called when a pawn stops listening to the inputs of the controller.
     /// </summary>
-    void Unpossess() {
+    void LostListener() {
         // Nop.
     }
 }

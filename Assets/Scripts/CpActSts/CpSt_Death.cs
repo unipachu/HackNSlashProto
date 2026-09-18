@@ -26,7 +26,7 @@ public class CpSt_Death : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                GameObject.Destroy(CpMgr.inst.unityComps[cpId].rootTrf.gameObject);
+                GameObject.Destroy(CpMgr.inst.cp[cpId].gameObject);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

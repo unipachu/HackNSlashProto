@@ -4,5 +4,5 @@ using UnityEngine;
 // TODO: Rename to AiCpConfig
 public class So_NpcSetup : ScriptableObject{
     public CpRegisterer cpPrefab;
-    public BtNodeConfig btNodeConfig;
+    public BtT btT;
 }

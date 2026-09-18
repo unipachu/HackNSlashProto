@@ -135,7 +135,7 @@ public struct BtNodeDataOld {
     public BtNodeT t;
 }
 
-[Serializable]
+[Obsolete]
 public struct  BtNodeConfig {
     public string dbgName;
     public BtNodeT t;
@@ -232,7 +232,7 @@ public struct Cp_AosData {
     public bool comboAllowed;
     public float curStDur;
     public bool dodgeAllowed;
-    public bool enableDebugMsgs;
+    public bool enableDbgMsgs;
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
     public float groundSnapVerDownSpd;
@@ -292,10 +292,10 @@ public struct Cp_BrainData {
     public float3 agentDesiredVel;
     public float aggroRange;
     public float atkRange;
-    public float distToTgt;
-    public bool hasTgt;
-    public bool inAggroRange;
-    public bool inAtkRange;
+    //public float distToTgt;
+    //public bool hasTgt;
+    //public bool inAggroRange;
+    //public bool inAtkRange;
     public bool prevCalculatePathSucceeded;
     public LockOnTgt lockedOnTgt;
 }
@@ -356,7 +356,6 @@ public struct Cp_UnityObjs {
     public CpHitRecieveHandler hitRecieverHandler;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
-    public Transform rootTrf;
     public Transform lockOnTrf;
 }
 

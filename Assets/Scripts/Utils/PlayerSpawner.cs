@@ -3,18 +3,14 @@ using UnityEngine;
 
 // TODO: Rename to CpSpawner or similar
 public static class PlayerSpawner {
-    /// <summary>
-    /// Spawns a cp and calls its <see cref="CpRegisterer.Init"/>.
-    /// </summary>
-    public static CpRegisterer SpawnCpAtSpawnPt(
+    static CpRegisterer SpawnCpAtSpawnPt(
         CpRegisterer prefab,
-        Transform spawnPt,
-        ICpCtrlInputter ctrl
+        Transform spawnPt
     ) {
-        CpRegisterer cp = GameObject.Instantiate(prefab, spawnPt);
+        CpRegisterer cp = GameObject.Instantiate(prefab, spawnPt.position, spawnPt.rotation);
         Debug.Assert(CpMgr.inst != null, $"{typeof(CpMgr).Name} inst was null!");
         Debug.Assert(cp.so_cpData != null, "No data ref set!");
-        CpMgr.inst.Register(ctrl, cp);
+        CpMgr.inst.Register(cp);
         return cp;
     }
 
@@ -24,16 +20,25 @@ public static class PlayerSpawner {
         PlrCtrl ctrl,
         CinemachineCamera cam
     ) {
-        cam.Target.TrackingTarget = SpawnCpAtSpawnPt(prefab, spawnPt, ctrl).transform;
+        //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");
+        CpRegisterer cp = SpawnCpAtSpawnPt(prefab, spawnPt);
+        CpMgr.StartListeningToCtrlInput(cp.Id, ctrl);
+        cam.Target.TrackingTarget = cp.transform;
+
     }
 
     public static void SpawnAiCpAtSpawnPt(
-        AiCtrl prefab,
-        BtNode btRoot,
+        BtT btT,
         CpRegisterer cpPrefab,
         Transform spawnPt
     ) {
-        AiCtrlMgr.inst.Register(prefab, btRoot);
-        CpRegisterer cp = SpawnCpAtSpawnPt(cpPrefab, spawnPt, prefab);
+        //Debug.Log($"Spawnin ai cp: {cpPrefab.gameObject.name}, with brain: {btT}.");
+        AiCtrl aiCtrl = new AiCtrl();
+        CpRegisterer cp;
+        BtNode bt;
+        cp = SpawnCpAtSpawnPt(cpPrefab, spawnPt);
+        bt = CpBehaviorTreeData.Get(btT, cp, aiCtrl);
+        AiCtrlMgr.inst.Register(aiCtrl, bt);
+        CpMgr.StartListeningToCtrlInput(cp.Id, aiCtrl);
     }
 }

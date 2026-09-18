@@ -25,6 +25,7 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
         //);
         int cpId = pc.Id;
         var classRefs = CpMgr.inst.classRefs[cpId];
+        var cp = CpMgr.inst.cp[cpId];
         if (!CpMgr.GetAos(cpId).invul) {
             CpMgr.GetAos(cpId).hp_Cur -= hitData.atkData.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
@@ -46,7 +47,7 @@ public class CpHitRecieveHandler : MonoBehaviour, IHitReceiverOwner {
                     else
                         horHitDir.Normalize();
                     AnimInfo knockbackAnim;
-                    if (Vector3.Dot(horHitDir, CpMgr.inst.unityComps[cpId].rootTrf.forward) > 0)
+                    if (Vector3.Dot(horHitDir, cp.transform.forward) > 0)
                         knockbackAnim = CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Fwd);
                     else
                         knockbackAnim = CpAnimInfo.Get(CpAnimInfoT.knockback_Weak_Bwd);

@@ -56,6 +56,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cp_Plr
       objectReference: {fileID: 0}
+    - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: avoidancePriority
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -32,6 +32,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var unityComps = CpMgr.inst.unityComps[cpId];
+        var cp = CpMgr.inst.cp[cpId];
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
                 CpMgr.GetAos(cpId).isAffectedByGravity = true;
@@ -46,7 +47,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                hitDealer.hitWldDir = cp.transform.forward;
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:

@@ -85,7 +85,7 @@ public static class CpUtils{
     public static bool IsOnNavMesh(int cpId) {
         if (CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick)
             return CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh;
-        Transform trf = CpMgr.inst.unityComps[cpId].rootTrf;
+        Transform trf = CpMgr.inst.cp[cpId].transform;
         CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
         CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
             trf.position,

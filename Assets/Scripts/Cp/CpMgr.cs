@@ -89,7 +89,7 @@ public class CpMgr : Singleton<CpMgr> {
         Tick_FromNonNative(dt);
         Tick_Input();
         Tick_InputBuffer(dt);
-        Tick_Sensing();
+        //Tick_Sensing();
         Tick_AgentMovInput();
         Tick_Fsm();
         Tick_Mov(dt);
@@ -99,8 +99,6 @@ public class CpMgr : Singleton<CpMgr> {
     // TODO C: Or maybe in Tick_Sensing.
     void Tick_AgentMovInput() {
         for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null || unityComps[i].navMeshAgent == null) // TODO: Remove nav mesh check and only tick this in ai controller.
-                continue;
             // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
             if (brainData[i].lockedOnTgt == null)
                 continue;
@@ -114,7 +112,7 @@ public class CpMgr : Singleton<CpMgr> {
                 continue;
             }
             // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
-            unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
+            unityComps[i].navMeshAgent.nextPosition = cp[i].transform.position;
                 // NOTE: We need to check this manually since SetDestination does not have option to set
                 // NOTE C: target sample position max distance.
                 if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.Id)) {
@@ -136,7 +134,7 @@ public class CpMgr : Singleton<CpMgr> {
             // If we are close enough to the destination, stop desiring movement.
             if(
                 Vector3.SqrMagnitude(
-                    unityComps[i].navMeshAgent.destination - unityComps[i].rootTrf.position
+                    unityComps[i].navMeshAgent.destination - cp[i].transform.position
                 ) < 0.1f // NOTE: Stopping distane is hard coded.
             ) {
                 //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.",
@@ -185,13 +183,15 @@ public class CpMgr : Singleton<CpMgr> {
     /// <summary>
     /// Update data from non native sources, e.g. from Monobehavior components.
     /// </summary>
+    // TODO: Meh. Remove copying and move the cur st dur timer to someplace else. Little less complexity.
+    // TODO C: You can copy these for individual loops if there's a need.
     void Tick_FromNonNative(float dt) {
         for (int i = 0; i < cpCount; i++) {
             if (cp[i] == null)
                 continue;
-            GetAos(i).trf_pos = unityComps[i].rootTrf.position;
-            GetAos(i).trf_rot = unityComps[i].rootTrf.rotation;
-            GetAos(i).trf_lossyScl = unityComps[i].rootTrf.lossyScale;
+            GetAos(i).trf_pos = cp[i].transform.position;
+            GetAos(i).trf_rot = cp[i].transform.rotation;
+            GetAos(i).trf_lossyScl = cp[i].transform.lossyScale;
             GetAos(i).lastCcVel = unityComps[i].cc.velocity;
             GetAos(i).curStDur += dt;
         }
@@ -216,17 +216,15 @@ public class CpMgr : Singleton<CpMgr> {
             if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
                 GetAos(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
                 GetAos(i).input_mov_LastNonZero = GetAos(i).input_mov;
-            } else {
+            } else
                 GetAos(i).input_mov = Vector2.zero;
-            }
+            Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
             //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
     }
 
     void Tick_InputBuffer(float dt) {
         for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null)
-                continue;
             if (GetAos(i).input_atk_Light)
                 CpInputBuffer.BufferInput(
                     ref GetAos(i).inputBuffer_BufferedInput,
@@ -270,8 +268,6 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_Mov(float dt) {
         for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null)
-                continue;
             //Dbg.Log(
             //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
             //    + $"| additionalLinMov: {soaData.movInput_additionalLinMov[i]} \n"
@@ -297,7 +293,7 @@ public class CpMgr : Singleton<CpMgr> {
                     GetAos(i).movInput_yawSpd,
                     GetAos(i).movInput_tgtHorDir
                 );
-                unityComps[i].rootTrf.rotation = GetAos(i).trf_rot;
+                cp[i].transform.rotation = GetAos(i).trf_rot;
             }
             if (GetAos(i).isAffectedByGravity)
                 // NOTE: This will override previously calculated horizontal velocity if the player is
@@ -317,42 +313,42 @@ public class CpMgr : Singleton<CpMgr> {
             GetAos(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
             GetAos(i).vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            unityComps[i].navMeshAgent.nextPosition = unityComps[i].rootTrf.position;
+            unityComps[i].navMeshAgent.nextPosition = cp[i].transform.position;
         }
     }
 
-    void Tick_Sensing() {
-        for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null)
-                continue;
-            // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
-            if (brainData[i].lockedOnTgt == null)
-                continue;
-            // TODO: Use better logic for sensing player.
-            brainData[i].lockedOnTgt
-                = GameObject.Find("Cp_Plr").GetComponent<LockOnTgt>();
-            //Debug.Log(brainData[i].tgtPose.position);
-            if (brainData[i].lockedOnTgt != null) {
-                brainData[i].distToTgt = Vector3.Distance(
-                    unityComps[i].rootTrf.position,
-                    brainData[i].lockedOnTgt.Trf.position
-                );
-                brainData[i].hasTgt = true;
-                brainData[i].inAggroRange
-                    = Vector3.Distance(
-                        unityComps[i].rootTrf.position,
-                    brainData[i].lockedOnTgt.Trf.position) < brainData[i].aggroRange;
-                brainData[i].inAtkRange
-                    = Vector3.Distance(
-                        unityComps[i].rootTrf.position,
-                    brainData[i].lockedOnTgt.Trf.position
-                ) < brainData[i].atkRange;
-                //Dbg.Log($"in atk range: {brainData[i].inAtkRange}", aosData[i].enableDebugMsgs);
-            }
-            else
-                brainData[i].hasTgt = false;
-        }
-    }
+    //void Tick_Sensing() {
+    //    for (int i = 0; i < cpCount; i++) {
+    //        if (cp[i] == null)
+    //            continue;
+    //        // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
+    //        if (brainData[i].lockedOnTgt == null)
+    //            continue;
+    //        // TODO: Use better logic for sensing player.
+    //        brainData[i].lockedOnTgt
+    //            = GameObject.Find("Cp_Plr").GetComponent<LockOnTgt>();
+    //        if (brainData[i].lockedOnTgt != null) {
+    //            Dbg.Log($"locked on tgt pos: {brainData[i].lockedOnTgt.Trf.position}", aosData[i].enableDbgMsgs);
+    //            brainData[i].distToTgt = Vector3.Distance(
+    //                unityComps[i].rootTrf.position,
+    //                brainData[i].lockedOnTgt.Trf.position
+    //            );
+    //            brainData[i].hasTgt = true;
+    //            brainData[i].inAggroRange
+    //                = Vector3.Distance(
+    //                    unityComps[i].rootTrf.position,
+    //                brainData[i].lockedOnTgt.Trf.position) < brainData[i].aggroRange;
+    //            brainData[i].inAtkRange
+    //                = Vector3.Distance(
+    //                    unityComps[i].rootTrf.position,
+    //                brainData[i].lockedOnTgt.Trf.position
+    //            ) < brainData[i].atkRange;
+    //            //Dbg.Log($"in atk range: {brainData[i].inAtkRange}", aosData[i].enableDebugMsgs);
+    //        }
+    //        else
+    //            brainData[i].hasTgt = false;
+    //    }
+    //}
 
     // ------------------------------------------------------------
     // Late Tick Methods
@@ -392,12 +388,54 @@ public class CpMgr : Singleton<CpMgr> {
     // Other Methods
     // ------------------------------------------------------------
 
+    public static bool HasLockedOnTgt(int cpId) {
+        return inst.brainData[cpId].lockedOnTgt != null;
+    }
+
+    public static bool IsInAggroRange(int cpId) {
+        Debug.Assert(inst.cp[cpId] != null, $"cp at index {cpId} was null!");
+        Debug.Assert(inst.brainData[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
+        float dist = Vector3.Distance(
+            inst.cp[cpId].transform.position,
+            inst.brainData[cpId].lockedOnTgt.Trf.position
+        );
+        //Debug.Log($"Distance to tgt: {dist}.", inst.cp[cpId]);
+        return dist < inst.brainData[cpId].aggroRange;
+    }
+
+    public static bool IsInAtkRange(int cpId) {
+        Debug.Assert(inst.cp[cpId] != null, $"cp at index {cpId} was null!");
+        Debug.Assert(inst.brainData[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
+        float dist = Vector3.Distance(
+            inst.cp[cpId].transform.position,
+            inst.brainData[cpId].lockedOnTgt.Trf.position
+        );
+        //Debug.Log($"Distance to tgt: {dist}.", inst.cp[cpId]);
+        return dist < inst.brainData[cpId].atkRange;
+    }
+
+    /// <summary>
+    /// This should always be called when cp act state is switched!
+    /// </summary>
+    public void OnStateSwitched(int cpId, IFsmSt newSt) {
+        GetAos(cpId).curStDur = 0;
+        if (classRefs[cpId].cpCtrl == null)
+            GetAos(cpId).input_mov_WhenLastSwitchedSt
+                = GetAos(cpId).input_mov;
+        else {
+            if (classRefs[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
+                GetAos(cpId).input_mov_WhenLastSwitchedSt
+                    = GetAos(cpId).input_mov;
+            else
+                GetAos(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
+        }
+    }
+
     /// <summary>
     /// Registers new capsule pawn.
     /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
     /// </summary>
     public void Register(
-        ICpCtrlInputter ctrl,
         CpRegisterer newCp
         //So_CpData so,
         //Cp_NonUnityObjClassRefs newClassRefs,
@@ -418,10 +456,6 @@ public class CpMgr : Singleton<CpMgr> {
         newBrainData.agentDesiredVel = float3.zero;
         newBrainData.aggroRange = newCp.so_cpData.brain_AggroRange;
         newBrainData.atkRange = newCp.so_cpData.brain_AtkRange;
-        newBrainData.distToTgt = 0;
-        newBrainData.hasTgt = false;
-        newBrainData.inAggroRange = false;
-        newBrainData.inAtkRange = false;
         newBrainData.lockedOnTgt = null;
         ArrayUtils.Add(ref brainData, cpCount, newBrainData);
         // Structure of arrays data
@@ -461,7 +495,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
         newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
         newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
-        newAosData.enableDebugMsgs = newCp.so_cpData.enableDebugMsgs;
+        newAosData.enableDbgMsgs = newCp.so_cpData.enableDebugMsgs;
         newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
         newAosData.navTgtInfo = new(false, false, 0.2f); 
@@ -473,7 +507,7 @@ public class CpMgr : Singleton<CpMgr> {
             newCp.unityObjs.rHand.rotation
         );
         rHandItem.Trf.parent = newCp.unityObjs.rHand;
-        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, ctrl, rHandItem);
+        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, null, rHandItem);
         ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
         newCp.Id = cpCount;
@@ -482,33 +516,11 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// Unregisters cp and destroys corresponding game object.
+    /// Call this if you want to make a cp listen to a controller, i.e. get possessed by a controller.
     /// </summary>
-    public void UnregisterNDestroy(int cpId) {
-        if (cpId >= cpCount) {
-            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
-            return;
-        }
-        GameObject.Destroy(cp[cpId].gameObject);
-        int lastId = cpCount - 1;
-        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
-        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(brainData, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
-        aosData.RemoveAtSwapBack(cpId);
-        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
-        cpCount--;
-        if (swappedCp != null)
-            // Last Cp was swapped to cpId, so update Id.
-            swappedCp.Id = cpId;
-    }
-
-    public void SwitchToInitActSt(int cpId) {
-        Debug.Log($"{cpId} switching to init state", this);
-        // NOTE: This is currently always enters to idle state. (6.9.2026)
-        SwitchActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
-        //Debug.Log($"{id} state initialized to : {initSt}", this);
+    public static void StartListeningToCtrlInput(int cpId, ICpCtrlInputter ctrl) {
+        Debug.Assert(inst.classRefs[cpId].cpCtrl == null, $"{cpId} already listening to a ctrl!");
+        inst.classRefs[cpId].cpCtrl = ctrl;
     }
 
     /// <summary>
@@ -524,6 +536,25 @@ public class CpMgr : Singleton<CpMgr> {
             // CpMgr.GetSoa(cpId).enableDebugMsgs
         );
         OnStateSwitched(cpId, classRefs[cpId].st_cur);
+    }
+
+    public void SwitchToInitActSt(int cpId) {
+        Debug.Log($"{cpId} switching to init state", this);
+        // NOTE: This is currently always enters to idle state. (6.9.2026)
+        SwitchActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
+        //Debug.Log($"{id} state initialized to : {initSt}", this);
+    }
+
+    // TODO: Make it possible to not find a target (and return false).
+    public static bool TryFindTgt(int cpId) {
+        if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
+            return true;
+        inst.brainData[cpId].lockedOnTgt = inst.cp[0].GetComponent<LockOnTgt>();
+        Dbg.Log(
+            $"locked on tgt pos: {inst.brainData[cpId].lockedOnTgt.Trf.position}",
+            inst.aosData[cpId].enableDbgMsgs
+        );
+        return true;
     }
 
     /// <summary>
@@ -549,19 +580,25 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// This should always be called when cp act state is switched!
+    /// Unregisters cp and destroys corresponding game object.
     /// </summary>
-    public void OnStateSwitched(int cpId, IFsmSt newSt) {
-        GetAos(cpId).curStDur = 0;
-        if (classRefs[cpId].cpCtrl == null)
-            GetAos(cpId).input_mov_WhenLastSwitchedSt
-                = GetAos(cpId).input_mov;
-        else {
-            if (classRefs[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
-                GetAos(cpId).input_mov_WhenLastSwitchedSt
-                    = GetAos(cpId).input_mov;
-            else
-                GetAos(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
+    public void UnregisterNDestroy(int cpId) {
+        if (cpId >= cpCount) {
+            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
+            return;
         }
+        GameObject.Destroy(cp[cpId].gameObject);
+        int lastId = cpCount - 1;
+        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
+        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(brainData, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
+        aosData.RemoveAtSwapBack(cpId);
+        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
+        cpCount--;
+        if (swappedCp != null)
+            // Last Cp was swapped to cpId, so update Id.
+            swappedCp.Id = cpId;
     }
 }

@@ -1,5 +1,4 @@
 using Unity.Mathematics;
-using UnityEngine;
 
 public class BtNode_MovToTgt : BtNode{
     CpRegisterer cp;
@@ -27,7 +26,11 @@ public class BtNode_MovToTgt : BtNode{
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = math.normalize(horDesiredVel);
         else
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = float2.zero;
-        //Debug.Log($"{cpId} BtNodeT.Cmd_MovToTgt movement input: {ccMgr.input_mov[cpId]}", this);
+        Dbg.Log($"{cpId} bt node: {typeof(BtNode_MovToTgt).Name} mov input: "
+                + $"{AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov}",
+            cp,
+            CpMgr.GetAos(cpId).enableDbgMsgs
+        );
         return BtResult.Success;
     }
 }

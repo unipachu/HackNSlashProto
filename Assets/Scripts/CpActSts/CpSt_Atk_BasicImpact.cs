@@ -37,6 +37,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var classRefs = CpMgr.inst.classRefs[cpId];
         var unityComps = CpMgr.inst.unityComps[cpId];
+        var cp = CpMgr.inst.cp[cpId];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
@@ -50,7 +51,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
                 hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = unityComps.rootTrf.forward;
+                hitDealer.hitWldDir = cp.transform.forward;
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
