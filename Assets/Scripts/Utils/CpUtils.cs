@@ -58,6 +58,8 @@ public static class CpUtils{
             if (enter != null)
                 return enter;
         }
+        // NOTE: Casting is the best option here. We could do a ECS-style "GetComponent", but for this
+        // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
         // TODO: You should make these "combo" moves, this is just a temp solution.
         if (classRefs.rHandItem is IHandItem_Hitter hitter) {
             if(input == BufferableInput.LShldr)

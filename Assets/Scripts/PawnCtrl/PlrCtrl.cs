@@ -26,22 +26,14 @@ public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
     [Header("Refs")]
     [SerializeField] CamMgr camMgr;
 
-    bool input_Atk_Light = false;
-    bool input_Atk_Heavy = false;
-    bool input_Atk_Ult = false;
-    bool input_Dodge = false;
-    Vector2 input_Look_Gamepad = Vector2.zero;
-    Vector2 input_Look_Pointer = Vector2.zero;
-    Vector2 input_Mov = Vector2.zero;
+    CtrlInputData data;
 
-    public Vector2 Input_Look_Gamepad => input_Look_Gamepad;
+    public Vector2 Input_Look_Gamepad => data.input_Look_Gamepad;
     /// <summary>
     /// Gives mouse delta.
     /// </summary>
-    public Vector2 Input_Look_Pointer => input_Look_Pointer;
-    public Vector2 Input_Mov => input_Mov;
-
-    public IPawn Pawn => throw new System.NotImplementedException();
+    public Vector2 Input_Look_Pointer => data.input_Look_Pointer;
+    public Vector2 Input_Mov => data.input_Mov;
 
     void OnEnable() {
         inputActs.FindActionMap(actionMapName).Enable();
@@ -55,46 +47,27 @@ public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
     void OnDisable(){
         inputActs.FindActionMap(actionMapName).Disable();
     }
-
+    
     void ReadInputs(){
-        input_Atk_Light = inputAct_Atk_Light.action.WasPressedThisFrame();
-        input_Atk_Heavy = inputAct_Atk_Heavy.action.WasPressedThisFrame();
-        input_Atk_Ult = inputAct_Atk_Ult.action.WasPressedThisFrame();
-        input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
-        input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
-        input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>() * lookPointerSensitivity;
+        data.input_Atk_Light = inputAct_Atk_Light.action.WasPressedThisFrame();
+        data.input_Atk_Heavy = inputAct_Atk_Heavy.action.WasPressedThisFrame();
+        data.input_Atk_Ult = inputAct_Atk_Ult.action.WasPressedThisFrame();
+        data.input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
+        data.input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
+        data.input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>() * lookPointerSensitivity;
         // NOTE: We use camera relative movement input.
-        input_Mov = MathUtils.TrfInputByBasis(
+        data.input_Mov = MathUtils.TrfInputByBasis(
             inputAct_Mov.action.ReadValue<Vector2>(),
             camMgr.CamFwdDir
         );
         //Debug.Log($"input_Mov: {input_Mov}.");
     }
 
-    // -----------------------------------------------------------------
-    // Try Consume Methods
-    // -----------------------------------------------------------------
+    public bool TryConsume_Atk_Light() => CtrlUtils.TryConsume(ref data.input_Atk_Light);
 
-    public static bool TryConsume(ref bool input) {
-        if (!input)
-            return false;
-        input = false;
-        return true;
-    }
+    public bool TryConsume_Atk_Heavy() => CtrlUtils.TryConsume(ref data.input_Atk_Heavy);
 
-    public bool TryConsume_Atk_Light() => TryConsume(ref input_Atk_Light);
+    public bool TryConsume_Atk_Ult() => CtrlUtils.TryConsume(ref data.input_Atk_Ult);
 
-    public bool TryConsume_Atk_Heavy() => TryConsume(ref input_Atk_Heavy);
-
-    public bool TryConsume_Atk_Ult() => TryConsume(ref input_Atk_Ult);
-
-    public bool TryConsume_Dodge() => TryConsume(ref input_Dodge);
-
-    public void Possess(IPawn pawn) {
-        throw new System.NotImplementedException();
-    }
-
-    public void Unpossess() {
-        throw new System.NotImplementedException();
-    }
+    public bool TryConsume_Dodge() => CtrlUtils.TryConsume(ref data.input_Dodge);
 }

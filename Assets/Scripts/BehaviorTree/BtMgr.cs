@@ -1,3 +1,5 @@
+// TODO: Delete.
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -6,6 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Behavior tree using native arrays.
 /// </summary>
+[Obsolete("Obsolete. New BT manager uses class-based node system.")]
 public class BtMgr : Singleton<BtMgr>{
     [Tooltip("How deep a tree branch can be at max.")]
     [SerializeField] int maxNodesPerTree = 10;
@@ -14,7 +17,7 @@ public class BtMgr : Singleton<BtMgr>{
     /// All nodes of all capsule character trees. Nodes of one tree are put here
     /// sequentially, trees ordered in the order of capsule character ids.
     /// </summary>
-    public NativeArray<BtNodeData> nodes;
+    public NativeArray<BtNodeDataOld> nodes;
     /// <summary>
     /// Node currently running for a behavior tree. Defaults to -1.
     /// </summary>
@@ -69,7 +72,7 @@ public class BtMgr : Singleton<BtMgr>{
 
     void AddTree(int cpId, So_BtRootNode tree) {
         //Debug.Log($"Adding bt for char {cpId}: {tree.name}", this);
-        List<BtNodeData> nodeList = new List<BtNodeData>();
+        List<BtNodeDataOld> nodeList = new List<BtNodeDataOld>();
         CompileNode(tree.root, nodeList, -1);
         if (nodeList.Count > maxNodesPerTree) {
             Debug.LogError($"Tree had {nodeList.Count} nodes but max node count "
@@ -81,7 +84,7 @@ public class BtMgr : Singleton<BtMgr>{
     }
 
     void AllocateNodeStorage() {
-        nodes = new NativeArray<BtNodeData>(
+        nodes = new NativeArray<BtNodeDataOld>(
             CpMgr.inst.initCapacity * maxNodesPerTree,
             Allocator.Persistent
         );
@@ -101,7 +104,7 @@ public class BtMgr : Singleton<BtMgr>{
     /// <summary>
     /// We compile nodes to a flat list. Each nodes subtree is contiguous.
     /// </summary>
-    void CompileNode(So_BtNode node, List<BtNodeData> nodeList, int parent) {
+    void CompileNode(So_BtNode node, List<BtNodeDataOld> nodeList, int parent) {
         Debug.Assert(node != null, $"Scriptable object bt node ref was null!", this);
         int i = nodeList.Count;
         nodeList.Add(default);
@@ -111,13 +114,13 @@ public class BtMgr : Singleton<BtMgr>{
             int childI = nodeList.Count;
             CompileNode(node.children[j], nodeList, i);
             if(prevChild != -1) {
-                BtNodeData prevData = nodeList[prevChild];
+                BtNodeDataOld prevData = nodeList[prevChild];
                 prevData.nextSibling = childI;
                 nodeList[prevChild] = prevData;
             }
             prevChild = childI;
         }
-        nodeList[i] = new BtNodeData {
+        nodeList[i] = new BtNodeDataOld {
             childCount = node.children.Length,
             dataId = -1,
             firstChild = firstChild,
@@ -212,7 +215,7 @@ public class BtMgr : Singleton<BtMgr>{
                 Debug.LogError($"{capsuleCharId} bt outer loop looped too long.", this);
                 return;
             }
-            BtNodeData node = nodes[nodeI];
+            BtNodeDataOld node = nodes[nodeI];
             //Debug.Log($"Went to node {node.nodeName}");
             if (node.t == BtNodeT.Sequence || node.t == BtNodeT.Selector) {
                 nodeI = treeStart + node.firstChild;
@@ -232,7 +235,7 @@ public class BtMgr : Singleton<BtMgr>{
                     curRunningNode[capsuleCharId] = -1;
                     return;
                 }
-                BtNodeData parent = nodes[treeStart + node.parent];
+                BtNodeDataOld parent = nodes[treeStart + node.parent];
                 bool parentFinished
                     = parent.t == BtNodeT.Sequence
                     && result == BtResult.Failure

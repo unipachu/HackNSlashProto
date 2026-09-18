@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -120,23 +121,8 @@ public struct AnimEventPlrData {
     public bool firstTick;
 }
 
-[Serializable]
-public struct HitEffects {
-    public int dmg;
-    public KnockbackT knockbackT;
-    /// <summary>
-    /// 1 equals knocback movement of 1 unit.
-    /// </summary>
-    public float knockbackStr;
-
-    public HitEffects(int dmg, KnockbackT knockbackT, float knockbackStr) {
-        this.dmg = dmg;
-        this.knockbackT = knockbackT;
-        this.knockbackStr = knockbackStr;
-    }
-}
-
-public struct BtNodeData {
+[Obsolete()]
+public struct BtNodeDataOld {
     public int childCount;
     /// <summary>
     /// Id for optional data the node might use.
@@ -147,6 +133,26 @@ public struct BtNodeData {
     public FixedString32Bytes nodeName;
     public int parent;
     public BtNodeT t;
+}
+
+[Serializable]
+public struct  BtNodeConfig {
+    public string dbgName;
+    public BtNodeT t;
+    public List<BtNodeConfig> children;
+}
+
+[Serializable]
+public struct CapsuleShape {
+    public Vector3 pt0;
+    public Vector3 pt1;
+    public float r;
+
+    public CapsuleShape(Vector3 pt0, Vector3 pt1, float r) {
+        this.pt0 = pt0;
+        this.pt1 = pt1;
+        this.r = r;
+    }
 }
 
 [Serializable]
@@ -241,6 +247,7 @@ public struct Cp_AosData {
     /// Movement input during last state switch (in world space).
     /// </summary>
     public float2 input_mov_WhenLastSwitchedSt;
+    // TODO: Are these attack and dodge inputs needed since controllers already have them?
     public bool input_atk_Light;
     public bool input_atk_Heavy;
     public bool input_atk_Ult;
@@ -353,17 +360,14 @@ public struct Cp_UnityObjs {
     public Transform lockOnTrf;
 }
 
-[Serializable]
-public struct CapsuleShape {
-    public Vector3 pt0;
-    public Vector3 pt1;
-    public float r;
-
-    public CapsuleShape(Vector3 pt0, Vector3 pt1, float r) {
-        this.pt0 = pt0;
-        this.pt1 = pt1;
-        this.r = r;
-    }
+public struct CtrlInputData {
+    public bool input_Atk_Light;
+    public bool input_Atk_Heavy;
+    public bool input_Atk_Ult;
+    public bool input_Dodge;
+    public Vector2 input_Look_Gamepad;
+    public Vector2 input_Look_Pointer;
+    public Vector2 input_Mov;
 }
 
 public struct HitData {
@@ -373,6 +377,22 @@ public struct HitData {
     public HitData(HitEffects atkData, Vector3 hitWldDir) {
         this.atkData = atkData;
         this.hitWldDir = hitWldDir;
+    }
+}
+
+[Serializable]
+public struct HitEffects {
+    public int dmg;
+    public KnockbackT knockbackT;
+    /// <summary>
+    /// 1 equals knocback movement of 1 unit.
+    /// </summary>
+    public float knockbackStr;
+
+    public HitEffects(int dmg, KnockbackT knockbackT, float knockbackStr) {
+        this.dmg = dmg;
+        this.knockbackT = knockbackT;
+        this.knockbackStr = knockbackStr;
     }
 }
 

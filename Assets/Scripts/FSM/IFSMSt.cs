@@ -11,9 +11,15 @@ public interface IFsmSt {
     
     void Exit();
     
-    void LateTick();
+    void LateTick() {
+        // Noop.
+    }
     
-    void PhysicsTick();
-    
-    void Tick();
+    void PhysicsTick() {
+        // Noop.
+    }
+
+    void Tick() {
+        // Noop.
+    }
 }

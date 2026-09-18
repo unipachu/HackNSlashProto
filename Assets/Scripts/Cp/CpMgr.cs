@@ -394,16 +394,21 @@ public class CpMgr : Singleton<CpMgr> {
 
     /// <summary>
     /// Registers new capsule pawn.
+    /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
     /// </summary>
     public void Register(
         ICpCtrlInputter ctrl,
-        CpRegisterer newCp, 
-        Cp_UnityObjs newUnityComps,
-        IHandItem rHandItem,
-        So_CpData so,
+        CpRegisterer newCp
+        //So_CpData so,
         //Cp_NonUnityObjClassRefs newClassRefs,
-        So_BtRootNode newBt
+        //So_BtRootNode newBt
     ) {
+        // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
+        // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
+        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
+        // NOTE C: the capsule pawn.
+        newCp.unityObjs.navMeshAgent.updatePosition = false;
+        newCp.unityObjs.navMeshAgent.updateRotation = false;
         // NOTE: Index = new count - 1.
         //Debug.Log($"Start registering {cp}", cp);
         ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
@@ -411,8 +416,8 @@ public class CpMgr : Singleton<CpMgr> {
         // Brain data
         var newBrainData = new Cp_BrainData();
         newBrainData.agentDesiredVel = float3.zero;
-        newBrainData.aggroRange = so.brain_AggroRange;
-        newBrainData.atkRange = so.brain_AtkRange;
+        newBrainData.aggroRange = newCp.so_cpData.brain_AggroRange;
+        newBrainData.atkRange = newCp.so_cpData.brain_AtkRange;
         newBrainData.distToTgt = 0;
         newBrainData.hasTgt = false;
         newBrainData.inAggroRange = false;
@@ -421,13 +426,13 @@ public class CpMgr : Singleton<CpMgr> {
         ArrayUtils.Add(ref brainData, cpCount, newBrainData);
         // Structure of arrays data
         Cp_AosData newAosData = new();
-        newAosData.act_BasicImpact_YawSpd = so.impact_YawSpd;
+        newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
         newAosData.curStDur = 0;
         newAosData.groundCastHitSomething = false;
         newAosData.groundCastNrm = float3.zero;
-        newAosData.groundSnapVerDownSpd = so.groundSnapVerDownSpd;
-        newAosData.hp_Cur = so.maxHP;
-        newAosData.hp_Max = so.maxHP;
+        newAosData.groundSnapVerDownSpd = newCp.so_cpData.groundSnapVerDownSpd;
+        newAosData.hp_Cur = newCp.so_cpData.maxHP;
+        newAosData.hp_Max = newCp.so_cpData.maxHP;
         newAosData.input_mov = float2.zero;
         newAosData.input_mov_LastNonZero = float2.zero;
         newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
@@ -441,32 +446,35 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.lastCcVel = float3.zero;
         newAosData.lastKnockbackStr = 0;
         newAosData.lastRecievedHitDir = float3.zero;
-        newAosData.act_BasicWindup_MaxAngSpd = so.st_AtkHorSlash_Windup_YawSpd;
-        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = so.st_AtkJump_DownSpeedAfterJumpFinished;
-        newAosData.act_Dodge_YawSpd = so.st_Dodge_YawAngSpd;
-        newAosData.act_Falling_LandingStFallDistThreshold = so.st_Falling_LandingStFallDistThreshold;
-        newAosData.act_Falling_HorAcc = so.st_Falling_HorAcc;
-        newAosData.act_Falling_TgtHorSpd = so.st_Falling_TgtHorSpd;
+        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
+        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
+        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
+        newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
+        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
+        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
         newAosData.trf_pos = float3.zero;
         newAosData.trf_rot = quaternion.identity;
         newAosData.trf_lossyScl = new float3(1);
         newAosData.vel_Hor = float2.zero;
         newAosData.vel_Ver = 0;
-        newAosData.walkLinAcc = so.walkHorAcc;
-        newAosData.walkMaxLinSpd = so.walkTgtHorSpd;
-        newAosData.walkYawSpd = so.walkYawSpd;
+        newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
+        newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
+        newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
         newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
-        newAosData.enableDebugMsgs = so.enableDebugMsgs;
-        newAosData.act_AtkFlying_TgtHorSpd = so.st_AtkFlying_TgtHorSpeed;
+        newAosData.enableDebugMsgs = newCp.so_cpData.enableDebugMsgs;
+        newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
         newAosData.navTgtInfo = new(false, false, 0.2f); 
         aosData.Add(newAosData);
-        ArrayUtils.Add(ref unityComps, cpCount, newUnityComps);
+        ArrayUtils.Add(ref unityComps, cpCount, newCp.unityObjs);
+        IHandItem rHandItem = HandItemFactory.inst.InstantiateHandItem(newCp.so_cpData.rHandItem);
+        rHandItem.Trf.SetPositionAndRotation(
+            newCp.unityObjs.rHand.position,
+            newCp.unityObjs.rHand.rotation
+        );
+        rHandItem.Trf.parent = newCp.unityObjs.rHand;
         Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, ctrl, rHandItem);
         ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
-        // TODO: Should have a reference to a generic controller which could be player or ai. (6.9.2026)
-        if (newBt != null)
-            BtMgr.inst.Register(cpCount, newBt);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
         newCp.Id = cpCount;
         SwitchToInitActSt(cpCount);
@@ -474,14 +482,14 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// Call this before destroying a cp.
+    /// Unregisters cp and destroys corresponding game object.
     /// </summary>
-    /// <param name="cpId"></param>
-    public void Unregister(int cpId) {
+    public void UnregisterNDestroy(int cpId) {
         if (cpId >= cpCount) {
             Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
             return;
         }
+        GameObject.Destroy(cp[cpId].gameObject);
         int lastId = cpCount - 1;
         CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
         ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);

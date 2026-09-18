@@ -6,12 +6,41 @@ public enum AtkPhase : byte {
     Recovery
 }
 
+public enum BtNodeMethodCall : byte {
+    None,
+    Cond_IsInAggroRange,
+    Cond_IsInAtkRange,
+    Cmd_Atk,
+}
+
+public enum BtNodeT : byte {
+    Cmd_Atk1,
+    Cmd_Idle,
+    Cmd_MovToTgt,
+    Cond_InAggroRange,
+    Cond_InAtkRange,
+    Selector,
+    Sequence,
+}
+
+public enum BtResult : byte {
+    Success,
+    Failure,
+    Running,
+}
+
 public enum BufferableInput : byte {
     None,
     RShldr,
     RTrg,
     LShldr,
     BtnE
+}
+
+public enum ComboNodeT : byte {
+    BasicImpact,
+    BasicRecovery,
+    BasicBranch,
 }
 
 /// <summary>
@@ -59,56 +88,27 @@ public enum CpAnimInfoT {
     walk
 }
 
-public enum BtNodeT : byte {
-    Cmd_Atk1,
-    Cmd_Idle,
-    Cmd_MovToTgt,
-    Cond_InAggroRange,
-    Cond_InAtkRange,
-    Selector,
-    Sequence,
+public enum Dir2DHor : byte {
+    Left,
+    Right,
+    Backward,
+    Forward,
 }
+public enum Dir2DVer : byte {
 
-public enum BtResult : byte {
-    Success,
-    Failure,
-    Running,
-}
-
-public enum ComboNodeT : byte {
-    BasicImpact,
-    BasicRecovery,
-    BasicBranch,
-}
-
-public enum Directions2DVertical : byte {
     Left,
     Right,
     Down,
     Up,
 }
 
-public enum Directions2DHorizontal : byte {
-    Left,
-    Right,
-    Backward,
-    Forward,
-}
-
-public enum Directions3D : byte {
+public enum Dir3D : byte {
     Left,
     Right,
     Down,
     Up,
     Backward,
     Forward,
-}
-
-public enum BtNodeMethodCall : byte {
-    None,
-    Cond_IsInAggroRange,
-    Cond_IsInAtkRange,
-    Cmd_Atk,
 }
 
 public enum Faces : byte {

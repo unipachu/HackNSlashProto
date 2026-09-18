@@ -11,7 +11,7 @@ public class GameMgr : Singleton<GameMgr>{
     override protected void Awake(){
         base.Awake();
         CpMgr.inst.Init();
-        BtMgr.inst.Init();
+        AiCtrlMgr.inst.Init();
     }
     private void Start() {
         PlayerSpawner.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
@@ -22,7 +22,8 @@ public class GameMgr : Singleton<GameMgr>{
     }
     
     void Update() {
-        BtMgr.inst.Tick();
+        // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
+        AiCtrlMgr.inst.Tick();
         CpMgr.inst.Tick(Time.deltaTime);
     }
 
