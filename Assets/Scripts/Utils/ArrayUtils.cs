@@ -31,7 +31,7 @@ public static class ArrayUtils{
 
     /// <summary>
     /// Removes element at <paramref name="i"/> and swaps the last element, indicated by
-    /// <paramref name="usedLength"/>, to its place.
+    /// <paramref name="usedLength"/>, to its place.<br/>
     /// NOTE: Does not reallocate array, so <paramref name="usedLength"/> represents "used length"
     /// like in a List.<br/>
     /// NOTE 2: You have to keep track of the <paramref name="usedLength"/> outside of this method!

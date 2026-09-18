@@ -11,14 +11,12 @@ public class EnemyServer : Singleton<EnemyServer>{
             //Debug.Log($"Spawnin enemy to spawn point: {i}");
             if (i % 2 == 0) 
                 PlayerSpawner.SpawnAiCpAtSpawnPt(
-                    hammerEnemyConfig.btT,
-                    hammerEnemyConfig.cpPrefab,
+                    hammerEnemyConfig,
                     spawnPoints[i]
                 );
             else
                 PlayerSpawner.SpawnAiCpAtSpawnPt(
-                    pistolEnemyConfig.btT,
-                    pistolEnemyConfig.cpPrefab,
+                    pistolEnemyConfig,
                     spawnPoints[i]
                 );
         }

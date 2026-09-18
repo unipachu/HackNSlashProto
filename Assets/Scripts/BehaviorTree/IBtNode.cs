@@ -1,5 +1,4 @@
-// TODO: Rename to IBtNode
-public interface BtNode {
+public interface IBtNode {
     /// <summary>
     /// Name used for debugging.
     /// </summary>

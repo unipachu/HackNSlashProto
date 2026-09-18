@@ -1,5 +1,5 @@
 // TODO: Rename to TryLockOnTgt
-public class BtNode_TryFindLockOnTgt : BtNode {
+public class BtNode_TryFindLockOnTgt : IBtNode {
     CpRegisterer cp;
 
     public BtNode_TryFindLockOnTgt(CpRegisterer cp) {
@@ -10,12 +10,12 @@ public class BtNode_TryFindLockOnTgt : BtNode {
 
     public BtResult Eval() {
         bool result = CpMgr.TryFindTgt(cp.Id);
-        Dbg.Log(
-            $"{cp.Id} bt node: {typeof(BtNode_TryFindLockOnTgt).Name}: "
-                + $"{result}",
-            cp,
-            CpMgr.GetAos(cp.Id).enableDbgMsgs
-        );
+        //Dbg.Log(
+        //    $"{cp.Id} bt node: {typeof(BtNode_TryFindLockOnTgt).Name}: "
+        //        + $"{result}",
+        //    cp,
+        //    CpMgr.GetAos(cp.Id).enableDbgMsgs
+        //);
         return result ? BtResult.Success : BtResult.Failure;
     }
 }

@@ -2,7 +2,6 @@ using System;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
 /// Capsule pawn (i.e. player or ai controlled character that uses capsule collision for movement) manager.
@@ -16,7 +15,6 @@ public class CpMgr : Singleton<CpMgr> {
     public int initCapacity = 1;
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
-    [HideInInspector] public Cp_BrainData[] brainData;
     [HideInInspector] public Cp_NonUnityObjClassRefs[] classRefs;
     [HideInInspector] public CpRegisterer[] cp;
     [HideInInspector] public NativeList<Cp_AosData> aosData;
@@ -31,7 +29,6 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void Init() {
         animEventPlrData = new AnimEventPlrData[initCapacity];
-        brainData = new Cp_BrainData[initCapacity];
         classRefs = new Cp_NonUnityObjClassRefs[initCapacity];
         cp = new CpRegisterer[initCapacity];
         aosData = GeneralUtils.AllocList<Cp_AosData>(initCapacity);
@@ -43,8 +40,105 @@ public class CpMgr : Singleton<CpMgr> {
         aosData.Dispose();
     }
 
-    public static ref Cp_AosData GetAos(int cpId)
-        => ref inst.aosData.ElementAt(cpId);
+    // ------------------------------------------------------------
+    // Register and Unregister
+    // ------------------------------------------------------------
+
+    /// <summary>
+    /// Registers new capsule pawn.
+    /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
+    /// </summary>
+    public void Register(
+        CpRegisterer newCp
+    ) {
+        // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
+        // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
+        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
+        // NOTE C: the capsule pawn.
+        newCp.unityObjs.navMeshAgent.updatePosition = false;
+        newCp.unityObjs.navMeshAgent.updateRotation = false;
+        // NOTE: Index = new count - 1.
+        //Debug.Log($"Start registering {cp}", cp);
+        ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
+        ArrayUtils.Add(ref cp, cpCount, newCp);
+        // Structure of arrays data
+        Cp_AosData newAosData = new();
+        newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
+        newAosData.curStDur = 0;
+        newAosData.groundCastHitSomething = false;
+        newAosData.groundCastNrm = float3.zero;
+        newAosData.groundSnapVerDownSpd = newCp.so_cpData.groundSnapVerDownSpd;
+        newAosData.hp_Cur = newCp.so_cpData.maxHP;
+        newAosData.hp_Max = newCp.so_cpData.maxHP;
+        newAosData.input_mov = float2.zero;
+        newAosData.input_mov_LastNonZero = float2.zero;
+        newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
+        newAosData.input_atk_Light = false;
+        newAosData.input_atk_Heavy = false;
+        newAosData.input_atk_Ult = false;
+        newAosData.input_dodge = false;
+        newAosData.invul = false;
+        newAosData.isAffectedByGravity = true;
+        newAosData.isGrounded = true;
+        newAosData.lastCcVel = float3.zero;
+        newAosData.lastKnockbackStr = 0;
+        newAosData.lastRecievedHitDir = float3.zero;
+        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
+        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
+        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
+        newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
+        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
+        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
+        newAosData.trf_pos = float3.zero;
+        newAosData.trf_rot = quaternion.identity;
+        newAosData.trf_lossyScl = new float3(1);
+        newAosData.vel_Hor = float2.zero;
+        newAosData.vel_Ver = 0;
+        newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
+        newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
+        newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
+        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
+        newAosData.enableDbgMsgs = newCp.so_cpData.enableDebugMsgs;
+        newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
+        // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
+        newAosData.navTgtInfo = new(false, false, 0.2f);
+        aosData.Add(newAosData);
+        ArrayUtils.Add(ref unityComps, cpCount, newCp.unityObjs);
+        IHandItem rHandItem = HandItemFactory.inst.InstantiateHandItem(newCp.so_cpData.rHandItem);
+        rHandItem.Trf.SetPositionAndRotation(
+            newCp.unityObjs.rHand.position,
+            newCp.unityObjs.rHand.rotation
+        );
+        rHandItem.Trf.parent = newCp.unityObjs.rHand;
+        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, null, rHandItem);
+        ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
+        //Debug.Log($"Switching {freeI} to initial act st!", this);
+        newCp.Id = cpCount;
+        SwitchToInitActSt(cpCount);
+        cpCount++;
+    }
+
+    /// <summary>
+    /// Unregisters cp and destroys corresponding game object.
+    /// </summary>
+    public void UnregisterNDestroy(int cpId) {
+        if (cpId >= cpCount) {
+            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
+            return;
+        }
+        GameObject.Destroy(cp[cpId].gameObject);
+        int lastId = cpCount - 1;
+        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
+        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
+        aosData.RemoveAtSwapBack(cpId);
+        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
+        cpCount--;
+        if (swappedCp != null)
+            // Last Cp was swapped to cpId, so update Id.
+            swappedCp.Id = cpId;
+    }
 
     // ------------------------------------------------------------
     // Fixed Tick Methods
@@ -89,95 +183,8 @@ public class CpMgr : Singleton<CpMgr> {
         Tick_FromNonNative(dt);
         Tick_Input();
         Tick_InputBuffer(dt);
-        //Tick_Sensing();
-        Tick_AgentMovInput();
         Tick_Fsm();
         Tick_Mov(dt);
-    }
-
-    // TODO: Update in Tick_FromNonNative
-    // TODO C: Or maybe in Tick_Sensing.
-    void Tick_AgentMovInput() {
-        for (int i = 0; i < cpCount; i++) {
-            // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
-            if (brainData[i].lockedOnTgt == null)
-                continue;
-            if (brainData[i].lockedOnTgt.Trf == null) {
-                //Dbg.Log(
-                //    $"{i} Set agent desired vel to 0 because tgt was null: {brainData[i].lockedOnTgt.Trf}",
-                //    aosData[i].enableDebugMsgs
-                //);
-                unityComps[i].navMeshAgent.ResetPath();
-                brainData[i].agentDesiredVel = float3.zero;
-                continue;
-            }
-            // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
-            unityComps[i].navMeshAgent.nextPosition = cp[i].transform.position;
-                // NOTE: We need to check this manually since SetDestination does not have option to set
-                // NOTE C: target sample position max distance.
-                if (!CpUtils.IsOnNavMesh(brainData[i].lockedOnTgt.Id)) {
-                //Dbg.Log($"{i} Set agent desired vel to 0 since tgt was not on navmesh.",
-                //    aosData[i].enableDebugMsgs);
-                unityComps[i].navMeshAgent.ResetPath();
-                brainData[i].agentDesiredVel = float3.zero;
-                continue;
-            }
-            // TODO: The point of this is to START path finding calculation if there is no previous path
-            // TODO C: calculation (e.g. no path status) and if the agent is not currenly calculating a path.
-            // TODO C: I think this might be incorrect way to do it but the agent navigation seems to work
-            // TODO C: well enough for now.
-            if (!unityComps[i].navMeshAgent.hasPath) {
-                //Dbg.Log($"{i} Agent had no path. Set destination.", data.enableDebugMsgs[i]);
-                unityComps[i].navMeshAgent.SetDestination(brainData[i].lockedOnTgt.Trf.position);
-                continue;
-            }
-            // If we are close enough to the destination, stop desiring movement.
-            if(
-                Vector3.SqrMagnitude(
-                    unityComps[i].navMeshAgent.destination - cp[i].transform.position
-                ) < 0.1f // NOTE: Stopping distane is hard coded.
-            ) {
-                //Dbg.Log($"{i} Set agent desired vel to 0 since we reached the target vicinity.",
-                //data.enableDebugMsgs[i]);
-                unityComps[i].navMeshAgent.ResetPath();
-                brainData[i].agentDesiredVel = float3.zero;
-                continue;
-            }
-            // NOTE: We only use the current unfinished path if last path calculation was completed. This way
-            // NOTE C: if we get sequential failed path finding attempts, the character will not move at all
-            // NOTE C: (instead of jittering a little because of the partial paths).
-            if (unityComps[i].navMeshAgent.pathPending) {
-                //Dbg.Log($"{i} Path was pending.", data.enableDebugMsgs[i]);
-                if (brainData[i].prevCalculatePathSucceeded)
-                    brainData[i].agentDesiredVel = unityComps[i].navMeshAgent.desiredVelocity;
-                else
-                    brainData[i].agentDesiredVel = float3.zero;
-                continue;
-            }
-            if (unityComps[i].navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete) {
-                brainData[i].prevCalculatePathSucceeded = true;
-                //Debug.Log($"Entity id: {i}");
-                //Debug.Log($"Tgt on nav mesh: {tgtOnNavMesh}");
-                //Debug.Log($"prevCalculatePathSucceeded: {brainData[i].prevCalculatePathSucceeded}");
-                //Debug.Log($"pending: {unityComps[i].navMeshAgent.pathPending}");
-                //Debug.Log($"status: {unityComps[i].navMeshAgent.pathStatus}");
-                //Debug.Log($"has path: {unityComps[i].navMeshAgent.hasPath}");
-                //Debug.Log($"tgt: {unityComps[i].tgt.position}");
-                //Debug.Log($"destination: {unityComps[i].navMeshAgent.destination}");
-                //Debug.Log($"path end: {unityComps[i].navMeshAgent.pathEndPosition}");
-                //Debug.Log($"desired vel: {unityComps[i].navMeshAgent.desiredVelocity}");
-                //Debug.Log($"steering tgt: {unityComps[i].navMeshAgent.steeringTarget}");
-                // NOTE: We use desired velocity instead of steering target, because steering target doesn't
-                // NOTE C: use avoidance.
-                brainData[i].agentDesiredVel = unityComps[i].navMeshAgent.desiredVelocity;
-            }
-            else {
-                //Dbg.Log($"{i} Did not find path. Setting desired vel to 0.", data.enableDebugMsgs[i]);
-                brainData[i].prevCalculatePathSucceeded = false;
-                brainData[i].agentDesiredVel = float3.zero;
-            }
-            unityComps[i].navMeshAgent.SetDestination(brainData[i].lockedOnTgt.Trf.position);
-        }
     }
 
     /// <summary>
@@ -218,7 +225,7 @@ public class CpMgr : Singleton<CpMgr> {
                 GetAos(i).input_mov_LastNonZero = GetAos(i).input_mov;
             } else
                 GetAos(i).input_mov = Vector2.zero;
-            Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
+            //Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
             //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
     }
@@ -388,30 +395,21 @@ public class CpMgr : Singleton<CpMgr> {
     // Other Methods
     // ------------------------------------------------------------
 
-    public static bool HasLockedOnTgt(int cpId) {
-        return inst.brainData[cpId].lockedOnTgt != null;
-    }
+    public static ref Cp_AosData GetAos(int cpId)
+        => ref inst.aosData.ElementAt(cpId);
 
-    public static bool IsInAggroRange(int cpId) {
+    public static bool HasLockedOnTgt(int cpId)
+        => inst.classRefs[cpId].lockedOnTgt != null;
+
+    public static bool IsWithinDistToLockOnTgt(int cpId, float maxDist) {
         Debug.Assert(inst.cp[cpId] != null, $"cp at index {cpId} was null!");
-        Debug.Assert(inst.brainData[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
+        Debug.Assert(inst.classRefs[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
         float dist = Vector3.Distance(
             inst.cp[cpId].transform.position,
-            inst.brainData[cpId].lockedOnTgt.Trf.position
+            inst.classRefs[cpId].lockedOnTgt.Trf.position
         );
         //Debug.Log($"Distance to tgt: {dist}.", inst.cp[cpId]);
-        return dist < inst.brainData[cpId].aggroRange;
-    }
-
-    public static bool IsInAtkRange(int cpId) {
-        Debug.Assert(inst.cp[cpId] != null, $"cp at index {cpId} was null!");
-        Debug.Assert(inst.brainData[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
-        float dist = Vector3.Distance(
-            inst.cp[cpId].transform.position,
-            inst.brainData[cpId].lockedOnTgt.Trf.position
-        );
-        //Debug.Log($"Distance to tgt: {dist}.", inst.cp[cpId]);
-        return dist < inst.brainData[cpId].atkRange;
+        return dist < maxDist;
     }
 
     /// <summary>
@@ -429,90 +427,6 @@ public class CpMgr : Singleton<CpMgr> {
             else
                 GetAos(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
         }
-    }
-
-    /// <summary>
-    /// Registers new capsule pawn.
-    /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
-    /// </summary>
-    public void Register(
-        CpRegisterer newCp
-        //So_CpData so,
-        //Cp_NonUnityObjClassRefs newClassRefs,
-        //So_BtRootNode newBt
-    ) {
-        // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
-        // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
-        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
-        // NOTE C: the capsule pawn.
-        newCp.unityObjs.navMeshAgent.updatePosition = false;
-        newCp.unityObjs.navMeshAgent.updateRotation = false;
-        // NOTE: Index = new count - 1.
-        //Debug.Log($"Start registering {cp}", cp);
-        ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
-        ArrayUtils.Add(ref cp, cpCount, newCp);
-        // Brain data
-        var newBrainData = new Cp_BrainData();
-        newBrainData.agentDesiredVel = float3.zero;
-        newBrainData.aggroRange = newCp.so_cpData.brain_AggroRange;
-        newBrainData.atkRange = newCp.so_cpData.brain_AtkRange;
-        newBrainData.lockedOnTgt = null;
-        ArrayUtils.Add(ref brainData, cpCount, newBrainData);
-        // Structure of arrays data
-        Cp_AosData newAosData = new();
-        newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
-        newAosData.curStDur = 0;
-        newAosData.groundCastHitSomething = false;
-        newAosData.groundCastNrm = float3.zero;
-        newAosData.groundSnapVerDownSpd = newCp.so_cpData.groundSnapVerDownSpd;
-        newAosData.hp_Cur = newCp.so_cpData.maxHP;
-        newAosData.hp_Max = newCp.so_cpData.maxHP;
-        newAosData.input_mov = float2.zero;
-        newAosData.input_mov_LastNonZero = float2.zero;
-        newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
-        newAosData.input_atk_Light = false;
-        newAosData.input_atk_Heavy = false;
-        newAosData.input_atk_Ult = false;
-        newAosData.input_dodge = false;
-        newAosData.invul = false;
-        newAosData.isAffectedByGravity = true;
-        newAosData.isGrounded = true;
-        newAosData.lastCcVel = float3.zero;
-        newAosData.lastKnockbackStr = 0;
-        newAosData.lastRecievedHitDir = float3.zero;
-        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
-        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
-        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
-        newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
-        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
-        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
-        newAosData.trf_pos = float3.zero;
-        newAosData.trf_rot = quaternion.identity;
-        newAosData.trf_lossyScl = new float3(1);
-        newAosData.vel_Hor = float2.zero;
-        newAosData.vel_Ver = 0;
-        newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
-        newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
-        newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
-        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
-        newAosData.enableDbgMsgs = newCp.so_cpData.enableDebugMsgs;
-        newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
-        // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
-        newAosData.navTgtInfo = new(false, false, 0.2f); 
-        aosData.Add(newAosData);
-        ArrayUtils.Add(ref unityComps, cpCount, newCp.unityObjs);
-        IHandItem rHandItem = HandItemFactory.inst.InstantiateHandItem(newCp.so_cpData.rHandItem);
-        rHandItem.Trf.SetPositionAndRotation(
-            newCp.unityObjs.rHand.position,
-            newCp.unityObjs.rHand.rotation
-        );
-        rHandItem.Trf.parent = newCp.unityObjs.rHand;
-        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, null, rHandItem);
-        ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
-        //Debug.Log($"Switching {freeI} to initial act st!", this);
-        newCp.Id = cpCount;
-        SwitchToInitActSt(cpCount);
-        cpCount++;
     }
 
     /// <summary>
@@ -549,9 +463,9 @@ public class CpMgr : Singleton<CpMgr> {
     public static bool TryFindTgt(int cpId) {
         if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
             return true;
-        inst.brainData[cpId].lockedOnTgt = inst.cp[0].GetComponent<LockOnTgt>();
+        inst.classRefs[cpId].lockedOnTgt = inst.cp[0].GetComponent<LockOnTgt>();
         Dbg.Log(
-            $"locked on tgt pos: {inst.brainData[cpId].lockedOnTgt.Trf.position}",
+            $"locked on tgt pos: {inst.classRefs[cpId].lockedOnTgt.Trf.position}",
             inst.aosData[cpId].enableDbgMsgs
         );
         return true;
@@ -577,28 +491,5 @@ public class CpMgr : Singleton<CpMgr> {
             return true;
         }
         return false;
-    }
-
-    /// <summary>
-    /// Unregisters cp and destroys corresponding game object.
-    /// </summary>
-    public void UnregisterNDestroy(int cpId) {
-        if (cpId >= cpCount) {
-            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
-            return;
-        }
-        GameObject.Destroy(cp[cpId].gameObject);
-        int lastId = cpCount - 1;
-        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
-        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(brainData, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
-        aosData.RemoveAtSwapBack(cpId);
-        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
-        cpCount--;
-        if (swappedCp != null)
-            // Last Cp was swapped to cpId, so update Id.
-            swappedCp.Id = cpId;
     }
 }

@@ -21,10 +21,6 @@ public class So_CpData : ScriptableObject {
     [Header("Health")]
     public int maxHP = 100;
 
-    [Header("Npc Brain")]
-    public int brain_AggroRange = 8;
-    public int brain_AtkRange = 4;
-
     [Header("Equipment Settings")]
     public HandItemT rHandItem;
 

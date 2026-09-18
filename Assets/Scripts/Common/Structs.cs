@@ -6,6 +6,27 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
+/// Used to configure data of the ai controller.
+/// </summary>
+[Serializable]
+public struct AiCtrlConfigData {
+    public float aggroRange;
+    public float atkRange;
+
+    public AiCtrlConfigData(float aggroRange, float atkRange) {
+        this.aggroRange = aggroRange;
+        this.atkRange = atkRange;
+    }
+}
+
+public struct AiCtrlData {
+    public float3 agentDesiredVel;
+    public float aggroRange;
+    public float atkRange;
+    public bool prevCalculatePathSucceeded;
+}
+
+/// <summary>
 /// Grouped Animator state info used by <see cref="AnimEventPlr"/>.
 /// </summary>
 public struct AnimInfo {
@@ -288,18 +309,6 @@ public struct Cp_AosData {
     public float walkYawSpd;
 }
 
-public struct Cp_BrainData {
-    public float3 agentDesiredVel;
-    public float aggroRange;
-    public float atkRange;
-    //public float distToTgt;
-    //public bool hasTgt;
-    //public bool inAggroRange;
-    //public bool inAtkRange;
-    public bool prevCalculatePathSucceeded;
-    public LockOnTgt lockedOnTgt;
-}
-
 /// <summary>
 /// Info so that this pawn can be used as a navigation target BY OTHER PAWNS.
 /// </summary>
@@ -332,6 +341,7 @@ public struct Cp_NavTgtInfo {
 public struct Cp_NonUnityObjClassRefs {
     public Cp_ActSts actSts;
     public ICpCtrlInputter cpCtrl;
+    public LockOnTgt lockedOnTgt;
     public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
@@ -339,6 +349,7 @@ public struct Cp_NonUnityObjClassRefs {
     public Cp_NonUnityObjClassRefs(int cpId, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
         actSts = new Cp_ActSts(cpId);
         this.cpCtrl = cpCtrl;
+        lockedOnTgt = null;
         this.rHandItem = rHandItem;
         st_cur = null;
         st_prev = null;

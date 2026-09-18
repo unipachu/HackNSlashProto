@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class BtNode_Cmd_Idle : BtNode{
+public class BtNode_Cmd_Idle : IBtNode{
     CpRegisterer cp;
     AiCtrl aiCtrl;
 

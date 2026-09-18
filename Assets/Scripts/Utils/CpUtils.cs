@@ -45,7 +45,7 @@ public static class CpUtils{
                 projectileSpawner.ProjHitEffects,
                 projectileSpawner.HomingProjData,
                 projectileSpawner.ProjSpawnPose,
-                CpMgr.inst.brainData[cpId].lockedOnTgt.Trf
+                classRefs.lockedOnTgt.Trf
             );
         }
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {

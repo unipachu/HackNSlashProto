@@ -5,6 +5,6 @@ using System;
 /// Behavior tree node that has child nodes.
 /// </summary>
 [Obsolete]
-public interface IBtNode_Composite : BtNode{
+public interface IBtNode_Composite : IBtNode{
 
 }

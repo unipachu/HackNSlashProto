@@ -12,29 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0bd867f442c1914da89d6d719e17beb, type: 3}
   m_Name: AiCpConfig_Pistol
   m_EditorClassIdentifier: Assembly-CSharp::So_NpcSetup
+  data:
+    aggroRange: 20
+    atkRange: 7
   cpPrefab: {fileID: 1426418209356973073, guid: 1092f503677414742a98d61029935732, type: 3}
-  btNodeConfig:
-    dbgName: RootSelector
-    t: 5
-    children:
-    - dbgName: AtkSequence
-      t: 6
-      children:
-      - dbgName: 
-        t: 3
-        children: []
-      - dbgName: 
-        t: 0
-        children: []
-    - dbgName: FollowSequence
-      t: 6
-      children:
-      - dbgName: 
-        t: 3
-        children: []
-      - dbgName: 
-        t: 2
-        children: []
-    - dbgName: 
-      t: 1
-      children: []
+  btT: 0

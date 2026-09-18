@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class BtNode_Selector : BtNode {
-    BtNode[] children;
+public class BtNode_Selector : IBtNode {
+    IBtNode[] children;
     int curChild;
     string dbgName;
 
     public string DbgName => dbgName;
 
-    public BtNode_Selector(string dbgName, params BtNode[] children) {
+    public BtNode_Selector(string dbgName, params IBtNode[] children) {
         this.dbgName = dbgName;
         this.children = children;
     }
@@ -34,7 +34,7 @@ public class BtNode_Selector : BtNode {
 
     public void Reset() {
         curChild = 0;
-        foreach(BtNode node in children)
+        foreach(IBtNode node in children)
             node.Reset();
     }
 }

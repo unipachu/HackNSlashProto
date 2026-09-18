@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class BtNode_MovToTgt : BtNode{
+public class BtNode_MovToTgt : IBtNode{
     CpRegisterer cp;
     AiCtrl aiCtrl;
 
@@ -15,10 +15,8 @@ public class BtNode_MovToTgt : BtNode{
         int cpId = cp.Id;
         int aiCtrlId = aiCtrl.Id;
         float2 horDesiredVel = new(
-            // TODO: For all bt nodes queuring agent data, you should use a method which updates the data
-            // TODO C: only if it requested and not yet updated this frame. Or maybe caching is useless.
-            CpMgr.inst.brainData[cpId].agentDesiredVel.x,
-            CpMgr.inst.brainData[cpId].agentDesiredVel.z
+            AiCtrlMgr.inst.aosData[aiCtrlId].agentDesiredVel.x,
+            AiCtrlMgr.inst.aosData[aiCtrlId].agentDesiredVel.z
         );
         // Agent can have 0 desired velocity, thus to avoid NaNs:
         if (math.lengthsq(horDesiredVel) > 0.0001f)

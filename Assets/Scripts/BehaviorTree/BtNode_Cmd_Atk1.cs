@@ -1,6 +1,6 @@
 using Unity.Mathematics;
 
-public class BtNode_Cmd_Atk1 : BtNode{
+public class BtNode_Cmd_Atk1 : IBtNode{
     CpRegisterer cp;
     AiCtrl aiCtrl;
 
@@ -16,8 +16,8 @@ public class BtNode_Cmd_Atk1 : BtNode{
         int aiCtrlId = aiCtrl.Id;
         AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Atk_Light = true;
         float2 horDesiredVel = new(
-            CpMgr.inst.brainData[cpId].agentDesiredVel.x,
-            CpMgr.inst.brainData[cpId].agentDesiredVel.z
+            AiCtrlMgr.inst.aosData[aiCtrlId].agentDesiredVel.x,
+            AiCtrlMgr.inst.aosData[aiCtrlId].agentDesiredVel.z
         );
         // Agent can have 0 desired velocity, thus to avoid NaNs:
         if (math.lengthsq(horDesiredVel) > 0.0001f)
@@ -25,12 +25,12 @@ public class BtNode_Cmd_Atk1 : BtNode{
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = math.normalize(horDesiredVel);
         else
             AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov = float2.zero;
-        Dbg.Log(
-            $"{cpId} bt node: {typeof(BtNode_Cmd_Atk1).Name} mov input: "
-                + $"{AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov}",
-            cp,
-            CpMgr.GetAos(cpId).enableDbgMsgs
-        );
+        //Dbg.Log(
+        //    $"{cpId} bt node: {typeof(BtNode_Cmd_Atk1).Name} mov input: "
+        //        + $"{AiCtrlMgr.inst.ctrlInputData[aiCtrlId].input_Mov}",
+        //    cp,
+        //    CpMgr.GetAos(cpId).enableDbgMsgs
+        //);
         return BtResult.Success;
     }
 }

@@ -28,17 +28,16 @@ public static class PlayerSpawner {
     }
 
     public static void SpawnAiCpAtSpawnPt(
-        BtT btT,
-        CpRegisterer cpPrefab,
+        So_NpcSetup aiCpConfig,
         Transform spawnPt
     ) {
         //Debug.Log($"Spawnin ai cp: {cpPrefab.gameObject.name}, with brain: {btT}.");
         AiCtrl aiCtrl = new AiCtrl();
         CpRegisterer cp;
-        BtNode bt;
-        cp = SpawnCpAtSpawnPt(cpPrefab, spawnPt);
-        bt = CpBehaviorTreeData.Get(btT, cp, aiCtrl);
-        AiCtrlMgr.inst.Register(aiCtrl, bt);
+        IBtNode bt;
+        cp = SpawnCpAtSpawnPt(aiCpConfig.cpPrefab, spawnPt);
+        bt = CpBehaviorTreeData.Get(aiCpConfig.btT, cp, aiCtrl);
+        AiCtrlMgr.inst.Register(aiCtrl, bt, cp, aiCpConfig.data);
         CpMgr.StartListeningToCtrlInput(cp.Id, aiCtrl);
     }
 }
