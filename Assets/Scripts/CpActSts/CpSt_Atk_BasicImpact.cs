@@ -50,8 +50,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = cp.transform.forward;
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetAos(cpId).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:

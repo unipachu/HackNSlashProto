@@ -78,7 +78,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
                 continue;
             }
             HomingProj proj = pooledProj[i];
-            proj.hitDealer.hitWldDir = directions[i];
+            proj.hitDealer.hitData.hitWldDir = directions[i];
             proj.transform.SetPositionAndRotation(
                 positions[i],
                 Quaternion.LookRotation(directions[i])
@@ -91,7 +91,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     /// </summary>
     public void ShootProj(
         HomingProjData projData,
-        HitEffects atkData,
+        HitData hitData,
         Vector3 wldStartPos,
         Vector3 wldStartDir,
         Transform tgt
@@ -114,7 +114,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
             Quaternion.LookRotation(wldStartDir)
         );
         proj.gameObject.SetActive(true);
-        proj.hitDealer.hitEffects = atkData;
+        proj.hitDealer.hitData = hitData;
         proj.hitDealer.Activate();
     }
 

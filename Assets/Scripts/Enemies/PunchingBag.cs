@@ -7,6 +7,9 @@ public class PunchingBag : MonoBehaviour, IHitReceiver {
     [SerializeField] Material red;
     Coroutine turnRedProcess;
 
+    public int GetTeam()
+        => -1;
+
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         if (turnRedProcess != null)
             StopCoroutine(turnRedProcess);

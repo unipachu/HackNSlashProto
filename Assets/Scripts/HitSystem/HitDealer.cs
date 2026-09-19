@@ -11,8 +11,7 @@ public class HitDealer : MonoBehaviour {
     [SerializeField] int maxColliders = 100;
 
     // Update these before activating the hit dealer and during activation if needed.
-    [HideInInspector] public HitEffects hitEffects;
-    [HideInInspector] public Vector3 hitWldDir;
+    [HideInInspector] public HitData hitData;
 
     bool isActive;
     Collider[] overlapCapsuleResults;
@@ -70,6 +69,7 @@ public class HitDealer : MonoBehaviour {
 
     public void TryHitAllOverlappingHitRecievers(
         int layerMask,
+        bool allowFriendlyFire = false,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         for (int capsuleIndex = 0; capsuleIndex < capsules.Length; capsuleIndex++) {
@@ -87,8 +87,11 @@ public class HitDealer : MonoBehaviour {
             for (int colliderIndex = 0; colliderIndex < numCols; colliderIndex++) {
                 IHitReceiver hitReceiver =
                     overlapCapsuleResults[colliderIndex].GetComponent<IHitReceiver>();
-                if (hitReceiver != null)
-                    TryDealHit(hitReceiver, new HitData(hitEffects, hitWldDir));
+                if (hitReceiver == null)
+                    continue;
+                if(hitReceiver.GetTeam() == hitData.team && !allowFriendlyFire)
+                    continue;
+                TryDealHit(hitReceiver, hitData);
             }
         }
     }

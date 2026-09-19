@@ -1,6 +1,5 @@
 using System;
 using Unity.Mathematics;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -27,7 +26,7 @@ public static class CpUtils{
                 && (input == BufferableInput.RTrg || input == BufferableInput.RShldr)
         ) {
             return () => classRefs.actSts.atk_ShootHomingProj.Enter(
-                projectileSpawner.ProjHitEffects,
+                projectileSpawner.HitEffects,
                 projectileSpawner.HomingProjData,
                 projectileSpawner.ProjSpawnPose,
                 classRefs.lockedOnTgt.Trf

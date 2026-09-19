@@ -20,9 +20,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// <summary>
     /// Used to set the used length of the arrays (since they do not reallocate when elements are removed).
     /// </summary>
-    int cpCount;
-
-    public int CpCount => cpCount;
+    int entityCount;
 
     public void Init() {
         animEventPlrData = new AnimEventPlrData[initCapacity];
@@ -54,8 +52,8 @@ public class CpMgr : Singleton<CpMgr> {
         newCp.unityObjs.navMeshAgent.updateRotation = false;
         // NOTE: Index = new count - 1.
         //Debug.Log($"Start registering {cp}", cp);
-        ArrayUtils.Add(ref animEventPlrData, cpCount, default); // This is set when switching to init act state.
-        ArrayUtils.Add(ref cp, cpCount, newCp);
+        ArrayUtils.Add(ref animEventPlrData, entityCount, default); // This is set when switching to init act state.
+        ArrayUtils.Add(ref cp, entityCount, newCp);
         // Structure of arrays data
         Cp_AosData newAosData = new();
         newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
@@ -79,6 +77,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
         newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
         newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
+        newAosData.team = newCp.so_cpData.team;
         newAosData.vel_Hor = float2.zero;
         newAosData.vel_Ver = 0;
         newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
@@ -90,38 +89,38 @@ public class CpMgr : Singleton<CpMgr> {
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
         newAosData.navTgtInfo = new(false, false, 0.2f);
         aosData.Add(newAosData);
-        ArrayUtils.Add(ref unityComps, cpCount, newCp.unityObjs);
+        ArrayUtils.Add(ref unityComps, entityCount, newCp.unityObjs);
         IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpData.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
             newCp.unityObjs.rHand.position,
             newCp.unityObjs.rHand.rotation
         );
         rHandItem.Trf.parent = newCp.unityObjs.rHand;
-        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(cpCount, null, rHandItem);
-        ArrayUtils.Add(ref classRefs, cpCount, newClassRefs);
+        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(entityCount, null, rHandItem);
+        ArrayUtils.Add(ref classRefs, entityCount, newClassRefs);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
-        newCp.Id = cpCount;
-        SwitchToInitActSt(cpCount);
-        cpCount++;
+        newCp.Id = entityCount;
+        SwitchToInitActSt(entityCount);
+        entityCount++;
     }
 
     /// <summary>
     /// Unregisters cp and destroys corresponding game object.
     /// </summary>
     public void UnregisterNDestroy(int cpId) {
-        if (cpId >= cpCount) {
-            Debug.LogError($"{cpId} was greaterequal to {cpCount}!");
+        if (cpId >= entityCount) {
+            Debug.LogError($"{cpId} was greaterequal to {entityCount}!");
             return;
         }
         GameObject.Destroy(cp[cpId].gameObject);
-        int lastId = cpCount - 1;
+        int lastId = entityCount - 1;
         CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
-        ArrayUtils.RemoveAtSwapBack(animEventPlrData, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(classRefs, cpCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(cp, cpCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(animEventPlrData, entityCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(classRefs, entityCount, cpId);
+        ArrayUtils.RemoveAtSwapBack(cp, entityCount, cpId);
         aosData.RemoveAtSwapBack(cpId);
-        ArrayUtils.RemoveAtSwapBack(unityComps, cpCount, cpId);
-        cpCount--;
+        ArrayUtils.RemoveAtSwapBack(unityComps, entityCount, cpId);
+        entityCount--;
         if (swappedCp != null)
             // Last Cp was swapped to cpId, so update Id.
             swappedCp.Id = cpId;
@@ -137,7 +136,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void FixedTick_Fsm() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
             Debug.Assert(classRefs[i].st_cur != null, $"cur st was null for {i}.");
@@ -146,7 +145,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void UpdateGroundCheck() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
             GetAos(i).isGrounded = CcMov.IsGrounded(
@@ -165,7 +164,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             aosData.ElementAt(i).navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
             GetAos(i).curStDur += dt;
         }
@@ -176,7 +175,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Fsm() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.Tick();
@@ -184,7 +183,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_ReadMovInput() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (classRefs[i].cpCtrl == null)
                 continue;
             //GetAos(i).input_atk_Light = classRefs[i].cpCtrl.TryConsume_Atk_Light();
@@ -202,7 +201,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_InputBuffer(float dt) {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (classRefs[i].cpCtrl == null)
                 continue;
             if (classRefs[i].cpCtrl.TryConsume_Atk_Light())
@@ -247,7 +246,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void Tick_Mov(float dt) {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             //Dbg.Log(
             //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
             //    + $"| additionalLinMov: {soaData.movInput_additionalLinMov[i]} \n"
@@ -306,7 +305,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_AnimEventPlr() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
             //Debug.Log($"{animEventPlrData[i]}");
@@ -322,7 +321,7 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     void LateTick_Fsm() {
-        for (int i = 0; i < cpCount; i++) {
+        for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
             classRefs[i].st_cur.LateTick();
@@ -397,16 +396,22 @@ public class CpMgr : Singleton<CpMgr> {
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
-    // TODO: Make it possible to not find a target (and return false).
+    /// <summary>
+    /// Tries to find any eligible lock on target from other team if not already locked to a target.
+    /// </summary>
     public static bool TryFindTgt(int cpId) {
         if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
             return true;
-        inst.classRefs[cpId].lockedOnTgt = inst.cp[0].GetComponent<ILockOnTgt>();
-        //Dbg.Log(
-        //    $"locked on tgt pos: {inst.classRefs[cpId].lockedOnTgt.Trf.position}",
-        //    inst.aosData[cpId].enableDbgMsgs
-        //);
-        return true;
+        for(int i = 0; i < inst.entityCount; i++) {
+            if (i == cpId)
+                continue;
+            if (inst.aosData[i].team != inst.aosData[cpId].team) {
+                //Debug.Log("Found tgt: " + i);
+                inst.classRefs[cpId].lockedOnTgt = inst.cp[i].AsLockOnTgt;
+                return true;
+            }
+        }
+        return false;
     }
 
     /// <summary>

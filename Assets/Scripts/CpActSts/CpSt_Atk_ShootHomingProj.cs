@@ -45,7 +45,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Recovery;
                         HomingProjMgr.inst.ShootProj(
                             homingProjData,
-                            hitEffects,
+                            new HitData(hitEffects, soaData[cpId].team, projSpawnPose.forward),
                             projSpawnPose.position,
                             projSpawnPose.forward,
                             homingProjTgt

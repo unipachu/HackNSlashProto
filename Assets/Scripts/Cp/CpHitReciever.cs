@@ -6,6 +6,9 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpRegisterer cp;
 
+    public int GetTeam() 
+        => CpMgr.GetAos(cp.Id).team;
+
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         //Debug.Log(
         //    $"HitData:\n" +
@@ -18,12 +21,12 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         var classRefs = CpMgr.inst.classRefs[cpId];
         var cp = CpMgr.inst.cp[cpId];
         if (!CpMgr.GetAos(cpId).invul) {
-            CpMgr.GetAos(cpId).hp_Cur -= hitData.atkData.dmg;
+            CpMgr.GetAos(cpId).hp_Cur -= hitData.hitEffects.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
             CpMgr.GetAos(cpId).lastRecievedHitDir = hitData.hitWldDir;
-            CpMgr.GetAos(cpId).lastKnockbackStr = hitData.atkData.knockbackStr;
+            CpMgr.GetAos(cpId).lastKnockbackStr = hitData.hitEffects.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");
-            switch (hitData.atkData.knockbackT) {
+            switch (hitData.hitEffects.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:

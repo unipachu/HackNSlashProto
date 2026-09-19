@@ -46,8 +46,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 CpUtils.TransitionToFallIdleOrWalk(cpId);
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = cp.transform.forward;
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetAos(cpId).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:

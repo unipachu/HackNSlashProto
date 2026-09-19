@@ -312,6 +312,10 @@ public struct Cp_AosData {
     public float movInput_horAcc;
     public Cp_NavTgtInfo navTgtInfo;
     /// <summary>
+    /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
+    /// </summary>
+    public byte team;
+    /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>
     public float2 vel_Hor;
@@ -356,6 +360,9 @@ public struct Cp_NavTgtInfo {
 public struct Cp_NonUnityObjClassRefs {
     public Cp_ActSts actSts;
     public ICpCtrlInputter cpCtrl;
+    /// <summary>
+    /// Other pawn this is pawn is locked onto.
+    /// </summary>
     public ILockOnTgt lockedOnTgt;
     public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
@@ -396,11 +403,13 @@ public struct CtrlInputData {
 }
 
 public struct HitData {
-    public HitEffects atkData;
+    public HitEffects hitEffects;
+    public int team;
     public Vector3 hitWldDir;
 
-    public HitData(HitEffects atkData, Vector3 hitWldDir) {
-        this.atkData = atkData;
+    public HitData(HitEffects atkData, int team, Vector3 hitWldDir) {
+        this.hitEffects = atkData;
+        this.team = team;
         this.hitWldDir = hitWldDir;
     }
 }

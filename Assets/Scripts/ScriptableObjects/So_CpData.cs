@@ -11,7 +11,7 @@ public class So_CpData : ScriptableObject {
     public float groundSnapVerDownSpd = 1000;
     public float impact_YawSpd = 1200;
     public float walkHorAcc = 100;
-    public int walkTgtHorSpd = 5;
+    public float walkTgtHorSpd = 5;
     public float walkYawSpd = 1000;
 
     [Header("Input Settings")]
@@ -23,6 +23,9 @@ public class So_CpData : ScriptableObject {
 
     [Header("Equipment Settings")]
     public HandItemT rHandItem;
+
+    [Header("Team Settings")]
+    public byte team = 1;
 
     [Header("Debug")]
     public bool enableDebugMsgs = false;

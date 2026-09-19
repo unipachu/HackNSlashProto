@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface IHandItem_ProjectileSpawner : IHandItem {
     HomingProjData HomingProjData { get; }
-    HitEffects ProjHitEffects { get; }
+    HitEffects HitEffects { get; }
     Transform ProjSpawnPose { get; }
 }

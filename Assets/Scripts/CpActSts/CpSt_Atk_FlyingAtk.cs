@@ -35,7 +35,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var soaData = CpMgr.inst.aosData;
+        var aos = CpMgr.inst.aosData;
         var unityComps = CpMgr.inst.unityComps[cpId];
         var cp = CpMgr.inst.cp[cpId];
         switch (animEvent) {
@@ -65,8 +65,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitEffects = hitEffects;
-                hitDealer.hitWldDir = cp.transform.forward;
+                hitDealer.hitData = new HitData(hitEffects, aos[cpId].team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             default:

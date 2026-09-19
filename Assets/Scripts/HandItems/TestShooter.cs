@@ -5,7 +5,8 @@ using UnityEngine;
 /// </summary>
 public class TestShooter : MonoBehaviour {
     [SerializeField] bool shoot = true;
-    [SerializeField] HitEffects atkData = new(10, KnockbackT.Weak, 0.5f);
+    [SerializeField] HitEffects hitEffects = new(10, KnockbackT.Weak, 0.5f);
+    [SerializeField] int team = 1;
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
@@ -27,7 +28,7 @@ public class TestShooter : MonoBehaviour {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
                 projData,
-                atkData,
+                new HitData(hitEffects, team, (plr.position - transform.position).normalized),
                 transform.position,
                 (plr.position - transform.position).normalized,
                 plr);
