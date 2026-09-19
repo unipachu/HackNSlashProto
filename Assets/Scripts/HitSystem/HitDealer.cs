@@ -59,6 +59,7 @@ public class HitDealer : MonoBehaviour {
     }
 
     public bool TryDealHit(IHitReceiver hitReceiver, HitData hitData) {
+        Debug.Log($"kb str: {hitData.effects.knockbackStr}, kbT: {hitData.effects.knockbackT}");
         if (hitReceiversHitDuringLastActivation.Contains(hitReceiver))
             return false;
         HitResult hitResult = hitReceiver.ReceiveHit(this, hitData);
@@ -89,7 +90,16 @@ public class HitDealer : MonoBehaviour {
                     overlapCapsuleResults[colliderIndex].GetComponent<IHitReceiver>();
                 if (hitReceiver == null)
                     continue;
-                if(hitReceiver.GetTeam() == hitData.team && !allowFriendlyFire)
+                if(hitReceiver.IgnoreAllHits())
+                    continue;
+                PawnTeam receiverTeam = hitReceiver.GetTeam();
+                if (receiverTeam == PawnTeam.FriendToAll)
+                    continue;
+                if(
+                    receiverTeam != PawnTeam.EnemyToAll
+                        && receiverTeam == hitData.team
+                        && !allowFriendlyFire
+                )
                     continue;
                 TryDealHit(hitReceiver, hitData);
             }

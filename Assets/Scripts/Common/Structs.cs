@@ -314,7 +314,7 @@ public struct Cp_AosData {
     /// <summary>
     /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
     /// </summary>
-    public byte team;
+    public PawnTeam team;
     /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>
@@ -403,14 +403,14 @@ public struct CtrlInputData {
 }
 
 public struct HitData {
-    public HitEffects hitEffects;
-    public int team;
-    public Vector3 hitWldDir;
+    public HitEffects effects;
+    public PawnTeam team;
+    public Vector3 wldDir;
 
-    public HitData(HitEffects atkData, int team, Vector3 hitWldDir) {
-        this.hitEffects = atkData;
+    public HitData(HitEffects effects, PawnTeam team, Vector3 wldDir) {
+        this.effects = effects;
         this.team = team;
-        this.hitWldDir = hitWldDir;
+        this.wldDir = wldDir;
     }
 }
 

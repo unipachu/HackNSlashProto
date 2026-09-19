@@ -6,34 +6,38 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpRegisterer cp;
 
-    public int GetTeam() 
+    public PawnTeam GetTeam() 
         => CpMgr.GetAos(cp.Id).team;
 
+    public bool IgnoreAllHits()
+        => CpMgr.GetAos(cp.Id).invul;
+
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
-        //Debug.Log(
-        //    $"HitData:\n" +
-        //    $"  atkData.dmg: {hitData.atkData.dmg}\n" +
-        //    $"  atkData.knockbackT: {hitData.atkData.knockbackT}\n" +
-        //    $"  atkData.knockbackStr: {hitData.atkData.knockbackStr}\n" +
-        //    $"  hitWldDir: {hitData.hitWldDir}"
-        //);
+        Debug.Log(
+            $"HitData:\n" +
+            $"  {nameof(hitData.effects.dmg)}: {hitData.effects.dmg}\n" +
+            $"  {nameof(hitData.effects.knockbackT)}: {hitData.effects.knockbackT}\n" +
+            $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
+            $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
+        );
         int cpId = this.cp.Id;
+        ref Cp_AosData aos = ref CpMgr.GetAos(cpId);
         var classRefs = CpMgr.inst.classRefs[cpId];
         var cp = CpMgr.inst.cp[cpId];
-        if (!CpMgr.GetAos(cpId).invul) {
-            CpMgr.GetAos(cpId).hp_Cur -= hitData.hitEffects.dmg;
+        if (!aos.invul) {
+            aos.hp_Cur -= hitData.effects.dmg;
             //Debug.Log($"New HP: {pc.Data.curHp}", this);
-            CpMgr.GetAos(cpId).lastRecievedHitDir = hitData.hitWldDir;
-            CpMgr.GetAos(cpId).lastKnockbackStr = hitData.hitEffects.knockbackStr;
+            aos.lastRecievedHitDir = hitData.wldDir;
+            aos.lastKnockbackStr = hitData.effects.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");
-            switch (hitData.hitEffects.knockbackT) {
+            switch (hitData.effects.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
                     Vector3 horHitDir = new Vector3(
-                        CpMgr.GetAos(cpId).lastRecievedHitDir.x,
+                        aos.lastRecievedHitDir.x,
                         0,
-                        CpMgr.GetAos(cpId).lastRecievedHitDir.z
+                        aos.lastRecievedHitDir.z
                     );
                     // If you, for some reason, set the hit direction to Vector3.zero.
                     if (horHitDir.sqrMagnitude < 0.0001f)
@@ -58,6 +62,6 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
             }
         }
-        return new(CpMgr.GetAos(cpId).invul, false);
+        return new(aos.invul, false);
     }
 }

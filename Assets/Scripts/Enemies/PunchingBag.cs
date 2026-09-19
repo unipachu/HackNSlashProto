@@ -7,8 +7,11 @@ public class PunchingBag : MonoBehaviour, IHitReceiver {
     [SerializeField] Material red;
     Coroutine turnRedProcess;
 
-    public int GetTeam()
-        => -1;
+    public PawnTeam GetTeam()
+        => PawnTeam.EnemyToAll;
+
+    public bool IgnoreAllHits()
+        => false;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         if (turnRedProcess != null)

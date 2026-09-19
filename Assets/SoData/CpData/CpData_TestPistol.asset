@@ -19,9 +19,8 @@ MonoBehaviour:
   walkYawSpd: 1000
   inputBufferDuration: 0.3
   maxHP: 100
-  brain_AggroRange: 10
-  brain_AtkRange: 5
   rHandItem: 1
+  team: 3
   enableDebugMsgs: 1
   st_AtkFlying_TgtHorSpeed: 2
   st_AtkJump_DownSpeedAfterJumpFinished: 10

@@ -78,7 +78,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
                 continue;
             }
             HomingProj proj = pooledProj[i];
-            proj.hitDealer.hitData.hitWldDir = directions[i];
+            proj.hitDealer.hitData.wldDir = directions[i];
             proj.transform.SetPositionAndRotation(
                 positions[i],
                 Quaternion.LookRotation(directions[i])

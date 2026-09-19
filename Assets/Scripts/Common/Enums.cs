@@ -130,6 +130,21 @@ public enum KnockbackT : byte {
     Strong
 }
 
+public enum PawnTeam : byte {
+    EnemyToAll,
+    FriendToAll,
+    /// <summary>
+    /// Default local player team.
+    /// </summary>
+    Team0,
+    /// <summary>
+    /// Default ai enemy team
+    /// </summary>
+    Team1,
+    Team2,
+    Team3,
+}
+
 public enum Side : byte {
     Left,
     Right,

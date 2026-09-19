@@ -25,7 +25,7 @@ public class So_CpData : ScriptableObject {
     public HandItemT rHandItem;
 
     [Header("Team Settings")]
-    public byte team = 1;
+    public PawnTeam team = PawnTeam.EnemyToAll;
 
     [Header("Debug")]
     public bool enableDebugMsgs = false;

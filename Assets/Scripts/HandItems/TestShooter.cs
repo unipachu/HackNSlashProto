@@ -6,7 +6,7 @@ using UnityEngine;
 public class TestShooter : MonoBehaviour {
     [SerializeField] bool shoot = true;
     [SerializeField] HitEffects hitEffects = new(10, KnockbackT.Weak, 0.5f);
-    [SerializeField] int team = 1;
+    [SerializeField] PawnTeam team = PawnTeam.EnemyToAll;
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
