@@ -11,7 +11,7 @@ public class CpHitRecieverGizmo : MonoBehaviour{
     [SerializeField] Color invulnerableColor = Color.cyan;
 
     [Header("External Refs")]
-    [SerializeField] CpRegisterer cp;
+    [SerializeField] CpHandle cp;
     [SerializeField] Collider col;
 
     private void OnDrawGizmos() {

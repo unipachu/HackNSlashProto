@@ -4,7 +4,7 @@ using UnityEngine;
 /// Resolves recieved hits foe a capsule pawn.
 /// </summary>
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
-    [SerializeField] CpRegisterer cp;
+    [SerializeField] CpHandle cp;
 
     public PawnTeam GetTeam() 
         => CpMgr.GetAos(cp.Id).team;

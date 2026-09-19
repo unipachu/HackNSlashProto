@@ -1,7 +1,7 @@
 public class BtNode_Cond_InAtkRange : IBtNode{
-    AiCtrl aiCtrl;
+    AiCtrlHandle aiCtrl;
 
-    public BtNode_Cond_InAtkRange(AiCtrl aiCtrl) {
+    public BtNode_Cond_InAtkRange(AiCtrlHandle aiCtrl) {
         this.aiCtrl = aiCtrl;
     }
 

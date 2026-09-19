@@ -13,7 +13,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_NonUnityObjClassRefs[] classRefs;
-    [HideInInspector] public CpRegisterer[] cp;
+    [HideInInspector] public CpHandle[] cp;
     [HideInInspector] public NativeList<Cp_AosData> aosData;
     [HideInInspector] public Cp_UnityObjs[] unityComps;
 
@@ -25,7 +25,7 @@ public class CpMgr : Singleton<CpMgr> {
     public void Init() {
         animEventPlrData = new AnimEventPlrData[initCapacity];
         classRefs = new Cp_NonUnityObjClassRefs[initCapacity];
-        cp = new CpRegisterer[initCapacity];
+        cp = new CpHandle[initCapacity];
         aosData = GeneralUtils.AllocList<Cp_AosData>(initCapacity);
         //Debug.Log($"soa length in init: {aosData.Length}");
         unityComps = new Cp_UnityObjs[initCapacity];
@@ -43,7 +43,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// Registers new capsule pawn.
     /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
     /// </summary>
-    public void Register(CpRegisterer newCp) {
+    public void Register(CpHandle newCp) {
         // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
         // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
         // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
@@ -114,7 +114,7 @@ public class CpMgr : Singleton<CpMgr> {
         }
         GameObject.Destroy(cp[cpId].gameObject);
         int lastId = entityCount - 1;
-        CpRegisterer swappedCp = cpId != lastId ? cp[lastId] : null;
+        CpHandle swappedCp = cpId != lastId ? cp[lastId] : null;
         ArrayUtils.RemoveAtSwapBack(animEventPlrData, entityCount, cpId);
         ArrayUtils.RemoveAtSwapBack(classRefs, entityCount, cpId);
         ArrayUtils.RemoveAtSwapBack(cp, entityCount, cpId);
@@ -343,7 +343,7 @@ public class CpMgr : Singleton<CpMgr> {
         Debug.Assert(inst.classRefs[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
         float dist = Vector3.Distance(
             inst.cp[cpId].transform.position,
-            inst.classRefs[cpId].lockedOnTgt.Trf.position
+            inst.classRefs[cpId].lockedOnTgt.LockOnTrf.position
         );
         //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpId], inst.aosData[cpId].enableDbgMsgs);
         return dist < maxDist;

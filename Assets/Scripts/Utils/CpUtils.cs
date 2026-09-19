@@ -29,7 +29,7 @@ public static class CpUtils{
                 projectileSpawner.HitEffects,
                 projectileSpawner.HomingProjData,
                 projectileSpawner.ProjSpawnPose,
-                classRefs.lockedOnTgt.Trf
+                classRefs.lockedOnTgt.LockOnTrf
             );
         }
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {
@@ -44,7 +44,6 @@ public static class CpUtils{
         }
         // NOTE: Casting is the best option here. We could do a ECS-style "GetComponent", but for this
         // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
-        // TODO: You should make these "combo" moves, this is just a temp solution.
         if (classRefs.rHandItem is IHandItem_Hitter hitter) {
             if(input == BufferableInput.LShldr)
                 return () => classRefs.actSts.atk_FlyingAtk.Enter(
@@ -164,12 +163,7 @@ public static class CpUtils{
     /// Returns true if successfully transitioned to the next action state of the combo.
     /// </summary>
     static bool TryComboTransition(BufferableInput input, IComboNode curComboNode, int cpId) {
-        var data = CpMgr.inst.aosData;
-        var classRefs = CpMgr.inst.classRefs[cpId];
         if (
-            // TODO: This check if faster than trying to get the next node func. However for simplicity you
-            // TODO C: could just consume the input, get the func and then check if it's null. You only gain
-            // TODO C: perf only when the button actually doesn't change the state which is cheap anyway.
             curComboNode.GetNextNode(input) != null
                 && InputBufferUtils.TryConsumeInput(
                     input,

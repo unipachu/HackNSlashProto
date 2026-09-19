@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class AiCtrl : ICpCtrlInputter {
+/// <summary>
+/// Used as a memory managed handle to the entity id.
+/// </summary>
+public class AiCtrlHandle : ICpCtrlInputter {
     public int Id { get; set; }
 
     public Vector2 Input_Look_Gamepad => AiCtrlMgr.GetData(Id).ctrlInputData.input_Look_Gamepad;

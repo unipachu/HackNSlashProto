@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
     [SerializeField] PlrCtrl plrCtrl;
-    [SerializeField] CpRegisterer plrPrefab;
+    [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
     override protected void Awake(){

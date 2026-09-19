@@ -1,11 +1,11 @@
 using Unity.Mathematics;
 
 public class BtNode_MovToTgt : IBtNode{
-    AiCtrl aiCtrl;
+    AiCtrlHandle aiCtrl;
 
     public string DbgName => typeof(BtNode_MovToTgt).Name;
 
-    public BtNode_MovToTgt(AiCtrl aiCtrl) {
+    public BtNode_MovToTgt(AiCtrlHandle aiCtrl) {
         this.aiCtrl = aiCtrl;
     }
 

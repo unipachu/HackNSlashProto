@@ -28,7 +28,7 @@ public static class EditorUtils {
 
     public static void GenerateEnum(List<GameObject> items, string enumName, string enumPath) {
         string directory = Path.GetDirectoryName(enumPath);
-        // TODO: Maybe just log error and return if dir doesn't exist?
+        // NOTE: Creates directory if path doesn't exist!
         if (!Directory.Exists(directory))
             Directory.CreateDirectory(directory);
         StringBuilder sb = new();

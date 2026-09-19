@@ -1,7 +1,7 @@
 public class BtNode_Cond_InAggroRange : IBtNode {
-    AiCtrl aiCtrl;
+    AiCtrlHandle aiCtrl;
 
-    public BtNode_Cond_InAggroRange(AiCtrl aiCtrl) {
+    public BtNode_Cond_InAggroRange(AiCtrlHandle aiCtrl) {
         this.aiCtrl = aiCtrl;
     }
 

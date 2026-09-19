@@ -24,17 +24,17 @@ public struct AiCtrlData {
     public float aggroRange;
     public float atkRange;
     public IBtNode bt;
-    public CpRegisterer cp;
+    public CpHandle cp;
     public CtrlInputData ctrlInputData;
-    public AiCtrl handle;
+    public AiCtrlHandle handle;
     public bool prevCalculatePathSucceeded;
 
     public AiCtrlData(
         float aggroRange,
         float atkRange, 
         IBtNode bt,
-        CpRegisterer cp,
-        AiCtrl handle
+        CpHandle cp,
+        AiCtrlHandle handle
     ) {
         agentDesiredVel = Vector3.zero;
         this.aggroRange = aggroRange;

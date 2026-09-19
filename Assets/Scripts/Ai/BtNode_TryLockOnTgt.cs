@@ -1,7 +1,7 @@
 public class BtNode_TryLockOnTgt : IBtNode {
-    AiCtrl aiCtrl;
+    AiCtrlHandle aiCtrl;
 
-    public BtNode_TryLockOnTgt(AiCtrl aiCtrl) {
+    public BtNode_TryLockOnTgt(AiCtrlHandle aiCtrl) {
         this.aiCtrl = aiCtrl;
     }
 

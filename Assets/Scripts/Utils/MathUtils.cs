@@ -110,7 +110,7 @@ public static class MathUtils {
     /// Can be used to e.g. see how a follow target hand rotation affects the rotation of an (axis-locked)
     /// key in a key hole.
     /// </summary>
-    public static float ExtractSignedTwistAng(Quaternion rot, Vector3 axis) {
+    public static float ExtractSignedTwistAng(Quaternion rot, Vector3 axis, float magThld = 1e-8f) {
         // The dot product requires normalized axis.
         axis.Normalize();
         // Ensure equivalent quaternions are represented consistently. This prevents discontinuities where
@@ -121,10 +121,14 @@ public static class MathUtils {
         // around the axis.
         Vector3 projected = Vector3.Project(new Vector3(rot.x, rot.y, rot.z), axis);
         Quaternion twist = new Quaternion(projected.x, projected.y, projected.z, rot.w);
-        // Valid quaternion needs to have length 1.
+        // NOTE: if there's no twist component at all (e.g. a 180deg swing perpendicular
+        // to axis), twist is zero length and can't be normalized.
+        // TODO MAYBE: Intuitively you can imagine how 180deg swing could work - figure out the math.
+        float twistSqrMag = twist.x * twist.x + twist.y * twist.y + twist.z * twist.z + twist.w * twist.w;
+        if (twistSqrMag < magThld)
+            return 0f;
         twist.Normalize();
-        // NOTE: It is unintuitive that any orientation can be represented by angle axis.
-        // TODO: Are 180 degree rotations undefined?
+        // NOTE: Any orientation can be represented by angle axis - that's what we do here.
         twist.ToAngleAxis(out float angleDeg, out Vector3 twistAxis);
         // Make sure the original axis and twist axis point in the same direction.
         if (Vector3.Dot(twistAxis, axis) < 0f)

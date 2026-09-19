@@ -24,9 +24,9 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// Registers an AI controller and creates its per-entity runtime data.
     /// </summary>
     public void Register(
-        AiCtrl newHandle,
+        AiCtrlHandle newHandle,
         IBtNode newBt,
-        CpRegisterer controlledCp,
+        CpHandle controlledCp,
         AiCtrlConfigData configData
     ) {
         Debug.Assert(newHandle != null);
@@ -55,7 +55,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             return;
         }
         int lastId = entityCount - 1;
-        AiCtrl swappedCtrl = id != lastId
+        AiCtrlHandle swappedCtrl = id != lastId
             ? aos[lastId].handle
             : null;
         ArrayUtils.RemoveAtSwapBack(aos, entityCount, id);
@@ -116,7 +116,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: to work well enough for now.
             if (!cpUnityComps.navMeshAgent.hasPath) {
                 //Dbg.Log($"{cpId} Agent had no path. Set destination.", CpMgr.GetAos(cpId).enableDbgMsgs);
-                cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.Trf.position);
+                cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.LockOnTrf.position);
                 continue;
             }
             // If we are close enough to the destination, stop desiring movement.
@@ -165,7 +165,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 aos[i].prevCalculatePathSucceeded = false;
                 aos[i].agentDesiredVel = float3.zero;
             }
-            cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.Trf.position);
+            cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.LockOnTrf.position);
         }
     }
 
@@ -213,6 +213,6 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// <summary>
     /// Gets ref to corresponding <see cref="AiCtrlData"/>.
     /// </summary>
-    public static ref AiCtrlData GetData(AiCtrl aiCtrl) 
+    public static ref AiCtrlData GetData(AiCtrlHandle aiCtrl) 
         => ref inst.aos[aiCtrl.Id];
 }

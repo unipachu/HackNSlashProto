@@ -9,7 +9,7 @@ public interface ILockOnTgt {
     /// </summary>
     int Id { get; }
     /// <summary>
-    /// Transform of the target.
+    /// Transform of the lock on point.
     /// </summary>
-    Transform Trf { get; }
+    Transform LockOnTrf { get; }
 }

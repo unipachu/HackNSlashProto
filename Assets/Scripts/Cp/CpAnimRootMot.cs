@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CpAnimRootMot : MonoBehaviour {
     [SerializeField] Animator anim;
-    [SerializeField] CpRegisterer cp;
+    [SerializeField] CpHandle cp;
 
     void OnAnimatorMove() {
         CpMgr.GetAos(cp.Id).animDPos = anim.deltaPosition;

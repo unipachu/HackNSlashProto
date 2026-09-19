@@ -1,11 +1,11 @@
 using Unity.Mathematics;
 
 public class BtNode_Cmd_Atk1 : IBtNode{
-    AiCtrl aiCtrl;
+    AiCtrlHandle aiCtrl;
 
     public string DbgName => typeof(BtNode_Cmd_Atk1).Name;
 
-    public BtNode_Cmd_Atk1(AiCtrl aiCtrl) {
+    public BtNode_Cmd_Atk1(AiCtrlHandle aiCtrl) {
         this.aiCtrl = aiCtrl;
     }
 

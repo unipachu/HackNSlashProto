@@ -2,14 +2,14 @@
 /// Can construct all the possible behavior trees NPCs can use.
 /// </summary>
 public static class BtDataFactory{
-    public static IBtNode Construct(BtT t, AiCtrl aiCtrl) {
+    public static IBtNode Construct(BtT t, AiCtrlHandle aiCtrl) {
         return t switch {
             BtT.FollowNAttack => GetBt_FollowNAttack(aiCtrl),
             _ => GeneralUtils.LogErrorForInput<BtT, IBtNode>(t)
         };
     }
 
-    static IBtNode GetBt_FollowNAttack(AiCtrl aiCtrl) {
+    static IBtNode GetBt_FollowNAttack(AiCtrlHandle aiCtrl) {
         return new BtNode_Selector(
             "RootSelector",
             new BtNode_Sequence(
