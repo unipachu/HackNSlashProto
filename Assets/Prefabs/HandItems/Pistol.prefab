@@ -592,11 +592,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 512
   maxColliders: 100
-  hitEffects:
-    dmg: 0
-    knockbackT: 0
-    knockbackStr: 0
-  hitWldDir: {x: 0, y: 0, z: 0}
 --- !u!1 &6707570474400046529
 GameObject:
   m_ObjectHideFlags: 0
@@ -803,6 +798,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6aa224c800f6ef4cbf997d38da59d3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicGun
+  comboGraphConfig: {fileID: 11400000, guid: 11275182d38a78c49b2bef14d3d22db8, type: 2}
   meleeHitDealer: {fileID: 5092167040023849340}
   hitEffects:
     dmg: 1
@@ -812,8 +808,4 @@ MonoBehaviour:
     spd: 10
     maxLifetime: 4
     homingStr: 1
-  projHitEffects:
-    dmg: 1
-    knockbackT: 1
-    knockbackStr: 1
   projSpawnPose: {fileID: 4093082790708201532}

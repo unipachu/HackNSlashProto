@@ -20,18 +20,6 @@ public static class CpUtils{
         var unityComps = CpMgr.inst.unityComps[cpId];
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
-        // TODO: Make projectile attack a combo attakc.
-        if(
-            classRefs.rHandItem is IHandItem_ProjectileSpawner projectileSpawner
-                && (input == BufferableInput.RTrg || input == BufferableInput.RShldr)
-        ) {
-            return () => classRefs.actSts.atk_ShootHomingProj.Enter(
-                projectileSpawner.HitEffects,
-                projectileSpawner.HomingProjData,
-                projectileSpawner.ProjSpawnPose,
-                classRefs.lockedOnTgt.LockOnTrf
-            );
-        }
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
                 BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpId),

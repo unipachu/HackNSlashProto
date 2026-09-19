@@ -41,10 +41,11 @@ public enum BufferableInput : byte {
     BtnE
 }
 
-public enum ComboNodeT : byte {
+public enum ComboNodeConfigT : byte {
     BasicImpact,
     BasicRecovery,
     BasicBranch,
+    ShootProj,
 }
 
 /// <summary>

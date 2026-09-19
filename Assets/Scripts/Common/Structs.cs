@@ -199,7 +199,7 @@ public struct CapsuleShape {
 
 [Serializable]
 public struct ComboNodeConfig {
-    public ComboNodeT t;
+    public ComboNodeConfigT t;
     public CpAnimInfoT animInfo;
     public byte node_BtnE;
     public byte node_LShldr;
@@ -222,7 +222,7 @@ public struct ComboNode_Transitions {
 public struct Cp_ActSts {
     public CpSt_Death death;
     public CpSt_Atk_BasicImpact atk_BasicImpact;
-    public CpSt_Atk_BasicBranch atk_BasicWindup;
+    public CpSt_Atk_BasicBranch atk_BasicBranch;
     public CpSt_Atk_BasicRecovery atk_BasicRecovery;
     public CpSt_Atk_FlyingAtk atk_FlyingAtk;
     public CpSt_Atk_Jump atk_Jump;
@@ -237,7 +237,7 @@ public struct Cp_ActSts {
     public Cp_ActSts(int cpId) {
         death = new(cpId);
         atk_BasicImpact = new(cpId);
-        atk_BasicWindup = new(cpId);
+        atk_BasicBranch = new(cpId);
         atk_BasicRecovery = new(cpId);
         atk_FlyingAtk = new(cpId);
         atk_Jump = new(cpId);

@@ -13,13 +13,13 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         => CpMgr.GetAos(cp.Id).invul;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
-        Debug.Log(
-            $"HitData:\n" +
-            $"  {nameof(hitData.effects.dmg)}: {hitData.effects.dmg}\n" +
-            $"  {nameof(hitData.effects.knockbackT)}: {hitData.effects.knockbackT}\n" +
-            $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
-            $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
-        );
+        //Debug.Log(
+        //    $"HitData:\n" +
+        //    $"  {nameof(hitData.effects.dmg)}: {hitData.effects.dmg}\n" +
+        //    $"  {nameof(hitData.effects.knockbackT)}: {hitData.effects.knockbackT}\n" +
+        //    $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
+        //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
+        //);
         int cpId = this.cp.Id;
         ref Cp_AosData aos = ref CpMgr.GetAos(cpId);
         var classRefs = CpMgr.inst.classRefs[cpId];

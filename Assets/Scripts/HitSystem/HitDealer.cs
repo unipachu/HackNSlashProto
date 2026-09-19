@@ -59,7 +59,6 @@ public class HitDealer : MonoBehaviour {
     }
 
     public bool TryDealHit(IHitReceiver hitReceiver, HitData hitData) {
-        Debug.Log($"kb str: {hitData.effects.knockbackStr}, kbT: {hitData.effects.knockbackT}");
         if (hitReceiversHitDuringLastActivation.Contains(hitReceiver))
             return false;
         HitResult hitResult = hitReceiver.ReceiveHit(this, hitData);

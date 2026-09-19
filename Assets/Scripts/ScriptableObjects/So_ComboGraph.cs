@@ -14,18 +14,30 @@ public class So_ComboGraph : ScriptableObject {
         }
     };
 
+    /// <summary>
+    /// NOTE: When you create new combo node classes, always add a corresponding enum and a case in this switch.
+    /// </summary>
+    /// <param name="ctx">
+    /// Generally the hand item that uses this combo graph, but can be any object containing the data the combo
+    /// node needs for initialization. Individual nodes cast this to get the initialization data they need, so
+    /// check the individual nodes for data required from <paramref name="ctx"/>.
+    /// </param>
+    /// <returns>Ref to generated combo graph.</returns>
     public List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx) {
         List<IComboNode> nodeList = new();
         for (int i = 0; i < nodes.Count; i++) {
             switch (nodes[i].t) {
-                case ComboNodeT.BasicImpact:
+                case ComboNodeConfigT.BasicImpact:
                     nodeList.Add(new ComboNode_BasicImpact(ctx, nodes[i].animInfo));
                     break;
-                case ComboNodeT.BasicRecovery:
+                case ComboNodeConfigT.BasicRecovery:
                     nodeList.Add(new ComboNode_BasicRecovery(nodes[i].animInfo));
                     break;
-                case ComboNodeT.BasicBranch:
-                    nodeList.Add(new ComboNode_BasicWindup(nodes[i].animInfo));
+                case ComboNodeConfigT.BasicBranch:
+                    nodeList.Add(new ComboNode_BasicBranch(nodes[i].animInfo));
+                    break;
+                case ComboNodeConfigT.ShootProj:
+                    nodeList.Add(new ComboNode_ShootProj(ctx, nodes[i].animInfo));
                     break;
                 default:
                     Debug.LogError($"Defaulted with {nodes[i].t}.");

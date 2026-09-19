@@ -1,6 +1,7 @@
 using UnityEngine;
 
 public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
+    IComboNode comboNode;
     int cpId;
     HitEffects hitEffects;
     HomingProjData homingProjData;
@@ -15,11 +16,13 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         => true;
 
     public CpSt_Atk_ShootHomingProj Enter(
+        IComboNode comboNode,
         HitEffects hitEffects,
         HomingProjData homingProjData,
         Transform projSpawnPose,
         Transform homingProjTgt
     ) {
+        this.comboNode = comboNode;
         this.hitEffects = hitEffects;
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
