@@ -17,7 +17,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.Get(CpAnimInfoT.dodge),
+            CpAnimInfoFactory.Construct(CpAnimInfoT.dodge),
             0.1f
         );
         return this;
@@ -41,7 +41,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         );
         if (
             CpMgr.GetAos(cpId).bufferedInputStSwitchAllowed
-                && CpUtils.BaseTrySwitchStByBufferedInput(cpId)
+                && CpUtils.TrySwitchStByBufferedInput(cpId)
         )
             return;
     }

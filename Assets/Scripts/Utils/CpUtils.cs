@@ -8,22 +8,7 @@ using UnityEngine.AI;
 /// Capsule pawn general util methods. Consider organizing these better!
 /// </summary>
 public static class CpUtils{
-    /// <summary>
-    /// Can be used from neutral states like "walk" or "idle" to transition to new states with input.<br/>
-    /// Returns true if succeeded changing state.
-    /// </summary>
-    // TODO: Rename?
-    public static bool BaseTrySwitchStByBufferedInput(int cpId) {
-        if (TrySwitchSt(cpId, BufferableInput.BtnE))
-            return true;
-        if (TrySwitchSt(cpId, BufferableInput.RShldr))
-            return true;
-        if (TrySwitchSt(cpId, BufferableInput.RTrg))
-            return true;
-        if (TrySwitchSt(cpId, BufferableInput.LShldr))
-            return true;
-        return false;
-    }
+
 
     /// <summary>
     /// Finds next state to transition to based on input and held items. Returns null if no applicable
@@ -97,40 +82,6 @@ public static class CpUtils{
     }
 
     /// <summary>
-    /// Used to transition to a baic action state after an attack/special move etc.
-    /// </summary>
-    // TODO: rename?
-    public static void TransitionToFallIdleOrWalk(int cpId) {
-        var classRefs = CpMgr.inst.classRefs[cpId];
-        SwitchToFallingStIfNotGrounded(cpId);
-        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero))
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
-        else
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
-    }
-
-    /// <summary>
-    /// Tries to switch state based on input and equipped items (and possibly other state).
-    /// Returns true if state transition successful.
-    /// </summary>
-    public static bool TrySwitchSt(int cpId, BufferableInput input) {
-        var classRefs = CpMgr.inst.classRefs[cpId];
-        Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
-        if (
-            enterFunc != null
-                && CpInputBuffer.TryConsumeInput(
-                    input,
-                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
-                )
-        ) {
-            CpMgr.inst.SwitchActSt(enterFunc, cpId);
-            return true;
-        }
-        return false;
-    }
-
-    /// <summary>
     /// True if switched.
     /// </summary>
     public static bool SwitchToFallingStIfNotGrounded(int cpId) {
@@ -141,6 +92,41 @@ public static class CpUtils{
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.falling.Enter(), cpId);
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Used to transition to a baic action state after an attack/special move etc.
+    /// </summary>
+    public static void TransitionToFallIdleOrWalk(int cpId) {
+        var classRefs = CpMgr.inst.classRefs[cpId];
+        SwitchToFallingStIfNotGrounded(cpId);
+        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero))
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
+        else
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
+    }
+
+    /// <summary>
+    /// Can be used from neutral states like "walk" or "idle" to transition to new states with input.<br/>
+    /// Returns true if succeeded changing state.
+    /// </summary>
+    public static bool TrySwitchStByBufferedInput(int cpId) {
+        BufferableInput input = CpMgr.GetAos(cpId).inputBuffer_BufferedInput;
+        if(input == BufferableInput.None)
+            return false;
+        Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
+        if (
+            enterFunc != null
+                && InputBufferUtils.TryConsumeInput(
+                    input,
+                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
+                )
+        ) {
+            CpMgr.inst.SwitchActSt(enterFunc, cpId);
             return true;
         }
         return false;
@@ -186,7 +172,7 @@ public static class CpUtils{
             // TODO C: could just consume the input, get the func and then check if it's null. You only gain
             // TODO C: perf only when the button actually doesn't change the state which is cheap anyway.
             curComboNode.GetNextNode(input) != null
-                && CpInputBuffer.TryConsumeInput(
+                && InputBufferUtils.TryConsumeInput(
                     input,
                     ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
                     ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime

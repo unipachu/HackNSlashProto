@@ -1,4 +1,4 @@
-// TODO BEFORE BUILD: Remove instances from the game.
+// BEFORE BUILD: Remove instances from the game.
 using UnityEngine;
 
 /// <summary>

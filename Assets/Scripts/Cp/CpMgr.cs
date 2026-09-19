@@ -7,12 +7,9 @@ using UnityEngine;
 /// Capsule pawn (i.e. player or ai controlled character that uses capsule collision for movement) manager.
 /// </summary>
 public class CpMgr : Singleton<CpMgr> {
-    [Header("Settings")]
-    // TODO: Make private after creating ai controller factory. Maybe call it "InitCpCapacity"
-
     [Tooltip("Initial capacity of arrays. They allocate more space if needed (but do not deallocate even" +
         "if pawns are unregistered.)")]
-    public int initCapacity = 1;
+    [SerializeField] int initCapacity = 1;
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_NonUnityObjClassRefs[] classRefs;
@@ -71,14 +68,9 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.input_mov = float2.zero;
         newAosData.input_mov_LastNonZero = float2.zero;
         newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
-        newAosData.input_atk_Light = false;
-        newAosData.input_atk_Heavy = false;
-        newAosData.input_atk_Ult = false;
-        newAosData.input_dodge = false;
         newAosData.invul = false;
         newAosData.isAffectedByGravity = true;
         newAosData.isGrounded = true;
-        newAosData.lastCcVel = float3.zero;
         newAosData.lastKnockbackStr = 0;
         newAosData.lastRecievedHitDir = float3.zero;
         newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
@@ -87,9 +79,6 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
         newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
         newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
-        newAosData.trf_pos = float3.zero;
-        newAosData.trf_rot = quaternion.identity;
-        newAosData.trf_lossyScl = new float3(1);
         newAosData.vel_Hor = float2.zero;
         newAosData.vel_Ver = 0;
         newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
@@ -102,7 +91,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.navTgtInfo = new(false, false, 0.2f);
         aosData.Add(newAosData);
         ArrayUtils.Add(ref unityComps, cpCount, newCp.unityObjs);
-        IHandItem rHandItem = HandItemFactory.inst.InstantiateHandItem(newCp.so_cpData.rHandItem);
+        IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpData.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
             newCp.unityObjs.rHand.position,
             newCp.unityObjs.rHand.rotation
@@ -176,30 +165,14 @@ public class CpMgr : Singleton<CpMgr> {
 
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
-        for (int i = 0; i < cpCount; i++)
+        for (int i = 0; i < cpCount; i++) {
             aosData.ElementAt(i).navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
-        Tick_FromNonNative(dt);
-        Tick_Input();
+            GetAos(i).curStDur += dt;
+        }
+        Tick_ReadMovInput();
         Tick_InputBuffer(dt);
         Tick_Fsm();
         Tick_Mov(dt);
-    }
-
-    /// <summary>
-    /// Update data from non native sources, e.g. from Monobehavior components.
-    /// </summary>
-    // TODO: Meh. Remove copying and move the cur st dur timer to someplace else. Little less complexity.
-    // TODO C: You can copy these for individual loops if there's a need.
-    void Tick_FromNonNative(float dt) {
-        for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null)
-                continue;
-            GetAos(i).trf_pos = cp[i].transform.position;
-            GetAos(i).trf_rot = cp[i].transform.rotation;
-            GetAos(i).trf_lossyScl = cp[i].transform.lossyScale;
-            GetAos(i).lastCcVel = unityComps[i].cc.velocity;
-            GetAos(i).curStDur += dt;
-        }
     }
 
     void Tick_Fsm() {
@@ -210,17 +183,17 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
-    void Tick_Input() {
+    void Tick_ReadMovInput() {
         for (int i = 0; i < cpCount; i++) {
-            if (cp[i] == null || classRefs[i].cpCtrl == null)
+            if (classRefs[i].cpCtrl == null)
                 continue;
-            GetAos(i).input_atk_Light = classRefs[i].cpCtrl.TryConsume_Atk_Light();
-            GetAos(i).input_atk_Heavy = classRefs[i].cpCtrl.TryConsume_Atk_Heavy();
-            GetAos(i).input_atk_Ult = classRefs[i].cpCtrl.TryConsume_Atk_Ult();
-            GetAos(i).input_dodge = classRefs[i].cpCtrl.TryConsume_Dodge();
+            //GetAos(i).input_atk_Light = classRefs[i].cpCtrl.TryConsume_Atk_Light();
+            //GetAos(i).input_atk_Heavy = classRefs[i].cpCtrl.TryConsume_Atk_Heavy();
+            //GetAos(i).input_atk_Ult = classRefs[i].cpCtrl.TryConsume_Atk_Ult();
+            //GetAos(i).input_dodge = classRefs[i].cpCtrl.TryConsume_Dodge();
             if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
                 GetAos(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
-                GetAos(i).input_mov_LastNonZero = GetAos(i).input_mov;
+                GetAos(i).input_mov_LastNonZero = classRefs[i].cpCtrl.Input_Mov;
             } else
                 GetAos(i).input_mov = Vector2.zero;
             //Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
@@ -230,29 +203,31 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_InputBuffer(float dt) {
         for (int i = 0; i < cpCount; i++) {
-            if (GetAos(i).input_atk_Light)
-                CpInputBuffer.BufferInput(
+            if (classRefs[i].cpCtrl == null)
+                continue;
+            if (classRefs[i].cpCtrl.TryConsume_Atk_Light())
+                InputBufferUtils.BufferInput(
                     ref GetAos(i).inputBuffer_BufferedInput,
                     ref GetAos(i).inputBuffer_RemainingTime,
                     BufferableInput.RShldr,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (GetAos(i).input_atk_Heavy)
-                CpInputBuffer.BufferInput(
+            else if (classRefs[i].cpCtrl.TryConsume_Atk_Heavy())
+                InputBufferUtils.BufferInput(
                     ref GetAos(i).inputBuffer_BufferedInput,
                     ref GetAos(i).inputBuffer_RemainingTime,
                     BufferableInput.RTrg,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (GetAos(i).input_atk_Ult)
-                CpInputBuffer.BufferInput(
+            else if (classRefs[i].cpCtrl.TryConsume_Atk_Ult())
+                InputBufferUtils.BufferInput(
                     ref GetAos(i).inputBuffer_BufferedInput,
                     ref GetAos(i).inputBuffer_RemainingTime,
                     BufferableInput.LShldr,
                     GlobalData.inst.inputBuffer_Dur
                 );
-            else if (GetAos(i).input_dodge)
-                CpInputBuffer.BufferInput(
+            else if (classRefs[i].cpCtrl.TryConsume_Dodge())
+                InputBufferUtils.BufferInput(
                     ref GetAos(i).inputBuffer_BufferedInput,
                     ref GetAos(i).inputBuffer_RemainingTime, 
                     BufferableInput.BtnE,
@@ -264,7 +239,7 @@ public class CpMgr : Singleton<CpMgr> {
             GetAos(i).inputBuffer_RemainingTime -= dt;
             //Debug.Log("remaining time: " + remainingTime);
             if (GetAos(i).inputBuffer_RemainingTime <= 0)
-                CpInputBuffer.Clear(
+                InputBufferUtils.Clear(
                     ref GetAos(i).inputBuffer_BufferedInput,
                     ref GetAos(i).inputBuffer_RemainingTime
                 );
@@ -293,12 +268,11 @@ public class CpMgr : Singleton<CpMgr> {
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
             if (math.lengthsq(GetAos(i).movInput_tgtHorDir) > 0.0001f) {
-                GetAos(i).trf_rot = TrfMathUtils.RotateFwdToTgt(
-                    GetAos(i).trf_rot,
+                cp[i].transform.rotation = TrfMathUtils.RotateFwdToTgt(
+                    inst.cp[i].transform.rotation,
                     GetAos(i).movInput_yawSpd,
                     GetAos(i).movInput_tgtHorDir
                 );
-                cp[i].transform.rotation = GetAos(i).trf_rot;
             }
             if (GetAos(i).isAffectedByGravity)
                 // NOTE: This will override previously calculated horizontal velocity if the player is
@@ -322,44 +296,10 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
-    //void Tick_Sensing() {
-    //    for (int i = 0; i < cpCount; i++) {
-    //        if (cp[i] == null)
-    //            continue;
-    //        // TODO: This is really bad. Remove this after you've moved this tick to aiBrain update.
-    //        if (brainData[i].lockedOnTgt == null)
-    //            continue;
-    //        // TODO: Use better logic for sensing player.
-    //        brainData[i].lockedOnTgt
-    //            = GameObject.Find("Cp_Plr").GetComponent<LockOnTgt>();
-    //        if (brainData[i].lockedOnTgt != null) {
-    //            Dbg.Log($"locked on tgt pos: {brainData[i].lockedOnTgt.Trf.position}", aosData[i].enableDbgMsgs);
-    //            brainData[i].distToTgt = Vector3.Distance(
-    //                unityComps[i].rootTrf.position,
-    //                brainData[i].lockedOnTgt.Trf.position
-    //            );
-    //            brainData[i].hasTgt = true;
-    //            brainData[i].inAggroRange
-    //                = Vector3.Distance(
-    //                    unityComps[i].rootTrf.position,
-    //                brainData[i].lockedOnTgt.Trf.position) < brainData[i].aggroRange;
-    //            brainData[i].inAtkRange
-    //                = Vector3.Distance(
-    //                    unityComps[i].rootTrf.position,
-    //                brainData[i].lockedOnTgt.Trf.position
-    //            ) < brainData[i].atkRange;
-    //            //Dbg.Log($"in atk range: {brainData[i].inAtkRange}", aosData[i].enableDebugMsgs);
-    //        }
-    //        else
-    //            brainData[i].hasTgt = false;
-    //    }
-    //}
-
     // ------------------------------------------------------------
     // Late Tick Methods
     // ------------------------------------------------------------
 
-    // TODO: Remember to call this from game manager.
     public void LateTick() {
         LateTick_AnimEventPlr();
         LateTick_Fsm();
@@ -461,7 +401,7 @@ public class CpMgr : Singleton<CpMgr> {
     public static bool TryFindTgt(int cpId) {
         if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
             return true;
-        inst.classRefs[cpId].lockedOnTgt = inst.cp[0].GetComponent<LockOnTgt>();
+        inst.classRefs[cpId].lockedOnTgt = inst.cp[0].GetComponent<ILockOnTgt>();
         //Dbg.Log(
         //    $"locked on tgt pos: {inst.classRefs[cpId].lockedOnTgt.Trf.position}",
         //    inst.aosData[cpId].enableDbgMsgs

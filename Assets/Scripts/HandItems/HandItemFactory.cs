@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 public class HandItemFactory : Singleton<HandItemFactory> {
-    [SerializeField] HandItemCatalog catalog;
+    [SerializeField] So_HandItemCatalog catalog;
 
     protected override void Awake() {
         base.Awake();
@@ -25,9 +25,9 @@ public class HandItemFactory : Singleton<HandItemFactory> {
         return true;
     }
 
-    public IHandItem InstantiateHandItem(HandItemT handItemT){
-        IHandItem item = Instantiate(catalog.Items[(int)handItemT]).GetComponent<IHandItem>();
-        Debug.Assert(item != null, $"Failed to instantiate item of type {handItemT}.", this);
+    public static IHandItem InstantiateHandItem(HandItemT handItemT){
+        IHandItem item = Instantiate(inst.catalog.Items[(int)handItemT]).GetComponent<IHandItem>();
+        Debug.Assert(item != null, $"Failed to instantiate item of type {handItemT}.", inst);
         return item;
     }
 }

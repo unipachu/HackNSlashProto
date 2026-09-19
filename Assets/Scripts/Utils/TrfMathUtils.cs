@@ -25,9 +25,6 @@ public static class TrfMathUtils {
         );
     }
 
-    // TODO: Perhaps expand this so that parameter takes in the axis and pivot pos and rot instead of
-    // TODO C: the transform. Or actually create a separate method that doesn't take in pivot transform
-    // TODO C: but instead uses only pivot wld pos and direction of the axis to rotate around.
     /// <summary>
     /// Returns world pos and rot of an object when rotated around the right-axis of a pivot object. 
     /// </summary>
@@ -40,7 +37,6 @@ public static class TrfMathUtils {
         // NOTE: rotMult is used here to rotate the object slightly further.
         float dXAng = rotAroundAxis * rotMult;
         //Debug.Log("delta x angle: " + deltaXAngle);
-        // TODO: Make the local axis of the pivot a parameter.
         Quaternion dRotAroundPivRight = Quaternion.AngleAxis(dXAng, pivTrf.right);
         Vector3 movedTrfPosInPivSpace = movedTrf.position.InvTrfPtUnscaled(pivTrf);
         Quaternion movedTrfRotInPivSpace = movedTrf.rotation.InvTrfRot(pivTrf);

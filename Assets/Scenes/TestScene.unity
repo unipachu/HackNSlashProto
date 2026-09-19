@@ -1685,9 +1685,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 296478567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
+  m_Script: {fileID: 11500000, guid: 30035ef4312c5cc44b31d4816e3186ea, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
+  m_EditorClassIdentifier: Assembly-CSharp::PunchingBag
+  meshRenderer: {fileID: 296478569}
+  grey: {fileID: 2100000, guid: 39c7a773c147832489144a698e872110, type: 2}
+  red: {fileID: 2100000, guid: e90e0efde41e61d48abb8fc5c8838918, type: 2}
 --- !u!1 &308558583
 GameObject:
   m_ObjectHideFlags: 0
@@ -2489,7 +2492,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 465066626}
-  - component: {fileID: 465066624}
   m_Layer: 9
   m_Name: PunchingBag
   m_TagString: Untagged
@@ -2497,22 +2499,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &465066624
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 465066623}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30035ef4312c5cc44b31d4816e3186ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PunchingBag
-  hitReceiver: {fileID: 296478573}
-  meshRenderer: {fileID: 296478569}
-  grey: {fileID: 2100000, guid: 39c7a773c147832489144a698e872110, type: 2}
-  red: {fileID: 2100000, guid: e90e0efde41e61d48abb8fc5c8838918, type: 2}
 --- !u!4 &465066626
 Transform:
   m_ObjectHideFlags: 0
@@ -6536,7 +6522,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AiCtrlMgr
   initCapacity: 1
-  cp: []
 --- !u!4 &1533031326
 Transform:
   m_ObjectHideFlags: 0

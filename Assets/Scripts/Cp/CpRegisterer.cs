@@ -6,7 +6,7 @@ using UnityEngine;
 /// NOTE: Set this to the root of the cp!
 /// </summary>
 // Rename to just Cp.
-public class CpRegisterer : MonoBehaviour, LockOnTgt, IPawn{
+public class CpRegisterer : MonoBehaviour, ILockOnTgt, IPawn{
     [Header("Scriptable Object Data")]
     public So_CpData so_cpData;
     

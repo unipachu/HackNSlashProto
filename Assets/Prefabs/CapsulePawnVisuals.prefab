@@ -407,7 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpAnimRootMot
   anim: {fileID: 4678657368601596990}
-  cpReg: {fileID: 0}
+  cp: {fileID: 0}
 --- !u!95 &4678657368601596990
 Animator:
   serializedVersion: 7
@@ -938,7 +938,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2877554013161557112}
-  - component: {fileID: 2732198706603240118}
+  - component: {fileID: 141906430116339270}
   - component: {fileID: 1000488504326016277}
   - component: {fileID: 1930875150031484807}
   m_Layer: 9
@@ -963,7 +963,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6727410631872082106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2732198706603240118
+--- !u!114 &141906430116339270
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -972,9 +972,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6413266446938913594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a186190e07c5369439c7a2ccb7ea3ec6, type: 3}
+  m_Script: {fileID: 11500000, guid: f9043e6b090aff34da82013d9c71bcae, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitReceiver
+  m_EditorClassIdentifier: Assembly-CSharp::CpHitRecieveHandler
+  cp: {fileID: 0}
 --- !u!114 &1000488504326016277
 MonoBehaviour:
   m_ObjectHideFlags: 0

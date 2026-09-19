@@ -7,7 +7,7 @@ public class ComboNode_BasicRecovery : IComboNode {
     public AnimInfo AnimInfo { get; }
 
     public ComboNode_BasicRecovery(CpAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfo.Get(animInfoT);
+        AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
     }
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {

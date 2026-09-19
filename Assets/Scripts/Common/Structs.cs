@@ -289,19 +289,16 @@ public struct Cp_AosData {
     /// Movement input during last state switch (in world space).
     /// </summary>
     public float2 input_mov_WhenLastSwitchedSt;
-    // TODO: Are these attack and dodge inputs needed since controllers already have them?
-    public bool input_atk_Light;
-    public bool input_atk_Heavy;
-    public bool input_atk_Ult;
-    public bool input_dodge;
     public BufferableInput inputBuffer_BufferedInput;
     public float inputBuffer_RemainingTime;
     public bool inputRotAllowed;
+    /// <summary>
+    /// Invulnerable (character ignores hits).
+    /// </summary>
     public bool invul;
     public bool isAffectedByGravity;
     public bool isGrounded;
     public bool isSwitchingSt;
-    public float3 lastCcVel;
     public float lastKnockbackStr;
     public float3 lastRecievedHitDir;
     public float2 movInput_tgtHorDir;
@@ -314,9 +311,6 @@ public struct Cp_AosData {
     public float movInput_yawSpd;
     public float movInput_horAcc;
     public Cp_NavTgtInfo navTgtInfo;
-    public float3 trf_lossyScl;
-    public float3 trf_pos;
-    public quaternion trf_rot;
     /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>
@@ -362,7 +356,7 @@ public struct Cp_NavTgtInfo {
 public struct Cp_NonUnityObjClassRefs {
     public Cp_ActSts actSts;
     public ICpCtrlInputter cpCtrl;
-    public LockOnTgt lockedOnTgt;
+    public ILockOnTgt lockedOnTgt;
     public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
@@ -385,7 +379,7 @@ public struct Cp_UnityObjs {
     public Animator anim;
     public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
-    public CpHitRecieveHandler hitRecieverHandler;
+    public CpHitReciever hitRecieverHandler;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
     public Transform lockOnTrf;

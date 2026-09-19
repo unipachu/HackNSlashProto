@@ -13,7 +13,7 @@ public class GameMgr : Singleton<GameMgr>{
         AiCtrlMgr.inst.Init();
     }
     private void Start() {
-        PlayerSpawner.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
+        CpSpawningUtils.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
         EnemyServer.inst.SpawnEnemies();
     }
 

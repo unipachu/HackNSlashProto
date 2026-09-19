@@ -1,16 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-public class PunchingBag : MonoBehaviour, IHitReceiverOwner {
-    [SerializeField] HitReceiver hitReceiver;
+public class PunchingBag : MonoBehaviour, IHitReceiver {
     [SerializeField] MeshRenderer meshRenderer;
     [SerializeField] Material grey;
     [SerializeField] Material red;
     Coroutine turnRedProcess;
-
-    private void Awake() {
-        hitReceiver.owner = this;
-    }
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         if (turnRedProcess != null)

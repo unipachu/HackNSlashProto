@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// TODO BEFORE BUILD: Remove instances from the game.
+// BEFORE BUILD: Remove instances from the game.
 public class CharacterControllerGizmo : MonoBehaviour{
     [Header("Settings")]
     [SerializeField] bool drawGizmo = true;

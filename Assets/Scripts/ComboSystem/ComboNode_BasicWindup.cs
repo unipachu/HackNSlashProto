@@ -9,7 +9,7 @@ public class ComboNode_BasicWindup : IComboNode, IComboNodeTransitionsHolder {
     public ComboNode_Transitions Transitions { get; set; }
 
     public ComboNode_BasicWindup(CpAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfo.Get(animInfoT);
+        AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
     }
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {

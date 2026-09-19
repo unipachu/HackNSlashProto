@@ -14,7 +14,7 @@ public class CpSt_Walk : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.Get(CpAnimInfoT.walk),
+            CpAnimInfoFactory.Construct(CpAnimInfoT.walk),
             0.5f
         );
         return this;
@@ -40,7 +40,7 @@ public class CpSt_Walk : IFsmSt_Cp {
             CpMgr.GetAos(cpId).walkYawSpd,
             CpMgr.GetAos(cpId).walkLinAcc
         );
-        if (CpUtils.BaseTrySwitchStByBufferedInput(cpId))
+        if (CpUtils.TrySwitchStByBufferedInput(cpId))
             return;
         if (math.all(CpMgr.GetAos(cpId).input_mov == float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);

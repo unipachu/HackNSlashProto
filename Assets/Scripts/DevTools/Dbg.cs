@@ -1,8 +1,8 @@
 using UnityEngine;
 
-// TODO BEFORE BUILD: If you comment out this class/methods, you can easily find the methods in other files
-// TODO BEFORE BUILD C: and comment them out as well. However you should check asserts and error
-// TODO BEFORE BUILD C: logs carefully since you never want those asserts to fail in a published game!
+// BEFORE BUILD: If you comment out this class/methods, you can easily find the methods in other files
+// BEFORE BUILD C: and comment them out as well. However you should check asserts and error
+// BEFORE BUILD C: logs carefully since you never want those asserts to fail in a published game!
 
 /// <summary>
 /// A bit useless class, but can be used to easily turn off debug messages, and have debug

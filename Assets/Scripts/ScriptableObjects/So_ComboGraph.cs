@@ -34,7 +34,6 @@ public class So_ComboGraph : ScriptableObject {
         }
         // Set transitions.
         for (int i = 0; i < nodes.Count; i++) {
-            // TODO: Wow, does this really work like this? Have I always assigned outside of the if scope?
             if (nodeList[i] is IComboNodeTransitionsHolder transitioner) {
                 ComboNode_Transitions transitions = transitioner.Transitions;
                 transitions.node_BtnE = GetNode(nodes[i].node_BtnE);

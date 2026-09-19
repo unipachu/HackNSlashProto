@@ -1,14 +1,12 @@
+// BEFORE BUILD: This is just a test class. You can delete after you're actually using the databases elsewhere.
 using UnityEngine;
 
 /// <summary>
 /// Just some testing´.
 /// </summary>
-// TODO: Delete this class.
-public class TestDatabaseUsage : MonoBehaviour
-{
+public class TestDatabaseUsage : MonoBehaviour {
     [SerializeField] ExampleGameDatabase database;
-    void Start()
-    {
+    void Start(){
         //Debug.Log(database.GetItem("jee").DisplayName, this);
     }
 }

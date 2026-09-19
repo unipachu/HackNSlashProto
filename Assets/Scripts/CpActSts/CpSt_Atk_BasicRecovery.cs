@@ -65,7 +65,7 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
             return;
         if (CpMgr.GetAos(cpId).dodgeAllowed) {
-            if (CpInputBuffer.TryConsumeInput(
+            if (InputBufferUtils.TryConsumeInput(
                 BufferableInput.BtnE,
                 ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
                 ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime)

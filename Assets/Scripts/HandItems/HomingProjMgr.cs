@@ -68,8 +68,6 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
             hasTargets = hasTargets,
             isActive = isActive
         }.Schedule(numOfPooledProj, 64);
-        // TODO: For more parallelism we could actually apply the homing projectile movement to the
-        // TODO C: Transforms later but what ever.
         movJobHandle.Complete();
         // Update projectile Monobehaviour.
         for (int i = 0; i < numOfPooledProj; i++) {

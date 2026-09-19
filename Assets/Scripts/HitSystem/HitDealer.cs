@@ -16,7 +16,7 @@ public class HitDealer : MonoBehaviour {
 
     bool isActive;
     Collider[] overlapCapsuleResults;
-    HashSet<HitReceiver> hitReceiversHitDuringLastActivation = new();
+    HashSet<IHitReceiver> hitReceiversHitDuringLastActivation = new();
 
     public bool IsActive => isActive;
 
@@ -59,7 +59,7 @@ public class HitDealer : MonoBehaviour {
         isActive = false;
     }
 
-    public bool TryDealHit(HitReceiver hitReceiver, HitData hitData) {
+    public bool TryDealHit(IHitReceiver hitReceiver, HitData hitData) {
         if (hitReceiversHitDuringLastActivation.Contains(hitReceiver))
             return false;
         HitResult hitResult = hitReceiver.ReceiveHit(this, hitData);
@@ -68,10 +68,6 @@ public class HitDealer : MonoBehaviour {
         return true;
     }
 
-    // TODO: Make a version of this which uses capsule cast from previous location to current location
-    // TODO C: instead. This will allow the weapon to make fast linear movements without going through
-    // TODO C: enemies. You need to save the previous capsule world locations for the sweeps.
-    // TODO C: Then you can choose between OverlapCapsule or CapsuleCast or use both at the same time!
     public void TryHitAllOverlappingHitRecievers(
         int layerMask,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
@@ -89,8 +85,8 @@ public class HitDealer : MonoBehaviour {
                 qryTrgIxn
             );
             for (int colliderIndex = 0; colliderIndex < numCols; colliderIndex++) {
-                HitReceiver hitReceiver =
-                    overlapCapsuleResults[colliderIndex].GetComponent<HitReceiver>();
+                IHitReceiver hitReceiver =
+                    overlapCapsuleResults[colliderIndex].GetComponent<IHitReceiver>();
                 if (hitReceiver != null)
                     TryDealHit(hitReceiver, new HitData(hitEffects, hitWldDir));
             }

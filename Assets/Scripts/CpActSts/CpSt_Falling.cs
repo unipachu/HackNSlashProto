@@ -12,11 +12,11 @@ public class CpSt_Falling : IFsmSt_Cp {
         => true;
 
     public CpSt_Falling Enter() {
-        CpMgr.GetAos(cpId).act_Falling_StartHgt = CpMgr.GetAos(cpId).trf_pos.y;
+        CpMgr.GetAos(cpId).act_Falling_StartHgt = CpMgr.inst.cp[cpId].transform.position.y;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.Get(CpAnimInfoT.falling),
+            CpAnimInfoFactory.Construct(CpAnimInfoT.falling),
             4 // NOTE: Transition is long to give a sense of accleration during falling.
         );
         return this;
@@ -42,7 +42,7 @@ public class CpSt_Falling : IFsmSt_Cp {
             CpMgr.GetAos(cpId).act_Falling_HorAcc
         );
         if (CpMgr.GetAos(cpId).isGrounded){
-            float fallDist = CpMgr.GetAos(cpId).act_Falling_StartHgt - CpMgr.GetAos(cpId).trf_pos.y;
+            float fallDist = CpMgr.GetAos(cpId).act_Falling_StartHgt - CpMgr.inst.cp[cpId].transform.position.y;
             if(fallDist > CpMgr.GetAos(cpId).act_Falling_LandingStFallDistThreshold) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
                 return;

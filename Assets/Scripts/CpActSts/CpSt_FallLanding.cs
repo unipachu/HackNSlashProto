@@ -16,7 +16,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cpId],
             CpMgr.inst.unityComps[cpId].anim,
-            CpAnimInfo.Get(CpAnimInfoT.fallLanding),
+            CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
             0.2f
         );
         return this;
@@ -42,7 +42,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         );
         if (CpMgr.GetAos(cpId).dodgeAllowed) {
             if (
-                CpInputBuffer.TryConsumeInput(
+                InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,
                     ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
                     ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
