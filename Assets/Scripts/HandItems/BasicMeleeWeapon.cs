@@ -16,6 +16,6 @@ public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitt
     public Transform Trf => transform;
 
     void Awake() {
-        comboGraph = comboGraphConfig.GenerateComboGraph(this);
+        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphConfig.nodes);
     }
 }

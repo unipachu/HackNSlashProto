@@ -20,6 +20,6 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
     public Transform Trf => transform;
 
     void Awake() {
-        comboGraph = comboGraphConfig.GenerateComboGraph(this);
+        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphConfig.nodes);
     }
 }
