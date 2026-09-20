@@ -15,8 +15,8 @@ public class BtNode_Cond_InAggroRange : IBtNode {
         //    data.cp,
         //    CpMgr.GetAos(data.cp.Id).enableDbgMsgs
         //);
-        return CpMgr.IsWithinDistToLockOnTgt(
-            data.cp.Id,
+        return AiCtrlMgr.IsWithinDistToFollowTgt(
+            aiCtrl.Id,
             data.aggroRange
         )
             ? BtResult.Success

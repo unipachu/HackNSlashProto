@@ -335,20 +335,6 @@ public class CpMgr : Singleton<CpMgr> {
     public static ref Cp_AosData GetAos(int cpId)
         => ref inst.aosData.ElementAt(cpId);
 
-    public static bool HasLockedOnTgt(int cpId)
-        => inst.classRefs[cpId].lockedOnTgt != null;
-
-    public static bool IsWithinDistToLockOnTgt(int cpId, float maxDist) {
-        Debug.Assert(inst.cp[cpId] != null, $"cp at index {cpId} was null!");
-        Debug.Assert(inst.classRefs[cpId].lockedOnTgt != null, $"locked on tgt at index {cpId} was null!");
-        float dist = Vector3.Distance(
-            inst.cp[cpId].transform.position,
-            inst.classRefs[cpId].lockedOnTgt.LockOnTrf.position
-        );
-        //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpId], inst.aosData[cpId].enableDbgMsgs);
-        return dist < maxDist;
-    }
-
     /// <summary>
     /// This should always be called when cp act state is switched!
     /// </summary>
@@ -397,21 +383,22 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// Tries to find any eligible lock on target from other team if not already locked to a target.
+    /// Tries to find any <see cref="CpHandle"/> considered an "enemy" to <paramref name="cpId"/>. Returns
+    /// null if none found.
     /// </summary>
-    public static bool TryFindTgt(int cpId) {
-        if (HasLockedOnTgt(cpId)) // Already locked on a tgt.
-            return true;
-        for(int i = 0; i < inst.entityCount; i++) {
+    public static CpHandle TryFindEnemy(int cpId) {
+        for (int i = 0; i < inst.entityCount; i++) {
             if (i == cpId)
                 continue;
-            if (inst.aosData[i].team != inst.aosData[cpId].team) {
+            PawnTeam candTeam = CpMgr.inst.aosData[i].team;
+            if (candTeam == PawnTeam.FriendToAll)
+                continue;
+            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aosData[cpId].team) {
                 //Debug.Log("Found tgt: " + i);
-                inst.classRefs[cpId].lockedOnTgt = inst.cp[i].AsLockOnTgt;
-                return true;
+                return inst.cp[i];
             }
         }
-        return false;
+        return null;
     }
 
     /// <summary>

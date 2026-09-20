@@ -33,7 +33,7 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
             thisNode.hitter.HitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
-            CpMgr.inst.classRefs[cpId].lockedOnTgt.LockOnTrf
+            CpMgr.inst.classRefs[cpId].lockOnTgt.LockOnTrf
         );
     }
 

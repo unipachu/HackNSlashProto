@@ -86,9 +86,9 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         for (int i = 0; i < entityCount; i++) {
             int cpId = aos[i].cp.Id;
             var cpUnityComps = CpMgr.inst.unityComps[cpId];
-            var cpClassRefs = CpMgr.inst.classRefs[cpId];
+            //var cpClassRefs = CpMgr.inst.classRefs[cpId];
             //Debug.Log("cpId " + cpId);
-            if (cpClassRefs.lockedOnTgt == null) {
+            if (aos[i].followTgt == null) {
                 //Dbg.Log(
                 //    $"{cpId} Set agent desired vel to 0 because tgt was null: {cpClassRefs.lockedOnTgt}",
                 //    CpMgr.GetAos(cpId).enableDbgMsgs
@@ -101,7 +101,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             cpUnityComps.navMeshAgent.nextPosition = aos[i].cp.transform.position;
             // NOTE: We need to check this manually since SetDestination does not have option to set
             // NOTE C: target sample position max distance.
-            if (!CpUtils.IsOnNavMesh(cpClassRefs.lockedOnTgt.Id)) {
+            if (!aos[i].followTgt.IsOnNavMesh()) {
                 //Dbg.Log(
                 //    $"{cpId} Set agent desired vel to 0 since tgt was not on navmesh.",
                 //    CpMgr.GetAos(cpId).enableDbgMsgs
@@ -116,7 +116,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: to work well enough for now.
             if (!cpUnityComps.navMeshAgent.hasPath) {
                 //Dbg.Log($"{cpId} Agent had no path. Set destination.", CpMgr.GetAos(cpId).enableDbgMsgs);
-                cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.LockOnTrf.position);
+                cpUnityComps.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
                 continue;
             }
             // If we are close enough to the destination, stop desiring movement.
@@ -165,7 +165,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 aos[i].prevCalculatePathSucceeded = false;
                 aos[i].agentDesiredVel = float3.zero;
             }
-            cpUnityComps.navMeshAgent.SetDestination(cpClassRefs.lockedOnTgt.LockOnTrf.position);
+            cpUnityComps.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
         }
     }
 
@@ -213,6 +213,49 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// <summary>
     /// Gets ref to corresponding <see cref="AiCtrlData"/>.
     /// </summary>
-    public static ref AiCtrlData GetData(AiCtrlHandle aiCtrl) 
+    public static ref AiCtrlData GetData(AiCtrlHandle aiCtrl)
         => ref inst.aos[aiCtrl.Id];
+
+    public static bool HasFollowTgt(int aiCtrlId)
+        => GetData(aiCtrlId).followTgt != null;
+
+    public static bool IsWithinDistToFollowTgt(int aiCtrlId, float maxDist) {
+        Debug.Assert(
+            GetData(aiCtrlId).followTgt != null,
+            $"{nameof(AiCtrlData.followTgt)} at index {aiCtrlId} was null!"
+        );
+        float dist = Vector3.Distance(
+            GetData(aiCtrlId).cp.transform.position,
+            GetData(aiCtrlId).followTgt.TrfToFollow.position
+        );
+        //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpId], inst.aosData[cpId].enableDbgMsgs);
+        return dist < maxDist;
+    }
+
+    /// <summary>
+    /// Tries to find any eligible follow tgt and set it as cur follow tgt.
+    /// </summary>
+    public static bool TryFindFollowTgt(int aiCtrlId) {
+        if (HasFollowTgt(aiCtrlId))
+            return true;
+        GetData(aiCtrlId).followTgt = CpMgr.TryFindEnemy(GetData(aiCtrlId).cp.Id);
+        if(GetData(aiCtrlId).followTgt == null)
+            return false;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to lock onto the target the <paramref name="aiCtrl"/> is currently following.<br/>
+    /// NOTE: Expects the <paramref name="aiCtrl"/> to already have a <see cref="AiCtrlData.followTgt"/>!<br/>
+    /// NOTE 2: The <see cref="Cp_NonUnityObjClassRefs.lockOnTgt"/> is owned by <see cref="CpMgr"/> instead
+    /// of <see cref="AiCtrlMgr"/> since in the future we might want to implement lock on funcitonality for
+    /// the player as well. (20.9.2026)
+    /// </summary>
+    public static bool TryLockOnToFollowTgt(int aiCtrl) {
+        if(GetData(aiCtrl).followTgt is ILockOnTargetable lockOnTgt) {
+            CpMgr.inst.classRefs[GetData(aiCtrl).cp.Id].lockOnTgt = lockOnTgt;
+            return true;
+        }
+        return false;
+    }
 }

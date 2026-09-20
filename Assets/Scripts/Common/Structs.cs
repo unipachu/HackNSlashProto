@@ -26,6 +26,7 @@ public struct AiCtrlData {
     public IBtNode bt;
     public CpHandle cp;
     public CtrlInputData ctrlInputData;
+    public IFollowTgt followTgt;
     public AiCtrlHandle handle;
     public bool prevCalculatePathSucceeded;
 
@@ -42,6 +43,7 @@ public struct AiCtrlData {
         this.bt = bt;
         this.cp = cp;
         ctrlInputData = default;
+        followTgt = null;
         this.handle = handle;
         prevCalculatePathSucceeded = false;
     }
@@ -363,7 +365,7 @@ public struct Cp_NonUnityObjClassRefs {
     /// <summary>
     /// Other pawn this is pawn is locked onto.
     /// </summary>
-    public ILockOnTgt lockedOnTgt;
+    public ILockOnTargetable lockOnTgt;
     public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
@@ -371,7 +373,7 @@ public struct Cp_NonUnityObjClassRefs {
     public Cp_NonUnityObjClassRefs(int cpId, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
         actSts = new Cp_ActSts(cpId);
         this.cpCtrl = cpCtrl;
-        lockedOnTgt = null;
+        lockOnTgt = null;
         this.rHandItem = rHandItem;
         st_cur = null;
         st_prev = null;

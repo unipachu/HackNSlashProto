@@ -14,7 +14,8 @@ public static class BtDataFactory{
             "RootSelector",
             new BtNode_Sequence(
                 "LockedOnTgtSequence",
-                new BtNode_TryLockOnTgt(aiCtrl),
+                new BtNode_TryFindFollowTgt(aiCtrl),
+                new BtNode_TryLockOnToFollowTgt(aiCtrl),
                 new BtNode_Selector(
                     "TargetActionSelector",
                     new BtNode_Sequence(
