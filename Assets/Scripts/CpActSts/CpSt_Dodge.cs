@@ -13,7 +13,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
     public CpSt_Dodge Enter() {
         CpMgr.GetData(cp.Id).inputRotAllowed = false;
         CpMgr.GetData(cp.Id).bufferedInputStSwitchAllowed = false;
-        CpMgr.GetData(cp.Id).invul = true;
+        CpMgr.GetData(cp.Id).ignoreHits = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.Id],
             CpMgr.inst.unityComps[cp.Id].anim,
@@ -24,7 +24,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetData(cp.Id).invul = false;
+        CpMgr.GetData(cp.Id).ignoreHits = false;
     }
 
     public void Tick() {

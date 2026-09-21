@@ -16,7 +16,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     public CpSt_Atk_FlyingAtk Enter(HitEffects hitEffects, HitDealer hitDealer) {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
-        CpMgr.GetData(cp.Id).invul = true;
+        CpMgr.GetData(cp.Id).ignoreHits = true;
         CpMgr.GetData(cp.Id).isAffectedByGravity = false;
         CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
@@ -29,7 +29,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetData(cp.Id).invul = false;
+        CpMgr.GetData(cp.Id).ignoreHits = false;
         CpMgr.GetData(cp.Id).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }

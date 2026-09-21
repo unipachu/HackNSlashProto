@@ -297,7 +297,7 @@ public struct Cp_AosData {
     /// <summary>
     /// Invulnerable (character ignores hits).
     /// </summary>
-    public bool invul;
+    public bool ignoreHits;
     public bool isAffectedByGravity;
     public bool isGrounded;
     public bool isSwitchingSt;
@@ -392,6 +392,7 @@ public struct Cp_UnityObjs {
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
     public Transform lockOnTrf;
+    public Transform wldHpBarPos;
 }
 
 public struct CtrlInputData {
@@ -469,4 +470,13 @@ public struct MeleeWeaponData {
         this.atk1Dmg = atk1Dmg;
         this.atk2Dmg = atk2Dmg;
     }
+}
+
+public struct WldHpBarData {
+    public Transform anchor;
+    public WldHpBar hpBar;
+    public bool isLocked;
+    public bool pendingUnregister;
+    public RectTransform rect;
+    public float visibleUntil;
 }

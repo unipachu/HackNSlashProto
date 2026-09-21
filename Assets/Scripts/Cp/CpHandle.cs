@@ -11,6 +11,9 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     [Header("Unity Comp Refs")]
     public Cp_UnityObjs unityObjs;
 
+    /// <summary>
+    ///  Rename to "I" since this object is kind of the id and this int is index of the entity.
+    /// </summary>
     public int Id { get; set; }
 
     // NOTE: This is a little cheating but we do not need to access the manager to access the lock on transform.

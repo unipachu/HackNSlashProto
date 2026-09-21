@@ -38,7 +38,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.HitDealerDeactivated);
                 break;
             case CpAnimEventT.InvulEnd:
-                CpMgr.GetData(id).invul = false;
+                CpMgr.GetData(id).ignoreHits = false;
                 break;
             case CpAnimEventT.AirtimeEnded:
                 CpMgr.GetData(id).isAffectedByGravity = true;

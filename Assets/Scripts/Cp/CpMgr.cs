@@ -1,4 +1,5 @@
 using System;
+using Unity.AppUI.UI;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -67,7 +68,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.input_mov = float2.zero;
         newAosData.input_mov_LastNonZero = float2.zero;
         newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
-        newAosData.invul = false;
+        newAosData.ignoreHits = false;
         newAosData.isAffectedByGravity = true;
         newAosData.isGrounded = true;
         newAosData.lastKnockbackStr = 0;
@@ -402,8 +403,8 @@ public class CpMgr : Singleton<CpMgr> {
             enterFunc,
             ref classRefs[cpId].st_cur,
             ref classRefs[cpId].st_prev,
-            ref GetData(cpId).isSwitchingSt,
-            CpMgr.GetData(cpId).enableDbgMsgs
+            ref GetData(cpId).isSwitchingSt
+            //CpMgr.GetData(cpId).enableDbgMsgs
         );
         OnStateSwitched(cpId, classRefs[cpId].st_cur);
     }

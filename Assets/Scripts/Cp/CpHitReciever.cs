@@ -10,7 +10,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         => CpMgr.GetData(cp.Id).team;
 
     public bool IgnoreAllHits()
-        => CpMgr.GetData(cp.Id).invul;
+        => CpMgr.GetData(cp.Id).ignoreHits;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         //Debug.Log(
@@ -24,7 +24,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         ref Cp_AosData aos = ref CpMgr.GetData(cpId);
         var classRefs = CpMgr.inst.classRefs[cpId];
         var cp = CpMgr.inst.cp[cpId];
-        if (!aos.invul) {
+        if (!aos.ignoreHits) {
             aos.hp_Cur -= hitData.effects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
             //Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
@@ -74,6 +74,6 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
             }
         }
-        return new(aos.invul, false);
+        return new(aos.ignoreHits, false);
     }
 }

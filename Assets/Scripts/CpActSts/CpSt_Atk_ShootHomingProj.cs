@@ -44,7 +44,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
             case CpAnimEventT.Finished:
                 switch (cpData.act_AtkPhase) {
                     case AtkPhase.Windup:
-                        Dbg.Log("fired finished windup", cpData.enableDbgMsgs);
+                        //Dbg.Log("fired finished windup", cpData.enableDbgMsgs);
                         cpData.act_AtkPhase = AtkPhase.Recovery;
                         HomingProjMgr.inst.ShootProj(
                             homingProjData,
@@ -60,7 +60,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         );
                         break;
                     case AtkPhase.Recovery:
-                        Dbg.Log("fired finished recovery", cpData.enableDbgMsgs);
+                        //Dbg.Log("fired finished recovery", cpData.enableDbgMsgs);
                         CpUtils.TransitionToFallIdleOrWalk(cp.Id);
                         break;
                     default:
