@@ -26,15 +26,15 @@ public class CpSt_Walk : IFsmSt_Cp {
             return;
         CpUtils.UpdateMovInputData(
             cp.Id,
-            CpMgr.GetAos(cp.Id).input_mov,
+            CpMgr.GetData(cp.Id).input_mov,
             float3.zero,
-            CpMgr.GetAos(cp.Id).walkMaxLinSpd,
-            CpMgr.GetAos(cp.Id).walkYawSpd,
-            CpMgr.GetAos(cp.Id).walkLinAcc
+            CpMgr.GetData(cp.Id).walkMaxLinSpd,
+            CpMgr.GetData(cp.Id).walkYawSpd,
+            CpMgr.GetData(cp.Id).walkLinAcc
         );
         if (CpUtils.TrySwitchStByBufferedInput(cp.Id))
             return;
-        if (math.all(CpMgr.GetAos(cp.Id).input_mov == float2.zero)) {
+        if (math.all(CpMgr.GetData(cp.Id).input_mov == float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cp.Id);
             return;
         }

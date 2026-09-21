@@ -24,7 +24,7 @@ public class CpSt_Death : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpMgr.inst.UnregisterNDestroy(cp.Id);
+                GameObject.Destroy(cp.gameObject);
                 return;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -36,7 +36,7 @@ public class CpSt_Death : IFsmSt_Cp {
         CpUtils.UpdateMovInputData(
             cp.Id,
             float2.zero,
-            CpMgr.GetAos(cp.Id).animDPos,
+            CpMgr.GetData(cp.Id).animDPos,
             0,
             0,
             float.PositiveInfinity

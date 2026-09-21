@@ -42,7 +42,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
         CpUtils.UpdateMovInputData(
             cp.Id,
             float2.zero,
-            CpMgr.GetAos(cp.Id).animDPos * CpMgr.GetAos(cp.Id).lastKnockbackStr,
+            CpMgr.GetData(cp.Id).animDPos * CpMgr.GetData(cp.Id).lastKnockbackStr,
             0,
             0,
             float.PositiveInfinity

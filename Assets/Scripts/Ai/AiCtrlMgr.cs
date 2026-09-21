@@ -86,6 +86,8 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     void Tick_AgentMovInput() {
         for (int i = 0; i < entityCount; i++) {
+            if (aos[i].cp == null)
+                continue;
             int cpId = aos[i].cp.Id;
             var cpUnityComps = CpMgr.inst.unityComps[cpId];
             //var cpClassRefs = CpMgr.inst.classRefs[cpId];
@@ -171,20 +173,10 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         }
     }
 
-    /// <summary>
-    /// NOTE: Reset "WasPressedThisFrame" inputs.
-    /// </summary>
-    void Tick_ResetWasPressedThisFrameInputs() {
-        for (int i = 0; i < entityCount; i++) {
-            aos[i].ctrlInputData.input_Atk_Light = false;
-            aos[i].ctrlInputData.input_Atk_Heavy = false;
-            aos[i].ctrlInputData.input_Atk_Ult = false;
-            aos[i].ctrlInputData.input_Dodge = false;
-        }
-    }
-
     void Tick_BehaviorTrees() {
         for ( int i = 0; i < entityCount; i++) {
+            if (aos[i].cp == null)
+                continue;
             switch (aos[i].bt.Eval()) {
                 case BtResult.Success:
                     aos[i].bt.Reset();
@@ -199,6 +191,20 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                     Debug.LogError($"Switch defaulted");
                     break;
             }
+        }
+    }
+
+    /// <summary>
+    /// NOTE: Reset "WasPressedThisFrame" inputs.
+    /// </summary>
+    void Tick_ResetWasPressedThisFrameInputs() {
+        for (int i = 0; i < entityCount; i++) {
+            if (aos[i].cp == null)
+                continue;
+            aos[i].ctrlInputData.input_Atk_Light = false;
+            aos[i].ctrlInputData.input_Atk_Heavy = false;
+            aos[i].ctrlInputData.input_Atk_Ult = false;
+            aos[i].ctrlInputData.input_Dodge = false;
         }
     }
 

@@ -108,16 +108,17 @@ public class CpMgr : Singleton<CpMgr> {
     }
 
     /// <summary>
-    /// Unregisters cp and destroys corresponding game object.
+    /// Unregisters cp entity. Expects <see cref="CpHandle"/> to have been already destroyed.
+    /// WARNING: NEVER CALL THIS DIRECTLY FROM ANYWHERE EXCEPT
+    /// <see cref="LateTick_UnregisterDestroyedHandles"/>!
     /// </summary>
-    public void UnregisterNDestroy(int cpId) {
+    void Unregister(int cpId) {
         if (cpId >= entityCount) {
             Debug.LogError($"{cpId} was greaterequal to {entityCount}!");
             return;
         }
         if (classRefs[cpId].cpCtrl != null)
             classRefs[cpId].cpCtrl.LostListener();
-        GameObject.Destroy(cp[cpId].gameObject);
         int lastId = entityCount - 1;
         CpHandle swappedCp = cpId != lastId ? cp[lastId] : null;
         ArrayUtils.RemoveAtSwapBack(animEventPlrData, entityCount, cpId);
@@ -129,7 +130,7 @@ public class CpMgr : Singleton<CpMgr> {
         if (swappedCp != null)
             // Last Cp was swapped to cpId, so update Id.
             swappedCp.Id = cpId;
-        Debug.Log($"Unregistered and destroyed {typeof(CpHandle)} id: {cpId}.");
+        Debug.Log($"Unregistered (and destroyed) {typeof(CpHandle)} id: {cpId}.");
     }
 
     // ------------------------------------------------------------
@@ -154,13 +155,13 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < entityCount; i++) {
             if (cp[i] == null)
                 continue;
-            GetAos(i).isGrounded = CcMov.IsGrounded(
+            GetData(i).isGrounded = CcMov.IsGrounded(
                 unityComps[i].cc,
                 out bool hitSomething,
                 out RaycastHit groundCastResult
             );
-            GetAos(i).groundCastHitSomething = hitSomething;
-            GetAos(i).groundCastNrm = groundCastResult.normal;
+            GetData(i).groundCastHitSomething = hitSomething;
+            GetData(i).groundCastNrm = groundCastResult.normal;
         }
     }
 
@@ -171,8 +172,10 @@ public class CpMgr : Singleton<CpMgr> {
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
         for (int i = 0; i < entityCount; i++) {
+            if (cp[i] == null)
+                continue;
             aosData.ElementAt(i).navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
-            GetAos(i).curStDur += dt;
+            GetData(i).curStDur += dt;
         }
         Tick_ReadMovInput();
         Tick_InputBuffer(dt);
@@ -190,6 +193,8 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_ReadMovInput() {
         for (int i = 0; i < entityCount; i++) {
+            if (cp[i] == null)
+                continue;
             if (classRefs[i].cpCtrl == null)
                 continue;
             //GetAos(i).input_atk_Light = classRefs[i].cpCtrl.TryConsume_Atk_Light();
@@ -197,10 +202,10 @@ public class CpMgr : Singleton<CpMgr> {
             //GetAos(i).input_atk_Ult = classRefs[i].cpCtrl.TryConsume_Atk_Ult();
             //GetAos(i).input_dodge = classRefs[i].cpCtrl.TryConsume_Dodge();
             if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
-                GetAos(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
-                GetAos(i).input_mov_LastNonZero = classRefs[i].cpCtrl.Input_Mov;
+                GetData(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
+                GetData(i).input_mov_LastNonZero = classRefs[i].cpCtrl.Input_Mov;
             } else
-                GetAos(i).input_mov = Vector2.zero;
+                GetData(i).input_mov = Vector2.zero;
             //Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
             //Debug.Log($"{i} mov input mag: {math.length(data.input_mov[i])}.");
         }
@@ -208,51 +213,55 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_InputBuffer(float dt) {
         for (int i = 0; i < entityCount; i++) {
+            if (cp[i] == null)
+                continue;
             if (classRefs[i].cpCtrl == null)
                 continue;
             if (classRefs[i].cpCtrl.TryConsume_Atk_Light())
                 InputBufferUtils.BufferInput(
-                    ref GetAos(i).inputBuffer_BufferedInput,
-                    ref GetAos(i).inputBuffer_RemainingTime,
+                    ref GetData(i).inputBuffer_BufferedInput,
+                    ref GetData(i).inputBuffer_RemainingTime,
                     BufferableInput.RShldr,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (classRefs[i].cpCtrl.TryConsume_Atk_Heavy())
                 InputBufferUtils.BufferInput(
-                    ref GetAos(i).inputBuffer_BufferedInput,
-                    ref GetAos(i).inputBuffer_RemainingTime,
+                    ref GetData(i).inputBuffer_BufferedInput,
+                    ref GetData(i).inputBuffer_RemainingTime,
                     BufferableInput.RTrg,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (classRefs[i].cpCtrl.TryConsume_Atk_Ult())
                 InputBufferUtils.BufferInput(
-                    ref GetAos(i).inputBuffer_BufferedInput,
-                    ref GetAos(i).inputBuffer_RemainingTime,
+                    ref GetData(i).inputBuffer_BufferedInput,
+                    ref GetData(i).inputBuffer_RemainingTime,
                     BufferableInput.LShldr,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (classRefs[i].cpCtrl.TryConsume_Dodge())
                 InputBufferUtils.BufferInput(
-                    ref GetAos(i).inputBuffer_BufferedInput,
-                    ref GetAos(i).inputBuffer_RemainingTime, 
+                    ref GetData(i).inputBuffer_BufferedInput,
+                    ref GetData(i).inputBuffer_RemainingTime, 
                     BufferableInput.BtnE,
                     GlobalData.inst.inputBuffer_Dur
                 );
             // Clear input if buffer time passed.
-            if (GetAos(i).inputBuffer_RemainingTime <= 0)
+            if (GetData(i).inputBuffer_RemainingTime <= 0)
                 continue;
-            GetAos(i).inputBuffer_RemainingTime -= dt;
+            GetData(i).inputBuffer_RemainingTime -= dt;
             //Debug.Log("remaining time: " + remainingTime);
-            if (GetAos(i).inputBuffer_RemainingTime <= 0)
+            if (GetData(i).inputBuffer_RemainingTime <= 0)
                 InputBufferUtils.Clear(
-                    ref GetAos(i).inputBuffer_BufferedInput,
-                    ref GetAos(i).inputBuffer_RemainingTime
+                    ref GetData(i).inputBuffer_BufferedInput,
+                    ref GetData(i).inputBuffer_RemainingTime
                 );
         }
     }
 
     void Tick_Mov(float dt) {
         for (int i = 0; i < entityCount; i++) {
+            if (cp[i] == null)
+                continue;
             //Dbg.Log(
             //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
             //    + $"| additionalLinMov: {soaData.movInput_additionalLinMov[i]} \n"
@@ -262,24 +271,24 @@ public class CpMgr : Singleton<CpMgr> {
             //    aosData[i].enableDebugMsgs
             //);
             Debug.Assert(
-                !float.IsNaN(GetAos(i).vel_Hor.x) && !float.IsNaN(GetAos(i).vel_Hor.y),
-                $"{i} vel_hor had NaN: {GetAos(i).vel_Hor}"
+                !float.IsNaN(GetData(i).vel_Hor.x) && !float.IsNaN(GetData(i).vel_Hor.y),
+                $"{i} vel_hor had NaN: {GetData(i).vel_Hor}"
             );
             //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-            GetAos(i).vel_Hor = Vector2.MoveTowards(
-                GetAos(i).vel_Hor,
-                GetAos(i).movInput_tgtHorDir * GetAos(i).movInput_tgtHorSpd,
-                GetAos(i).movInput_horAcc * dt
+            GetData(i).vel_Hor = Vector2.MoveTowards(
+                GetData(i).vel_Hor,
+                GetData(i).movInput_tgtHorDir * GetData(i).movInput_tgtHorSpd,
+                GetData(i).movInput_horAcc * dt
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
-            if (math.lengthsq(GetAos(i).movInput_tgtHorDir) > 0.0001f) {
+            if (math.lengthsq(GetData(i).movInput_tgtHorDir) > 0.0001f) {
                 cp[i].transform.rotation = TrfMathUtils.RotateFwdToTgt(
                     inst.cp[i].transform.rotation,
-                    GetAos(i).movInput_yawSpd,
-                    GetAos(i).movInput_tgtHorDir
+                    GetData(i).movInput_yawSpd,
+                    GetData(i).movInput_tgtHorDir
                 );
             }
-            if (GetAos(i).isAffectedByGravity)
+            if (GetData(i).isAffectedByGravity)
                 // NOTE: This will override previously calculated horizontal velocity if the player is
                 // NOTE C: sliding down a slope. (9.9.2026)
                 CcMov.ApplyGravityNSlideDownSlopes(i, dt);
@@ -287,15 +296,15 @@ public class CpMgr : Singleton<CpMgr> {
                 // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
                 // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
                 // NOTE C: for vertical movement.
-                GetAos(i).vel_Ver = 0;
+                GetData(i).vel_Ver = 0;
             // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
-            Vector3 totalMov = (Vector3)GetAos(i).movInput_additionalLinMov
-                + new Vector3(GetAos(i).vel_Hor.x, GetAos(i).vel_Ver, GetAos(i).vel_Hor.y) * dt;
+            Vector3 totalMov = (Vector3)GetData(i).movInput_additionalLinMov
+                + new Vector3(GetData(i).vel_Hor.x, GetData(i).vel_Ver, GetData(i).vel_Hor.y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
             unityComps[i].cc.Move(totalMov);
             // Save final velocity back to cp data.
-            GetAos(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
-            GetAos(i).vel_Ver = totalMov.y / dt;
+            GetData(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
+            GetData(i).vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
             unityComps[i].navMeshAgent.nextPosition = cp[i].transform.position;
         }
@@ -308,6 +317,7 @@ public class CpMgr : Singleton<CpMgr> {
     public void LateTick() {
         LateTick_AnimEventPlr();
         LateTick_Fsm();
+        LateTick_UnregisterDestroyedHandles();
     }
 
     void LateTick_AnimEventPlr() {
@@ -334,27 +344,44 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
+    /// <summary>
+    /// NOTE: We want to unregister an entity at a safe point when we are not looping over the entities or
+    /// otherwise using their Id's. You can safely mark a cp for deletion by destroying its
+    /// <see cref="CpHandle"/>, it will then be unregistered here.
+    /// </summary>
+    void LateTick_UnregisterDestroyedHandles() {
+        int i = 0;
+        // We swap the last element in the place of the unregistered one, so we onlu increment index if we
+        // don't unregister a cp.
+        while (i < entityCount) {
+            if (cp[i] == null)
+                Unregister(i);
+            else
+                i++;
+        }
+    }
+
     // ------------------------------------------------------------
     // Other Methods
     // ------------------------------------------------------------
 
-    public static ref Cp_AosData GetAos(int cpId)
+    public static ref Cp_AosData GetData(int cpId)
         => ref inst.aosData.ElementAt(cpId);
 
     /// <summary>
     /// This should always be called when cp act state is switched!
     /// </summary>
     public void OnStateSwitched(int cpId, IFsmSt newSt) {
-        GetAos(cpId).curStDur = 0;
+        GetData(cpId).curStDur = 0;
         if (classRefs[cpId].cpCtrl == null)
-            GetAos(cpId).input_mov_WhenLastSwitchedSt
-                = GetAos(cpId).input_mov;
+            GetData(cpId).input_mov_WhenLastSwitchedSt
+                = GetData(cpId).input_mov;
         else {
             if (classRefs[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
-                GetAos(cpId).input_mov_WhenLastSwitchedSt
-                    = GetAos(cpId).input_mov;
+                GetData(cpId).input_mov_WhenLastSwitchedSt
+                    = GetData(cpId).input_mov;
             else
-                GetAos(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
+                GetData(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
         }
     }
 
@@ -375,8 +402,8 @@ public class CpMgr : Singleton<CpMgr> {
             enterFunc,
             ref classRefs[cpId].st_cur,
             ref classRefs[cpId].st_prev,
-            ref GetAos(cpId).isSwitchingSt
-            // CpMgr.GetSoa(cpId).enableDebugMsgs
+            ref GetData(cpId).isSwitchingSt,
+            CpMgr.GetData(cpId).enableDbgMsgs
         );
         OnStateSwitched(cpId, classRefs[cpId].st_cur);
     }
@@ -419,7 +446,7 @@ public class CpMgr : Singleton<CpMgr> {
                 enterFunc,
                 ref classRefs[cpId].st_cur,
                 ref classRefs[cpId].st_prev,
-                ref GetAos(cpId).isSwitchingSt
+                ref GetData(cpId).isSwitchingSt
                 // CpMgr.GetSoa(cpId).enableDebugMsgs
             )
         ) {

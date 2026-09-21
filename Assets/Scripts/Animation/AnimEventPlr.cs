@@ -56,14 +56,28 @@ public static class AnimEventPlr {
     /// frame Update have already been applied!
     /// </summary>
     public static void Tick(
-        int caId,
+        int cpId,
         ref AnimEventPlrData data,
         Animator anim,
         Action<int, CpAnimEventT> animEventAction
     ) {
+        //Dbg.Log(
+        //    $"{nameof(data.animInfo)}: {data.animInfo}\n"
+        //        + $"{nameof(data.prevTotalNrmT)}: {data.prevTotalNrmT}\n"
+        //        + $"{nameof(data.cursor)}: {data.cursor}\n"
+        //        + $"{nameof(data.loopCount)}: {data.loopCount}\n"
+        //        + $"{nameof(data.loopsSinceRebase)}: {data.loopsSinceRebase}\n"
+        //        + $"{nameof(data.finished)}: {data.finished}\n"
+        //        + $"{nameof(data.fireEventsBeforeStartOffset)}: {data.fireEventsBeforeStartOffset}\n"
+        //        + $"{nameof(data.firstTick)}: {data.firstTick}",
+        //    CpMgr.GetData(cpId).enableDbgMsgs
+        //);
         bool firstTickHelper = data.firstTick;
         data.firstTick = false;
-        //Debug.Log($"Num of anim events: {data.animInfo.sortedAnimEvents.Length}");
+        //Dbg.Log(
+        //    $"Num of anim events: {data.animInfo.sortedAnimEvents.Length}",
+        //    CpMgr.GetData(cpId).enableDbgMsgs
+        //);
         if (data.finished) {
             return;
         }
@@ -83,7 +97,7 @@ public static class AnimEventPlr {
         float curTotalNrmT = info.normalizedTime;
         if (firstTickHelper && data.fireEventsBeforeStartOffset) {
             FireEventsInNrmRange(
-                caId,
+                cpId,
                 data,
                 0,
                 data.cursor,
@@ -100,7 +114,7 @@ public static class AnimEventPlr {
         data.prevTotalNrmT = curTotalNrmT;
         if (!data.animInfo.looping) {
             FireEventsInNrmRange(
-                caId,
+                cpId,
                 data,
                 data.cursor,
                 Mathf.Min(curTotalNrmT, 1),
@@ -121,7 +135,7 @@ public static class AnimEventPlr {
             float toLoopEnd = 1 - data.cursor;
             if (dTotalNrmT < toLoopEnd) {
                 FireEventsInNrmRange(
-                    caId,
+                    cpId,
                     data,
                     data.cursor,
                     data.cursor + dTotalNrmT,
@@ -133,10 +147,9 @@ public static class AnimEventPlr {
                     return;
                 data.cursor += dTotalNrmT;
                 dTotalNrmT = 0;
-            }
-            else {
+            }else {
                 FireEventsInNrmRange(
-                    caId,
+                    cpId,
                     data,
                     data.cursor,
                     1,
@@ -180,7 +193,7 @@ public static class AnimEventPlr {
     /// NOTE: from and to need to be normalized!
     /// </summary>
     static void FireEventsInNrmRange(
-        int caId,
+        int cpId,
         in AnimEventPlrData data,
         float from,
         float to,
@@ -198,7 +211,7 @@ public static class AnimEventPlr {
             float t = data.animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
             //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
-            animEventAction?.Invoke(caId, data.animInfo.sortedAnimEvents[i].id);
+            animEventAction?.Invoke(cpId, data.animInfo.sortedAnimEvents[i].id);
             // If the animation event switched animation, we return.
             if (data.firstTick)
                 return;

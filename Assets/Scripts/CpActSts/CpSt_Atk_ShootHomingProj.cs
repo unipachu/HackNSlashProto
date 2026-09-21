@@ -28,7 +28,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.homingProjTgt = homingProjTgt;
-        CpMgr.GetAos(cp.Id).act_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.Id],
             CpMgr.inst.unityComps[cp.Id].anim,
@@ -39,15 +39,16 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var soaData = CpMgr.inst.aosData;
+        ref Cp_AosData cpData = ref cp.GetData();
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (CpMgr.GetAos(cp.Id).act_AtkPhase) {
+                switch (cpData.act_AtkPhase) {
                     case AtkPhase.Windup:
-                        CpMgr.GetAos(cp.Id).act_AtkPhase = AtkPhase.Recovery;
+                        Dbg.Log("fired finished windup", cpData.enableDbgMsgs);
+                        cpData.act_AtkPhase = AtkPhase.Recovery;
                         HomingProjMgr.inst.ShootProj(
                             homingProjData,
-                            new HitData(hitEffects, soaData[cp.Id].team, projSpawnPose.forward),
+                            new HitData(hitEffects, cpData.team, projSpawnPose.forward),
                             projSpawnPose.position,
                             projSpawnPose.forward,
                             homingProjTgt
@@ -59,10 +60,11 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         );
                         break;
                     case AtkPhase.Recovery:
+                        Dbg.Log("fired finished recovery", cpData.enableDbgMsgs);
                         CpUtils.TransitionToFallIdleOrWalk(cp.Id);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {CpMgr.GetAos(cp.Id).act_AtkPhase}");
+                        Debug.LogError($"Switch defaulted with {cpData.act_AtkPhase}");
                         break;
                 }
                 break;
@@ -73,29 +75,31 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void Tick() {
-        switch (CpMgr.GetAos(cp.Id).act_AtkPhase) {
+        switch (CpMgr.GetData(cp.Id).act_AtkPhase) {
             case AtkPhase.Windup:
+                //Dbg.Log("ticked windup", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
                     cp.Id,
-                    CpMgr.GetAos(cp.Id).input_mov_LastNonZero,
-                    CpMgr.GetAos(cp.Id).animDPos,
+                    CpMgr.GetData(cp.Id).input_mov_LastNonZero,
+                    CpMgr.GetData(cp.Id).animDPos,
                     0,
                     180, // NOTE: Yaw speed is set here.
                     float.PositiveInfinity
                 );
                 break;
             case AtkPhase.Recovery:
+                //Dbg.Log("ticked recovery", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
                     cp.Id,
-                    CpMgr.GetAos(cp.Id).input_mov_LastNonZero,
-                    CpMgr.GetAos(cp.Id).animDPos,
+                    CpMgr.GetData(cp.Id).input_mov_LastNonZero,
+                    CpMgr.GetData(cp.Id).animDPos,
                     0,
                     0,
                     float.PositiveInfinity
                 );
                 break;
             default:
-                Debug.LogError($"{cp.Id} Switch defaulted with {CpMgr.GetAos(cp.Id).act_AtkPhase}.");
+                Debug.LogError($"{cp.Id} Switch defaulted with {CpMgr.GetData(cp.Id).act_AtkPhase}.");
                 break;
         }
     }

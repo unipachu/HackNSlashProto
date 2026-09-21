@@ -7,10 +7,10 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
     public PawnTeam GetTeam() 
-        => CpMgr.GetAos(cp.Id).team;
+        => CpMgr.GetData(cp.Id).team;
 
     public bool IgnoreAllHits()
-        => CpMgr.GetAos(cp.Id).invul;
+        => CpMgr.GetData(cp.Id).invul;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         //Debug.Log(
@@ -21,13 +21,13 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
         //);
         int cpId = this.cp.Id;
-        ref Cp_AosData aos = ref CpMgr.GetAos(cpId);
+        ref Cp_AosData aos = ref CpMgr.GetData(cpId);
         var classRefs = CpMgr.inst.classRefs[cpId];
         var cp = CpMgr.inst.cp[cpId];
         if (!aos.invul) {
             aos.hp_Cur -= hitData.effects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
-            Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
+            //Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
             if (aos.hp_Cur == 0) {
                 if (
                     CpMgr.inst.TrySwitchActSt(

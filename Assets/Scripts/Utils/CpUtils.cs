@@ -54,17 +54,17 @@ public static class CpUtils{
     /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
     /// </summary>
     public static bool IsOnNavMesh(int cpId) {
-        if (CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick)
-            return CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh;
+        if (CpMgr.GetData(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick)
+            return CpMgr.GetData(cpId).navTgtInfo.isCpOnNavmesh;
         Transform trf = CpMgr.inst.cp[cpId].transform;
-        CpMgr.GetAos(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
-        CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
+        CpMgr.GetData(cpId).navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
+        CpMgr.GetData(cpId).navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
             trf.position,
             out NavMeshHit hit,
-            CpMgr.GetAos(cpId).navTgtInfo.maxDistToNavMesh,
+            CpMgr.GetData(cpId).navTgtInfo.maxDistToNavMesh,
             CpMgr.inst.unityComps[cpId].navMeshAgent.areaMask
         );
-        return CpMgr.GetAos(cpId).navTgtInfo.isCpOnNavmesh;
+        return CpMgr.GetData(cpId).navTgtInfo.isCpOnNavmesh;
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public static class CpUtils{
     public static bool SwitchToFallingStIfNotGrounded(int cpId) {
         var classRefs = CpMgr.inst.classRefs[cpId];
         if (
-            !CpMgr.GetAos(cpId).isGrounded
+            !CpMgr.GetData(cpId).isGrounded
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
@@ -89,7 +89,7 @@ public static class CpUtils{
     public static void TransitionToFallIdleOrWalk(int cpId) {
         var classRefs = CpMgr.inst.classRefs[cpId];
         SwitchToFallingStIfNotGrounded(cpId);
-        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero))
+        if (math.all(CpMgr.GetData(cpId).input_mov != float2.zero))
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
         else
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
@@ -100,7 +100,7 @@ public static class CpUtils{
     /// Returns true if succeeded changing state.
     /// </summary>
     public static bool TrySwitchStByBufferedInput(int cpId) {
-        BufferableInput input = CpMgr.GetAos(cpId).inputBuffer_BufferedInput;
+        BufferableInput input = CpMgr.GetData(cpId).inputBuffer_BufferedInput;
         if(input == BufferableInput.None)
             return false;
         Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpId);
@@ -108,8 +108,8 @@ public static class CpUtils{
             enterFunc != null
                 && InputBufferUtils.TryConsumeInput(
                     input,
-                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetData(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetData(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(enterFunc, cpId);
@@ -130,11 +130,11 @@ public static class CpUtils{
         float yawSpd,
         float horAcc
     ) {
-        CpMgr.GetAos(cpId).movInput_tgtHorDir = tgtHorDir;
-        CpMgr.GetAos(cpId).movInput_additionalLinMov = additionalLinMov;
-        CpMgr.GetAos(cpId).movInput_tgtHorSpd = tgtHorSpd;
-        CpMgr.GetAos(cpId).movInput_yawSpd = yawSpd;
-        CpMgr.GetAos(cpId).movInput_horAcc = horAcc;
+        CpMgr.GetData(cpId).movInput_tgtHorDir = tgtHorDir;
+        CpMgr.GetData(cpId).movInput_additionalLinMov = additionalLinMov;
+        CpMgr.GetData(cpId).movInput_tgtHorSpd = tgtHorSpd;
+        CpMgr.GetData(cpId).movInput_yawSpd = yawSpd;
+        CpMgr.GetData(cpId).movInput_horAcc = horAcc;
     }
 
     /// <summary>
@@ -155,8 +155,8 @@ public static class CpUtils{
             curComboNode.GetNextNode(input) != null
                 && InputBufferUtils.TryConsumeInput(
                     input,
-                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetData(cpId).inputBuffer_BufferedInput,
+                    ref CpMgr.GetData(cpId).inputBuffer_RemainingTime
                 )
         ) {
             CpMgr.inst.SwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpId), cpId);

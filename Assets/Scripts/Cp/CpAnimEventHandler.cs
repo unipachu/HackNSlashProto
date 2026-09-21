@@ -17,16 +17,16 @@ public class CpAnimEventHandler : MonoBehaviour {
         var classRefs = CpMgr.inst.classRefs[id];
         switch (animEvent) {
             case CpAnimEventT.BufferedInputStSwitchAllowed:
-                CpMgr.GetAos(id).bufferedInputStSwitchAllowed = true;
+                CpMgr.GetData(id).bufferedInputStSwitchAllowed = true;
                 break;
             case CpAnimEventT.ComboAllowed:
-                CpMgr.GetAos(id).comboAllowed = true;
+                CpMgr.GetData(id).comboAllowed = true;
                 break;
             case CpAnimEventT.ComboDisallowed:
-                CpMgr.GetAos(id).comboAllowed = false;
+                CpMgr.GetData(id).comboAllowed = false;
                 break;
             case CpAnimEventT.DodgeAllowed:
-                CpMgr.GetAos(id).dodgeAllowed = true;
+                CpMgr.GetData(id).dodgeAllowed = true;
                 break;
             case CpAnimEventT.Finished:
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.Finished);
@@ -38,20 +38,20 @@ public class CpAnimEventHandler : MonoBehaviour {
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.HitDealerDeactivated);
                 break;
             case CpAnimEventT.InvulEnd:
-                CpMgr.GetAos(id).invul = false;
+                CpMgr.GetData(id).invul = false;
                 break;
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetAos(id).isAffectedByGravity = true;
-                CpMgr.GetAos(id).vel_Ver = -CpMgr.GetAos(id).act_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetData(id).isAffectedByGravity = true;
+                CpMgr.GetData(id).vel_Ver = -CpMgr.GetData(id).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetAos(id).isAffectedByGravity = false;
+                CpMgr.GetData(id).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.YawAllowed:
-                CpMgr.GetAos(id).inputRotAllowed = true;
+                CpMgr.GetData(id).inputRotAllowed = true;
                 break;
             case CpAnimEventT.YawDisallowed:
-                CpMgr.GetAos(id).inputRotAllowed = false;
+                CpMgr.GetData(id).inputRotAllowed = false;
                 break;
             default:
                 Debug.Log($"Switch defaulted with {animEvent}.", this);

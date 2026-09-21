@@ -15,9 +15,9 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
         var unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetAos(cp.Id).act_AtkPhase = AtkPhase.Impact;
-        CpMgr.GetAos(cp.Id).comboAllowed = false;
-        CpMgr.GetAos(cp.Id).inputRotAllowed = false;
+        CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Impact;
+        CpMgr.GetData(cp.Id).comboAllowed = false;
+        CpMgr.GetData(cp.Id).inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.Id],
             unityComps[cp.Id].anim,
@@ -49,7 +49,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetAos(cp.Id).team, cp.transform.forward);
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.Id).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -64,19 +64,19 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     public void Tick() {
         var classRefs = CpMgr.inst.unityComps[cp.Id];
         float angSpd = 0;
-        if (CpMgr.GetAos(cp.Id).inputRotAllowed)
-            angSpd = CpMgr.GetAos(cp.Id).act_BasicImpact_YawSpd;
+        if (CpMgr.GetData(cp.Id).inputRotAllowed)
+            angSpd = CpMgr.GetData(cp.Id).act_BasicImpact_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.Id,
-            CpMgr.GetAos(cp.Id).input_mov,
-            CpMgr.GetAos(cp.Id).animDPos,
+            CpMgr.GetData(cp.Id).input_mov,
+            CpMgr.GetData(cp.Id).animDPos,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
             return;
-        if (CpMgr.GetAos(cp.Id).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.Id, comboNode))
+        if (CpMgr.GetData(cp.Id).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.Id, comboNode))
             return;
     }
 }
