@@ -5,11 +5,11 @@ using UnityEngine;
 /// addition to the animation events) except to switch to next combo node (by input or by animation events).
 /// </summary>
 public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
     IComboNode comboNode;
 
-    public CpSt_Atk_BasicBranch(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Atk_BasicBranch(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -18,30 +18,28 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
         Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetAos(cpId).act_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetAos(cp.Id).act_AtkPhase = AtkPhase.Windup;
         InputBufferUtils.Clear(
-            ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
-            ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
+            ref CpMgr.GetAos(cp.Id).inputBuffer_BufferedInput,
+            ref CpMgr.GetAos(cp.Id).inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            unityComps[cp.Id].anim,
             comboNode.AnimInfo,
             0.1f
         );
         return this;
     }
 
-    public void Exit() {}
-
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = CpMgr.inst.classRefs[cpId];
+        var classRefs = CpMgr.inst.classRefs[cp.Id];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
                     CpMgr.inst.SwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpId),
-                        cpId
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.Id),
+                        cp.Id
                     );
                     return;
                 }
@@ -52,23 +50,19 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
         }
     }
 
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
         CpUtils.UpdateMovInputData(
-            cpId,
-            CpMgr.GetAos(cpId).input_mov_WhenLastSwitchedSt,
-            CpMgr.GetAos(cpId).animDPos,
+            cp.Id,
+            CpMgr.GetAos(cp.Id).input_mov_WhenLastSwitchedSt,
+            CpMgr.GetAos(cp.Id).animDPos,
             0,
-            CpMgr.GetAos(cpId).act_BasicWindup_MaxAngSpd,
+            CpMgr.GetAos(cp.Id).act_BasicWindup_MaxAngSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
             return;
-        if (CpMgr.GetAos(cpId).comboAllowed && CpUtils.TryAnyComboInputTransition(cpId, comboNode))
+        if (CpMgr.GetAos(cp.Id).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.Id, comboNode))
             return;
     }
 }

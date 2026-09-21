@@ -2,10 +2,10 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Death : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_Death(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Death(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -13,36 +13,30 @@ public class CpSt_Death : IFsmSt_Cp {
 
     public CpSt_Death Enter(AnimInfo deathAnim) {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             deathAnim,
             0.1f
         );
         return this;
     }
 
-    public void Exit() { }
-
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                GameObject.Destroy(CpMgr.inst.cp[cpId].gameObject);
-                break;
+                CpMgr.inst.UnregisterNDestroy(cp.Id);
+                return;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
-                break;
+                return;
         }
     }
 
-    public void LateTick() { }
-
-    public void PhysicsTick() { }
-
     public void Tick() {
         CpUtils.UpdateMovInputData(
-            cpId,
+            cp.Id,
             float2.zero,
-            CpMgr.GetAos(cpId).animDPos,
+            CpMgr.GetAos(cp.Id).animDPos,
             0,
             0,
             float.PositiveInfinity

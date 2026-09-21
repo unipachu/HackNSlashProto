@@ -26,7 +26,19 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         var cp = CpMgr.inst.cp[cpId];
         if (!aos.invul) {
             aos.hp_Cur -= hitData.effects.dmg;
-            //Debug.Log($"New HP: {pc.Data.curHp}", this);
+            aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
+            Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
+            if (aos.hp_Cur == 0) {
+                if (
+                    CpMgr.inst.TrySwitchActSt(
+                        () => classRefs.actSts.death.Enter(
+                            CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd)
+                        ),
+                        cpId
+                    )
+                )
+                    return new(false, false);
+            }
             aos.lastRecievedHitDir = hitData.wldDir;
             aos.lastKnockbackStr = hitData.effects.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");

@@ -1,10 +1,10 @@
 using Unity.Mathematics;
 
 public class CpSt_Idle : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_Idle(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Idle(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -12,50 +12,42 @@ public class CpSt_Idle : IFsmSt_Cp {
 
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
             0.1f
         );
         return this;
     }
 
-    public void Exit() {}
-
-    public void HandleAnimEvent(CpAnimEventT animEvent) {}
-
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cpId];
+        var classRefs = CpMgr.inst.classRefs[cp.Id];
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
-                cpId,
-                CpMgr.GetAos(cpId).input_mov_LastNonZero,
+                cp.Id,
+                CpMgr.GetAos(cp.Id).input_mov_LastNonZero,
                 float3.zero,
                 0,
-                CpMgr.GetAos(cpId).walkYawSpd,
+                CpMgr.GetAos(cp.Id).walkYawSpd,
                 float.PositiveInfinity
             );
         else
             CpUtils.UpdateMovInputData(
-                cpId,
+                cp.Id,
                 float2.zero,
                 float3.zero,
                 0,
                 0,
                 float.PositiveInfinity
             );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
             return;
         // Try consume input
-        if (CpUtils.TrySwitchStByBufferedInput(cpId))
+        if (CpUtils.TrySwitchStByBufferedInput(cp.Id))
             return;
-        if (math.all(CpMgr.GetAos(cpId).input_mov != float2.zero)) {
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpId);
+        if (math.all(CpMgr.GetAos(cp.Id).input_mov != float2.zero)) {
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cp.Id);
             return;
         }
     }

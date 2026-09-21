@@ -236,20 +236,20 @@ public struct Cp_ActSts {
     public CpSt_Knockback knockback;
     public CpSt_Walk walk;
 
-    public Cp_ActSts(int cpId) {
-        death = new(cpId);
-        atk_BasicImpact = new(cpId);
-        atk_BasicBranch = new(cpId);
-        atk_BasicRecovery = new(cpId);
-        atk_FlyingAtk = new(cpId);
-        atk_Jump = new(cpId);
-        atk_ShootHomingProj = new(cpId);
-        dodge = new(cpId);
-        falling = new(cpId);
-        fallLanding = new(cpId);
-        idle = new(cpId);
-        knockback = new(cpId);
-        walk = new(cpId);
+    public Cp_ActSts(CpHandle cp) {
+        death = new(cp);
+        atk_BasicImpact = new(cp);
+        atk_BasicBranch = new(cp);
+        atk_BasicRecovery = new(cp);
+        atk_FlyingAtk = new(cp);
+        atk_Jump = new(cp);
+        atk_ShootHomingProj = new(cp);
+        dodge = new(cp);
+        falling = new(cp);
+        fallLanding = new(cp);
+        idle = new(cp);
+        knockback = new(cp);
+        walk = new(cp);
     }
 }
 
@@ -370,8 +370,8 @@ public struct Cp_NonUnityObjClassRefs {
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
 
-    public Cp_NonUnityObjClassRefs(int cpId, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
-        actSts = new Cp_ActSts(cpId);
+    public Cp_NonUnityObjClassRefs(CpHandle cp, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
+        actSts = new Cp_ActSts(cp);
         this.cpCtrl = cpCtrl;
         lockOnTgt = null;
         this.rHandItem = rHandItem;
@@ -421,7 +421,7 @@ public struct HitEffects {
     public int dmg;
     public KnockbackT knockbackT;
     /// <summary>
-    /// 1 equals knocback movement of 1 unit.
+    /// This is multiplied by the knockback animation root motion.
     /// </summary>
     public float knockbackStr;
 

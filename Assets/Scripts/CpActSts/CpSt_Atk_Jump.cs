@@ -2,12 +2,12 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Atk_Jump : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
     HitDealer hitDealer;
     HitEffects hitEffects;
 
-    public CpSt_Atk_Jump(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Atk_Jump(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -17,8 +17,8 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
@@ -26,27 +26,26 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetAos(cpId).isAffectedByGravity = true;
+        CpMgr.GetAos(cp.Id).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var unityComps = CpMgr.inst.unityComps[cpId];
-        var cp = CpMgr.inst.cp[cpId];
+        var unityComps = CpMgr.inst.unityComps[cp.Id];
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetAos(cpId).isAffectedByGravity = true;
-                CpMgr.GetAos(cpId).vel_Ver = -CpMgr.GetAos(cpId).act_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetAos(cp.Id).isAffectedByGravity = true;
+                CpMgr.GetAos(cp.Id).vel_Ver = -CpMgr.GetAos(cp.Id).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetAos(cpId).isAffectedByGravity = false;
+                CpMgr.GetAos(cp.Id).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
                 Debug.Log("Went here asdasdasd");
-                CpUtils.TransitionToFallIdleOrWalk(cpId);
+                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetAos(cpId).team, cp.transform.forward);
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetAos(cp.Id).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -58,16 +57,12 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         }
     }
 
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
         Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         CpUtils.UpdateMovInputData(
-            cpId,
+            cp.Id,
             float2.zero,
-            CpMgr.GetAos(cpId).animDPos,
+            CpMgr.GetAos(cp.Id).animDPos,
             0,
             0,
             float.PositiveInfinity

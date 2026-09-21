@@ -2,10 +2,10 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Knockback : IFsmSt_Cp{
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_Knockback(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Knockback(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt {
@@ -16,20 +16,18 @@ public class CpSt_Knockback : IFsmSt_Cp{
 
     public CpSt_Knockback Enter(AnimInfo knockbackAnimInfo) {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             knockbackAnimInfo,
             0.1f
         );
         return this;
     }
 
-    public void Exit() {}
-
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cpId);
+                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -37,18 +35,14 @@ public class CpSt_Knockback : IFsmSt_Cp{
         }
     }
 
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
-        //if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+        //if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
         //    return;
-        //Debug.Log($"knocback: {data.lastKnockbackStr[cpId]}\nanim delta: {data.animDPos[cpId]}");
+        //Debug.Log($"knocback: {data.lastKnockbackStr[cp.Id]}\nanim delta: {data.animDPos[cp.Id]}");
         CpUtils.UpdateMovInputData(
-            cpId,
+            cp.Id,
             float2.zero,
-            CpMgr.GetAos(cpId).animDPos * CpMgr.GetAos(cpId).lastKnockbackStr,
+            CpMgr.GetAos(cp.Id).animDPos * CpMgr.GetAos(cp.Id).lastKnockbackStr,
             0,
             0,
             float.PositiveInfinity

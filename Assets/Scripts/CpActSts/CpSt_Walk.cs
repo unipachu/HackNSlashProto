@@ -1,10 +1,10 @@
 using Unity.Mathematics;
 
 public class CpSt_Walk : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_Walk(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Walk(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -12,38 +12,30 @@ public class CpSt_Walk : IFsmSt_Cp {
 
     public CpSt_Walk Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.walk),
             0.5f
         );
         return this;
     }
 
-    public void Exit() {}
-
-    public void HandleAnimEvent(CpAnimEventT animEvent) {}
-
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cpId];
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+        var classRefs = CpMgr.inst.classRefs[cp.Id];
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
             return;
         CpUtils.UpdateMovInputData(
-            cpId,
-            CpMgr.GetAos(cpId).input_mov,
+            cp.Id,
+            CpMgr.GetAos(cp.Id).input_mov,
             float3.zero,
-            CpMgr.GetAos(cpId).walkMaxLinSpd,
-            CpMgr.GetAos(cpId).walkYawSpd,
-            CpMgr.GetAos(cpId).walkLinAcc
+            CpMgr.GetAos(cp.Id).walkMaxLinSpd,
+            CpMgr.GetAos(cp.Id).walkYawSpd,
+            CpMgr.GetAos(cp.Id).walkLinAcc
         );
-        if (CpUtils.TrySwitchStByBufferedInput(cpId))
+        if (CpUtils.TrySwitchStByBufferedInput(cp.Id))
             return;
-        if (math.all(CpMgr.GetAos(cpId).input_mov == float2.zero)) {
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpId);
+        if (math.all(CpMgr.GetAos(cp.Id).input_mov == float2.zero)) {
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cp.Id);
             return;
         }
     }

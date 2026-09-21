@@ -62,6 +62,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         entityCount--;
         if (swappedCtrl != null)
             swappedCtrl.Id = id;
+        Debug.Log($"Unregistered {typeof(AiCtrlHandle)} id: {id}.");
     }
 
     // ----------------------------------------------------------------------------------------
@@ -70,8 +71,9 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
 
     public void Tick() {
         Tick_ResetWasPressedThisFrameInputs();
-        Tick_AgentMovInput();
+        // Note: here you could set a ai tick budget e.g. only tick half of the ai controllers during one frame.
         Tick_BehaviorTrees();
+        Tick_AgentMovInput();
     }
 
     // ----------------------------------------------------------------------------------------

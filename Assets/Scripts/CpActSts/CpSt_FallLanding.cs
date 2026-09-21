@@ -2,53 +2,47 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_FallLanding : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_FallLanding(int cpId) {
-        this.cpId = cpId;
+    public CpSt_FallLanding(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_FallLanding Enter() {
-        CpMgr.GetAos(cpId).dodgeAllowed = false;
+        CpMgr.GetAos(cp.Id).dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
             0.2f
         );
         return this;
     }
 
-    public void Exit() {}
-
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
-
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cpId];
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cpId))
+        var classRefs = CpMgr.inst.classRefs[cp.Id];
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
             return;
         CpUtils.UpdateMovInputData(
-            cpId,
+            cp.Id,
             float2.zero,
             float3.zero,
             0,
             0,
             float.PositiveInfinity
         );
-        if (CpMgr.GetAos(cpId).dodgeAllowed) {
+        if (CpMgr.GetAos(cp.Id).dodgeAllowed) {
             if (
                 InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,
-                    ref CpMgr.GetAos(cpId).inputBuffer_BufferedInput,
-                    ref CpMgr.GetAos(cpId).inputBuffer_RemainingTime
+                    ref CpMgr.GetAos(cp.Id).inputBuffer_BufferedInput,
+                    ref CpMgr.GetAos(cp.Id).inputBuffer_RemainingTime
                 )
             ) {
-                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cpId);
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cp.Id);
                 return;
             }
         }
@@ -57,7 +51,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cpId);
+                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

@@ -2,56 +2,48 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Falling : IFsmSt_Cp {
-    int cpId;
+    CpHandle cp;
 
-    public CpSt_Falling(int cpId) {
-        this.cpId = cpId;
+    public CpSt_Falling(CpHandle cp) {
+        this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_Falling Enter() {
-        CpMgr.GetAos(cpId).act_Falling_StartHgt = CpMgr.inst.cp[cpId].transform.position.y;
+        CpMgr.GetAos(cp.Id).act_Falling_StartHgt = CpMgr.inst.cp[cp.Id].transform.position.y;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cpId],
-            CpMgr.inst.unityComps[cpId].anim,
+            ref CpMgr.inst.animEventPlrData[cp.Id],
+            CpMgr.inst.unityComps[cp.Id].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.falling),
             4 // NOTE: Transition is long to give a sense of accleration during falling.
         );
         return this;
     }
-
-    public void Exit() {}
-
-    public void HandleAnimEvent(CpAnimEventT animEvent) {}
-    
-    public void LateTick() {}
-
-    public void PhysicsTick() {}
     
     public void Tick() {
-        var unityComps = CpMgr.inst.unityComps[cpId];
-        var classRefs = CpMgr.inst.classRefs[cpId];
+        var unityComps = CpMgr.inst.unityComps[cp.Id];
+        var classRefs = CpMgr.inst.classRefs[cp.Id];
         CpUtils.UpdateMovInputData(
-            cpId,
+            cp.Id,
             float2.zero,
             float3.zero,
-            CpMgr.GetAos(cpId).act_Falling_TgtHorSpd,
+            CpMgr.GetAos(cp.Id).act_Falling_TgtHorSpd,
             0,
-            CpMgr.GetAos(cpId).act_Falling_HorAcc
+            CpMgr.GetAos(cp.Id).act_Falling_HorAcc
         );
-        if (CpMgr.GetAos(cpId).isGrounded){
-            float fallDist = CpMgr.GetAos(cpId).act_Falling_StartHgt - CpMgr.inst.cp[cpId].transform.position.y;
-            if(fallDist > CpMgr.GetAos(cpId).act_Falling_LandingStFallDistThreshold) {
-                CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cpId);
+        if (CpMgr.GetAos(cp.Id).isGrounded){
+            float fallDist = CpMgr.GetAos(cp.Id).act_Falling_StartHgt - CpMgr.inst.cp[cp.Id].transform.position.y;
+            if(fallDist > CpMgr.GetAos(cp.Id).act_Falling_LandingStFallDistThreshold) {
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.Id);
                 return;
             }
-            CpUtils.TransitionToFallIdleOrWalk(cpId);
+            CpUtils.TransitionToFallIdleOrWalk(cp.Id);
             return;
         }
-        if (CpMgr.GetAos(cpId).curStDur > 15) {
-            Debug.LogError($"{cpId} likely stuck falling as curStDur was: {CpMgr.GetAos(cpId).curStDur}.");
+        if (CpMgr.GetAos(cp.Id).curStDur > 15) {
+            Debug.LogError($"{cp.Id} likely stuck falling as curStDur was: {CpMgr.GetAos(cp.Id).curStDur}.");
         }
     }
 }

@@ -9,7 +9,9 @@ public interface IFsmSt {
     /// </summary>
     bool CanSwitchTo<TState>() where TState : IFsmSt;
     
-    void Exit();
+    void Exit() {
+        // Nop.
+    }
     
     void LateTick() {
         // Noop.

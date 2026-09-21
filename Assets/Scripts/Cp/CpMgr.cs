@@ -46,13 +46,14 @@ public class CpMgr : Singleton<CpMgr> {
     public void Register(CpHandle newCp) {
         // If these are not set to false, the nav mesh agent component will try to move the capsule pawn trf.
         // NOTE: NavMeshAgent will still move its own position and rotation which can cause problems if you don't
-        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you move
-        // NOTE C: the capsule pawn.
+        // NOTE C: set the drifting navmesh position back to the transform position and rotation every time you
+        // NOTE C: move the capsule pawn.
         newCp.unityObjs.navMeshAgent.updatePosition = false;
         newCp.unityObjs.navMeshAgent.updateRotation = false;
         // NOTE: Index = new count - 1.
         //Debug.Log($"Start registering {cp}", cp);
-        ArrayUtils.Add(ref animEventPlrData, entityCount, default); // This is set when switching to init act state.
+        // This is set when switching to init act state.
+        ArrayUtils.Add(ref animEventPlrData, entityCount, default);
         ArrayUtils.Add(ref cp, entityCount, newCp);
         // Structure of arrays data
         Cp_AosData newAosData = new();
@@ -72,9 +73,11 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.lastKnockbackStr = 0;
         newAosData.lastRecievedHitDir = float3.zero;
         newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
-        newAosData.act_AtkJump_DownSpeedAfterJumpFinished = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
+        newAosData.act_AtkJump_DownSpeedAfterJumpFinished
+            = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
         newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
-        newAosData.act_Falling_LandingStFallDistThreshold = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
+        newAosData.act_Falling_LandingStFallDistThreshold
+            = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
         newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
         newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
         newAosData.team = newCp.so_cpData.team;
@@ -96,7 +99,7 @@ public class CpMgr : Singleton<CpMgr> {
             newCp.unityObjs.rHand.rotation
         );
         rHandItem.Trf.parent = newCp.unityObjs.rHand;
-        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(entityCount, null, rHandItem);
+        Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(newCp, null, rHandItem);
         ArrayUtils.Add(ref classRefs, entityCount, newClassRefs);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
         newCp.Id = entityCount;
@@ -112,6 +115,8 @@ public class CpMgr : Singleton<CpMgr> {
             Debug.LogError($"{cpId} was greaterequal to {entityCount}!");
             return;
         }
+        if (classRefs[cpId].cpCtrl != null)
+            classRefs[cpId].cpCtrl.LostListener();
         GameObject.Destroy(cp[cpId].gameObject);
         int lastId = entityCount - 1;
         CpHandle swappedCp = cpId != lastId ? cp[lastId] : null;
@@ -124,6 +129,7 @@ public class CpMgr : Singleton<CpMgr> {
         if (swappedCp != null)
             // Last Cp was swapped to cpId, so update Id.
             swappedCp.Id = cpId;
+        Debug.Log($"Unregistered and destroyed {typeof(CpHandle)} id: {cpId}.");
     }
 
     // ------------------------------------------------------------
