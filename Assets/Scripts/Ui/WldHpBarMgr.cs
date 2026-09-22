@@ -7,6 +7,8 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     [SerializeField] float screenMargin = 40;
     [SerializeField] RectTransform wldHpBarLayer;
     [SerializeField] WldHpBar wldHpBarPrefab;
+    [SerializeField] float yellowBarSpd = 1;
+    [SerializeField] float yellowWaitUntilTrail = 0.5f;
 
     [HideInInspector] public WldHpBarData[] bars;
 
@@ -89,16 +91,42 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             //Debug.Log($"{nameof(WldHpBarMgr)} {nameof(entityCount)}: {entityCount}");
             ref WldHpBarData data = ref bars[i];
             bool barShouldBeVisible = data.isLocked || now < data.barVisibleUntil;
+            // Hide bar and reset trailing yellow
             if (!barShouldBeVisible) {
+                data.hpBar.imgDmgYellow.fillAmount = data.hpBar.imgDmgRed.fillAmount;
+                data.trailingSt = HpBarTrailingSt.Settled;
                 data.hpBar.gameObject.SetActive(false);
                 continue;
             }
+            // Move yellow trail.
+            if (data.hpBar.imgDmgYellow.fillAmount > data.hpBar.imgDmgRed.fillAmount)
+                switch (data.trailingSt) {
+                    case HpBarTrailingSt.DelayingDecrease:
+                        if(now > data.trailingDelayStartTime + yellowWaitUntilTrail)
+                            data.trailingSt = HpBarTrailingSt.Decreasing;
+                        break;
+                    case HpBarTrailingSt.Decreasing:
+                        data.hpBar.imgDmgYellow.fillAmount -= yellowBarSpd * Time.deltaTime;
+                        if(data.hpBar.imgDmgYellow.fillAmount <= data.hpBar.imgDmgRed.fillAmount) {
+                            data.hpBar.imgDmgYellow.fillAmount = data.hpBar.imgDmgRed.fillAmount;
+                            data.trailingSt = HpBarTrailingSt.Settled;
+                        }
+                        break;
+                    case HpBarTrailingSt.Settled:
+                        data.trailingSt = HpBarTrailingSt.DelayingDecrease;
+                        data.trailingDelayStartTime = now;
+                        break;
+                    default:
+                        break;
+                }
+            // Handle dmg number visibility
             if (now > data.dmgNumberVisibleUntil) {
                 data.accumulatedDmg = 0;
-                data.hpBar.SetDmgText(0); // Hide dmg number after successive atk window.
+                data.hpBar.SetDmgText(0);
             }
             Vector3 screenPos = cam.WorldToScreenPoint(data.anchor.position);
-            if (screenPos.z < 0) { // Hide hp bar if its behind camera.
+            // Hide hp bar if its behind camera.
+            if (screenPos.z < 0) {
                 data.hpBar.gameObject.SetActive(false);
                 return;
             }

@@ -1372,6 +1372,8 @@ MonoBehaviour:
   screenMargin: 40
   wldHpBarLayer: {fileID: 1914199070}
   wldHpBarPrefab: {fileID: 169842778811770902, guid: a34c9d3dc67837843b2437e6dca02bd9, type: 3}
+  yellowBarSpd: 1
+  yellowWaitUntilTrail: 0.5
 --- !u!4 &222021722
 Transform:
   m_ObjectHideFlags: 0

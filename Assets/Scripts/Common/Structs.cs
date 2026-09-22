@@ -510,4 +510,6 @@ public struct WldHpBarData {
     public int accumulatedDmg;
     public bool pendingUnregister;
     public RectTransform rect;
+    public HpBarTrailingSt trailingSt;
+    public float trailingDelayStartTime;
 }

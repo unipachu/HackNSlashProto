@@ -125,6 +125,12 @@ public enum Faces : byte {
     Far,
 }
 
+public enum HpBarTrailingSt {
+    DelayingDecrease,
+    Decreasing,
+    Settled,
+}
+
 public enum KnockbackT : byte {
     None,
     Weak,

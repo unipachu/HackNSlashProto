@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class WldHpBar : MonoBehaviour {
-    [SerializeField] Image imgDmgYellow;
-    [SerializeField] Image imgDmgRed;
+    public Image imgDmgYellow;
+    public Image imgDmgRed;
     [SerializeField] TMP_Text textName;
     [SerializeField] TMP_Text textDmg;
 
