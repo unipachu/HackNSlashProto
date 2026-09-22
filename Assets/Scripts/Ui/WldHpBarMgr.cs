@@ -1,14 +1,15 @@
 using UnityEngine;
 
 public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
+    public float barVisibleDur = 3;
+    [SerializeField] Camera cam;
+    [SerializeField] int initCapacity = 8;
+    [SerializeField] float screenMargin = 40;
     [SerializeField] RectTransform wldHpBarLayer;
     [SerializeField] WldHpBar wldHpBarPrefab;
-    [SerializeField] Camera cam;
-    [SerializeField] float screenMargin = 40f;
-    public float visibleAfterDamageTime = 2f;
-    [SerializeField] int initCapacity = 8;
 
-    public WldHpBarData[] bars;
+    [HideInInspector] public WldHpBarData[] bars;
+
     int entityCount;
 
     // TODO: init in game manager
@@ -31,7 +32,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             hpBar = hpBar,
             isLocked = false,
             rect = (RectTransform)hpBar.transform,
-            visibleUntil = 0f
+            barVisibleUntil = 0f
         };
         ArrayUtils.Add(ref bars, entityCount, data);
         data.cpHandle.GetData().action_curHpChanged += hpBar.OnCurHpChanged;
@@ -76,29 +77,34 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     // ----------------------------------------------------------------------------------
 
     public void LateTick() {
-        LateTick_UpdateBarPosition();
-        LateTick_UnregisterDestroyedHandles();
+        LateTick_UpdateBarPosAndVisibility();
+        LateTick_UnregisterPending();
     }
 
-    void LateTick_UpdateBarPosition() {
+    void LateTick_UpdateBarPosAndVisibility() {
         for (int i = 0; i < entityCount; i++) {
             if (bars[i].pendingUnregister)
                 continue;
             float now = Time.time;
             //Debug.Log($"{nameof(WldHpBarMgr)} {nameof(entityCount)}: {entityCount}");
             ref WldHpBarData data = ref bars[i];
-            bool shouldBeVisible = data.isLocked || now < data.visibleUntil;
-            if (!shouldBeVisible) {
+            bool barShouldBeVisible = data.isLocked || now < data.barVisibleUntil;
+            if (!barShouldBeVisible) {
                 data.hpBar.gameObject.SetActive(false);
                 continue;
             }
+            if (now > data.dmgNumberVisibleUntil) {
+                data.accumulatedDmg = 0;
+                data.hpBar.SetDmgText(0); // Hide dmg number after successive atk window.
+            }
             Vector3 screenPos = cam.WorldToScreenPoint(data.anchor.position);
-            if (screenPos.z <= 0f) {
+            if (screenPos.z < 0) { // Hide hp bar if its behind camera.
                 data.hpBar.gameObject.SetActive(false);
                 return;
             }
             //Debug.Log("Set hp bar visible");
             data.hpBar.gameObject.SetActive(true);
+            // Clamp the hp bar to screen (like in Elden Ring!).
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 wldHpBarLayer,
                 screenPos,
@@ -116,7 +122,10 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         }
     }
 
-    void LateTick_UnregisterDestroyedHandles() {
+    /// <summary>
+    /// Destroy hp bars marked for unregisteration.
+    /// </summary>
+    void LateTick_UnregisterPending() {
         int i = 0;
         // We swap the last element in the place of the unregistered one, so we onlu increment index if we
         // don't unregister a cp.

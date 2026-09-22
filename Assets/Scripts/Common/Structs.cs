@@ -502,10 +502,12 @@ public struct MeleeWeaponData {
 
 public struct WldHpBarData {
     public Transform anchor;
+    public float barVisibleUntil;
     public CpHandle cpHandle;
+    public float dmgNumberVisibleUntil;
     public WldHpBar hpBar;
     public bool isLocked;
+    public int accumulatedDmg;
     public bool pendingUnregister;
     public RectTransform rect;
-    public float visibleUntil;
 }

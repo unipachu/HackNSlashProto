@@ -6,9 +6,10 @@ using UnityEngine.InputSystem;
 /// NOTE: This class is (or should be) set to run before default time, just
 /// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
-public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
-    [Tooltip("Mouse (or joystick hatswitch) sensitivity for look input.")]
-    [SerializeField] float lookPointerSensitivity = 1;
+public class PlrMgr : Singleton<PlrMgr>, ICpCtrlInputter {
+    [Header("Player stats")]
+    [Tooltip("Window (in seconds) after an attack during which another attack is considered 'successive'.")]
+    public float successiveAtkWindow = 1.5f;
 
     [Header("Input Action Asset")]
     [SerializeField] InputActionAsset inputActs;
@@ -54,7 +55,8 @@ public class PlrCtrl : MonoBehaviour, ICpCtrlInputter {
         data.input_Atk_Ult = inputAct_Atk_Ult.action.WasPressedThisFrame();
         data.input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
         data.input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
-        data.input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>() * lookPointerSensitivity;
+        data.input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>()
+            * GameSettings.inst.lookPointerSensitivity;
         // NOTE: We use camera relative movement input.
         data.input_Mov = MathUtils.TrfInputByBasis(
             inputAct_Mov.action.ReadValue<Vector2>(),

@@ -126,7 +126,7 @@ public class CpMgr : Singleton<CpMgr> {
         if (swappedCp != null)
             // Last Cp was swapped to cpI, so update Id.
             swappedCp.I = cpI;
-        Debug.Log($"Unregistered (and destroyed) {typeof(CpHandle)} id: {cpI}.");
+        //Debug.Log($"Unregistered (and destroyed) {typeof(CpHandle)} id: {cpI}.");
     }
 
     // ------------------------------------------------------------
@@ -197,7 +197,7 @@ public class CpMgr : Singleton<CpMgr> {
             //GetAos(i).input_atk_Heavy = classRefs[i].cpCtrl.TryConsume_Atk_Heavy();
             //GetAos(i).input_atk_Ult = classRefs[i].cpCtrl.TryConsume_Atk_Ult();
             //GetAos(i).input_dodge = classRefs[i].cpCtrl.TryConsume_Dodge();
-            if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone) {
+            if (classRefs[i].cpCtrl.Input_Mov.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone) {
                 GetData(i).input_mov = classRefs[i].cpCtrl.Input_Mov;
                 GetData(i).input_mov_LastNonZero = classRefs[i].cpCtrl.Input_Mov;
             } else
@@ -376,7 +376,7 @@ public class CpMgr : Singleton<CpMgr> {
             GetData(cpI).input_mov_WhenLastSwitchedSt
                 = GetData(cpI).input_mov;
         else {
-            if (classRefs[cpI].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
+            if (classRefs[cpI].cpCtrl.Input_Mov.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone)
                 GetData(cpI).input_mov_WhenLastSwitchedSt
                     = GetData(cpI).input_mov;
             else

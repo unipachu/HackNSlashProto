@@ -18,7 +18,7 @@ MonoBehaviour:
   walkTgtHorSpd: 5
   walkYawSpd: 1000
   inputBufferDuration: 0.3
-  maxHP: 1
+  maxHP: 2
   rHandItem: 0
   team: 3
   enableDebugMsgs: 0

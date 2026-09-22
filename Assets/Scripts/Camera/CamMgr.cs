@@ -16,7 +16,7 @@ public class CamMgr : Singleton<CamMgr>{
     [SerializeField] bool invY = false;
 
     [Header("Refs")]
-    [SerializeField] PlrCtrl plrCtrl;
+    [SerializeField] PlrMgr plrCtrl;
     public CinemachineCamera cam;
     [SerializeField] CinemachineOrbitalFollow orbitalFollow;
     [SerializeField] CinemachinePanTilt panTilt;

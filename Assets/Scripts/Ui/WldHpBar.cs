@@ -21,23 +21,23 @@ public class WldHpBar : MonoBehaviour {
     }
 
     public void SetHp(int curHp, int maxHp) {
-        Debug.Log($"Set hp bar: {curHp} {maxHp}");
-        float nrmHp = maxHp > 0f
+        //Debug.Log($"Set hp bar curhp: {curHp}, maxhp: {maxHp}");
+        float nrmHp = maxHp > 0
             ? Mathf.Clamp01((float)curHp / maxHp)
-            : 0f;
+            : 0;
         imgDmgRed.fillAmount = nrmHp;
     }
 
     // TODO: Make this trail after the red bar
     public void SetYellowHp(int hp, int maxHp) {
-        float nrmHp = maxHp > 0f
+        float nrmHp = maxHp > 0
             ? Mathf.Clamp01((float)hp / maxHp)
-            : 0f;
+            : 0;
         imgDmgYellow.fillAmount = nrmHp;
     }
 
     public void SetDmgText(int damage) {
-        bool show = damage > 0f;
+        bool show = damage > 0;
         textDmg.gameObject.SetActive(show);
         if (show)
             textDmg.text = damage.ToString();
@@ -49,29 +49,32 @@ public class WldHpBar : MonoBehaviour {
 
     public void OnCurHpChanged(int newCurHp, int maxHp) {
         SetHp(newCurHp, maxHp);
-        GetData().visibleUntil = Time.time + WldHpBarMgr.inst.visibleAfterDamageTime;
+        GetData().barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnDmgTaken(int dmgTaken) {
-        Debug.Log("Went here");
-        SetDmgText(dmgTaken);
-        GetData().visibleUntil = Time.time + WldHpBarMgr.inst.visibleAfterDamageTime;
+        ref var data = ref GetData();
+        var now = Time.time;
+        SetDmgText(dmgTaken + data.accumulatedDmg);
+        data.accumulatedDmg = data.accumulatedDmg + dmgTaken;
+        data.barVisibleUntil = now + WldHpBarMgr.inst.barVisibleDur;
+        data.dmgNumberVisibleUntil = now + PlrMgr.inst.successiveAtkWindow;
     }
 
     public void OnMaxHpChanged(int curHp, int newMaxHp) {
         SetHp(curHp, newMaxHp);
-        GetData().visibleUntil = Time.time + WldHpBarMgr.inst.visibleAfterDamageTime;
+        GetData().barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnPlrLockedOnEnded() {
         ref var data = ref GetData();
         data.isLocked = false;
-        data.visibleUntil = Time.time + WldHpBarMgr.inst.visibleAfterDamageTime;
+        data.barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnPlrLockedOnStarted() {
         ref var data = ref GetData();
         data.isLocked = true;
-        data.visibleUntil = float.PositiveInfinity;
+        data.barVisibleUntil = float.PositiveInfinity;
     }
 }

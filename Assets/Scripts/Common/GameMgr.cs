@@ -3,7 +3,7 @@
 using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
-    [SerializeField] PlrCtrl plrCtrl;
+    [SerializeField] PlrMgr plrCtrl;
     [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 

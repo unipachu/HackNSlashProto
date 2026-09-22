@@ -16,7 +16,7 @@ public static class CpSpawningUtils {
     public static void SpawnPlrCpAtSpawnPt(
         CpHandle prefab,
         Transform spawnPt,
-        PlrCtrl ctrl,
+        PlrMgr ctrl,
         CinemachineCamera cam
     ) {
         //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");

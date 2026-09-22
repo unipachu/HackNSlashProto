@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpMgr
   initCapacity: 5
-  cp: []
+  handle: []
   unityComps: []
 --- !u!1 &36494360
 GameObject:
@@ -416,10 +416,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 83296387}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0ef1b2cdbc5fdd4b9067f0c3eb94e06, type: 3}
+  m_Script: {fileID: 11500000, guid: 6030ca2f392cfe24ab34aba6e3cae51d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputController
-  lookPointerSensitivity: 0.001
+  successiveAtkWindow: 1.5
   inputActs: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   actionMapName: Player
   inputAct_Atk_Light:
@@ -428,7 +428,7 @@ MonoBehaviour:
       m_Name: Input Act_Atk_Light
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: fce4e957-d477-41ff-9d8f-47e9db57f10b
+      m_Id: c872add4-50ce-4334-9e02-f3990feb6e59
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -440,7 +440,7 @@ MonoBehaviour:
       m_Name: Input Act_Atk_Heavy
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: d74f9b01-55e3-4db4-b46b-08fba2b7647d
+      m_Id: 92df2e2d-5b32-42df-a7f6-589d3b529de2
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -452,7 +452,7 @@ MonoBehaviour:
       m_Name: Input Act_Atk_Ult
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 04ca3838-fd73-4164-8ea5-600e835bbfff
+      m_Id: ac83ffdb-415f-4bbd-988f-d8d4ace641ad
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -464,7 +464,7 @@ MonoBehaviour:
       m_Name: Input Act_Dodge
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 47e9a8b6-2d86-4480-b348-29bef67e7824
+      m_Id: ae2bb9f8-7c26-4326-a887-0f6fbb5683af
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -476,7 +476,7 @@ MonoBehaviour:
       m_Name: Input Act_Look_Gamepad
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: e66bc58a-9c3a-4fb9-866e-3800425a7cb2
+      m_Id: 82601cdb-10ad-4753-b6a5-84fe18a9170b
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -488,7 +488,7 @@ MonoBehaviour:
       m_Name: Input Act_Look_Pointer
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 5c734d54-53d2-460d-b8b8-6c852e52e718
+      m_Id: a2494f57-a07c-43f2-b2c4-9941fa137992
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -500,7 +500,7 @@ MonoBehaviour:
       m_Name: Input Act_Mov
       m_Type: 0
       m_ExpectedControlType: 
-      m_Id: 70396674-44b4-4dfe-891b-2577193c009a
+      m_Id: 823b6f8c-02f9-4f51-8e8c-1362f2c6322c
       m_Processors: 
       m_Interactions: 
       m_SingletonActionBindings: []
@@ -1366,11 +1366,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b880d32c7683a547b2576c64475a483, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WldHpBarMgr
+  barVisibleDur: 3
+  cam: {fileID: 330585545}
+  initCapacity: 8
+  screenMargin: 40
   wldHpBarLayer: {fileID: 1914199070}
   wldHpBarPrefab: {fileID: 169842778811770902, guid: a34c9d3dc67837843b2437e6dca02bd9, type: 3}
-  cam: {fileID: 330585545}
-  screenMargin: 40
-  initCapacity: 8
 --- !u!4 &222021722
 Transform:
   m_ObjectHideFlags: 0
@@ -4064,10 +4065,10 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  isGroundedChkDist: 0.1
-  inputBuffer_Dur: 0.3
-  maxFallSpd: 30
   gravitationalAcc: 10
+  inputBuffer_Dur: 0.3
+  isGroundedChkDist: 0.1
+  maxFallSpd: 30
 --- !u!4 &900887753
 Transform:
   m_ObjectHideFlags: 0
@@ -4394,7 +4395,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1026410970}
   m_Layer: 0
-  m_Name: ----- MANAGERS SERVERS SYSTEMS ----------------------------------------------
+  m_Name: ----- MANAGERS SERVERS DATABASES ----------------------------------------------
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5533,6 +5534,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1256659988}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1262985750
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1262985751}
+  m_Layer: 0
+  m_Name: PlrMgr
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1262985751
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262985750}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 20.5315, y: 21.7977, z: 1.95349}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1268670702
 GameObject:
   m_ObjectHideFlags: 0
@@ -7628,7 +7660,7 @@ GameObject:
   - component: {fileID: 1745552596}
   - component: {fileID: 1745552595}
   m_Layer: 0
-  m_Name: PlrConfigs
+  m_Name: GameSettings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7643,10 +7675,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1745552594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dfe6243ddd8022c499bf1e833a9be5db, type: 3}
+  m_Script: {fileID: 11500000, guid: 0013d0800b32bd342936e4a75e4eef67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrConfigsManager
   movInputSqrDeadzone: 0.2
+  lookPointerSensitivity: 0.001
 --- !u!4 &1745552596
 Transform:
   m_ObjectHideFlags: 0
@@ -9366,11 +9399,12 @@ SceneRoots:
   - {fileID: 936050738}
   - {fileID: 32162908}
   - {fileID: 1753333071}
+  - {fileID: 1745552596}
   - {fileID: 900887753}
   - {fileID: 404265975}
   - {fileID: 1861722109}
   - {fileID: 83296389}
-  - {fileID: 1745552596}
+  - {fileID: 1262985751}
   - {fileID: 222021722}
   - {fileID: 1607186510}
   - {fileID: 832575519}
