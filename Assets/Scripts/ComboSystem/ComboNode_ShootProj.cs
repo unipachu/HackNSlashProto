@@ -26,14 +26,14 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
         this.projSpawner = projSpawner;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
         ComboNode_ShootProj thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_ShootHomingProj.Enter(
+        return () => CpMgr.inst.classRefs[cpI].actSts.atk_ShootHomingProj.Enter(
             thisNode,
             thisNode.hitter.HitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
-            CpMgr.inst.classRefs[cpId].lockOnTgt.LockOnTrf
+            CpMgr.inst.classRefs[cpI].lockOnTgt.LockOnTrf
         );
     }
 

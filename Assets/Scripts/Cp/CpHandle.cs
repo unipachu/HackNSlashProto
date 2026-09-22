@@ -12,17 +12,17 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     public Cp_UnityObjs unityObjs;
 
     /// <summary>
-    ///  Rename to "I" since this object is kind of the id and this int is index of the entity.
+    /// Index to the corresponding entity data <see cref="CpMgr"/>.
     /// </summary>
-    public int Id { get; set; }
+    public int I { get; set; } = -1;
 
     // NOTE: This is a little cheating but we do not need to access the manager to access the lock on transform.
     public Transform LockOnTrf => unityObjs.lockOnTrf;
     public Transform TrfToFollow => transform;
 
     public ref Cp_AosData GetData()
-        => ref CpMgr.GetData(Id);
+        => ref CpMgr.GetData(I);
 
     public bool IsOnNavMesh()
-        => CpUtils.IsOnNavMesh(Id);
+        => CpUtils.IsOnNavMesh(I);
 }

@@ -7,10 +7,10 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
     public PawnTeam GetTeam() 
-        => CpMgr.GetData(cp.Id).team;
+        => CpMgr.GetData(cp.I).team;
 
     public bool IgnoreAllHits()
-        => CpMgr.GetData(cp.Id).ignoreHits;
+        => CpMgr.GetData(cp.I).ignoreHits;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         //Debug.Log(
@@ -20,10 +20,10 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         //    $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
         //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
         //);
-        int cpId = this.cp.Id;
-        ref Cp_AosData aos = ref CpMgr.GetData(cpId);
-        var classRefs = CpMgr.inst.classRefs[cpId];
-        var cp = CpMgr.inst.cp[cpId];
+        int cpI = this.cp.I;
+        ref Cp_AosData aos = ref CpMgr.GetData(cpI);
+        var classRefs = CpMgr.inst.classRefs[cpI];
+        var cp = CpMgr.inst.handle[cpI];
         if (!aos.ignoreHits) {
             aos.hp_Cur -= hitData.effects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
@@ -34,14 +34,14 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         () => classRefs.actSts.death.Enter(
                             CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd)
                         ),
-                        cpId
+                        cpI
                     )
                 )
                     return new(false, false);
             }
             aos.lastRecievedHitDir = hitData.wldDir;
             aos.lastKnockbackStr = hitData.effects.knockbackStr;
-            //Debug.Log($"knockback str: {data.lastKnockbackStr[cpId]}.");
+            //Debug.Log($"knockback str: {data.lastKnockbackStr[cpI]}.");
             switch (hitData.effects.knockbackT) {
                 case KnockbackT.None:
                     break;
@@ -63,7 +63,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         knockbackAnim = CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd);
                     CpMgr.inst.TrySwitchActSt(
                         () => classRefs.actSts.knockback.Enter(knockbackAnim),
-                        cpId
+                        cpI
                     );
                     break;
                 case KnockbackT.Strong:

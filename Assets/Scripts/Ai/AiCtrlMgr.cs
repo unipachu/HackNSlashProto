@@ -30,7 +30,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         AiCtrlConfigData configData
     ) {
         Debug.Assert(newHandle != null);
-        int newId = entityCount;
+        int newI = entityCount;
         AiCtrlData newData = new AiCtrlData(
             configData.aggroRange,
             configData.atkRange,
@@ -38,8 +38,9 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             controlledCp,
             newHandle
         );
-        ArrayUtils.Add(ref aos, newId, newData);
-        newHandle.Id = newId;
+        ArrayUtils.Add(ref aos, newI, newData);
+        controlledCp.GetData().onMarkForPendingUnregister += newHandle.OnCpMarkedForUnregister;
+        newHandle.I = newI;
         entityCount++;
     }
 
@@ -47,22 +48,23 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// Unregisters an AI controller, removes its runtime data and destroys
     /// the controller GameObject.
     /// </summary>
-    public void Unregister(int id) {
-        if (id < 0 || id >= entityCount) {
+    public void Unregister(int i) {
+        if (i < 0 || i >= entityCount) {
             Debug.LogError(
-                $"Invalid AiCtrl id {id}. Ctrl count was {entityCount}."
+                $"Invalid AiCtrl i {i}. Ctrl count was {entityCount}."
             );
             return;
         }
+        GetData(i).cp.GetData().onMarkForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
         int lastId = entityCount - 1;
-        AiCtrlHandle swappedCtrl = id != lastId
+        AiCtrlHandle swappedCtrl = i != lastId
             ? aos[lastId].handle
             : null;
-        ArrayUtils.RemoveAtSwapBack(aos, entityCount, id);
+        ArrayUtils.RemoveAtSwapBack(aos, entityCount, i);
         entityCount--;
         if (swappedCtrl != null)
-            swappedCtrl.Id = id;
-        Debug.Log($"Unregistered {typeof(AiCtrlHandle)} id: {id}.");
+            swappedCtrl.I = i;
+        Debug.Log($"Unregistered {typeof(AiCtrlHandle)} i: {i}.");
     }
 
     // ----------------------------------------------------------------------------------------
@@ -88,14 +90,14 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         for (int i = 0; i < entityCount; i++) {
             if (aos[i].cp == null)
                 continue;
-            int cpId = aos[i].cp.Id;
-            var cpUnityComps = CpMgr.inst.unityComps[cpId];
-            //var cpClassRefs = CpMgr.inst.classRefs[cpId];
-            //Debug.Log("cpId " + cpId);
+            int cpI = aos[i].cp.I;
+            var cpUnityComps = CpMgr.inst.unityComps[cpI];
+            //var cpClassRefs = CpMgr.inst.classRefs[cpI];
+            //Debug.Log("cpI " + cpI);
             if (aos[i].followTgt == null) {
                 //Dbg.Log(
-                //    $"{cpId} Set agent desired vel to 0 because tgt was null: {cpClassRefs.lockedOnTgt}",
-                //    CpMgr.GetAos(cpId).enableDbgMsgs
+                //    $"{cpI} Set agent desired vel to 0 because tgt was null: {cpClassRefs.lockedOnTgt}",
+                //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
                 cpUnityComps.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
@@ -107,8 +109,8 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: target sample position max distance.
             if (!aos[i].followTgt.IsOnNavMesh()) {
                 //Dbg.Log(
-                //    $"{cpId} Set agent desired vel to 0 since tgt was not on navmesh.",
-                //    CpMgr.GetAos(cpId).enableDbgMsgs
+                //    $"{cpI} Set agent desired vel to 0 since tgt was not on navmesh.",
+                //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
                 cpUnityComps.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
@@ -119,7 +121,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: I think this might be incorrect way to do it (maybe) but the agent navigation seems
             // NOTE C: to work well enough for now.
             if (!cpUnityComps.navMeshAgent.hasPath) {
-                //Dbg.Log($"{cpId} Agent had no path. Set destination.", CpMgr.GetAos(cpId).enableDbgMsgs);
+                //Dbg.Log($"{cpI} Agent had no path. Set destination.", CpMgr.GetAos(cpI).enableDbgMsgs);
                 cpUnityComps.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
                 continue;
             }
@@ -130,8 +132,8 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 ) < 0.1f // NOTE: Stopping distane is hard coded.
             ) {
                 //Dbg.Log(
-                //    $"{cpId} Set agent desired vel to 0 since we reached the target vicinity.",
-                //    CpMgr.GetAos(cpId).enableDbgMsgs
+                //    $"{cpI} Set agent desired vel to 0 since we reached the target vicinity.",
+                //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
                 cpUnityComps.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
@@ -141,7 +143,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: if we get sequential failed path finding attempts, the character will not move at all
             // NOTE C: (instead of jittering a little because of the partial paths).
             if (cpUnityComps.navMeshAgent.pathPending) {
-                //Dbg.Log($"{cpId} Path was pending.", CpMgr.GetAos(cpId).enableDbgMsgs);
+                //Dbg.Log($"{cpI} Path was pending.", CpMgr.GetAos(cpI).enableDbgMsgs);
                 if (aos[i].prevCalculatePathSucceeded)
                     aos[i].agentDesiredVel = cpUnityComps.navMeshAgent.desiredVelocity;
                 else
@@ -150,7 +152,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             }
             if (cpUnityComps.navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete) {
                 aos[i].prevCalculatePathSucceeded = true;
-                //Debug.Log($"Entity id: {cpId}");
+                //Debug.Log($"Entity i: {cpI}");
                 //Debug.Log($"prevCalculatePathSucceeded: {aos[i].prevCalculatePathSucceeded}");
                 //Debug.Log($"pending: {cpUnityComps.navMeshAgent.pathPending}");
                 //Debug.Log($"status: {cpUnityComps.navMeshAgent.pathStatus}");
@@ -222,7 +224,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// Gets ref to corresponding <see cref="AiCtrlData"/>.
     /// </summary>
     public static ref AiCtrlData GetData(AiCtrlHandle aiCtrl)
-        => ref inst.aos[aiCtrl.Id];
+        => ref inst.aos[aiCtrl.I];
 
     public static bool HasFollowTgt(int aiCtrlId)
         => GetData(aiCtrlId).followTgt != null;
@@ -236,7 +238,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             GetData(aiCtrlId).cp.transform.position,
             GetData(aiCtrlId).followTgt.TrfToFollow.position
         );
-        //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpId], inst.aosData[cpId].enableDbgMsgs);
+        //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpI], inst.aosData[cpI].enableDbgMsgs);
         return dist < maxDist;
     }
 
@@ -246,7 +248,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     public static bool TryFindFollowTgt(int aiCtrlId) {
         if (HasFollowTgt(aiCtrlId))
             return true;
-        GetData(aiCtrlId).followTgt = CpMgr.TryFindEnemy(GetData(aiCtrlId).cp.Id);
+        GetData(aiCtrlId).followTgt = CpMgr.TryFindEnemy(GetData(aiCtrlId).cp.I);
         if(GetData(aiCtrlId).followTgt == null)
             return false;
         return true;
@@ -261,7 +263,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     public static bool TryLockOnToFollowTgt(int aiCtrl) {
         if(GetData(aiCtrl).followTgt is ILockOnTargetable lockOnTgt) {
-            CpMgr.inst.classRefs[GetData(aiCtrl).cp.Id].lockOnTgt = lockOnTgt;
+            CpMgr.inst.classRefs[GetData(aiCtrl).cp.I].lockOnTgt = lockOnTgt;
             return true;
         }
         return false;

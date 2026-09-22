@@ -18,14 +18,14 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
         Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Windup;
         InputBufferUtils.Clear(
-            ref CpMgr.GetData(cp.Id).inputBuffer_BufferedInput,
-            ref CpMgr.GetData(cp.Id).inputBuffer_RemainingTime
+            ref CpMgr.GetData(cp.I).inputBuffer_BufferedInput,
+            ref CpMgr.GetData(cp.I).inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            unityComps[cp.I].anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -33,13 +33,13 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = CpMgr.inst.classRefs[cp.Id];
+        var classRefs = CpMgr.inst.classRefs[cp.I];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
                     CpMgr.inst.SwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.Id),
-                        cp.Id
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
+                        cp.I
                     );
                     return;
                 }
@@ -52,17 +52,17 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public void Tick() {
         CpUtils.UpdateMovInputData(
-            cp.Id,
-            CpMgr.GetData(cp.Id).input_mov_WhenLastSwitchedSt,
-            CpMgr.GetData(cp.Id).animDPos,
+            cp.I,
+            CpMgr.GetData(cp.I).input_mov_WhenLastSwitchedSt,
+            CpMgr.GetData(cp.I).animDPos,
             0,
-            CpMgr.GetData(cp.Id).act_BasicWindup_MaxAngSpd,
+            CpMgr.GetData(cp.I).act_BasicWindup_MaxAngSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (CpMgr.GetData(cp.Id).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.Id, comboNode))
+        if (CpMgr.GetData(cp.I).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
             return;
     }
 }

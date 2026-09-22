@@ -15,12 +15,12 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
         var unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Impact;
-        CpMgr.GetData(cp.Id).comboAllowed = false;
-        CpMgr.GetData(cp.Id).inputRotAllowed = false;
+        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Impact;
+        CpMgr.GetData(cp.I).comboAllowed = false;
+        CpMgr.GetData(cp.I).inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            unityComps[cp.I].anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -35,21 +35,21 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = CpMgr.inst.classRefs[cp.Id];
-        var unityComps = CpMgr.inst.unityComps[cp.Id];
+        var classRefs = CpMgr.inst.classRefs[cp.I];
+        var unityComps = CpMgr.inst.unityComps[cp.I];
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
                     CpMgr.inst.SwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.Id),
-                        cp.Id
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
+                        cp.I
                     );
                     return;
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.Id).team, cp.transform.forward);
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.I).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -62,21 +62,21 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.unityComps[cp.Id];
+        var classRefs = CpMgr.inst.unityComps[cp.I];
         float angSpd = 0;
-        if (CpMgr.GetData(cp.Id).inputRotAllowed)
-            angSpd = CpMgr.GetData(cp.Id).act_BasicImpact_YawSpd;
+        if (CpMgr.GetData(cp.I).inputRotAllowed)
+            angSpd = CpMgr.GetData(cp.I).act_BasicImpact_YawSpd;
         CpUtils.UpdateMovInputData(
-            cp.Id,
-            CpMgr.GetData(cp.Id).input_mov,
-            CpMgr.GetData(cp.Id).animDPos,
+            cp.I,
+            CpMgr.GetData(cp.I).input_mov,
+            CpMgr.GetData(cp.I).animDPos,
             0,
             angSpd,
             float.PositiveInfinity
         );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (CpMgr.GetData(cp.Id).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.Id, comboNode))
+        if (CpMgr.GetData(cp.I).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
             return;
     }
 }

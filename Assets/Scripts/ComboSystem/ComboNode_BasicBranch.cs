@@ -12,11 +12,11 @@ public class ComboNode_BasicBranch : IComboNode, IComboNodeTransitionsHolder {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicBranch thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicBranch.Enter(thisNode);
+        return () => CpMgr.inst.classRefs[cpI].actSts.atk_BasicBranch.Enter(thisNode);
     }
 
     public IComboNode GetNextNode(BufferableInput input) {

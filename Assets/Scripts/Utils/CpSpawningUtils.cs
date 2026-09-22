@@ -21,7 +21,7 @@ public static class CpSpawningUtils {
     ) {
         //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");
         CpHandle cp = SpawnCpAtSpawnPt(prefab, spawnPt);
-        CpMgr.StartListeningToCtrlInput(cp.Id, ctrl);
+        CpMgr.StartListeningToCtrlInput(cp.I, ctrl);
         cam.Target.TrackingTarget = cp.transform;
 
     }
@@ -37,7 +37,7 @@ public static class CpSpawningUtils {
         cp = SpawnCpAtSpawnPt(aiCpConfig.cpPrefab, spawnPt);
         bt = BtDataFactory.Construct(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCtrl, bt, cp, aiCpConfig.data);
-        CpMgr.StartListeningToCtrlInput(cp.Id, aiCtrl);
+        CpMgr.StartListeningToCtrlInput(cp.I, aiCtrl);
         // Ui related
         // TODO: Change.
         var hpBar = WldHpBarMgr.inst.Register(cp.unityObjs.wldHpBarPos);

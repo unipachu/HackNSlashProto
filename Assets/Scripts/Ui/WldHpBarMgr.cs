@@ -43,7 +43,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     /// NOTE: Expects that the hp bar game object has been destroyed earlier.
     /// </summary>
     public void Unregister(int i) {
-        Debug.Log($"Unregistering hp bar {i}");
+        //Debug.Log($"Unregistering hp bar {i}");
         GameObject.Destroy(bars[i].hpBar.gameObject);
         entityCount = ArrayUtils.RemoveAtSwapBack(bars, entityCount, i);
     }
@@ -62,7 +62,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             if (bars[i].pendingUnregister)
                 continue;
             float now = Time.time;
-            Debug.Log($"{nameof(WldHpBarMgr)} {nameof(entityCount)}: {entityCount}");
+            //Debug.Log($"{nameof(WldHpBarMgr)} {nameof(entityCount)}: {entityCount}");
             ref WldHpBarData data = ref bars[i];
             bool shouldBeVisible = data.isLocked || now < data.visibleUntil;
             if (!shouldBeVisible) {
@@ -102,7 +102,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         // We swap the last element in the place of the unregistered one, so we onlu increment index if we
         // don't unregister a cp.
         while (i < entityCount) {
-            Debug.Log($"Checked {i} for null hpbar: {bars[i].hpBar}");
+            //Debug.Log($"Checked {i} for null hpbar: {bars[i].hpBar}");
             if (bars[i].pendingUnregister)
                 Unregister(i);
             else

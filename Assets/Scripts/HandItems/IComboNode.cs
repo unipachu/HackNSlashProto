@@ -6,7 +6,7 @@ using System;
 public interface IComboNode {
     AnimInfo AnimInfo { get; }
 
-    Func<IFsmSt_Cp> GetEnterFunc(int cpId);
+    Func<IFsmSt_Cp> GetEnterFunc(int cpI);
 
     IComboNode GetNextNode(BufferableInput input);
 }

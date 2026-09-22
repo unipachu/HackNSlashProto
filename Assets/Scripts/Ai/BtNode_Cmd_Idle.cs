@@ -11,13 +11,13 @@ public class BtNode_Cmd_Idle : IBtNode{
 
     public BtResult Eval() {
         ref AiCtrlData data = ref AiCtrlMgr.GetData(aiCtrl);
-        int cpId = data.cp.Id;
-        int aiCtrlId = aiCtrl.Id;
+        int cpI = data.cp.I;
+        int aiCtrlId = aiCtrl.I;
         data.ctrlInputData.input_Mov = float2.zero;
         //Dbg.Log(
-        //    $"{cpId} bt node: {typeof(BtNode_Cmd_Idle).Name}",
+        //    $"{cpI} bt node: {typeof(BtNode_Cmd_Idle).Name}",
         //    data.cp,
-        //    CpMgr.GetAos(cpId).enableDbgMsgs
+        //    CpMgr.GetAos(cpI).enableDbgMsgs
         //);
         return BtResult.Success;
     }

@@ -12,10 +12,10 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         => true;
 
     public CpSt_FallLanding Enter() {
-        CpMgr.GetData(cp.Id).dodgeAllowed = false;
+        CpMgr.GetData(cp.I).dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            CpMgr.inst.unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            CpMgr.inst.unityComps[cp.I].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
             0.2f
         );
@@ -23,26 +23,26 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cp.Id];
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
+        var classRefs = CpMgr.inst.classRefs[cp.I];
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
         CpUtils.UpdateMovInputData(
-            cp.Id,
+            cp.I,
             float2.zero,
             float3.zero,
             0,
             0,
             float.PositiveInfinity
         );
-        if (CpMgr.GetData(cp.Id).dodgeAllowed) {
+        if (CpMgr.GetData(cp.I).dodgeAllowed) {
             if (
                 InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,
-                    ref CpMgr.GetData(cp.Id).inputBuffer_BufferedInput,
-                    ref CpMgr.GetData(cp.Id).inputBuffer_RemainingTime
+                    ref CpMgr.GetData(cp.I).inputBuffer_BufferedInput,
+                    ref CpMgr.GetData(cp.I).inputBuffer_RemainingTime
                 )
             ) {
-                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cp.Id);
+                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cp.I);
                 return;
             }
         }
@@ -51,7 +51,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
+                CpUtils.TransitionToFallIdleOrWalk(cp.I);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

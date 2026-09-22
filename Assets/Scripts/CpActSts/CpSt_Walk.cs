@@ -12,8 +12,8 @@ public class CpSt_Walk : IFsmSt_Cp {
 
     public CpSt_Walk Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            CpMgr.inst.unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            CpMgr.inst.unityComps[cp.I].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.walk),
             0.5f
         );
@@ -21,21 +21,21 @@ public class CpSt_Walk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cp.Id];
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
+        var classRefs = CpMgr.inst.classRefs[cp.I];
+        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
         CpUtils.UpdateMovInputData(
-            cp.Id,
-            CpMgr.GetData(cp.Id).input_mov,
+            cp.I,
+            CpMgr.GetData(cp.I).input_mov,
             float3.zero,
-            CpMgr.GetData(cp.Id).walkMaxLinSpd,
-            CpMgr.GetData(cp.Id).walkYawSpd,
-            CpMgr.GetData(cp.Id).walkLinAcc
+            CpMgr.GetData(cp.I).walkMaxLinSpd,
+            CpMgr.GetData(cp.I).walkYawSpd,
+            CpMgr.GetData(cp.I).walkLinAcc
         );
-        if (CpUtils.TrySwitchStByBufferedInput(cp.Id))
+        if (CpUtils.TrySwitchStByBufferedInput(cp.I))
             return;
-        if (math.all(CpMgr.GetData(cp.Id).input_mov == float2.zero)) {
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cp.Id);
+        if (math.all(CpMgr.GetData(cp.I).input_mov == float2.zero)) {
+            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cp.I);
             return;
         }
     }

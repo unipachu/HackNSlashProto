@@ -16,8 +16,8 @@ public class CpSt_Knockback : IFsmSt_Cp{
 
     public CpSt_Knockback Enter(AnimInfo knockbackAnimInfo) {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            CpMgr.inst.unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            CpMgr.inst.unityComps[cp.I].anim,
             knockbackAnimInfo,
             0.1f
         );
@@ -27,7 +27,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
+                CpUtils.TransitionToFallIdleOrWalk(cp.I);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -40,9 +40,9 @@ public class CpSt_Knockback : IFsmSt_Cp{
         //    return;
         //Debug.Log($"knocback: {data.lastKnockbackStr[cp.Id]}\nanim delta: {data.animDPos[cp.Id]}");
         CpUtils.UpdateMovInputData(
-            cp.Id,
+            cp.I,
             float2.zero,
-            CpMgr.GetData(cp.Id).animDPos * CpMgr.GetData(cp.Id).lastKnockbackStr,
+            CpMgr.GetData(cp.I).animDPos * CpMgr.GetData(cp.I).lastKnockbackStr,
             0,
             0,
             float.PositiveInfinity

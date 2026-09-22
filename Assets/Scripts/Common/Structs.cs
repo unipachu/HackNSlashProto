@@ -314,6 +314,13 @@ public struct Cp_AosData {
     public float movInput_horAcc;
     public Cp_NavTgtInfo navTgtInfo;
     /// <summary>
+    /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
+    /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
+    /// <see cref="Cp_AosData.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
+    /// </summary>
+    public Action onMarkForPendingUnregister;
+    public bool pendingUnregister;
+    /// <summary>
     /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
     /// </summary>
     public PawnTeam team;

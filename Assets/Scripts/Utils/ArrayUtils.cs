@@ -7,12 +7,12 @@ public static class ArrayUtils{
     /// NOTE 2: You have to keep track of the <paramref name="usedLength"/> outside of this method!
     /// </summary>
     /// <returns>New used length (old + 1).</returns>
-    public static int Add<T>(ref T[] array, int usedLength, T element) {
+    public static int Add<T>(ref T[] array, int usedLength, T newElement) {
         if (usedLength == array.Length)
             // NOTE: List also doubles the array size when Add forces it to reallocate, and so we do the
             // NOTE C:  same here. Note that the original allocated capacity affects this. (11.9.2026)
             Array.Resize(ref array, usedLength == 0 ? 1 : usedLength * 2);
-        array[usedLength] = element;
+        array[usedLength] = newElement;
         return usedLength + 1;
     }
 

@@ -9,17 +9,17 @@ public static class CcMov {
     /// Moves the character controller downwards, simulating gravity. If grounded check fails but there's
     /// still ground beneath the capsule (because floor is too steep to walk on) this slides the CC downhill.
     /// </summary>
-    public static void ApplyGravityNSlideDownSlopes(int cpId, float dt){
-        if (CpMgr.GetData(cpId).isGrounded)
-            CpMgr.GetData(cpId).vel_Ver = -CpMgr.GetData(cpId).groundSnapVerDownSpd * dt;
+    public static void ApplyGravityNSlideDownSlopes(int cpI, float dt){
+        if (CpMgr.GetData(cpI).isGrounded)
+            CpMgr.GetData(cpI).vel_Ver = -CpMgr.GetData(cpI).groundSnapVerDownSpd * dt;
         // Freefalling and slope down sliding.
         else {
-            CpMgr.GetData(cpId).vel_Ver = CpMgr.inst.unityComps[cpId].cc.velocity.y;
+            CpMgr.GetData(cpI).vel_Ver = CpMgr.inst.unityComps[cpI].cc.velocity.y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (CpMgr.GetData(cpId).groundCastHitSomething) {
+            if (CpMgr.GetData(cpI).groundCastHitSomething) {
                 // Find the gravitational acceleration component along the slope.
-                float3 newAcc = math.down().ProjectOnPlane(CpMgr.GetData(cpId).groundCastNrm)
+                float3 newAcc = math.down().ProjectOnPlane(CpMgr.GetData(cpI).groundCastNrm)
                     * GlobalData.inst.gravitationalAcc;
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
@@ -29,11 +29,11 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(CpMgr.inst.unityComps[cpId].cc.velocity, slideDir));
+                float slideSpd = math.max(0, math.dot(CpMgr.inst.unityComps[cpI].cc.velocity, slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                CpMgr.GetData(cpId).vel_Ver = newVel.y;
-                CpMgr.GetData(cpId).vel_Hor = new float2(newVel.x, newVel.z);
+                CpMgr.GetData(cpI).vel_Ver = newVel.y;
+                CpMgr.GetData(cpI).vel_Hor = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -47,10 +47,10 @@ public static class CcMov {
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0. I'm pretty sure it's like this.
-                CpMgr.GetData(cpId).vel_Ver = Mathf.Min(CpMgr.GetData(cpId).vel_Ver, 0);
-                CpMgr.GetData(cpId).vel_Ver -= GlobalData.inst.gravitationalAcc * dt;
-                CpMgr.GetData(cpId).vel_Ver = Mathf.Clamp(
-                    CpMgr.GetData(cpId).vel_Ver,
+                CpMgr.GetData(cpI).vel_Ver = Mathf.Min(CpMgr.GetData(cpI).vel_Ver, 0);
+                CpMgr.GetData(cpI).vel_Ver -= GlobalData.inst.gravitationalAcc * dt;
+                CpMgr.GetData(cpI).vel_Ver = Mathf.Clamp(
+                    CpMgr.GetData(cpI).vel_Ver,
                     -GlobalData.inst.maxFallSpd,
                     0
                 );

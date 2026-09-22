@@ -17,8 +17,8 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            CpMgr.inst.unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            CpMgr.inst.unityComps[cp.I].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
@@ -26,26 +26,26 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetData(cp.Id).isAffectedByGravity = true;
+        CpMgr.GetData(cp.I).isAffectedByGravity = true;
         hitDealer.Deactivate();
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var unityComps = CpMgr.inst.unityComps[cp.Id];
+        var unityComps = CpMgr.inst.unityComps[cp.I];
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetData(cp.Id).isAffectedByGravity = true;
-                CpMgr.GetData(cp.Id).vel_Ver = -CpMgr.GetData(cp.Id).act_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetData(cp.I).isAffectedByGravity = true;
+                CpMgr.GetData(cp.I).vel_Ver = -CpMgr.GetData(cp.I).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetData(cp.Id).isAffectedByGravity = false;
+                CpMgr.GetData(cp.I).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
                 Debug.Log("Went here asdasdasd");
-                CpUtils.TransitionToFallIdleOrWalk(cp.Id);
+                CpUtils.TransitionToFallIdleOrWalk(cp.I);
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.Id).team, cp.transform.forward);
+                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.I).team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -60,9 +60,9 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public void Tick() {
         Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         CpUtils.UpdateMovInputData(
-            cp.Id,
+            cp.I,
             float2.zero,
-            CpMgr.GetData(cp.Id).animDPos,
+            CpMgr.GetData(cp.I).animDPos,
             0,
             0,
             float.PositiveInfinity

@@ -28,10 +28,10 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.homingProjTgt = homingProjTgt;
-        CpMgr.GetData(cp.Id).act_AtkPhase = AtkPhase.Windup;
+        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.Id],
-            CpMgr.inst.unityComps[cp.Id].anim,
+            ref CpMgr.inst.animEventPlrData[cp.I],
+            CpMgr.inst.unityComps[cp.I].anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
@@ -54,14 +54,14 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                             homingProjTgt
                         );
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                            ref CpMgr.inst.animEventPlrData[cp.Id],
-                            CpMgr.inst.unityComps[cp.Id].anim,
+                            ref CpMgr.inst.animEventPlrData[cp.I],
+                            CpMgr.inst.unityComps[cp.I].anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Recovery)
                         );
                         break;
                     case AtkPhase.Recovery:
                         //Dbg.Log("fired finished recovery", cpData.enableDbgMsgs);
-                        CpUtils.TransitionToFallIdleOrWalk(cp.Id);
+                        CpUtils.TransitionToFallIdleOrWalk(cp.I);
                         break;
                     default:
                         Debug.LogError($"Switch defaulted with {cpData.act_AtkPhase}");
@@ -75,13 +75,13 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void Tick() {
-        switch (CpMgr.GetData(cp.Id).act_AtkPhase) {
+        switch (CpMgr.GetData(cp.I).act_AtkPhase) {
             case AtkPhase.Windup:
                 //Dbg.Log("ticked windup", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
-                    cp.Id,
-                    CpMgr.GetData(cp.Id).input_mov_LastNonZero,
-                    CpMgr.GetData(cp.Id).animDPos,
+                    cp.I,
+                    CpMgr.GetData(cp.I).input_mov_LastNonZero,
+                    CpMgr.GetData(cp.I).animDPos,
                     0,
                     180, // NOTE: Yaw speed is set here.
                     float.PositiveInfinity
@@ -90,16 +90,16 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
             case AtkPhase.Recovery:
                 //Dbg.Log("ticked recovery", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
-                    cp.Id,
-                    CpMgr.GetData(cp.Id).input_mov_LastNonZero,
-                    CpMgr.GetData(cp.Id).animDPos,
+                    cp.I,
+                    CpMgr.GetData(cp.I).input_mov_LastNonZero,
+                    CpMgr.GetData(cp.I).animDPos,
                     0,
                     0,
                     float.PositiveInfinity
                 );
                 break;
             default:
-                Debug.LogError($"{cp.Id} Switch defaulted with {CpMgr.GetData(cp.Id).act_AtkPhase}.");
+                Debug.LogError($"{cp.I} Switch defaulted with {CpMgr.GetData(cp.I).act_AtkPhase}.");
                 break;
         }
     }

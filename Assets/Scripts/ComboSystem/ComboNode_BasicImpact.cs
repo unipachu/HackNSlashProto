@@ -22,11 +22,11 @@ public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
         hitter = handItem_HitDealer;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpId) {
+    public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicImpact thisNode = this;
-        return () => CpMgr.inst.classRefs[cpId].actSts.atk_BasicImpact.Enter(
+        return () => CpMgr.inst.classRefs[cpI].actSts.atk_BasicImpact.Enter(
             thisNode.hitter.HitEffects,
             thisNode,
             thisNode.hitter.HitDealer

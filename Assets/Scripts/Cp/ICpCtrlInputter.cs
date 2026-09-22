@@ -12,11 +12,4 @@ public interface ICpCtrlInputter{
     public bool TryConsume_Atk_Ult();
 
     public bool TryConsume_Dodge();
-
-    /// <summary>
-    /// Should be called when a pawn stops listening to the inputs of the controller.
-    /// </summary>
-    void LostListener() {
-        // Nop.
-    }
 }

@@ -1,6 +1,5 @@
 using System;
 using Unity.AppUI.UI;
-using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -14,8 +13,8 @@ public class CpMgr : Singleton<CpMgr> {
 
     [HideInInspector] public AnimEventPlrData[] animEventPlrData;
     [HideInInspector] public Cp_NonUnityObjClassRefs[] classRefs;
-    [HideInInspector] public CpHandle[] cp;
-    [HideInInspector] public NativeList<Cp_AosData> aosData;
+    [HideInInspector] public CpHandle[] handle;
+    [HideInInspector] public Cp_AosData[] aosData;
     [HideInInspector] public Cp_UnityObjs[] unityComps;
 
     /// <summary>
@@ -26,14 +25,10 @@ public class CpMgr : Singleton<CpMgr> {
     public void Init() {
         animEventPlrData = new AnimEventPlrData[initCapacity];
         classRefs = new Cp_NonUnityObjClassRefs[initCapacity];
-        cp = new CpHandle[initCapacity];
-        aosData = GeneralUtils.AllocList<Cp_AosData>(initCapacity);
+        handle = new CpHandle[initCapacity];
+        aosData = new Cp_AosData[initCapacity];
         //Debug.Log($"soa length in init: {aosData.Length}");
         unityComps = new Cp_UnityObjs[initCapacity];
-    }
-
-    void OnDestroy() {
-        aosData.Dispose();
     }
 
     // ------------------------------------------------------------
@@ -55,7 +50,7 @@ public class CpMgr : Singleton<CpMgr> {
         //Debug.Log($"Start registering {cp}", cp);
         // This is set when switching to init act state.
         ArrayUtils.Add(ref animEventPlrData, entityCount, default);
-        ArrayUtils.Add(ref cp, entityCount, newCp);
+        ArrayUtils.Add(ref handle, entityCount, newCp);
         // Structure of arrays data
         Cp_AosData newAosData = new();
         newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
@@ -92,7 +87,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
         newAosData.navTgtInfo = new(false, false, 0.2f);
-        aosData.Add(newAosData);
+        ArrayUtils.Add(ref aosData, entityCount, newAosData);
         ArrayUtils.Add(ref unityComps, entityCount, newCp.unityObjs);
         IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpData.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
@@ -103,35 +98,34 @@ public class CpMgr : Singleton<CpMgr> {
         Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(newCp, null, rHandItem);
         ArrayUtils.Add(ref classRefs, entityCount, newClassRefs);
         //Debug.Log($"Switching {freeI} to initial act st!", this);
-        newCp.Id = entityCount;
+        newCp.I = entityCount;
         SwitchToInitActSt(entityCount);
         entityCount++;
     }
 
     /// <summary>
-    /// Unregisters cp entity. Expects <see cref="CpHandle"/> to have been already destroyed.
+    /// Unregisters cp entity and destroys the handle.
     /// WARNING: NEVER CALL THIS DIRECTLY FROM ANYWHERE EXCEPT
-    /// <see cref="LateTick_UnregisterDestroyedHandles"/>!
+    /// <see cref="LateTick_UnregisterNDestroyPending"/>!
     /// </summary>
-    void Unregister(int cpId) {
-        if (cpId >= entityCount) {
-            Debug.LogError($"{cpId} was greaterequal to {entityCount}!");
+    void UnregisterNDestroy(int cpI) {
+        if (cpI >= entityCount) {
+            Debug.LogError($"{cpI} was greaterequal to {entityCount}!");
             return;
         }
-        if (classRefs[cpId].cpCtrl != null)
-            classRefs[cpId].cpCtrl.LostListener();
+        GameObject.Destroy(handle[cpI].gameObject);
         int lastId = entityCount - 1;
-        CpHandle swappedCp = cpId != lastId ? cp[lastId] : null;
-        ArrayUtils.RemoveAtSwapBack(animEventPlrData, entityCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(classRefs, entityCount, cpId);
-        ArrayUtils.RemoveAtSwapBack(cp, entityCount, cpId);
-        aosData.RemoveAtSwapBack(cpId);
-        ArrayUtils.RemoveAtSwapBack(unityComps, entityCount, cpId);
+        CpHandle swappedCp = cpI != lastId ? handle[lastId] : null;
+        ArrayUtils.RemoveAtSwapBack(animEventPlrData, entityCount, cpI);
+        ArrayUtils.RemoveAtSwapBack(classRefs, entityCount, cpI);
+        ArrayUtils.RemoveAtSwapBack(handle, entityCount, cpI);
+        ArrayUtils.RemoveAtSwapBack(aosData, entityCount, cpI);
+        ArrayUtils.RemoveAtSwapBack(unityComps, entityCount, cpI);
         entityCount--;
         if (swappedCp != null)
-            // Last Cp was swapped to cpId, so update Id.
-            swappedCp.Id = cpId;
-        Debug.Log($"Unregistered (and destroyed) {typeof(CpHandle)} id: {cpId}.");
+            // Last Cp was swapped to cpI, so update Id.
+            swappedCp.I = cpI;
+        Debug.Log($"Unregistered (and destroyed) {typeof(CpHandle)} id: {cpI}.");
     }
 
     // ------------------------------------------------------------
@@ -145,7 +139,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void FixedTick_Fsm() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             Debug.Assert(classRefs[i].st_cur != null, $"cur st was null for {i}.");
             classRefs[i].st_cur.PhysicsTick();
@@ -154,7 +148,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void UpdateGroundCheck() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             GetData(i).isGrounded = CcMov.IsGrounded(
                 unityComps[i].cc,
@@ -173,9 +167,9 @@ public class CpMgr : Singleton<CpMgr> {
     public void Tick(float dt) {
         // Navigation target info is calculated only once per frame (if any request it).
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
-            aosData.ElementAt(i).navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
+            aosData[i].navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
             GetData(i).curStDur += dt;
         }
         Tick_ReadMovInput();
@@ -186,7 +180,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_Fsm() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             classRefs[i].st_cur.Tick();
         }
@@ -194,7 +188,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_ReadMovInput() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             if (classRefs[i].cpCtrl == null)
                 continue;
@@ -214,7 +208,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_InputBuffer(float dt) {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             if (classRefs[i].cpCtrl == null)
                 continue;
@@ -261,7 +255,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_Mov(float dt) {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             //Dbg.Log(
             //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
@@ -283,8 +277,8 @@ public class CpMgr : Singleton<CpMgr> {
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
             if (math.lengthsq(GetData(i).movInput_tgtHorDir) > 0.0001f) {
-                cp[i].transform.rotation = TrfMathUtils.RotateFwdToTgt(
-                    inst.cp[i].transform.rotation,
+                handle[i].transform.rotation = TrfMathUtils.RotateFwdToTgt(
+                    inst.handle[i].transform.rotation,
                     GetData(i).movInput_yawSpd,
                     GetData(i).movInput_tgtHorDir
                 );
@@ -307,7 +301,7 @@ public class CpMgr : Singleton<CpMgr> {
             GetData(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
             GetData(i).vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            unityComps[i].navMeshAgent.nextPosition = cp[i].transform.position;
+            unityComps[i].navMeshAgent.nextPosition = handle[i].transform.position;
         }
     }
 
@@ -318,12 +312,15 @@ public class CpMgr : Singleton<CpMgr> {
     public void LateTick() {
         LateTick_AnimEventPlr();
         LateTick_Fsm();
-        LateTick_UnregisterDestroyedHandles();
+        LateTick_UnregisterNDestroyPending();
     }
 
     void LateTick_AnimEventPlr() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            // NOTE: If pendingUnregister, animEventPlr is never ticked for a cp even if the Animator
+            // NOTE C: itself hadn't been destroyed yet (so it's possible to have an Animator update without
+            // NOTE C: the AnimEventPlr ticking for the corresponding Cp.
+            if (aosData[i].pendingUnregister)
                 continue;
             //Debug.Log($"{animEventPlrData[i]}");
             //Debug.Log($"{unityComps[i].anim == null}");
@@ -339,7 +336,7 @@ public class CpMgr : Singleton<CpMgr> {
 
     void LateTick_Fsm() {
         for (int i = 0; i < entityCount; i++) {
-            if (cp[i] == null)
+            if (aosData[i].pendingUnregister)
                 continue;
             classRefs[i].st_cur.LateTick();
         }
@@ -350,13 +347,13 @@ public class CpMgr : Singleton<CpMgr> {
     /// otherwise using their Id's. You can safely mark a cp for deletion by destroying its
     /// <see cref="CpHandle"/>, it will then be unregistered here.
     /// </summary>
-    void LateTick_UnregisterDestroyedHandles() {
+    void LateTick_UnregisterNDestroyPending() {
         int i = 0;
         // We swap the last element in the place of the unregistered one, so we onlu increment index if we
         // don't unregister a cp.
         while (i < entityCount) {
-            if (cp[i] == null)
-                Unregister(i);
+            if (aosData[i].pendingUnregister)
+                UnregisterNDestroy(i);
             else
                 i++;
         }
@@ -366,70 +363,81 @@ public class CpMgr : Singleton<CpMgr> {
     // Other Methods
     // ------------------------------------------------------------
 
-    public static ref Cp_AosData GetData(int cpId)
-        => ref inst.aosData.ElementAt(cpId);
+    public static ref Cp_AosData GetData(int cpI)
+        => ref inst.aosData[cpI];
 
     /// <summary>
     /// This should always be called when cp act state is switched!
     /// </summary>
-    public void OnStateSwitched(int cpId, IFsmSt newSt) {
-        GetData(cpId).curStDur = 0;
-        if (classRefs[cpId].cpCtrl == null)
-            GetData(cpId).input_mov_WhenLastSwitchedSt
-                = GetData(cpId).input_mov;
+    public void OnStateSwitched(int cpI, IFsmSt newSt) {
+        GetData(cpI).curStDur = 0;
+        if (classRefs[cpI].cpCtrl == null)
+            GetData(cpI).input_mov_WhenLastSwitchedSt
+                = GetData(cpI).input_mov;
         else {
-            if (classRefs[cpId].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
-                GetData(cpId).input_mov_WhenLastSwitchedSt
-                    = GetData(cpId).input_mov;
+            if (classRefs[cpI].cpCtrl.Input_Mov.sqrMagnitude > PlrConfigs.inst.movInputSqrDeadzone)
+                GetData(cpI).input_mov_WhenLastSwitchedSt
+                    = GetData(cpI).input_mov;
             else
-                GetData(cpId).input_mov_WhenLastSwitchedSt = float2.zero;
+                GetData(cpI).input_mov_WhenLastSwitchedSt = float2.zero;
         }
+    }
+
+    /// <summary>
+    /// Marks the entity for being unregistered and destroyed and invokes <see cref="Cp_AosData"/>.<br/>
+    /// NOTE: DO NOT DESTROY A <see cref="CpHandle"/> DIRECTLY OR ASSIGN
+    /// <see cref="Cp_AosData.pendingUnregister"/>, INSTEAD CALL THIS! 
+    /// = true!!!
+    /// </summary>
+    public void MarkForPendingUnregister(int cpI) {
+        aosData[cpI].pendingUnregister = true;
+        aosData[cpI].onMarkForPendingUnregister?.Invoke();
     }
 
     /// <summary>
     /// Call this if you want to make a cp listen to a controller, i.e. get possessed by a controller.
     /// </summary>
-    public static void StartListeningToCtrlInput(int cpId, ICpCtrlInputter ctrl) {
-        Debug.Assert(inst.classRefs[cpId].cpCtrl == null, $"{cpId} already listening to a ctrl!");
-        inst.classRefs[cpId].cpCtrl = ctrl;
+    public static void StartListeningToCtrlInput(int cpI, ICpCtrlInputter ctrl) {
+        Debug.Assert(inst.classRefs[cpI].cpCtrl == null, $"{cpI} already listening to a ctrl!");
+        inst.classRefs[cpI].cpCtrl = ctrl;
     }
 
     /// <summary>
     /// NOTE: Never directly call Fsm.Switch state since that will bypass calling
     /// <see cref="OnStateSwitched"/>. (10.9.2026)
     /// </summary>
-    public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpId){
+    public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpI){
         Fsm.SwitchSt(
             enterFunc,
-            ref classRefs[cpId].st_cur,
-            ref classRefs[cpId].st_prev,
-            ref GetData(cpId).isSwitchingSt
-            //CpMgr.GetData(cpId).enableDbgMsgs
+            ref classRefs[cpI].st_cur,
+            ref classRefs[cpI].st_prev,
+            ref GetData(cpI).isSwitchingSt
+            //CpMgr.GetData(cpI).enableDbgMsgs
         );
-        OnStateSwitched(cpId, classRefs[cpId].st_cur);
+        OnStateSwitched(cpI, classRefs[cpI].st_cur);
     }
 
-    public void SwitchToInitActSt(int cpId) {
-        Debug.Log($"{cpId} switching to init state", this);
+    public void SwitchToInitActSt(int cpI) {
+        Debug.Log($"{cpI} switching to init state", this);
         // NOTE: This is currently always enters to idle state. (6.9.2026)
-        SwitchActSt(() => classRefs[cpId].actSts.idle.Enter(), cpId);
+        SwitchActSt(() => classRefs[cpI].actSts.idle.Enter(), cpI);
         //Debug.Log($"{id} state initialized to : {initSt}", this);
     }
 
     /// <summary>
-    /// Tries to find any <see cref="CpHandle"/> considered an "enemy" to <paramref name="cpId"/>. Returns
+    /// Tries to find any <see cref="CpHandle"/> considered an "enemy" to <paramref name="cpI"/>. Returns
     /// null if none found.
     /// </summary>
-    public static CpHandle TryFindEnemy(int cpId) {
+    public static CpHandle TryFindEnemy(int cpI) {
         for (int i = 0; i < inst.entityCount; i++) {
-            if (i == cpId)
+            if (i == cpI)
                 continue;
             PawnTeam candTeam = CpMgr.inst.aosData[i].team;
             if (candTeam == PawnTeam.FriendToAll)
                 continue;
-            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aosData[cpId].team) {
+            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aosData[cpI].team) {
                 //Debug.Log("Found tgt: " + i);
-                return inst.cp[i];
+                return inst.handle[i];
             }
         }
         return null;
@@ -441,17 +449,17 @@ public class CpMgr : Singleton<CpMgr> {
     /// NOTE 2: <paramref name="enterFunc"/> return type needs to be generic (instead of IFsmSt_Cp), otherwise
     /// information of the new state type is lost. (12.9.2026)
     /// </summary>
-    public bool TrySwitchActSt<TNewState>(Func<TNewState> enterFunc, int cpId) where TNewState : IFsmSt_Cp {
+    public bool TrySwitchActSt<TNewState>(Func<TNewState> enterFunc, int cpI) where TNewState : IFsmSt_Cp {
         if(
             Fsm.TrySwitchState(
                 enterFunc,
-                ref classRefs[cpId].st_cur,
-                ref classRefs[cpId].st_prev,
-                ref GetData(cpId).isSwitchingSt
-                // CpMgr.GetSoa(cpId).enableDebugMsgs
+                ref classRefs[cpI].st_cur,
+                ref classRefs[cpI].st_prev,
+                ref GetData(cpI).isSwitchingSt
+                // CpMgr.GetSoa(cpI).enableDebugMsgs
             )
         ) {
-            OnStateSwitched(cpId, classRefs[cpId].st_cur);
+            OnStateSwitched(cpI, classRefs[cpI].st_cur);
             return true;
         }
         return false;

@@ -8,7 +8,7 @@ public class BtNode_TryFindFollowTgt : IBtNode {
     public string DbgName => typeof(BtNode_TryFindFollowTgt).Name;
 
     public BtResult Eval() {
-        bool result = AiCtrlMgr.TryFindFollowTgt(aiCtrl.Id);
+        bool result = AiCtrlMgr.TryFindFollowTgt(aiCtrl.I);
         //Dbg.Log(
         //    $"{cp.Id} bt node: {typeof(BtNode_TryFindLockOnTgt).Name}: "
         //        + $"{result}",

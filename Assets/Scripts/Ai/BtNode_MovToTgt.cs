@@ -11,8 +11,8 @@ public class BtNode_MovToTgt : IBtNode{
 
     public BtResult Eval() {
         ref AiCtrlData data = ref AiCtrlMgr.GetData(aiCtrl);
-        int cpId = data.cp.Id;
-        int aiCtrlId = aiCtrl.Id;
+        int cpI = data.cp.I;
+        int aiCtrlId = aiCtrl.I;
         float2 horDesiredVel = new(
             AiCtrlMgr.inst.aos[aiCtrlId].agentDesiredVel.x,
             AiCtrlMgr.inst.aos[aiCtrlId].agentDesiredVel.z
@@ -23,10 +23,10 @@ public class BtNode_MovToTgt : IBtNode{
             data.ctrlInputData.input_Mov = math.normalize(horDesiredVel);
         else
             data.ctrlInputData.input_Mov = float2.zero;
-        //Dbg.Log($"{cpId} bt node: {typeof(BtNode_MovToTgt).Name} mov input: "
+        //Dbg.Log($"{cpI} bt node: {typeof(BtNode_MovToTgt).Name} mov input: "
         //        + $"{data.ctrlInputData.input_Mov}",
         //    data.cp,
-        //    CpMgr.GetAos(cpId).enableDbgMsgs
+        //    CpMgr.GetAos(cpI).enableDbgMsgs
         //);
         return BtResult.Success;
     }

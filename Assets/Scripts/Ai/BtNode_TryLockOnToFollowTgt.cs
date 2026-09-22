@@ -8,7 +8,7 @@ public class BtNode_TryLockOnToFollowTgt : IBtNode{
     public string DbgName => typeof(BtNode_TryLockOnToFollowTgt).Name;
 
     public BtResult Eval() {
-        bool result = AiCtrlMgr.TryLockOnToFollowTgt(aiCtrl.Id);
+        bool result = AiCtrlMgr.TryLockOnToFollowTgt(aiCtrl.I);
         //Dbg.Log(
         //    $"{nameof(aiCtrl)} {aiCtrl.Id}: {DbgName}: {result}",
         //    AiCtrlMgr.GetData(aiCtrl.Id).cp,
