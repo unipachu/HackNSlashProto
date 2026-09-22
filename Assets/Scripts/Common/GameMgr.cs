@@ -13,8 +13,8 @@ public class GameMgr : Singleton<GameMgr>{
         AiCtrlMgr.inst.Init();
     }
     private void Start() {
-        CpSpawningUtils.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
-        EnemyServer.inst.SpawnEnemies();
+        CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
+        EnemyServer.inst.StartSpawningWaves(true);
     }
 
     void FixedUpdate() {
@@ -25,6 +25,7 @@ public class GameMgr : Singleton<GameMgr>{
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick();
         CpMgr.inst.Tick(Time.deltaTime);
+        EnemyServer.inst.Tick(Time.deltaTime, Time.time);
     }
 
     void LateUpdate() {

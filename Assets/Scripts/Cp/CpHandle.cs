@@ -20,8 +20,9 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     public Transform LockOnTrf => unityObjs.lockOnTrf;
     public Transform TrfToFollow => transform;
 
+    // TODO: Make this a property.
     public ref Cp_AosData GetData()
-        => ref CpMgr.GetData(I);
+        => ref CpMgr.inst.aosData[I];
 
     public bool IsOnNavMesh()
         => CpUtils.IsOnNavMesh(I);

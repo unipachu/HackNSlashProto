@@ -275,6 +275,10 @@ public struct Cp_AosData {
     /// </summary>
     public Action<int, int> action_curHpChanged;
     /// <summary>
+    /// Should be called when cp enters death/dying state (not when in unregisters). Param is cp in dying state.
+    /// </summary>
+    public Action<CpHandle> action_died;
+    /// <summary>
     /// Param is the damage taken.
     /// </summary>
     public Action<int> action_dmgTaken;

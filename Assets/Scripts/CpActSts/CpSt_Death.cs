@@ -13,6 +13,7 @@ public class CpSt_Death : IFsmSt_Cp {
 
     public CpSt_Death Enter(AnimInfo deathAnim) {
         CpMgr.GetData(cp.I).ignoreHits = true;
+        CpMgr.GetData(cp.I).action_died?.Invoke(cp);
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,

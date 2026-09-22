@@ -9,13 +9,14 @@ public class AiCtrlHandle : ICpCtrlInputter {
     /// </summary>
     public int I { get; set; } = -1;
 
+    public ref AiCtrlData Data => ref AiCtrlMgr.inst.aos[I];
     public Vector2 Input_Look_Gamepad => AiCtrlMgr.GetData(I).ctrlInputData.input_Look_Gamepad;
     /// <summary>
     /// Gives mouse delta.
     /// </summary>
     public Vector2 Input_Look_Pointer => AiCtrlMgr.GetData(I).ctrlInputData.input_Look_Pointer;
     public Vector2 Input_Mov => AiCtrlMgr.GetData(I).ctrlInputData.input_Mov;
-
+    
     public bool TryConsume_Atk_Light()
         => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Atk_Light);
 

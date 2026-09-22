@@ -1,11 +1,10 @@
 using Unity.Cinemachine;
 using UnityEngine;
 
-public static class CpSpawningUtils {
-    static CpHandle SpawnCpAtSpawnPt(
-        CpHandle prefab,
-        Transform spawnPt
-    ) {
+public static class CpFactory {
+    //static event Action EnemySpawned;
+
+    static CpHandle SpawnCpAtSpawnPt(CpHandle prefab, Transform spawnPt) {
         CpHandle cp = GameObject.Instantiate(prefab, spawnPt.position, spawnPt.rotation);
         Debug.Assert(CpMgr.inst != null, $"{typeof(CpMgr).Name} inst was null!");
         Debug.Assert(cp.so_cpData != null, "No data ref set!");
@@ -26,10 +25,11 @@ public static class CpSpawningUtils {
 
     }
 
-    public static void SpawnAiCpAtSpawnPt(
-        So_AiCpConfig aiCpConfig,
-        Transform spawnPt
-    ) {
+    /// <summary>
+    /// Spawns and registers an entity for <see cref="CpMgr"/> and an entity for
+    /// <see cref="AiCtrlMgr"/>. Returns handle to the spawned entity.
+    /// </summary>
+    public static AiCtrlHandle SpawnAiCpAtSpawnPt(So_AiCpConfig aiCpConfig, Transform spawnPt) {
         //Debug.Log($"Spawnin ai cp: {cpPrefab.gameObject.name}, with brain: {btT}.");
         AiCtrlHandle aiCtrl = new AiCtrlHandle();
         CpHandle cp;
@@ -39,7 +39,7 @@ public static class CpSpawningUtils {
         AiCtrlMgr.inst.Register(aiCtrl, bt, cp, aiCpConfig.data);
         CpMgr.StartListeningToCtrlInput(cp.I, aiCtrl);
         // Ui related
-        // TODO: Change.
         WldHpBarMgr.inst.Register(cp.unityObjs.wldHpBarPos, cp);
+        return aiCtrl;
     }
 }
