@@ -39,14 +39,16 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             newHandle
         );
         ArrayUtils.Add(ref aos, newI, newData);
-        controlledCp.GetData().onMarkForPendingUnregister += newHandle.OnCpMarkedForUnregister;
+        controlledCp.GetData().action_markedForPendingUnregister += newHandle.OnCpMarkedForUnregister;
         newHandle.I = newI;
         entityCount++;
     }
 
     /// <summary>
     /// Unregisters an AI controller, removes its runtime data and destroys
-    /// the controller GameObject.
+    /// the controller GameObject.<br/>
+    /// NOTE: Since this is currently only called when cp is marked for unregisteration, we can safely
+    /// unregister this without separate pendingUnregisteration field. (22.9.2026)
     /// </summary>
     public void Unregister(int i) {
         if (i < 0 || i >= entityCount) {
@@ -55,7 +57,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             );
             return;
         }
-        GetData(i).cp.GetData().onMarkForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
+        GetData(i).cp.GetData().action_markedForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
         int lastId = entityCount - 1;
         AiCtrlHandle swappedCtrl = i != lastId
             ? aos[lastId].handle
@@ -88,8 +90,6 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     void Tick_AgentMovInput() {
         for (int i = 0; i < entityCount; i++) {
-            if (aos[i].cp == null)
-                continue;
             int cpI = aos[i].cp.I;
             var cpUnityComps = CpMgr.inst.unityComps[cpI];
             //var cpClassRefs = CpMgr.inst.classRefs[cpI];
@@ -177,8 +177,6 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
 
     void Tick_BehaviorTrees() {
         for ( int i = 0; i < entityCount; i++) {
-            if (aos[i].cp == null)
-                continue;
             switch (aos[i].bt.Eval()) {
                 case BtResult.Success:
                     aos[i].bt.Reset();
@@ -201,8 +199,6 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     void Tick_ResetWasPressedThisFrameInputs() {
         for (int i = 0; i < entityCount; i++) {
-            if (aos[i].cp == null)
-                continue;
             aos[i].ctrlInputData.input_Atk_Light = false;
             aos[i].ctrlInputData.input_Atk_Heavy = false;
             aos[i].ctrlInputData.input_Atk_Ult = false;
@@ -217,26 +213,26 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// <summary>
     /// Gets ref to corresponding <see cref="AiCtrlData"/>.
     /// </summary>
-    public static ref AiCtrlData GetData(int aiCtrlId) 
-        => ref inst.aos[aiCtrlId];
+    public static ref AiCtrlData GetData(int aiCtrlI) 
+        => ref inst.aos[aiCtrlI];
 
     /// <summary>
     /// Gets ref to corresponding <see cref="AiCtrlData"/>.
     /// </summary>
-    public static ref AiCtrlData GetData(AiCtrlHandle aiCtrl)
-        => ref inst.aos[aiCtrl.I];
+    public static ref AiCtrlData GetData(AiCtrlHandle aiCtrlHandle)
+        => ref inst.aos[aiCtrlHandle.I];
 
-    public static bool HasFollowTgt(int aiCtrlId)
-        => GetData(aiCtrlId).followTgt != null;
+    public static bool HasFollowTgt(int aiCtrlI)
+        => GetData(aiCtrlI).followTgt != null;
 
-    public static bool IsWithinDistToFollowTgt(int aiCtrlId, float maxDist) {
+    public static bool IsWithinDistToFollowTgt(int aiCtrlI, float maxDist) {
         Debug.Assert(
-            GetData(aiCtrlId).followTgt != null,
-            $"{nameof(AiCtrlData.followTgt)} at index {aiCtrlId} was null!"
+            GetData(aiCtrlI).followTgt != null,
+            $"{nameof(AiCtrlData.followTgt)} at index {aiCtrlI} was null!"
         );
         float dist = Vector3.Distance(
-            GetData(aiCtrlId).cp.transform.position,
-            GetData(aiCtrlId).followTgt.TrfToFollow.position
+            GetData(aiCtrlI).cp.transform.position,
+            GetData(aiCtrlI).followTgt.TrfToFollow.position
         );
         //Dbg.Log($"Dist to tgt: {dist}. MaxDist: {maxDist}", inst.cp[cpI], inst.aosData[cpI].enableDbgMsgs);
         return dist < maxDist;
@@ -245,11 +241,11 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// <summary>
     /// Tries to find any eligible follow tgt and set it as cur follow tgt.
     /// </summary>
-    public static bool TryFindFollowTgt(int aiCtrlId) {
-        if (HasFollowTgt(aiCtrlId))
+    public static bool TryFindFollowTgt(int aiCtrlI) {
+        if (HasFollowTgt(aiCtrlI))
             return true;
-        GetData(aiCtrlId).followTgt = CpMgr.TryFindEnemy(GetData(aiCtrlId).cp.I);
-        if(GetData(aiCtrlId).followTgt == null)
+        GetData(aiCtrlI).followTgt = CpMgr.TryFindEnemy(GetData(aiCtrlI).cp.I);
+        if(GetData(aiCtrlI).followTgt == null)
             return false;
         return true;
     }

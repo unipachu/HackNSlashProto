@@ -270,11 +270,38 @@ public struct Cp_AosData {
     public float act_BasicImpact_YawSpd;
     public float act_BasicRecovery_MotInterpTimer;
     public float act_BasicWindup_MaxAngSpd;
+    /// <summary>
+    /// Parameters are (curHp, maxHp) (NOT the changed amount)!
+    /// </summary>
+    public Action<int, int> action_curHpChanged;
+    /// <summary>
+    /// Param is the damage taken.
+    /// </summary>
+    public Action<int> action_dmgTaken;
+    /// <summary>
+    /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
+    /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
+    /// <see cref="Cp_AosData.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
+    /// </summary>
+    public Action action_markedForPendingUnregister;
+    /// <summary>
+    /// Parameters are (curHp, maxHp) (NOT the changed amount)!
+    /// </summary>
+    public Action<int, int> action_maxHpChanged;
+    /// <summary>
+    /// Invoked when local player ends the lock on to this.
+    /// </summary>
+    public Action action_plrLockedOnEnded;
+    /// <summary>
+    /// Invoked when local player locks onto this.
+    /// </summary>
+    public Action action_plrLockedOnStarted;
     public float3 animDPos;
     public quaternion animDRot;
     public bool bufferedInputStSwitchAllowed;
     public bool comboAllowed;
     public float curStDur;
+    public string displayName;
     public bool dodgeAllowed;
     public bool enableDbgMsgs;
     public bool groundCastHitSomething;
@@ -313,12 +340,6 @@ public struct Cp_AosData {
     public float movInput_yawSpd;
     public float movInput_horAcc;
     public Cp_NavTgtInfo navTgtInfo;
-    /// <summary>
-    /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
-    /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
-    /// <see cref="Cp_AosData.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
-    /// </summary>
-    public Action onMarkForPendingUnregister;
     public bool pendingUnregister;
     /// <summary>
     /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
@@ -481,6 +502,7 @@ public struct MeleeWeaponData {
 
 public struct WldHpBarData {
     public Transform anchor;
+    public CpHandle cpHandle;
     public WldHpBar hpBar;
     public bool isLocked;
     public bool pendingUnregister;

@@ -5,10 +5,10 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     [SerializeField] WldHpBar wldHpBarPrefab;
     [SerializeField] Camera cam;
     [SerializeField] float screenMargin = 40f;
-    [SerializeField] float visibleAfterDamageTime = 2f;
+    public float visibleAfterDamageTime = 2f;
     [SerializeField] int initCapacity = 8;
 
-    WldHpBarData[] bars;
+    public WldHpBarData[] bars;
     int entityCount;
 
     // TODO: init in game manager
@@ -21,31 +21,54 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     // Register and Unregister
     // ----------------------------------------------------------------------------------
 
-    public WldHpBar Register(Transform anchor) {
+    public void Register(Transform anchor, CpHandle cpHandle) {
+        int newI = entityCount;
+        // TODO: Pool these.
         WldHpBar hpBar = Instantiate(wldHpBarPrefab, wldHpBarLayer);
         WldHpBarData data = new() {
-            hpBar = hpBar,
-            rect = (RectTransform)hpBar.transform,
             anchor = anchor,
+            cpHandle = cpHandle,
+            hpBar = hpBar,
             isLocked = false,
+            rect = (RectTransform)hpBar.transform,
             visibleUntil = 0f
         };
+        ArrayUtils.Add(ref bars, entityCount, data);
+        data.cpHandle.GetData().action_curHpChanged += hpBar.OnCurHpChanged;
+        data.cpHandle.GetData().action_dmgTaken += hpBar.OnDmgTaken;
+        data.cpHandle.GetData().action_markedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.GetData().action_maxHpChanged += hpBar.OnMaxHpChanged;
+        data.cpHandle.GetData().action_plrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.GetData().action_plrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
+        hpBar.I = newI;
+        entityCount++;
         hpBar.gameObject.SetActive(false);
-        entityCount = ArrayUtils.Add(
-            ref bars,
-            entityCount,
-            data
-        );
-        return hpBar;
+        hpBar.SetName(cpHandle.GetData().displayName);
+        hpBar.SetHp(cpHandle.GetData().hp_Cur, cpHandle.GetData().hp_Max);
+        hpBar.SetYellowHp(cpHandle.GetData().hp_Cur, cpHandle.GetData().hp_Max);
     }
 
     /// <summary>
     /// NOTE: Expects that the hp bar game object has been destroyed earlier.
     /// </summary>
     public void Unregister(int i) {
-        //Debug.Log($"Unregistering hp bar {i}");
+        ref var data = ref bars[i];
+        data.cpHandle.GetData().action_curHpChanged -= data.hpBar.OnCurHpChanged;
+        data.cpHandle.GetData().action_dmgTaken -= data.hpBar.OnDmgTaken;
+        data.cpHandle.GetData().action_markedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.GetData().action_maxHpChanged -= data.hpBar.OnMaxHpChanged;
+        data.cpHandle.GetData().action_plrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.GetData().action_plrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
+        int lastId = entityCount - 1;
+        WldHpBar swappedCtrl = i != lastId
+            ? bars[lastId].hpBar
+            : null;
         GameObject.Destroy(bars[i].hpBar.gameObject);
-        entityCount = ArrayUtils.RemoveAtSwapBack(bars, entityCount, i);
+        ArrayUtils.RemoveAtSwapBack(bars, entityCount, i);
+        entityCount--;
+        if (swappedCtrl != null)
+            swappedCtrl.I = i;
+        Debug.Log($"Unregistered {typeof(WldHpBar)} i: {i}");
     }
 
     // ----------------------------------------------------------------------------------
@@ -69,16 +92,12 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
                 data.hpBar.gameObject.SetActive(false);
                 continue;
             }
-            // TODO: Enemy should have a destroyed action this can listen to.
-            if (data.anchor == null) {
-                data.pendingUnregister = true;
-                return;
-            }
             Vector3 screenPos = cam.WorldToScreenPoint(data.anchor.position);
             if (screenPos.z <= 0f) {
                 data.hpBar.gameObject.SetActive(false);
                 return;
             }
+            //Debug.Log("Set hp bar visible");
             data.hpBar.gameObject.SetActive(true);
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 wldHpBarLayer,
@@ -107,36 +126,6 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
                 Unregister(i);
             else
                 i++;
-        }
-    }
-
-    // ----------------------------------------------------------------------------------
-    // Other Methods
-    // ----------------------------------------------------------------------------------
-
-    // TODO: enemy should have a event action this can listen to.
-    public void ReportDamage(WldHpBar hpBar) {
-        for (int i = 0; i < entityCount; i++) {
-            ref WldHpBarData data = ref bars[i];
-            if (data.hpBar != hpBar)
-                continue;
-            data.visibleUntil = Time.time + visibleAfterDamageTime;
-            return;
-        }
-    }
-
-    // TODO: enemy should have a event action this can listen to.
-    public void SetLocked(WldHpBar hpBar, bool isLocked) {
-        for (int i = 0; i < entityCount; i++) {
-            ref WldHpBarData data = ref bars[i];
-            if (data.hpBar != hpBar)
-                continue;
-            data.isLocked = isLocked;
-            if (isLocked)
-                data.visibleUntil = float.PositiveInfinity;
-            else
-                data.visibleUntil = Time.time + visibleAfterDamageTime;
-            return;
         }
     }
 }

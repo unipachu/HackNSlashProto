@@ -54,7 +54,17 @@ public class CpMgr : Singleton<CpMgr> {
         // Structure of arrays data
         Cp_AosData newAosData = new();
         newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
+        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
+        newAosData.act_AtkJump_DownSpeedAfterJumpFinished
+            = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
+        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
+        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
+        newAosData.act_Falling_LandingStFallDistThreshold
+            = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
+        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
+        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
         newAosData.curStDur = 0;
+        newAosData.displayName = "Test Name"; // TODO: Set with so.
         newAosData.groundCastHitSomething = false;
         newAosData.groundCastNrm = float3.zero;
         newAosData.groundSnapVerDownSpd = newCp.so_cpData.groundSnapVerDownSpd;
@@ -68,21 +78,12 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.isGrounded = true;
         newAosData.lastKnockbackStr = 0;
         newAosData.lastRecievedHitDir = float3.zero;
-        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
-        newAosData.act_AtkJump_DownSpeedAfterJumpFinished
-            = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
-        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
-        newAosData.act_Falling_LandingStFallDistThreshold
-            = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
-        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
-        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
         newAosData.team = newCp.so_cpData.team;
         newAosData.vel_Hor = float2.zero;
         newAosData.vel_Ver = 0;
         newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
         newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
         newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
-        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // NOTE: hard coded.
         newAosData.enableDbgMsgs = newCp.so_cpData.enableDebugMsgs;
         newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026)
@@ -391,7 +392,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// </summary>
     public void MarkForPendingUnregister(int cpI) {
         aosData[cpI].pendingUnregister = true;
-        aosData[cpI].onMarkForPendingUnregister?.Invoke();
+        aosData[cpI].action_markedForPendingUnregister?.Invoke();
     }
 
     /// <summary>

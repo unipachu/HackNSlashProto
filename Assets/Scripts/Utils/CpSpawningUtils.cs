@@ -40,10 +40,6 @@ public static class CpSpawningUtils {
         CpMgr.StartListeningToCtrlInput(cp.I, aiCtrl);
         // Ui related
         // TODO: Change.
-        var hpBar = WldHpBarMgr.inst.Register(cp.unityObjs.wldHpBarPos);
-        hpBar.SetName("Test Enemy");
-        hpBar.SetHp(75f, 100f);
-        hpBar.SetYellowHp(100f, 100f);
-        WldHpBarMgr.inst.SetLocked(hpBar, true);
+        WldHpBarMgr.inst.Register(cp.unityObjs.wldHpBarPos, cp);
     }
 }
