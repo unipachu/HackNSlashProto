@@ -7,10 +7,10 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
     public PawnTeam GetTeam() 
-        => CpMgr.GetData(cp.I).team;
+        => cp.Data.team;
 
     public bool IgnoreAllHits()
-        => CpMgr.GetData(cp.I).ignoreHits;
+        => cp.Data.ignoreHits;
 
     public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
         //Debug.Log(

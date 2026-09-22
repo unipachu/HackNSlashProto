@@ -12,8 +12,8 @@ public class CpSt_Death : IFsmSt_Cp {
         => false; // Cannot change to anything when dying.
 
     public CpSt_Death Enter(AnimInfo deathAnim) {
-        CpMgr.GetData(cp.I).ignoreHits = true;
-        CpMgr.GetData(cp.I).action_died?.Invoke(cp);
+        cp.Data.ignoreHits = true;
+        cp.Data.action_died?.Invoke(cp);
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,
@@ -38,7 +38,7 @@ public class CpSt_Death : IFsmSt_Cp {
         CpUtils.UpdateMovInputData(
             cp.I,
             float2.zero,
-            CpMgr.GetData(cp.I).animDPos,
+            cp.Data.animDPos,
             0,
             0,
             float.PositiveInfinity

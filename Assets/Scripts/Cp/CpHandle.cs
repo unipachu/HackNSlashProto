@@ -16,13 +16,12 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     /// </summary>
     public int I { get; set; } = -1;
 
+    public ref Cp_AosData Data => ref CpMgr.inst.aosData[I];
     // NOTE: This is a little cheating but we do not need to access the manager to access the lock on transform.
     public Transform LockOnTrf => unityObjs.lockOnTrf;
     public Transform TrfToFollow => transform;
 
     // TODO: Make this a property.
-    public ref Cp_AosData GetData()
-        => ref CpMgr.inst.aosData[I];
 
     public bool IsOnNavMesh()
         => CpUtils.IsOnNavMesh(I);

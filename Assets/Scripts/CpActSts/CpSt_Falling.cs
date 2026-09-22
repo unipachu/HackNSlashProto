@@ -12,7 +12,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         => true;
 
     public CpSt_Falling Enter() {
-        CpMgr.GetData(cp.I).act_Falling_StartHgt = CpMgr.inst.handle[cp.I].transform.position.y;
+        cp.Data.act_Falling_StartHgt = CpMgr.inst.handle[cp.I].transform.position.y;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,
@@ -29,21 +29,21 @@ public class CpSt_Falling : IFsmSt_Cp {
             cp.I,
             float2.zero,
             float3.zero,
-            CpMgr.GetData(cp.I).act_Falling_TgtHorSpd,
+            cp.Data.act_Falling_TgtHorSpd,
             0,
-            CpMgr.GetData(cp.I).act_Falling_HorAcc
+            cp.Data.act_Falling_HorAcc
         );
-        if (CpMgr.GetData(cp.I).isGrounded){
-            float fallDist = CpMgr.GetData(cp.I).act_Falling_StartHgt - CpMgr.inst.handle[cp.I].transform.position.y;
-            if(fallDist > CpMgr.GetData(cp.I).act_Falling_LandingStFallDistThreshold) {
+        if (cp.Data.isGrounded){
+            float fallDist = cp.Data.act_Falling_StartHgt - CpMgr.inst.handle[cp.I].transform.position.y;
+            if(fallDist > cp.Data.act_Falling_LandingStFallDistThreshold) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.I);
                 return;
             }
             CpUtils.TransitionToFallIdleOrWalk(cp.I);
             return;
         }
-        if (CpMgr.GetData(cp.I).curStDur > 15) {
-            Debug.LogError($"{cp.I} likely stuck falling as curStDur was: {CpMgr.GetData(cp.I).curStDur}.");
+        if (cp.Data.curStDur > 15) {
+            Debug.LogError($"{cp.I} likely stuck falling as curStDur was: {cp.Data.curStDur}.");
         }
     }
 }

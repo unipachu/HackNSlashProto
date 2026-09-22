@@ -39,7 +39,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             newHandle
         );
         ArrayUtils.Add(ref aos, newI, newData);
-        controlledCp.GetData().action_markedForPendingUnregister += newHandle.OnCpMarkedForUnregister;
+        controlledCp.Data.action_markedForPendingUnregister += newHandle.OnCpMarkedForUnregister;
         newHandle.I = newI;
         entityCount++;
     }
@@ -57,7 +57,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             );
             return;
         }
-        GetData(i).cp.GetData().action_markedForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
+        GetData(i).cp.Data.action_markedForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
         int lastId = entityCount - 1;
         AiCtrlHandle swappedCtrl = i != lastId
             ? aos[lastId].handle

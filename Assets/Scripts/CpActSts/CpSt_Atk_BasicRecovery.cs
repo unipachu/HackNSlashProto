@@ -18,9 +18,9 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
 
     public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
         var unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Recovery;
-        CpMgr.GetData(cp.I).comboAllowed = false;
-        CpMgr.GetData(cp.I).inputRotAllowed = false;
+        cp.Data.act_AtkPhase = AtkPhase.Recovery;
+        cp.Data.comboAllowed = false;
+        cp.Data.inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             unityComps[cp.I].anim,
@@ -45,24 +45,24 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         var classRefs = CpMgr.inst.classRefs[cp.I];
         var animEventPlrData = CpMgr.inst.animEventPlrData[cp.I];
         // interpolate to walking speed.
-        CpMgr.GetData(cp.I).act_BasicRecovery_MotInterpTimer += Time.deltaTime;
+        cp.Data.act_BasicRecovery_MotInterpTimer += Time.deltaTime;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);
         float interpValue = Mathf.Clamp01(animEventPlrData.prevTotalNrmT);
         CpUtils.UpdateMovInputData(
             cp.I,
-            CpMgr.GetData(cp.I).input_mov,
+            cp.Data.input_mov,
             float3.zero,
-            CpMgr.GetData(cp.I).walkMaxLinSpd * interpValue,
-            CpMgr.GetData(cp.I).walkYawSpd * interpValue,
-            CpMgr.GetData(cp.I).walkLinAcc
+            cp.Data.walkMaxLinSpd * interpValue,
+            cp.Data.walkYawSpd * interpValue,
+            cp.Data.walkLinAcc
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (CpMgr.GetData(cp.I).dodgeAllowed) {
+        if (cp.Data.dodgeAllowed) {
             if (InputBufferUtils.TryConsumeInput(
                 BufferableInput.BtnE,
-                ref CpMgr.GetData(cp.I).inputBuffer_BufferedInput,
-                ref CpMgr.GetData(cp.I).inputBuffer_RemainingTime)
+                ref cp.Data.inputBuffer_BufferedInput,
+                ref cp.Data.inputBuffer_RemainingTime)
             ) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(),cp.I);
                 return;

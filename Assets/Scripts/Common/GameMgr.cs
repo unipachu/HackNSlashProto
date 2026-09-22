@@ -3,7 +3,8 @@
 using UnityEngine;
 
 public class GameMgr : Singleton<GameMgr>{
-    [SerializeField] PlrMgr plrCtrl;
+    [SerializeField] PlrMgr plrMgr;
+    // TODO: PlrMgr should be responsible for spawning the player.
     [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
@@ -13,7 +14,7 @@ public class GameMgr : Singleton<GameMgr>{
         AiCtrlMgr.inst.Init();
     }
     private void Start() {
-        CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrCtrl, CamMgr.inst.cam);
+        CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
         EnemyServer.inst.StartSpawningWaves(true);
     }
 

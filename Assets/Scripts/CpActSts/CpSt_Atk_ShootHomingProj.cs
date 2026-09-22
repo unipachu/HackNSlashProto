@@ -28,7 +28,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.homingProjTgt = homingProjTgt;
-        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Windup;
+        cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,
@@ -39,7 +39,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        ref Cp_AosData cpData = ref cp.GetData();
+        ref Cp_AosData cpData = ref cp.Data;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 switch (cpData.act_AtkPhase) {
@@ -75,13 +75,13 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void Tick() {
-        switch (CpMgr.GetData(cp.I).act_AtkPhase) {
+        switch (cp.Data.act_AtkPhase) {
             case AtkPhase.Windup:
                 //Dbg.Log("ticked windup", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
                     cp.I,
-                    CpMgr.GetData(cp.I).input_mov_LastNonZero,
-                    CpMgr.GetData(cp.I).animDPos,
+                    cp.Data.input_mov_LastNonZero,
+                    cp.Data.animDPos,
                     0,
                     180, // NOTE: Yaw speed is set here.
                     float.PositiveInfinity
@@ -91,15 +91,15 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                 //Dbg.Log("ticked recovery", CpMgr.GetAos(cp.Id).enableDbgMsgs);
                 CpUtils.UpdateMovInputData(
                     cp.I,
-                    CpMgr.GetData(cp.I).input_mov_LastNonZero,
-                    CpMgr.GetData(cp.I).animDPos,
+                    cp.Data.input_mov_LastNonZero,
+                    cp.Data.animDPos,
                     0,
                     0,
                     float.PositiveInfinity
                 );
                 break;
             default:
-                Debug.LogError($"{cp.I} Switch defaulted with {CpMgr.GetData(cp.I).act_AtkPhase}.");
+                Debug.LogError($"{cp.I} Switch defaulted with {cp.Data.act_AtkPhase}.");
                 break;
         }
     }

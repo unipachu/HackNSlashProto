@@ -12,7 +12,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         => true;
 
     public CpSt_FallLanding Enter() {
-        CpMgr.GetData(cp.I).dodgeAllowed = false;
+        cp.Data.dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,
@@ -34,12 +34,12 @@ public class CpSt_FallLanding : IFsmSt_Cp {
             0,
             float.PositiveInfinity
         );
-        if (CpMgr.GetData(cp.I).dodgeAllowed) {
+        if (cp.Data.dodgeAllowed) {
             if (
                 InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,
-                    ref CpMgr.GetData(cp.I).inputBuffer_BufferedInput,
-                    ref CpMgr.GetData(cp.I).inputBuffer_RemainingTime
+                    ref cp.Data.inputBuffer_BufferedInput,
+                    ref cp.Data.inputBuffer_RemainingTime
                 )
             ) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(), cp.I);

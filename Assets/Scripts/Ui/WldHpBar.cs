@@ -10,7 +10,7 @@ public class WldHpBar : MonoBehaviour {
 
     public int I { get; set; } = -1;
 
-    public ref WldHpBarData GetData()
+    public ref WldHpBarData GetData
         => ref WldHpBarMgr.inst.bars[I];
 
     public void SetName(string name) {
@@ -49,11 +49,11 @@ public class WldHpBar : MonoBehaviour {
 
     public void OnCurHpChanged(int newCurHp, int maxHp) {
         SetHp(newCurHp, maxHp);
-        GetData().barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
+        GetData.barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnDmgTaken(int dmgTaken) {
-        ref var data = ref GetData();
+        ref var data = ref GetData;
         var now = Time.time;
         SetDmgText(dmgTaken + data.accumulatedDmg);
         data.accumulatedDmg = data.accumulatedDmg + dmgTaken;
@@ -63,17 +63,17 @@ public class WldHpBar : MonoBehaviour {
 
     public void OnMaxHpChanged(int curHp, int newMaxHp) {
         SetHp(curHp, newMaxHp);
-        GetData().barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
+        GetData.barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnPlrLockedOnEnded() {
-        ref var data = ref GetData();
+        ref var data = ref GetData;
         data.isLocked = false;
         data.barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
     public void OnPlrLockedOnStarted() {
-        ref var data = ref GetData();
+        ref var data = ref GetData;
         data.isLocked = true;
         data.barVisibleUntil = float.PositiveInfinity;
     }

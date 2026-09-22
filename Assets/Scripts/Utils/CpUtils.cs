@@ -33,11 +33,13 @@ public static class CpUtils{
         // NOTE: Casting is the best option here. We could do a ECS-style "GetComponent", but for this
         // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
         if (classRefs.rHandItem is IHandItem_Hitter hitter) {
+            // TODO: Do not hard code hit effects!
             if(input == BufferableInput.LShldr)
                 return () => classRefs.actSts.atk_FlyingAtk.Enter(
-                    new HitEffects(1, KnockbackT.Weak, 5),
+                    new HitEffects(3, KnockbackT.Weak, 5),
                     hitter.HitDealer
                 );
+            // TODO: Do not hard code hit effects!
             if(input == BufferableInput.RTrg)
                 return () => classRefs.actSts.atk_Jump.Enter(
                     new HitEffects(1, KnockbackT.Weak, 1),

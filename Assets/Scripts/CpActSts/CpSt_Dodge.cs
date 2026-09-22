@@ -11,9 +11,9 @@ public class CpSt_Dodge : IFsmSt_Cp {
         => true;
 
     public CpSt_Dodge Enter() {
-        CpMgr.GetData(cp.I).inputRotAllowed = false;
-        CpMgr.GetData(cp.I).bufferedInputStSwitchAllowed = false;
-        CpMgr.GetData(cp.I).ignoreHits = true;
+        cp.Data.inputRotAllowed = false;
+        cp.Data.bufferedInputStSwitchAllowed = false;
+        cp.Data.ignoreHits = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             CpMgr.inst.unityComps[cp.I].anim,
@@ -24,23 +24,23 @@ public class CpSt_Dodge : IFsmSt_Cp {
     }
 
     public void Exit() {
-        CpMgr.GetData(cp.I).ignoreHits = false;
+        cp.Data.ignoreHits = false;
     }
 
     public void Tick() {
         float angSpd = 0;
-        if (CpMgr.GetData(cp.I).inputRotAllowed)
-            angSpd = CpMgr.GetData(cp.I).act_Dodge_YawSpd;
+        if (cp.Data.inputRotAllowed)
+            angSpd = cp.Data.act_Dodge_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.I,
-            CpMgr.GetData(cp.I).input_mov,
-            CpMgr.GetData(cp.I).animDPos * CpMgr.GetData(cp.I).act_Dodge_HorMovSpdMult,
+            cp.Data.input_mov,
+            cp.Data.animDPos * cp.Data.act_Dodge_HorMovSpdMult,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (
-            CpMgr.GetData(cp.I).bufferedInputStSwitchAllowed
+            cp.Data.bufferedInputStSwitchAllowed
                 && CpUtils.TrySwitchStByBufferedInput(cp.I)
         )
             return;

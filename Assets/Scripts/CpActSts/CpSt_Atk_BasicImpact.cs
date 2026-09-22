@@ -15,9 +15,9 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
         var unityComps = CpMgr.inst.unityComps;
-        CpMgr.GetData(cp.I).act_AtkPhase = AtkPhase.Impact;
-        CpMgr.GetData(cp.I).comboAllowed = false;
-        CpMgr.GetData(cp.I).inputRotAllowed = false;
+        cp.Data.act_AtkPhase = AtkPhase.Impact;
+        cp.Data.comboAllowed = false;
+        cp.Data.inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.animEventPlrData[cp.I],
             unityComps[cp.I].anim,
@@ -49,7 +49,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                hitDealer.hitData = new HitData(hitEffects, CpMgr.GetData(cp.I).team, cp.transform.forward);
+                hitDealer.hitData = new HitData(hitEffects, cp.Data.team, cp.transform.forward);
                 hitDealer.Activate();
                 break;
             case CpAnimEventT.HitDealerDeactivated:
@@ -64,19 +64,19 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     public void Tick() {
         var classRefs = CpMgr.inst.unityComps[cp.I];
         float angSpd = 0;
-        if (CpMgr.GetData(cp.I).inputRotAllowed)
-            angSpd = CpMgr.GetData(cp.I).act_BasicImpact_YawSpd;
+        if (cp.Data.inputRotAllowed)
+            angSpd = cp.Data.act_BasicImpact_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.I,
-            CpMgr.GetData(cp.I).input_mov,
-            CpMgr.GetData(cp.I).animDPos,
+            cp.Data.input_mov,
+            cp.Data.animDPos,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (CpMgr.GetData(cp.I).comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
+        if (cp.Data.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
             return;
     }
 }

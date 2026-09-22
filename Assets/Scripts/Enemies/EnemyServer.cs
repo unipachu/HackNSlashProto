@@ -106,7 +106,7 @@ public class EnemyServer : Singleton<EnemyServer> {
                         yield return null; // No free spawn point available, wait.
                 }
                 AiCtrlHandle aiCtrl = CpFactory.SpawnAiCpAtSpawnPt(entry.enemyConfig, spawnPt.transform);
-                aiCtrl.Data.cp.GetData().action_died += OnEnemyDied;
+                aiCtrl.Data.cp.Data.action_died += OnEnemyDied;
                 currentEnemyCount++;
             }
         }
@@ -149,7 +149,7 @@ public class EnemyServer : Singleton<EnemyServer> {
     }
 
     public void OnEnemyDied(CpHandle cp) {
-        cp.GetData().action_died -= OnEnemyDied;
+        cp.Data.action_died -= OnEnemyDied;
         currentEnemyCount--;
         if (currentEnemyCount == 0 && spawningWave == false && !HasNextWave())
             Debug.Log("Player completed all enemy waves!!!", this);

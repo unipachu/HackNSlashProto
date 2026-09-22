@@ -26,10 +26,10 @@ public class CpSt_Idle : IFsmSt_Cp {
         if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
                 cp.I,
-                CpMgr.GetData(cp.I).input_mov_LastNonZero,
+                cp.Data.input_mov_LastNonZero,
                 float3.zero,
                 0,
-                CpMgr.GetData(cp.I).walkYawSpd,
+                cp.Data.walkYawSpd,
                 float.PositiveInfinity
             );
         else
@@ -46,7 +46,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         // Try consume input
         if (CpUtils.TrySwitchStByBufferedInput(cp.I))
             return;
-        if (math.all(CpMgr.GetData(cp.I).input_mov != float2.zero)) {
+        if (math.all(cp.Data.input_mov != float2.zero)) {
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cp.I);
             return;
         }
