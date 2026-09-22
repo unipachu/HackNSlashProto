@@ -15,8 +15,8 @@ public class CpSt_Dodge : IFsmSt_Cp {
         cp.Data.bufferedInputStSwitchAllowed = false;
         cp.Data.ignoreHits = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.dodge),
             0.1f
         );
@@ -47,7 +47,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = CpMgr.inst.unityComps[cp.I];
+        var classRefs = CpMgr.inst.aos[cp.I].unityComps;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 CpUtils.TransitionToFallIdleOrWalk(cp.I);

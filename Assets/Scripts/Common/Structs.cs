@@ -256,7 +256,7 @@ public struct Cp_ActSts {
 /// <summary>
 /// NOTE: When looping over SoA data, YOU MUST NOT REMOVE OR ADD NEW ENTITIES TO NOT CAUSE ERRORS WITH THE LOOP!! (10.9.2026) 
 /// </summary>
-public struct Cp_AosData {
+public struct Cp_Data {
     public AtkPhase act_AtkPhase;
     // NOTE: "act_" means action state specific data (11.9.2026)
     public float act_AtkFlying_TgtHorSpd;
@@ -285,7 +285,7 @@ public struct Cp_AosData {
     /// <summary>
     /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
     /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
-    /// <see cref="Cp_AosData.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
+    /// <see cref="Cp_Data.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
     /// </summary>
     public Action action_markedForPendingUnregister;
     /// <summary>
@@ -302,7 +302,9 @@ public struct Cp_AosData {
     public Action action_plrLockedOnStarted;
     public float3 animDPos;
     public quaternion animDRot;
+    public AnimEventPlrData animEventPlrData;
     public bool bufferedInputStSwitchAllowed;
+    public Cp_NonUnityObjClassRefs classRefs;
     public bool comboAllowed;
     public float curStDur;
     public string displayName;
@@ -311,6 +313,7 @@ public struct Cp_AosData {
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
     public float groundSnapVerDownSpd;
+    public CpHandle handle;
     public int hp_Cur;
     public int hp_Max;
     public float2 input_mov;
@@ -349,6 +352,8 @@ public struct Cp_AosData {
     /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
     /// </summary>
     public PawnTeam team;
+    // TODO: Rename to unity objs.
+    public Cp_UnityObjs unityComps;
     /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>

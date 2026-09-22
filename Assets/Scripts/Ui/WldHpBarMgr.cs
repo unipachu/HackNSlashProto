@@ -71,7 +71,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         entityCount--;
         if (swappedCtrl != null)
             swappedCtrl.I = i;
-        Debug.Log($"Unregistered {typeof(WldHpBar)} i: {i}");
+        //Debug.Log($"Unregistered {typeof(WldHpBar)} i: {i}");
     }
 
     // ----------------------------------------------------------------------------------

@@ -17,15 +17,14 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
-        Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         cp.Data.act_AtkPhase = AtkPhase.Windup;
         InputBufferUtils.Clear(
             ref cp.Data.inputBuffer_BufferedInput,
             ref cp.Data.inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            cp.Data.unityComps.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -33,7 +32,7 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = CpMgr.inst.classRefs[cp.I];
+        var classRefs = cp.Data.classRefs;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {

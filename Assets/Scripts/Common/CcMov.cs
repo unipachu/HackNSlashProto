@@ -10,16 +10,17 @@ public static class CcMov {
     /// still ground beneath the capsule (because floor is too steep to walk on) this slides the CC downhill.
     /// </summary>
     public static void ApplyGravityNSlideDownSlopes(int cpI, float dt){
-        if (CpMgr.GetData(cpI).isGrounded)
-            CpMgr.GetData(cpI).vel_Ver = -CpMgr.GetData(cpI).groundSnapVerDownSpd * dt;
+        ref var cpData = ref CpMgr.GetData(cpI);
+        if (cpData.isGrounded)
+            cpData.vel_Ver = -cpData.groundSnapVerDownSpd * dt;
         // Freefalling and slope down sliding.
         else {
-            CpMgr.GetData(cpI).vel_Ver = CpMgr.inst.unityComps[cpI].cc.velocity.y;
+            cpData.vel_Ver = CpMgr.inst.aos[cpI].unityComps.cc.velocity.y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
-            if (CpMgr.GetData(cpI).groundCastHitSomething) {
+            if (cpData.groundCastHitSomething) {
                 // Find the gravitational acceleration component along the slope.
-                float3 newAcc = math.down().ProjectOnPlane(CpMgr.GetData(cpI).groundCastNrm)
+                float3 newAcc = math.down().ProjectOnPlane(cpData.groundCastNrm)
                     * GlobalData.inst.gravitationalAcc;
                 float3 slideDir;
                 // Normalization will give NaN if acceleration is zero unless we do this.
@@ -29,11 +30,11 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(CpMgr.inst.unityComps[cpI].cc.velocity, slideDir));
+                float slideSpd = math.max(0, math.dot(CpMgr.inst.aos[cpI].unityComps.cc.velocity, slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
-                CpMgr.GetData(cpI).vel_Ver = newVel.y;
-                CpMgr.GetData(cpI).vel_Hor = new float2(newVel.x, newVel.z);
+                cpData.vel_Ver = newVel.y;
+                cpData.vel_Hor = new float2(newVel.x, newVel.z);
                 //Debug.Log($"ground normal: {data.groundCastNrm}");
                 //float ang = math.degrees(math.acos(
                 //        math.clamp(math.dot(data.groundCastNrm, math.up()), -1, 1)
@@ -47,10 +48,10 @@ public static class CcMov {
                 // NOTE C: cause the character to quickly snap upwards. If it enter falling
                 // NOTE C: state right after this, it will gain huge upwards velocity. So
                 // NOTE C: we clamp the vertical vel to min 0. I'm pretty sure it's like this.
-                CpMgr.GetData(cpI).vel_Ver = Mathf.Min(CpMgr.GetData(cpI).vel_Ver, 0);
-                CpMgr.GetData(cpI).vel_Ver -= GlobalData.inst.gravitationalAcc * dt;
-                CpMgr.GetData(cpI).vel_Ver = Mathf.Clamp(
-                    CpMgr.GetData(cpI).vel_Ver,
+                cpData.vel_Ver = Mathf.Min(cpData.vel_Ver, 0);
+                cpData.vel_Ver -= GlobalData.inst.gravitationalAcc * dt;
+                cpData.vel_Ver = Mathf.Clamp(
+                    cpData.vel_Ver,
                     -GlobalData.inst.maxFallSpd,
                     0
                 );
@@ -64,11 +65,14 @@ public static class CcMov {
     /// </summary>
     public static bool CastForGround(CharacterController cc, out RaycastHit groundHit) {
         float castDist = GlobalData.inst.isGroundedChkDist;
-        float r = cc.radius;
-        float height = Mathf.Max(cc.height, r * 2f);
+        // NOTE: Unity's documentation: "SphereCast will not detect colliders for which the sphere overlaps the
+        // NOTE C: collider." Thus we make the radius of the sphere slightly smaller than the character
+        // NOTE C: controller capsule.
+        float r = cc.radius - 0.01f;
+        float height = Mathf.Max(cc.height, cc.radius * 2);
         Vector3 center = cc.transform.position + cc.center;
-        Vector3 bottom = center + Vector3.down * (height / 2f - r);
-        return Physics.SphereCast(
+        Vector3 bottom = center + Vector3.down * (height / 2 - cc.radius);
+        bool hit = Physics.SphereCast(
             bottom,
             r,
             Vector3.down,
@@ -77,6 +81,7 @@ public static class CcMov {
             GlobalData.inst.groundMask,
             QueryTriggerInteraction.Ignore
         );
+        return hit;
     }
 
     /// <summary>
@@ -98,6 +103,7 @@ public static class CcMov {
             if( slopeAng <= cc.slopeLimit)
                 return true;
         }
+        //Debug.Log("is grounded: false");
         return false;
     }
 }

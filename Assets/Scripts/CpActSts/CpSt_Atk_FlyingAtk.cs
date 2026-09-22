@@ -20,8 +20,8 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         cp.Data.isAffectedByGravity = false;
         cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Windup),
             0.1f
         );
@@ -35,14 +35,14 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var aos = CpMgr.inst.aosData;
-        var unityComps = CpMgr.inst.unityComps[cp.I];
+        var aos = CpMgr.inst.aos;
+        var unityComps = CpMgr.inst.aos[cp.I].unityComps;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 switch (cp.Data.act_AtkPhase) {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                            ref CpMgr.inst.animEventPlrData[cp.I],
+                            ref CpMgr.inst.aos[cp.I].animEventPlrData,
                             unityComps.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
@@ -74,7 +74,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_UnityObjs unityComps = CpMgr.inst.unityComps[cp.I];
+        Cp_UnityObjs unityComps = CpMgr.inst.aos[cp.I].unityComps;
         switch (cp.Data.act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(
@@ -99,7 +99,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     hitDealer.Deactivate();
                     cp.Data.act_AtkPhase = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                        ref CpMgr.inst.animEventPlrData[cp.I],
+                        ref CpMgr.inst.aos[cp.I].animEventPlrData,
                         unityComps.anim,
                         CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Recovery)
                     );

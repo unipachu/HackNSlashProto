@@ -20,10 +20,8 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         //    $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
         //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
         //);
-        int cpI = this.cp.I;
-        ref Cp_AosData aos = ref CpMgr.GetData(cpI);
-        var classRefs = CpMgr.inst.classRefs[cpI];
-        var cp = CpMgr.inst.handle[cpI];
+        ref Cp_Data aos = ref cp.Data;
+        var classRefs = aos.classRefs;
         if (!aos.ignoreHits) {
             aos.hp_Cur -= hitData.effects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
@@ -36,7 +34,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         () => classRefs.actSts.death.Enter(
                             CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd)
                         ),
-                        cpI
+                        cp.I
                     )
                 )
                     return new(false, false);
@@ -65,7 +63,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         knockbackAnim = CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd);
                     CpMgr.inst.TrySwitchActSt(
                         () => classRefs.actSts.knockback.Enter(knockbackAnim),
-                        cpI
+                        cp.I
                     );
                     break;
                 case KnockbackT.Strong:

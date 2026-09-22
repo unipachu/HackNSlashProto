@@ -16,7 +16,7 @@ public class ComboNode_BasicBranch : IComboNode, IComboNodeTransitionsHolder {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicBranch thisNode = this;
-        return () => CpMgr.inst.classRefs[cpI].actSts.atk_BasicBranch.Enter(thisNode);
+        return () => CpMgr.inst.aos[cpI].classRefs.actSts.atk_BasicBranch.Enter(thisNode);
     }
 
     public IComboNode GetNextNode(BufferableInput input) {

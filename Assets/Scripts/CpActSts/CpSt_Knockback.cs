@@ -16,8 +16,8 @@ public class CpSt_Knockback : IFsmSt_Cp{
 
     public CpSt_Knockback Enter(AnimInfo knockbackAnimInfo) {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             knockbackAnimInfo,
             0.1f
         );

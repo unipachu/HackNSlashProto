@@ -66,7 +66,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
         entityCount--;
         if (swappedCtrl != null)
             swappedCtrl.I = i;
-        Debug.Log($"Unregistered {typeof(AiCtrlHandle)} i: {i}.");
+        //Debug.Log($"Unregistered {typeof(AiCtrlHandle)} i: {i}.");
     }
 
     // ----------------------------------------------------------------------------------------
@@ -91,8 +91,8 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     void Tick_AgentMovInput() {
         for (int i = 0; i < entityCount; i++) {
             int cpI = aos[i].cp.I;
-            var cpUnityComps = CpMgr.inst.unityComps[cpI];
-            //var cpClassRefs = CpMgr.inst.classRefs[cpI];
+            var cpUnityComps = CpMgr.inst.aos[cpI].unityComps;
+            //var cpClassRefs = CpMgr.inst.aos[cpI].classRefs;
             //Debug.Log("cpI " + cpI);
             if (aos[i].followTgt == null) {
                 //Dbg.Log(
@@ -259,7 +259,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     public static bool TryLockOnToFollowTgt(int aiCtrl) {
         if(GetData(aiCtrl).followTgt is ILockOnTargetable lockOnTgt) {
-            CpMgr.inst.classRefs[GetData(aiCtrl).cp.I].lockOnTgt = lockOnTgt;
+            CpMgr.GetData(GetData(aiCtrl).cp.I).classRefs.lockOnTgt = lockOnTgt;
             return true;
         }
         return false;

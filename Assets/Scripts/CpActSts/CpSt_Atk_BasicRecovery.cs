@@ -17,13 +17,13 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         => true;
 
     public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
-        var unityComps = CpMgr.inst.unityComps;
+        var unityComps = cp.Data.unityComps;
         cp.Data.act_AtkPhase = AtkPhase.Recovery;
         cp.Data.comboAllowed = false;
         cp.Data.inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            cp.Data.unityComps.anim,
             animInfo,
             0.1f
         );
@@ -42,8 +42,8 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cp.I];
-        var animEventPlrData = CpMgr.inst.animEventPlrData[cp.I];
+        var classRefs = cp.Data.classRefs;
+        var animEventPlrData = CpMgr.inst.aos[cp.I].animEventPlrData;
         // interpolate to walking speed.
         cp.Data.act_BasicRecovery_MotInterpTimer += Time.deltaTime;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);

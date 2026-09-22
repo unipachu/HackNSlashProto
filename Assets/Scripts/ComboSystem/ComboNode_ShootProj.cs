@@ -28,12 +28,12 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
         ComboNode_ShootProj thisNode = this;
-        return () => CpMgr.inst.classRefs[cpI].actSts.atk_ShootHomingProj.Enter(
+        return () => CpMgr.inst.aos[cpI].classRefs.actSts.atk_ShootHomingProj.Enter(
             thisNode,
             thisNode.hitter.HitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
-            CpMgr.inst.classRefs[cpI].lockOnTgt.LockOnTrf
+            CpMgr.inst.aos[cpI].classRefs.lockOnTgt.LockOnTrf
         );
     }
 

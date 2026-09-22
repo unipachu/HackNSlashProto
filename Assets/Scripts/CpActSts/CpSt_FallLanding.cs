@@ -14,8 +14,8 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public CpSt_FallLanding Enter() {
         cp.Data.dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
             0.2f
         );
@@ -23,7 +23,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cp.I];
+        var classRefs = cp.Data.classRefs;
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
         CpUtils.UpdateMovInputData(

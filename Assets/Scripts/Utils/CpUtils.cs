@@ -16,8 +16,8 @@ public static class CpUtils{
     /// use: <see cref="TryComboTransition"/>. (6.9.2026)
     /// </summary>
     public static Func<IFsmSt_Cp> FindStateEnterFunc(BufferableInput input, int cpI) {
-        var classRefs = CpMgr.inst.classRefs[cpI];
-        var unityComps = CpMgr.inst.unityComps[cpI];
+        var classRefs = CpMgr.inst.aos[cpI].classRefs;
+        var unityComps = CpMgr.inst.aos[cpI].unityComps;
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {
@@ -56,24 +56,25 @@ public static class CpUtils{
     /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
     /// </summary>
     public static bool IsOnNavMesh(int cpI) {
-        if (CpMgr.GetData(cpI).navTgtInfo.hasUpdatedNavTgtInfoThisTick)
-            return CpMgr.GetData(cpI).navTgtInfo.isCpOnNavmesh;
-        Transform trf = CpMgr.inst.handle[cpI].transform;
-        CpMgr.GetData(cpI).navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
-        CpMgr.GetData(cpI).navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
+        var cpData = CpMgr.GetData(cpI);
+        if (cpData.navTgtInfo.hasUpdatedNavTgtInfoThisTick)
+            return cpData.navTgtInfo.isCpOnNavmesh;
+        Transform trf = cpData.handle.transform;
+        cpData.navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
+        cpData.navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
             trf.position,
             out NavMeshHit hit,
-            CpMgr.GetData(cpI).navTgtInfo.maxDistToNavMesh,
-            CpMgr.inst.unityComps[cpI].navMeshAgent.areaMask
+            cpData.navTgtInfo.maxDistToNavMesh,
+            cpData.unityComps.navMeshAgent.areaMask
         );
-        return CpMgr.GetData(cpI).navTgtInfo.isCpOnNavmesh;
+        return cpData.navTgtInfo.isCpOnNavmesh;
     }
 
     /// <summary>
     /// True if switched.
     /// </summary>
     public static bool SwitchToFallingStIfNotGrounded(int cpI) {
-        var classRefs = CpMgr.inst.classRefs[cpI];
+        var classRefs = CpMgr.inst.aos[cpI].classRefs;
         if (
             !CpMgr.GetData(cpI).isGrounded
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
@@ -89,7 +90,7 @@ public static class CpUtils{
     /// Used to transition to a baic action state after an attack/special move etc.
     /// </summary>
     public static void TransitionToFallIdleOrWalk(int cpI) {
-        var classRefs = CpMgr.inst.classRefs[cpI];
+        var classRefs = CpMgr.inst.aos[cpI].classRefs;
         SwitchToFallingStIfNotGrounded(cpI);
         if (math.all(CpMgr.GetData(cpI).input_mov != float2.zero))
             CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpI);

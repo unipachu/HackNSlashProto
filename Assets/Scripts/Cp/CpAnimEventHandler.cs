@@ -12,21 +12,21 @@ public class CpAnimEventHandler : MonoBehaviour {
         animEvent -= OnAnimEvent;
     }
 
-    void OnAnimEvent(int id, CpAnimEventT animEvent) {
+    void OnAnimEvent(int cpI, CpAnimEventT animEvent) {
         //Debug.Log($"Anim event {animEvent} for {id} called!", this);
-        var classRefs = CpMgr.inst.classRefs[id];
+        var classRefs = CpMgr.inst.aos[cpI].classRefs;
         switch (animEvent) {
             case CpAnimEventT.BufferedInputStSwitchAllowed:
-                CpMgr.GetData(id).bufferedInputStSwitchAllowed = true;
+                CpMgr.GetData(cpI).bufferedInputStSwitchAllowed = true;
                 break;
             case CpAnimEventT.ComboAllowed:
-                CpMgr.GetData(id).comboAllowed = true;
+                CpMgr.GetData(cpI).comboAllowed = true;
                 break;
             case CpAnimEventT.ComboDisallowed:
-                CpMgr.GetData(id).comboAllowed = false;
+                CpMgr.GetData(cpI).comboAllowed = false;
                 break;
             case CpAnimEventT.DodgeAllowed:
-                CpMgr.GetData(id).dodgeAllowed = true;
+                CpMgr.GetData(cpI).dodgeAllowed = true;
                 break;
             case CpAnimEventT.Finished:
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.Finished);
@@ -38,20 +38,20 @@ public class CpAnimEventHandler : MonoBehaviour {
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.HitDealerDeactivated);
                 break;
             case CpAnimEventT.InvulEnd:
-                CpMgr.GetData(id).ignoreHits = false;
+                CpMgr.GetData(cpI).ignoreHits = false;
                 break;
             case CpAnimEventT.AirtimeEnded:
-                CpMgr.GetData(id).isAffectedByGravity = true;
-                CpMgr.GetData(id).vel_Ver = -CpMgr.GetData(id).act_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetData(cpI).isAffectedByGravity = true;
+                CpMgr.GetData(cpI).vel_Ver = -CpMgr.GetData(cpI).act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
-                CpMgr.GetData(id).isAffectedByGravity = false;
+                CpMgr.GetData(cpI).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.YawAllowed:
-                CpMgr.GetData(id).inputRotAllowed = true;
+                CpMgr.GetData(cpI).inputRotAllowed = true;
                 break;
             case CpAnimEventT.YawDisallowed:
-                CpMgr.GetData(id).inputRotAllowed = false;
+                CpMgr.GetData(cpI).inputRotAllowed = false;
                 break;
             default:
                 Debug.Log($"Switch defaulted with {animEvent}.", this);

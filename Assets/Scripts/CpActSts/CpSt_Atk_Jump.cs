@@ -17,8 +17,8 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
@@ -31,7 +31,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var unityComps = CpMgr.inst.unityComps[cp.I];
+        var unityComps = CpMgr.inst.aos[cp.I].unityComps;
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
                 cp.Data.isAffectedByGravity = true;
@@ -58,7 +58,6 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_UnityObjs[] unityComps = CpMgr.inst.unityComps;
         CpUtils.UpdateMovInputData(
             cp.I,
             float2.zero,

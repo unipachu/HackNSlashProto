@@ -276,8 +276,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpMgr
   initCapacity: 5
-  handle: []
-  unityComps: []
 --- !u!1 &36494360
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,7 +16,7 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     /// </summary>
     public int I { get; set; } = -1;
 
-    public ref Cp_AosData Data => ref CpMgr.inst.aosData[I];
+    public ref Cp_Data Data => ref CpMgr.inst.aos[I];
     // NOTE: This is a little cheating but we do not need to access the manager to access the lock on transform.
     public Transform LockOnTrf => unityObjs.lockOnTrf;
     public Transform TrfToFollow => transform;

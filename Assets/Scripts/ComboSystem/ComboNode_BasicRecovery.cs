@@ -14,7 +14,7 @@ public class ComboNode_BasicRecovery : IComboNode {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicRecovery thisNode = this;
-        return () => CpMgr.inst.classRefs[cpI].actSts.atk_BasicRecovery.Enter(thisNode.AnimInfo);
+        return () => CpMgr.inst.aos[cpI].classRefs.actSts.atk_BasicRecovery.Enter(thisNode.AnimInfo);
     }
 
     public IComboNode GetNextNode(BufferableInput input)

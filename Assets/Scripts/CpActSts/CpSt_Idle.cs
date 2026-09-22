@@ -12,8 +12,8 @@ public class CpSt_Idle : IFsmSt_Cp {
 
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.animEventPlrData[cp.I],
-            CpMgr.inst.unityComps[cp.I].anim,
+            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            CpMgr.inst.aos[cp.I].unityComps.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
             0.1f
         );
@@ -21,7 +21,7 @@ public class CpSt_Idle : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.classRefs[cp.I];
+        var classRefs = cp.Data.classRefs;
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         if (classRefs.st_prev == classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
