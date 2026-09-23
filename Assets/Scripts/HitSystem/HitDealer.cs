@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 // TODO: Add ICollisisionShapeHitDealer which implements the public methods. Then rename this to HitDealer_CapsuleSubstepper or similar.
 public class HitDealer : MonoBehaviour {
@@ -18,28 +17,46 @@ public class HitDealer : MonoBehaviour {
     [Tooltip("Max colliders a phys query can save during one query.")]
     [SerializeField] int maxOverlapCapsuleResults = 256;
 
-    //// Update these before activating the hit dealer and during activation if needed.
-    //[HideInInspector] public HitData hitData;
-
+    CapsuleShape[] prevCapsuleWldPoses;
     HitEffects hitEffects;
     Transform hitSource;
+    /// <summary>
+    /// We use this to ignore hit recievers already hit during one activation
+    /// </summary>
     // TODO MAYBE: You could basically use pre-allocated field arrays for all containers used in HitDealer logic
     // TODO MAYBE C: for less indirection and heap allocation but what ever.
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
     bool isActive;
     PawnTeam team;
+    List<CapsuleShape> dbgPrevSubsteppedWldCapsules = new(4);
 
     public bool IsActive => isActive;
+
+    /// <summary>
+    /// If the pt0 of a hit capsule linearily moves this much away from the previous substepped hitcapsule,
+    /// we make another substep hitcapsule.
+    /// </summary>
+    const float substepLinDist = 0.4f;
+    /// <summary>
+    /// If the capsule rotates around pt0 this many degrees from the prev substep capsule rotation,
+    /// we make another substep hitcapsule.
+    /// </summary>
+    const float substepAngDist = 5; 
 
     // ------------------------------------------------------------------
     // Unity Callbacks
     // ------------------------------------------------------------------
 
-    void Update() {
+    private void Awake() {
+        prevCapsuleWldPoses = new CapsuleShape[capsules.Length];
+    }
+
+    void LateUpdate() {
+        dbgPrevSubsteppedWldCapsules.Clear();
         if (isActive) {
             HashSet<HitResult> allHits = new(4);  
-            for (int capsuleIndex = 0; capsuleIndex < capsules.Length; capsuleIndex++) {
-                CapsuleShape capsule = capsules[capsuleIndex];
+            for (int capsuleI = 0; capsuleI < capsules.Length; capsuleI++) {
+                CapsuleShape capsule = capsules[capsuleI];
                 // Transform capsule into world space.
                 capsule.pt0 = capsule.pt0.TrfPtUnscaled(transform);
                 capsule.pt1 = capsule.pt1.TrfPtUnscaled(transform);
@@ -51,34 +68,36 @@ public class HitDealer : MonoBehaviour {
                     hitSource,
                     Vector3.zero
                 );
-                // TODO MAYBE: Use a field for array.
-                HashSet<HitResult> hitResults = TryHitHitRecievers_OverlapCapsule(
-                    hitData,
-                    false,
-                    ignoredHitRecievers,
-                    capsuleLayerMask,
-                    capsule
-                );
-                foreach(HitResult hitResult in hitResults) {
-                    allHits.Add(hitResult);
-                    ignoredHitRecievers.Add(hitResult.hitReceiver);
-                }
+                SubstepHitCapsules(allHits, capsule, prevCapsuleWldPoses[capsuleI], hitData);
+                prevCapsuleWldPoses[capsuleI] = capsule;
             }
-            if(allHits.Count != 0)
+            if (allHits.Count != 0)
                 hitSomething?.Invoke(allHits);
         }
     }
 
     void OnDrawGizmos() {
         Color color = isActive ? Color.red : Color.green;
-        for (int i = 0; i < capsules.Length; i++) {
-            CapsuleShape capsule = capsules[i];
-            DebugUtils.OnDrawGizmos_DrawCapsule(
-                capsule.pt0.TrfPtUnscaled(transform),
-                capsule.pt1.TrfPtUnscaled(transform),
-                capsule.r,
-                color
-            );
+        if (isActive) {
+            for (int i = 0; i < dbgPrevSubsteppedWldCapsules.Count; i++) {
+                CapsuleShape capsule = dbgPrevSubsteppedWldCapsules[i];
+                DebugUtils.OnDrawGizmos_DrawCapsule(
+                    capsule.pt0,
+                    capsule.pt1,
+                    capsule.r,
+                    color
+                );
+            }
+        } else {
+            for (int i = 0; i < capsules.Length; i++) {
+                CapsuleShape capsule = capsules[i];
+                DebugUtils.OnDrawGizmos_DrawCapsule(
+                    capsule.pt0.TrfPtUnscaled(transform),
+                    capsule.pt1.TrfPtUnscaled(transform),
+                    capsule.r,
+                    color
+                );
+            }
         }
     }
 
@@ -86,8 +105,13 @@ public class HitDealer : MonoBehaviour {
     // Public Methods
     // ------------------------------------------------------------------
 
+    public void Deactivate() {
+        isActive = false;
+    }
+
     /// <summary>
-    /// 
+    /// Call this when you want to activate the hit capsule. This can also be called when hit capsule is
+    /// already activated - it will then act as if it started the activation from the beginning.
     /// </summary>
     /// <param name="hitSource">
     /// Used to calculate hit dir if using <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>.
@@ -95,15 +119,16 @@ public class HitDealer : MonoBehaviour {
     /// <param name="ignoreHitRecievers">
     /// You should add the recievers owned by the hitter here (if you don't want it to hit itself).
     /// </param>
-    public void Activate(
+    public void ResetNActivate(
         Transform hitSource,
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
         PawnTeam team
     ) {
-        Dbg.LogWrn(
-            $"{nameof(HitDealer)} was already active when {nameof(Activate)} was called.",
+        Dbg.Log(
+            $"{nameof(HitDealer)} was already active when {nameof(ResetNActivate)} was called. This"
+                + $"should be fine, so ignore this message!",
             this,
             isActive
         );
@@ -112,67 +137,86 @@ public class HitDealer : MonoBehaviour {
         this.hitSource = hitSource;
         this.team = team;
         ignoredHitRecievers.Clear();
-        if(ignoredHitRecievers != null )
+        // NOTE: We set the initial capsule world locations. During the first update of the hit dealer,
+        // NOTE C: there should be no substepped capsules since previous capsule positions equal to the
+        // NOTE C: current ones. (24.9.2026) 
+        for (int capsuleI = 0; capsuleI < capsules.Length; capsuleI++) {
+            CapsuleShape capsule = capsules[capsuleI];
+            // Transform capsule into world space.
+            capsule.pt0 = capsule.pt0.TrfPtUnscaled(transform);
+            capsule.pt1 = capsule.pt1.TrfPtUnscaled(transform);
+            prevCapsuleWldPoses[capsuleI] = capsule;
+        }
+        if (ignoredHitRecievers != null )
             ignoredHitRecievers.UnionWith(ignoreHitRecievers);
     }
 
-    public void Deactivate() {
-        isActive = false;
-    }
-
-    // TODO: Move to util class.
-    public static HitResult DealHit(HitData hitData, IHitReceiver hitReceiver)
-        => hitReceiver.ReceiveHit(hitData);
-
     /// <summary>
-    /// Uses a <see cref="Physics.OverlapCapsuleNonAlloc"/> to try and hit <see cref="IHitReceiver"/>s.
+    /// Deals hits with hit capsules, first creating intermediate capsules between
+    /// <paramref name="prevWldCapsule"/> (exclusive) and <paramref name="curWldCapsule"/>, finally
+    /// creating a hit capsule to <paramref name="curWldCapsule"/>.<br/>
+    /// NOTE: Substeps are calcualted by interpolating <see cref="CapsuleShape.pt0"/> linearly between
+    /// <paramref name="prevWldCapsule"/> and <paramref name="curWldCapsule"/>, and by using quaternion slerp
+    /// to interpolate capsule rotation, <see cref="CapsuleShape.pt0"/> as a pivot, so that
+    /// <see cref="CapsuleShape.pt1"/> draws an arc.
     /// </summary>
-    /// <param name="hitMaxOnce">
-    /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
-    /// </param>
-    /// <param name="allowFriendlyFire">
-    /// Should allow hits that would be otherwise premitted by <see cref="PawnTeam"/> setup?
-    /// </param>
-    public static HashSet<HitResult> TryHitHitRecievers_OverlapCapsule(
-        HitData hitData,
-        bool hitMaxOnce,
-        HashSet<IHitReceiver> ignoreHitRecievers,
-        int layerMask,
-        CapsuleShape wldCapsule,
-        bool allowFriendlyFire = false,
-        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    void SubstepHitCapsules(
+        HashSet<HitResult> allHits,
+        CapsuleShape curWldCapsule,
+        CapsuleShape prevWldCapsule,
+        HitData hitData
     ) {
-        Collider[] overlapCapsuleResults = new Collider[128];
-        int numCols = Physics.OverlapCapsuleNonAlloc(
-            wldCapsule.pt0,
-            wldCapsule.pt1,
-            wldCapsule.r,
-            overlapCapsuleResults,
-            layerMask,
-            qryTrgIxn
+        Vector3 prevAxis = prevWldCapsule.pt1 - prevWldCapsule.pt0;
+        Vector3 curAxis = curWldCapsule.pt1 - curWldCapsule.pt0;
+        float linDist = Vector3.Distance(prevWldCapsule.pt0, curWldCapsule.pt0);
+        float prevAxisLen = prevAxis.magnitude;
+        float curAxisLen = curAxis.magnitude;
+        float angDist = 0f;
+        // If capsule axis is 0, we cannot calculate angle.
+        if (prevAxisLen > Mathf.Epsilon && curAxisLen > Mathf.Epsilon)
+            angDist = Vector3.Angle(prevAxis, curAxis);
+        int numSubsteps = Mathf.Max(
+            1,
+            Mathf.CeilToInt(Mathf.Max(
+                linDist / substepLinDist,
+                angDist / substepAngDist
+            ))
         );
-        HashSet<HitResult> results = new (4);
-        for (int i = 0; i < numCols; i++) {
-            IHitReceiver hitReceiver = overlapCapsuleResults[i].GetComponent<IHitReceiver>();
-            if (hitReceiver == null)
-                continue;
-            if (hitReceiver.IgnoreAllHits)
-                continue;
-            PawnTeam receiverTeam = hitReceiver.GetTeam;
-            if (receiverTeam == PawnTeam.FriendToAll)
-                continue;
-            if (
-                receiverTeam != PawnTeam.EnemyToAll
-                    && receiverTeam == hitData.team
-                    && !allowFriendlyFire
-            )
-                continue;
-            if (ignoreHitRecievers.Contains(hitReceiver))
-                continue;
-            results.Add(DealHit(hitData, hitReceiver));
-            if (hitMaxOnce)
-                break;
+        Quaternion axisRot = Quaternion.identity;
+        if (prevAxisLen > Mathf.Epsilon && curAxisLen > Mathf.Epsilon)
+            axisRot = Quaternion.FromToRotation(prevAxis, curAxis);
+        // NOTE: The last substep is the cur pose of the capsule.
+        for (int substepI = 1; substepI <= numSubsteps; substepI++) {
+            float t = substepI / (float)numSubsteps;
+            CapsuleShape substepCapsule = curWldCapsule;
+            // Linearly interpolate pt0.
+            substepCapsule.pt0 = Vector3.Lerp(
+                prevWldCapsule.pt0,
+                curWldCapsule.pt0,
+                t
+            );
+            if (prevAxisLen > Mathf.Epsilon && curAxisLen > Mathf.Epsilon) {
+                // Slerp the rotation from the previous capsule orientation toward the current capsule
+                // orientation.
+                Quaternion substepRot = Quaternion.Slerp(Quaternion.identity, axisRot, t);
+                float axisLen = Mathf.Lerp(prevAxisLen, curAxisLen, t);
+                Vector3 substepAxis = substepRot * prevAxis.normalized * axisLen;
+                substepCapsule.pt1 = substepCapsule.pt0 + substepAxis;
+            } else
+                substepCapsule.pt1 = Vector3.Lerp(prevWldCapsule.pt1, curWldCapsule.pt1, t);
+            substepCapsule.r = Mathf.Lerp(prevWldCapsule.r, curWldCapsule.r, t);
+            dbgPrevSubsteppedWldCapsules.Add(substepCapsule);
+            HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_OverlapCapsule(
+                hitData,
+                false,
+                ignoredHitRecievers,
+                capsuleLayerMask,
+                substepCapsule
+            );
+            foreach (HitResult hitResult in hitResults) {
+                allHits.Add(hitResult);
+                ignoredHitRecievers.Add(hitResult.hitReceiver);
+            }
         }
-        return results;
     }
 }

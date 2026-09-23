@@ -42,11 +42,10 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 cp.Data.isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
-                Debug.Log("Went here asdasdasd");
                 CpUtils.TransitionToFallIdleOrWalk(cp.I);
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.Activate(
+                hitDealer.ResetNActivate(
                     cp.unityObjs.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,

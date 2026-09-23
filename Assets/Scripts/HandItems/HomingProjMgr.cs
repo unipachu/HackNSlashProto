@@ -118,7 +118,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         );
         proj.gameObject.SetActive(true);
         // TODO: Use raycast or sphere cast instead (of the capsule hit dealer).
-        proj.hitDealer.Activate(
+        proj.hitDealer.ResetNActivate(
             hitData.sourceTrf, // NOTE: = character center point.
             HitDirMode.FromHitSourceTrfToHitReciever,
             hitData.effects,

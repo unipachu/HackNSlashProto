@@ -64,7 +64,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.Activate(
+                hitDealer.ResetNActivate(
                     cp.unityObjs.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
