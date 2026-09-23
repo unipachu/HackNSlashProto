@@ -24,7 +24,7 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityComps.anim,
+            cp.Data.unityObjs.anim,
             comboNode.AnimInfo,
             0.1f
         );

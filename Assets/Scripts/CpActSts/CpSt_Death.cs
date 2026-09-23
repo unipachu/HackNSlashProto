@@ -16,7 +16,7 @@ public class CpSt_Death : IFsmSt_Cp {
         cp.Data.action_died?.Invoke(cp);
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             deathAnim,
             0.1f
         );

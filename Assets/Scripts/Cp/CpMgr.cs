@@ -74,7 +74,7 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026) TODO: Put this into global variables.
         newAosData.navTgtInfo = new(false, false, 0.2f);
-        newAosData.unityComps = newCp.unityObjs;
+        newAosData.unityObjs = newCp.unityObjs;
         IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpData.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
             newCp.unityObjs.rHand.position,
@@ -135,7 +135,7 @@ public class CpMgr : Singleton<CpMgr> {
             if (aos[i].pendingUnregister)
                 continue;
             GetData(i).isGrounded = CcMov.IsGrounded(
-                aos[i].unityComps.cc,
+                aos[i].unityObjs.cc,
                 out bool hitSomething,
                 out RaycastHit groundCastResult
             );
@@ -281,12 +281,12 @@ public class CpMgr : Singleton<CpMgr> {
             Vector3 totalMov = (Vector3)GetData(i).movInput_additionalLinMov
                 + new Vector3(GetData(i).vel_Hor.x, GetData(i).vel_Ver, GetData(i).vel_Hor.y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
-            aos[i].unityComps.cc.Move(totalMov);
+            aos[i].unityObjs.cc.Move(totalMov);
             // Save final velocity back to cp data.
             GetData(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
             GetData(i).vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            aos[i].unityComps.navMeshAgent.nextPosition = aos[i].handle.transform.position;
+            aos[i].unityObjs.navMeshAgent.nextPosition = aos[i].handle.transform.position;
         }
     }
 
@@ -313,8 +313,8 @@ public class CpMgr : Singleton<CpMgr> {
             AnimEventPlr.Tick(
                 i,
                 ref aos[i].animEventPlrData,
-                aos[i].unityComps.anim,
-                aos[i].unityComps.animEventHandler.animEvent
+                aos[i].unityObjs.anim,
+                aos[i].unityObjs.animEventHandler.animEvent
             );
         }
     }

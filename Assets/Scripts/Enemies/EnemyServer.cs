@@ -45,6 +45,58 @@ public class EnemyServer : Singleton<EnemyServer> {
     public int CurrentWaveIndex => currentWaveIndex;
     public int CurrentEnemyCount => currentEnemyCount;
 
+    bool HasNextWave()
+        => currentWaveIndex + 1 < waves.Length;
+
+    public void OnEnemyDied(CpHandle cp) {
+        cp.Data.action_died -= OnEnemyDied;
+        currentEnemyCount--;
+        if (currentEnemyCount == 0 && spawningWave == false && !HasNextWave())
+            Debug.Log("Player completed all enemy waves!!!", this);
+        Debug.Assert(currentEnemyCount >= 0, $"{nameof(currentEnemyCount)} went below zero.", this);
+    }
+
+    public void OnSpawnPtFinishedSpawning(AiCtrlHandle spawnedEnemy) {
+        spawnedEnemy.Data.cp.Data.action_died += OnEnemyDied;
+    }
+    
+    bool ShouldBlockNextWave(EnemyWave wave) {
+        if (wave.blockNextWaveAtEnemyCount < 0)
+            return false;
+        return currentEnemyCount > wave.blockNextWaveAtEnemyCount;
+    }
+
+    bool ShouldForceNextWave(EnemyWave wave) {
+        if (wave.forceNextWaveAtEnemyCount < 0)
+            return false;
+        return currentEnemyCount <= wave.forceNextWaveAtEnemyCount;
+    }
+
+    IEnumerator SpawnWaveRoutine(EnemyWave wave, bool instaSpawnWave) {
+        spawningWave = true;
+        for (int i = 0; i < wave.enemies.Length; i++) {
+            EnemyWave_EnemyEntry entry = wave.enemies[i];
+            if (entry.enemyConfig == null) {
+                Debug.LogError($"Wave {currentWaveIndex} contains an enemy entry with no enemy config.");
+                continue;
+            }
+            for (int j = 0; j < entry.amount; j++) {
+                while (!TrySpawnToNextAvailableSpawnPt(instaSpawnWave, entry.enemyConfig))
+                    yield return null; // No free spawn point available, wait.
+                currentEnemyCount++;
+            }
+        }
+        spawningWave = false;
+        nextWaveTime = Time.time + wave.timeUntilNextWave;
+    }
+
+    void StartNextWave(bool instaSpawnWave) {
+        currentWaveIndex++;
+        EnemyWave wave = waves[currentWaveIndex];
+        //Debug.Log($"Starting enemy wave {currentWaveIndex}: {wave.name}");
+        StartCoroutine(SpawnWaveRoutine(wave, instaSpawnWave));
+    }
+
     /// <summary>
     /// Call this when you want to start spawning waves.
     /// </summary>
@@ -83,31 +135,6 @@ public class EnemyServer : Singleton<EnemyServer> {
         StartNextWave(false);
     }
 
-    void StartNextWave(bool instaSpawnWave) {
-        currentWaveIndex++;
-        EnemyWave wave = waves[currentWaveIndex];
-        Debug.Log($"Starting enemy wave {currentWaveIndex}: {wave.name}");
-        StartCoroutine(SpawnWaveRoutine(wave, instaSpawnWave));
-    }
-
-    IEnumerator SpawnWaveRoutine(EnemyWave wave, bool instaSpawnWave) {
-        spawningWave = true;
-        for (int i = 0; i < wave.enemies.Length; i++) {
-            EnemyWave_EnemyEntry entry = wave.enemies[i];
-            if (entry.enemyConfig == null) {
-                Debug.LogError($"Wave {currentWaveIndex} contains an enemy entry with no enemy config.");
-                continue;
-            }
-            for (int j = 0; j < entry.amount; j++) {
-                while (!TrySpawnToNextAvailableSpawnPt(instaSpawnWave, entry.enemyConfig))
-                    yield return null; // No free spawn point available, wait.
-                currentEnemyCount++;
-            }
-        }
-        spawningWave = false;
-        nextWaveTime = Time.time + wave.timeUntilNextWave;
-    }
-
     /// <summary>
     /// Returns true if spawn point started spawning. Retruns false if all spawn points were occupied.
     /// </summary>
@@ -128,33 +155,5 @@ public class EnemyServer : Singleton<EnemyServer> {
                 return true;
         }
         return false;
-    }
-
-    bool HasNextWave()
-        => currentWaveIndex + 1 < waves.Length;
-    
-    bool ShouldBlockNextWave(EnemyWave wave) {
-        if (wave.blockNextWaveAtEnemyCount < 0)
-            return false;
-        return currentEnemyCount > wave.blockNextWaveAtEnemyCount;
-    }
-
-    bool ShouldForceNextWave(EnemyWave wave) {
-        if (wave.forceNextWaveAtEnemyCount < 0)
-            return false;
-        Debug.Log($"enemy count:  {currentEnemyCount} <= {wave.forceNextWaveAtEnemyCount}: { currentEnemyCount <= wave.forceNextWaveAtEnemyCount}");
-        return currentEnemyCount <= wave.forceNextWaveAtEnemyCount;
-    }
-
-    public void OnEnemyDied(CpHandle cp) {
-        cp.Data.action_died -= OnEnemyDied;
-        currentEnemyCount--;
-        if (currentEnemyCount == 0 && spawningWave == false && !HasNextWave())
-            Debug.Log("Player completed all enemy waves!!!", this);
-        Debug.Assert(currentEnemyCount >= 0, $"{nameof(currentEnemyCount)} went below zero.", this);
-    }
-
-    public void OnSpawnPtFinishedSpawning(AiCtrlHandle spawnedEnemy) {
-        spawnedEnemy.Data.cp.Data.action_died += OnEnemyDied;
     }
 }

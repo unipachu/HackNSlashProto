@@ -91,7 +91,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     void Tick_AgentMovInput() {
         for (int i = 0; i < entityCount; i++) {
             int cpI = aos[i].cp.I;
-            var cpUnityComps = CpMgr.inst.aos[cpI].unityComps;
+            var cpUnityComps = CpMgr.inst.aos[cpI].unityObjs;
             //var cpClassRefs = CpMgr.inst.aos[cpI].classRefs;
             //Debug.Log("cpI " + cpI);
             if (aos[i].followTgt == null) {

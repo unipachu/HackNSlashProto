@@ -21,8 +21,6 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     public Transform LockOnTrf => unityObjs.lockOnTrf;
     public Transform TrfToFollow => transform;
 
-    // TODO: Make this a property.
-
     public bool IsOnNavMesh()
         => CpUtils.IsOnNavMesh(I);
 }

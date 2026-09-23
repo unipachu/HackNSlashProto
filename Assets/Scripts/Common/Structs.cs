@@ -352,8 +352,7 @@ public struct Cp_Data {
     /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
     /// </summary>
     public PawnTeam team;
-    // TODO: Rename to unity objs.
-    public Cp_UnityObjs unityComps;
+    public Cp_UnityObjs unityObjs;
     /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>

@@ -19,7 +19,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         cp.Data.inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityComps.anim,
+            cp.Data.unityObjs.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -35,7 +35,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var classRefs = cp.Data.classRefs;
-        var unityComps = CpMgr.inst.aos[cp.I].unityComps;
+        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
@@ -61,7 +61,7 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.aos[cp.I].unityComps;
+        var classRefs = CpMgr.inst.aos[cp.I].unityObjs;
         float angSpd = 0;
         if (cp.Data.inputRotAllowed)
             angSpd = cp.Data.act_BasicImpact_YawSpd;

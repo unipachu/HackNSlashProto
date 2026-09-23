@@ -10,7 +10,7 @@ public static class ShaderUtils{
         //);
         tgtRenderer.material.SetFloat(
             "_ditherAmount",
-            // TODO: These seem to be the right lerp values but I have no idea why and google gave no results.
+            // TODO MAYBE: These seem to be the right lerp values but I have no idea why and google gave no results.
             Mathf.Lerp(1.5f, 0.5f, Mathf.Clamp01(nrmValue))
         );
     }

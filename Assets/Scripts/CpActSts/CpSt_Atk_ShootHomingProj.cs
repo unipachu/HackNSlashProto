@@ -31,7 +31,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
@@ -55,7 +55,7 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         );
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                            CpMgr.inst.aos[cp.I].unityComps.anim,
+                            CpMgr.inst.aos[cp.I].unityObjs.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Recovery)
                         );
                         break;

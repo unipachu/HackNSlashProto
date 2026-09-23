@@ -21,7 +21,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Windup),
             0.1f
         );
@@ -36,7 +36,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         var aos = CpMgr.inst.aos;
-        var unityComps = CpMgr.inst.aos[cp.I].unityComps;
+        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 switch (cp.Data.act_AtkPhase) {
@@ -74,7 +74,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_UnityObjs unityComps = CpMgr.inst.aos[cp.I].unityComps;
+        Cp_UnityObjs unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         switch (cp.Data.act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(

@@ -17,13 +17,13 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         => true;
 
     public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
-        var unityComps = cp.Data.unityComps;
+        var unityComps = cp.Data.unityObjs;
         cp.Data.act_AtkPhase = AtkPhase.Recovery;
         cp.Data.comboAllowed = false;
         cp.Data.inputRotAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityComps.anim,
+            cp.Data.unityObjs.anim,
             animInfo,
             0.1f
         );

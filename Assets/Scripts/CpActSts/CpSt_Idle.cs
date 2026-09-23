@@ -13,7 +13,7 @@ public class CpSt_Idle : IFsmSt_Cp {
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
             0.1f
         );

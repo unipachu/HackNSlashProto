@@ -14,4 +14,6 @@ public class GlobalData : Singleton<GlobalData> {
     public float isGroundedChkDist = 0.1f;
     [Tooltip("Max downwards speed when falling for characters.")]
     public float maxFallSpd = 30;
+    [Tooltip("Duration of the visual effect that warns the player of enemy spawning there.")]
+    public float enemySpawnAnimDur = 2;
 }

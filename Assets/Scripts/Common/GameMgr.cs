@@ -10,12 +10,13 @@ public class GameMgr : Singleton<GameMgr>{
 
     override protected void Awake(){
         base.Awake();
+        WldHpBarMgr.inst.Init();
         CpMgr.inst.Init();
         AiCtrlMgr.inst.Init();
     }
     private void Start() {
         CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
-        EnemyServer.inst.StartSpawningWaves(false);
+        EnemyServer.inst.StartSpawningWaves(true);
     }
 
     void FixedUpdate() {

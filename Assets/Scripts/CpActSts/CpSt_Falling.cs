@@ -15,7 +15,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         cp.Data.act_Falling_StartHgt = cp.Data.handle.transform.position.y;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.falling),
             4 // NOTE: Transition is long to give a sense of accleration during falling. // TODO: So.
         );
@@ -23,7 +23,7 @@ public class CpSt_Falling : IFsmSt_Cp {
     }
     
     public void Tick() {
-        var unityComps = CpMgr.inst.aos[cp.I].unityComps;
+        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         var classRefs = cp.Data.classRefs;
         CpUtils.UpdateMovInputData(
             cp.I,

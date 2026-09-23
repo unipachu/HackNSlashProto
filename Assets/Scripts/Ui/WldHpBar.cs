@@ -28,7 +28,6 @@ public class WldHpBar : MonoBehaviour {
         imgDmgRed.fillAmount = nrmHp;
     }
 
-    // TODO: Make this trail after the red bar
     public void SetYellowHp(int hp, int maxHp) {
         float nrmHp = maxHp > 0
             ? Mathf.Clamp01((float)hp / maxHp)

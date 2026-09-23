@@ -14,9 +14,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
 
     int entityCount;
 
-    // TODO: init in game manager
-    protected override void Awake() {
-        base.Awake();
+    public void Init() {
         bars = new WldHpBarData[initCapacity];
     }
 

@@ -17,7 +17,7 @@ public static class CpUtils{
     /// </summary>
     public static Func<IFsmSt_Cp> FindStateEnterFunc(BufferableInput input, int cpI) {
         var classRefs = CpMgr.inst.aos[cpI].classRefs;
-        var unityComps = CpMgr.inst.aos[cpI].unityComps;
+        var unityComps = CpMgr.inst.aos[cpI].unityObjs;
         if(input == BufferableInput.BtnE)
             return () => classRefs.actSts.dodge.Enter();
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {
@@ -65,7 +65,7 @@ public static class CpUtils{
             trf.position,
             out NavMeshHit hit,
             cpData.navTgtInfo.maxDistToNavMesh,
-            cpData.unityComps.navMeshAgent.areaMask
+            cpData.unityObjs.navMeshAgent.areaMask
         );
         return cpData.navTgtInfo.isCpOnNavmesh;
     }

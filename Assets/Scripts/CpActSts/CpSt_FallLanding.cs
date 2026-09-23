@@ -15,7 +15,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         cp.Data.dodgeAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityComps.anim,
+            CpMgr.inst.aos[cp.I].unityObjs.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
             0.2f
         );
