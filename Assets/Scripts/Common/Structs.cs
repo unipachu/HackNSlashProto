@@ -441,6 +441,29 @@ public struct CtrlInputData {
     public Vector2 input_Mov;
 }
 
+[Serializable]
+public struct EnemyWave {
+    public string name;
+
+    [Header("Enemies")]
+    public EnemyWave_EnemyEntry[] enemies;
+
+    [Header("Next Wave Conditions")]
+    [Min(0f)] public float timeUntilNextWave;
+    [Tooltip("The next wave cannot start while the current enemy count is above this value. "
+        + "Set to -1 to disable.")]
+    public int blockNextWaveAtEnemyCount;
+    [Tooltip("The next wave starts immediately when the current enemy count is at or below this value, "
+        + "even if the timer has not expired. Set to -1 to disable.")]
+    public int forceNextWaveAtEnemyCount;
+}
+
+[Serializable]
+public struct EnemyWave_EnemyEntry {
+    public So_AiCpConfig enemyConfig;
+    [Min(1)] public int amount;
+}
+
 public struct HitData {
     public HitEffects effects;
     public PawnTeam team;

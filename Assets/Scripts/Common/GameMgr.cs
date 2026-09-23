@@ -16,7 +16,7 @@ public class GameMgr : Singleton<GameMgr>{
     }
     private void Start() {
         CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
-        EnemyServer.inst.StartSpawningWaves(true);
+        EnemyWaveMgr.inst.StartSpawningWaves(true);
     }
 
     void FixedUpdate() {
@@ -27,7 +27,7 @@ public class GameMgr : Singleton<GameMgr>{
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick();
         CpMgr.inst.Tick(Time.deltaTime);
-        EnemyServer.inst.Tick(Time.deltaTime, Time.time);
+        EnemyWaveMgr.inst.Tick(Time.deltaTime, Time.time);
     }
 
     void LateUpdate() {

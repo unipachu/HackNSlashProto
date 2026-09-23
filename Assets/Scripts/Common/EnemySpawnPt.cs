@@ -13,7 +13,7 @@ public class EnemySpawnPt : MonoBehaviour {
 
     public void EndSpawning(AiCtrlHandle spawnedEnemy) {
         sphereRenderer.enabled = false;
-        EnemyServer.inst.OnSpawnPtFinishedSpawning(spawnedEnemy);
+        EnemyWaveMgr.inst.OnSpawnPtFinishedSpawning(spawnedEnemy);
         IsSpawning = false;
     }
 

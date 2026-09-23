@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3f3e59767ce8e44da2f6a685fc45867, type: 3}
+  m_Name: EnemyWaveConfig_3WaveTest
+  m_EditorClassIdentifier: Assembly-CSharp::So_EnemyWaveConfig
+  waves:
+  - name: 
+    enemies:
+    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
+      amount: 1
+    timeUntilNextWave: 5
+    blockNextWaveAtEnemyCount: -1
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}
+      amount: 1
+    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
+      amount: 2
+    timeUntilNextWave: 9999
+    blockNextWaveAtEnemyCount: -1
+    forceNextWaveAtEnemyCount: 1
+  - name: 
+    enemies:
+    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 0
+    forceNextWaveAtEnemyCount: 0

@@ -4049,6 +4049,7 @@ MonoBehaviour:
   inputBuffer_Dur: 0.3
   isGroundedChkDist: 0.1
   maxFallSpd: 30
+  enemySpawnAnimDur: 2
 --- !u!4 &900887753
 Transform:
   m_ObjectHideFlags: 0
@@ -7710,30 +7711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waves:
-  - name: 
-    enemies:
-    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
-      amount: 1
-    timeUntilNextWave: 5
-    blockNextWaveAtEnemyCount: -1
-    forceNextWaveAtEnemyCount: -1
-  - name: 
-    enemies:
-    - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}
-      amount: 1
-    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
-      amount: 2
-    timeUntilNextWave: 999
-    blockNextWaveAtEnemyCount: -1
-    forceNextWaveAtEnemyCount: 1
-  - name: 
-    enemies:
-    - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}
-      amount: 1
-    timeUntilNextWave: 5
-    blockNextWaveAtEnemyCount: -1
-    forceNextWaveAtEnemyCount: -1
+  waveConfig: {fileID: 11400000, guid: bc89b709809221945ad76ed12fdb5005, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}

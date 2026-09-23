@@ -5,32 +5,9 @@ using UnityEngine;
 /// <summary>
 /// Responsible for spawning enemies.
 /// </summary>
-public class EnemyServer : Singleton<EnemyServer> {
-    [Serializable]
-    public struct EnemyWave_EnemyEntry {
-        public So_AiCpConfig enemyConfig;
-        [Min(1)] public int amount;
-    }
-
-    [Serializable]
-    public struct EnemyWave {
-        public string name;
-
-        [Header("Enemies")]
-        public EnemyWave_EnemyEntry[] enemies;
-
-        [Header("Next Wave Conditions")]
-        [Min(0f)] public float timeUntilNextWave;
-        [Tooltip("The next wave cannot start while the current enemy count is above this value. "
-            + "Set to -1 to disable.")]
-        public int blockNextWaveAtEnemyCount;
-        [Tooltip("The next wave starts immediately when the current enemy count is at or below this value, "
-            + "even if the timer has not expired. Set to -1 to disable.")]
-        public int forceNextWaveAtEnemyCount;
-    }
-
+public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
     [Header("Waves")]
-    [SerializeField] EnemyWave[] waves;
+    [SerializeField] So_EnemyWaveConfig waveConfig;
 
     [Header("Spawn Points")]
     [SerializeField] EnemySpawnPt[] spawnPoints;
@@ -46,7 +23,7 @@ public class EnemyServer : Singleton<EnemyServer> {
     public int CurrentEnemyCount => currentEnemyCount;
 
     bool HasNextWave()
-        => currentWaveIndex + 1 < waves.Length;
+        => currentWaveIndex + 1 < waveConfig.waves.Length;
 
     public void OnEnemyDied(CpHandle cp) {
         cp.Data.action_died -= OnEnemyDied;
@@ -92,7 +69,7 @@ public class EnemyServer : Singleton<EnemyServer> {
 
     void StartNextWave(bool instaSpawnWave) {
         currentWaveIndex++;
-        EnemyWave wave = waves[currentWaveIndex];
+        EnemyWave wave = waveConfig.waves[currentWaveIndex];
         //Debug.Log($"Starting enemy wave {currentWaveIndex}: {wave.name}");
         StartCoroutine(SpawnWaveRoutine(wave, instaSpawnWave));
     }
@@ -106,9 +83,14 @@ public class EnemyServer : Singleton<EnemyServer> {
     /// </param>
     public void StartSpawningWaves(bool instaSpawnFirstWave) {
         Debug.Assert(
-            spawnPoints != null && spawnPoints.Length != 0, $"{nameof(EnemyServer)} has no spawn points.", this
+            spawnPoints != null && spawnPoints.Length != 0,
+            $"{nameof(EnemyWaveMgr)} has no spawn points.",
+            this
         );
-        Debug.Assert(waves != null && waves.Length != 0, $"{nameof(EnemyServer)} has no waves.", this);
+        if(waveConfig.waves == null || waveConfig.waves.Length == 0) {
+            Dbg.LogWrn($"{nameof(EnemyWaveMgr)} has no waves.", this);
+            return;
+        }
         Debug.Assert(!spawningWavesStarted, $"{nameof(StartSpawningWaves)} was called more than once.", this);
         spawningWavesStarted = true;
         // Randomize first pawn pt
@@ -123,7 +105,7 @@ public class EnemyServer : Singleton<EnemyServer> {
             return;
         if (!HasNextWave())
             return;
-        EnemyWave currentWave = waves[currentWaveIndex];
+        EnemyWave currentWave = waveConfig.waves[currentWaveIndex];
         if (ShouldForceNextWave(currentWave)) {
             StartNextWave(false);
             return;
