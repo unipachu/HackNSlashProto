@@ -15,7 +15,7 @@ public class GameMgr : Singleton<GameMgr>{
     }
     private void Start() {
         CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
-        EnemyServer.inst.StartSpawningWaves(true);
+        EnemyServer.inst.StartSpawningWaves(false);
     }
 
     void FixedUpdate() {

@@ -21,7 +21,7 @@ public class EnemyServer : Singleton<EnemyServer> {
 
         [Header("Next Wave Conditions")]
         [Min(0f)] public float timeUntilNextWave;
-        [Tooltip("The next wave cannot start while the current enemy count is at or above this value. "
+        [Tooltip("The next wave cannot start while the current enemy count is above this value. "
             + "Set to -1 to disable.")]
         public int blockNextWaveAtEnemyCount;
         [Tooltip("The next wave starts immediately when the current enemy count is at or below this value, "
@@ -37,7 +37,7 @@ public class EnemyServer : Singleton<EnemyServer> {
 
     int currentWaveIndex = -1;
     int currentEnemyCount;
-    int nextSpawnPointIndex;
+    int nextSpawnPtI;
     float nextWaveTime;
     bool spawningWavesStarted;
     bool spawningWave;
@@ -60,7 +60,7 @@ public class EnemyServer : Singleton<EnemyServer> {
         Debug.Assert(!spawningWavesStarted, $"{nameof(StartSpawningWaves)} was called more than once.", this);
         spawningWavesStarted = true;
         // Randomize first pawn pt
-        nextSpawnPointIndex = UnityEngine.Random.Range(0, spawnPoints.Length);
+        nextSpawnPtI = UnityEngine.Random.Range(0, spawnPoints.Length);
         StartNextWave(instaSpawnFirstWave);
     }
 
@@ -99,14 +99,8 @@ public class EnemyServer : Singleton<EnemyServer> {
                 continue;
             }
             for (int j = 0; j < entry.amount; j++) {
-                EnemySpawnPt spawnPt = null;
-                while (spawnPt == null) {
-                    spawnPt = TryGetNextSpawnPt(instaSpawnWave);
-                    if (spawnPt == null)
-                        yield return null; // No free spawn point available, wait.
-                }
-                AiCtrlHandle aiCtrl = CpFactory.SpawnAiCpAtSpawnPt(entry.enemyConfig, spawnPt.transform);
-                aiCtrl.Data.cp.Data.action_died += OnEnemyDied;
+                while (!TrySpawnToNextAvailableSpawnPt(instaSpawnWave, entry.enemyConfig))
+                    yield return null; // No free spawn point available, wait.
                 currentEnemyCount++;
             }
         }
@@ -115,22 +109,25 @@ public class EnemyServer : Singleton<EnemyServer> {
     }
 
     /// <summary>
-    /// Returns next spawn pt, null if none are free.
+    /// Returns true if spawn point started spawning. Retruns false if all spawn points were occupied.
     /// </summary>
     /// <param name="forceGetSpawnPt">
-    /// Should this forcibly return next spawn point even if it otherwise was not available for spawning?
+    /// Should this force spawn point to spawn an enemy even if it were occupied?
     /// </param>
-    EnemySpawnPt TryGetNextSpawnPt(bool forceGetSpawnPt) {
+    bool TrySpawnToNextAvailableSpawnPt(bool forceGetSpawnPt, So_AiCpConfig enemyConfig) {
         for (int i = 0; i < spawnPoints.Length; i++) {
-            EnemySpawnPt spawnPoint = spawnPoints[nextSpawnPointIndex];
-            nextSpawnPointIndex++;
-            if (nextSpawnPointIndex >= spawnPoints.Length)
-                nextSpawnPointIndex = 0;
-            if (!forceGetSpawnPt && !spawnPoint.TryBeginSpawning())
-                continue;
-            return spawnPoint;
+            EnemySpawnPt spawnPt = spawnPoints[nextSpawnPtI];
+            nextSpawnPtI++;
+            if (nextSpawnPtI >= spawnPoints.Length)
+                nextSpawnPtI = 0;
+            if (forceGetSpawnPt) {
+                spawnPt.QuickSpawn(enemyConfig);
+                return true;
+            }
+            if(spawnPt.TryBeginSpawning(enemyConfig))
+                return true;
         }
-        return null;
+        return false;
     }
 
     bool HasNextWave()
@@ -139,12 +136,13 @@ public class EnemyServer : Singleton<EnemyServer> {
     bool ShouldBlockNextWave(EnemyWave wave) {
         if (wave.blockNextWaveAtEnemyCount < 0)
             return false;
-        return currentEnemyCount >= wave.blockNextWaveAtEnemyCount;
+        return currentEnemyCount > wave.blockNextWaveAtEnemyCount;
     }
 
     bool ShouldForceNextWave(EnemyWave wave) {
         if (wave.forceNextWaveAtEnemyCount < 0)
             return false;
+        Debug.Log($"enemy count:  {currentEnemyCount} <= {wave.forceNextWaveAtEnemyCount}: { currentEnemyCount <= wave.forceNextWaveAtEnemyCount}");
         return currentEnemyCount <= wave.forceNextWaveAtEnemyCount;
     }
 
@@ -154,5 +152,9 @@ public class EnemyServer : Singleton<EnemyServer> {
         if (currentEnemyCount == 0 && spawningWave == false && !HasNextWave())
             Debug.Log("Player completed all enemy waves!!!", this);
         Debug.Assert(currentEnemyCount >= 0, $"{nameof(currentEnemyCount)} went below zero.", this);
+    }
+
+    public void OnSpawnPtFinishedSpawning(AiCtrlHandle spawnedEnemy) {
+        spawnedEnemy.Data.cp.Data.action_died += OnEnemyDied;
     }
 }
