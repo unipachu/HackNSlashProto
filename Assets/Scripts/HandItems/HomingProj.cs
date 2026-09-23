@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class HomingProj : MonoBehaviour {
@@ -9,14 +10,14 @@ public class HomingProj : MonoBehaviour {
     Transform tgt;
 
     private void OnEnable() {
-        hitDealer.hitReceiverHit += OnHitReceiverHit;
+        hitDealer.hitSomething += OnHitReceiverHit;
     }
 
     private void OnDisable() {
-        hitDealer.hitReceiverHit -= OnHitReceiverHit;
+        hitDealer.hitSomething -= OnHitReceiverHit;
     }
 
-    void OnHitReceiverHit(HitResult hitResult) {
+    void OnHitReceiverHit(HashSet<HitResult> hitResult) {
         HomingProjMgr.inst.DeactivateProj(poolI);
     }
 

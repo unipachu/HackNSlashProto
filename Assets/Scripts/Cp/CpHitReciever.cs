@@ -6,13 +6,10 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
-    public PawnTeam GetTeam() 
-        => cp.Data.team;
+    public PawnTeam GetTeam => cp.Data.team;
+    bool IHitReceiver.IgnoreAllHits => cp.Data.ignoreHits;
 
-    public bool IgnoreAllHits()
-        => cp.Data.ignoreHits;
-
-    public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData) {
+    public HitResult ReceiveHit(HitData hitData) {
         //Debug.Log(
         //    $"HitData:\n" +
         //    $"  {nameof(hitData.effects.dmg)}: {hitData.effects.dmg}\n" +
@@ -37,7 +34,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         cp.I
                     )
                 )
-                    return new(false, false);
+                    return new(this, false, false);
             }
             aos.lastRecievedHitDir = hitData.wldDir;
             aos.lastKnockbackStr = hitData.effects.knockbackStr;
@@ -74,6 +71,6 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
             }
         }
-        return new(aos.ignoreHits, false);
+        return new(this, aos.ignoreHits, false);
     }
 }

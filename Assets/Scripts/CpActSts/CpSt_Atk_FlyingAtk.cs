@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -35,15 +36,14 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var aos = CpMgr.inst.aos;
-        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
+        var cpData = cp.Data;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 switch (cp.Data.act_AtkPhase) {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                            unityComps.anim,
+                            cpData.unityObjs.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
                         cp.Data.act_AtkPhase = AtkPhase.Impact;
@@ -64,8 +64,13 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitData = new HitData(hitEffects, aos[cp.I].team, cp.transform.forward);
-                hitDealer.Activate();
+                hitDealer.Activate(
+                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    HitDirMode.FromHitSourceTrfToHitReciever,
+                    hitEffects,
+                    new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
+                    cp.Data.team
+                );
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

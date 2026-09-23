@@ -28,7 +28,15 @@ public class TestShooter : MonoBehaviour {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
                 projData,
-                new HitData(hitEffects, team, (plr.position - transform.position).normalized),
+                // TODO: Build hit data in the projectile (since it can change direction).
+                new HitData(
+                    hitEffects,
+                    team,
+                    HitDirMode.WldDir,
+                    null,
+                    (plr.position - transform.position).normalized
+                ),
+                null,
                 transform.position,
                 (plr.position - transform.position).normalized,
                 plr);

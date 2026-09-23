@@ -5,7 +5,7 @@ public interface IHitReceiver {
     /// <summary>
     /// Get the team number the reciever belongs to.
     /// </summary>
-    public PawnTeam GetTeam();
-    public bool IgnoreAllHits();
-    public HitResult ReceiveHit(HitDealer hitDealer, HitData hitData);
+    public PawnTeam GetTeam { get; }
+    public bool IgnoreAllHits { get; }
+    public HitResult ReceiveHit(HitData hitData);
 }

@@ -31,6 +31,7 @@ public enum BtResult : byte {
 
 public enum BtT {
     FollowNAttack,
+    Idle,
 }
 
 public enum BufferableInput : byte {
@@ -123,6 +124,20 @@ public enum Faces : byte {
     Top,
     Near,
     Far,
+}
+
+/// <summary>
+/// Used to decide how the direction of a hit is calculated.
+/// </summary>
+public enum HitDirMode : byte {
+    /// <summary>
+    /// Calculates direction from <see cref="HitData.sourceTrf"/>
+    /// </summary>
+    FromHitSourceTrfToHitReciever,
+    /// <summary>
+    /// Calculates direction from <see cref="HitData.wldDir"/>
+    /// </summary>
+    WldDir,
 }
 
 public enum HpBarTrailingSt {

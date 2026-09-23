@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -45,8 +46,13 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 CpUtils.TransitionToFallIdleOrWalk(cp.I);
                 break;
             case CpAnimEventT.HitDealerActivated:
-                hitDealer.hitData = new HitData(hitEffects, cp.Data.team, cp.transform.forward);
-                hitDealer.Activate();
+                hitDealer.Activate(
+                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    HitDirMode.FromHitSourceTrfToHitReciever,
+                    hitEffects,
+                    new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
+                    cp.Data.team
+                );
                 break;
             case CpAnimEventT.HitDealerDeactivated:
                 hitDealer.Deactivate();

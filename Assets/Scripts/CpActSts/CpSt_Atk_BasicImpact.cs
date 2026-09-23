@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
@@ -48,8 +49,13 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
-                hitDealer.hitData = new HitData(hitEffects, cp.Data.team, cp.transform.forward);
-                hitDealer.Activate();
+                hitDealer.Activate(
+                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    HitDirMode.FromHitSourceTrfToHitReciever,
+                    hitEffects,
+                    new HashSet<IHitReceiver>{cp.unityObjs.hitReciever},
+                    cp.Data.team
+                );
                 break;
             case CpAnimEventT.HitDealerDeactivated:
                 hitDealer.Deactivate();

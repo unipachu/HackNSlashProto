@@ -85,7 +85,7 @@ MonoBehaviour:
     anim: {fileID: 1091843080481240901}
     animEventHandler: {fileID: 4596513238272593172}
     cc: {fileID: 5079058612890601784}
-    hitRecieverHandler: {fileID: 5634786316121275709}
+    hitReciever: {fileID: 5634786316121275709}
     navMeshAgent: {fileID: 8087861647241408892}
     rHand: {fileID: 6462226994868355226}
     lockOnTrf: {fileID: 2296725825080284018}

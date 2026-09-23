@@ -5,6 +5,7 @@ public static class BtDataFactory{
     public static IBtNode Construct(BtT t, AiCtrlHandle aiCtrl) {
         return t switch {
             BtT.FollowNAttack => GetBt_FollowNAttack(aiCtrl),
+            BtT.Idle => GetBt_Idle(aiCtrl),
             _ => GeneralUtils.LogErrorForInput<BtT, IBtNode>(t)
         };
     }
@@ -33,4 +34,7 @@ public static class BtDataFactory{
             new BtNode_Cmd_Idle(aiCtrl)
         );
     }
+
+    static IBtNode GetBt_Idle(AiCtrlHandle aiCtrl)
+        => new BtNode_Cmd_Idle(aiCtrl);
 }

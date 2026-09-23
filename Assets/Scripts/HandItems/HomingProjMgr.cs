@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
@@ -78,7 +79,8 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
                 continue;
             }
             HomingProj proj = pooledProj[i];
-            proj.hitDealer.hitData.wldDir = directions[i];
+            // TODO: This is kind of bad. Use raycasts for projectiles instead.
+            //proj.hitDealer.hitData.wldDir = directions[i];
             proj.transform.SetPositionAndRotation(
                 positions[i],
                 Quaternion.LookRotation(directions[i])
@@ -92,6 +94,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     public void ShootProj(
         HomingProjData projData,
         HitData hitData,
+        HashSet<IHitReceiver> shooterHitRecievers,
         Vector3 wldStartPos,
         Vector3 wldStartDir,
         Transform tgt
@@ -114,8 +117,14 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
             Quaternion.LookRotation(wldStartDir)
         );
         proj.gameObject.SetActive(true);
-        proj.hitDealer.hitData = hitData;
-        proj.hitDealer.Activate();
+        // TODO: Use raycast or sphere cast instead (of the capsule hit dealer).
+        proj.hitDealer.Activate(
+            hitData.sourceTrf, // NOTE: = character center point.
+            HitDirMode.FromHitSourceTrfToHitReciever,
+            hitData.effects,
+            shooterHitRecievers,
+            hitData.team
+        );
     }
 
     public void DeactivateProj(int projIndex) {

@@ -424,7 +424,7 @@ public struct Cp_UnityObjs {
     public Animator anim;
     public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
-    public CpHitReciever hitRecieverHandler;
+    public CpHitReciever hitReciever;
     public NavMeshAgent navMeshAgent;
     public Transform rHand;
     public Transform lockOnTrf;
@@ -467,11 +467,25 @@ public struct EnemyWave_EnemyEntry {
 public struct HitData {
     public HitEffects effects;
     public PawnTeam team;
+    public HitDirMode dirMode;
+    /// <summary>
+    /// Used to calculate hit direction if <see cref="HitDirMode"/> is set to
+    /// <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>.
+    /// </summary>
+    public Transform sourceTrf;
     public Vector3 wldDir;
 
-    public HitData(HitEffects effects, PawnTeam team, Vector3 wldDir) {
+    public HitData(
+        HitEffects effects,
+        PawnTeam team,
+        HitDirMode dirMode,
+        Transform sourceTrf,
+        Vector3 wldDir
+    ) {
         this.effects = effects;
         this.team = team;
+        this.dirMode = dirMode;
+        this.sourceTrf = sourceTrf;
         this.wldDir = wldDir;
     }
 }
@@ -493,11 +507,13 @@ public struct HitEffects {
 }
 
 public struct HitResult {
-    public bool wasInvul;
+    public IHitReceiver hitReceiver;
+    public bool hitIgnored;
     public bool wasBlocked;
 
-    public HitResult(bool wasInvul, bool wasBlocked) {
-        this.wasInvul = wasInvul;
+    public HitResult(IHitReceiver hitReceiver, bool hitIgnored, bool wasBlocked) {
+        this.hitReceiver = hitReceiver;
+        this.hitIgnored = hitIgnored;
         this.wasBlocked = wasBlocked;
     }
 }

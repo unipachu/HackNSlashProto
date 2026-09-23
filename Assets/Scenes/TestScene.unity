@@ -7711,7 +7711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: bc89b709809221945ad76ed12fdb5005, type: 2}
+  waveConfig: {fileID: 11400000, guid: 58da4f9a0e7fb294cbcd23bd76d0054c, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}

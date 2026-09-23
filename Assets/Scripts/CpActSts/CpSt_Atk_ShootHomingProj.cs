@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
@@ -48,7 +49,15 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
                         cpData.act_AtkPhase = AtkPhase.Recovery;
                         HomingProjMgr.inst.ShootProj(
                             homingProjData,
-                            new HitData(hitEffects, cpData.team, projSpawnPose.forward),
+                            // TODO: Build hit data in the projectile (since it can change direction).
+                            new HitData(
+                                hitEffects,
+                                cpData.team,
+                                HitDirMode.WldDir,
+                                null,
+                                projSpawnPose.forward
+                            ),
+                            new HashSet<IHitReceiver>{ cp.unityObjs.hitReciever },
                             projSpawnPose.position,
                             projSpawnPose.forward,
                             homingProjTgt
