@@ -17,6 +17,13 @@ MonoBehaviour:
     animInfo: 4
     node_BtnE: 255
     node_LShldr: 255
+    node_NoInput: 1
+    node_RShldr: 255
+    node_RTrg: 255
+  - t: 1
+    animInfo: 3
+    node_BtnE: 255
+    node_LShldr: 255
     node_NoInput: 255
     node_RShldr: 255
     node_RTrg: 255

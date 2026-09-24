@@ -64,6 +64,7 @@ public enum CpAnimEventT {
     Finished,
     HitDealerActivated,
     HitDealerDeactivated,
+    InputMovAllowed,
     InvulEnd,
     YawDisallowed,
     YawAllowed,

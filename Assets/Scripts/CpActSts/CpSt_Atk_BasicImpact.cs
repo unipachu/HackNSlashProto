@@ -19,9 +19,8 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
-        cp.Data.act_AtkPhase = AtkPhase.Impact;
         cp.Data.comboAllowed = false;
-        cp.Data.inputRotAllowed = false;
+        cp.Data.yawAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.Data.unityObjs.anim,
@@ -39,8 +38,6 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = cp.Data.classRefs;
-        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
@@ -71,21 +68,21 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = CpMgr.inst.aos[cp.I].unityObjs;
+        ref var cpData = ref cp.Data;
         float angSpd = 0;
-        if (cp.Data.inputRotAllowed)
-            angSpd = cp.Data.act_BasicImpact_YawSpd;
+        if (cpData.yawAllowed)
+            angSpd = cpData.act_BasicImpact_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.I,
-            cp.Data.input_mov,
-            cp.Data.animDPos,
+            cpData.input_mov,
+            cpData.animDPos,
             0,
             angSpd,
             float.PositiveInfinity
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (cp.Data.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
+        if (cpData.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
             return;
     }
 }

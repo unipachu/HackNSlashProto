@@ -37,6 +37,9 @@ public class CpAnimEventHandler : MonoBehaviour {
             case CpAnimEventT.HitDealerDeactivated:
                 classRefs.st_cur.HandleAnimEvent(CpAnimEventT.HitDealerDeactivated);
                 break;
+            case CpAnimEventT.InputMovAllowed:
+                CpMgr.GetData(cpI).inputMovAllowed = true;
+                break;
             case CpAnimEventT.InvulEnd:
                 CpMgr.GetData(cpI).ignoreHits = false;
                 break;
@@ -48,13 +51,13 @@ public class CpAnimEventHandler : MonoBehaviour {
                 CpMgr.GetData(cpI).isAffectedByGravity = false;
                 break;
             case CpAnimEventT.YawAllowed:
-                CpMgr.GetData(cpI).inputRotAllowed = true;
+                CpMgr.GetData(cpI).yawAllowed = true;
                 break;
             case CpAnimEventT.YawDisallowed:
-                CpMgr.GetData(cpI).inputRotAllowed = false;
+                CpMgr.GetData(cpI).yawAllowed = false;
                 break;
             default:
-                Debug.Log($"Switch defaulted with {animEvent}.", this);
+                Debug.LogError($"Switch defaulted with {animEvent}.", this);
                 break;
         }
     }

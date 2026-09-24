@@ -8,6 +8,10 @@ using UnityEngine;
 /// </summary>
 public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
     CpHandle cp;
+    /// <summary>
+    /// Normalized animation time when <see cref="Cp_Data.inputMovAllowed"/> is first read as true in Tick().
+    /// </summary>
+    float inputMovAllowedNrmTime;
 
     public CpSt_Atk_BasicRecovery(CpHandle cp) {
         this.cp = cp;
@@ -17,13 +21,13 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
         => true;
 
     public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
-        var unityComps = cp.Data.unityObjs;
-        cp.Data.act_AtkPhase = AtkPhase.Recovery;
-        cp.Data.comboAllowed = false;
-        cp.Data.inputRotAllowed = false;
+        ref var cpData = ref cp.Data;
+        inputMovAllowedNrmTime = -1;
+        cpData.comboAllowed = false;
+        cpData.inputMovAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityObjs.anim,
+            ref cpData.animEventPlrData,
+            cpData.unityObjs.anim,
             animInfo,
             0.1f
         );
@@ -42,29 +46,35 @@ public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
     }
 
     public void Tick() {
-        var classRefs = cp.Data.classRefs;
-        var animEventPlrData = CpMgr.inst.aos[cp.I].animEventPlrData;
-        // interpolate to walking speed.
-        cp.Data.act_BasicRecovery_MotInterpTimer += Time.deltaTime;
+        ref var cpData = ref cp.Data;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);
-        float interpValue = Mathf.Clamp01(animEventPlrData.prevTotalNrmT);
+        float interpValue = 0;
+        if (cpData.inputMovAllowed) {
+            if (inputMovAllowedNrmTime < 0)
+                inputMovAllowedNrmTime = cpData.animEventPlrData.prevTotalNrmT;
+            // Interpolate to walking speed.
+            interpValue = (cpData.animEventPlrData.prevTotalNrmT - inputMovAllowedNrmTime)
+                / (1 - inputMovAllowedNrmTime);
+            interpValue = Mathf.Clamp01(interpValue);
+        }
+        //Dbg.Log($"{nameof(interpValue)}: {interpValue}", cp, cpData.enableDbgMsgs);
         CpUtils.UpdateMovInputData(
             cp.I,
-            cp.Data.input_mov,
+            cpData.input_mov,
             float3.zero,
-            cp.Data.walkMaxLinSpd * interpValue,
-            cp.Data.walkYawSpd * interpValue,
-            cp.Data.walkLinAcc
+            cpData.walkMaxLinSpd * interpValue,
+            cpData.walkYawSpd * interpValue,
+            cpData.walkLinAcc
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (cp.Data.dodgeAllowed) {
+        if (cpData.dodgeAllowed) {
             if (InputBufferUtils.TryConsumeInput(
                 BufferableInput.BtnE,
-                ref cp.Data.inputBuffer_BufferedInput,
-                ref cp.Data.inputBuffer_RemainingTime)
+                ref cpData.inputBuffer_BufferedInput,
+                ref cpData.inputBuffer_RemainingTime)
             ) {
-                CpMgr.inst.SwitchActSt(() => classRefs.actSts.dodge.Enter(),cp.I);
+                CpMgr.inst.SwitchActSt(() => CpMgr.inst.aos[cp.I].classRefs.actSts.dodge.Enter(), cp.I);
                 return;
             }
         }

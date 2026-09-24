@@ -17,7 +17,6 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
 
     public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
-        cp.Data.act_AtkPhase = AtkPhase.Windup;
         InputBufferUtils.Clear(
             ref cp.Data.inputBuffer_BufferedInput,
             ref cp.Data.inputBuffer_RemainingTime

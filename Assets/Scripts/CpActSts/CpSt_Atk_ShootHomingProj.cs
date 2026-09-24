@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
-    // TODO: This should "combo" to windup or another shot. Currently combo node transition data is not used.
     IComboNode comboNode;
     CpHandle cp;
     HitEffects hitEffects;
@@ -29,7 +28,6 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.homingProjTgt = homingProjTgt;
-        cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             CpMgr.inst.aos[cp.I].unityObjs.anim,
@@ -43,38 +41,28 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
         ref Cp_Data cpData = ref cp.Data;
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (cpData.act_AtkPhase) {
-                    case AtkPhase.Windup:
-                        //Dbg.Log($"Cp {cp.I} fired finished windup", cpData.enableDbgMsgs);
-                        cpData.act_AtkPhase = AtkPhase.Recovery;
-                        HomingProjMgr.inst.ShootProj(
-                            homingProjData,
-                            // TODO: Build hit data in the projectile (since it can change direction).
-                            new HitData(
-                                hitEffects,
-                                cpData.team,
-                                HitDirMode.WldDir,
-                                null,
-                                projSpawnPose.forward
-                            ),
-                            new HashSet<IHitReceiver>{ cp.unityObjs.hitReciever },
-                            projSpawnPose.position,
-                            projSpawnPose.forward,
-                            homingProjTgt
-                        );
-                        AnimEventPlr.CrossfadeNInitAnimEventPlr(
-                            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                            CpMgr.inst.aos[cp.I].unityObjs.anim,
-                            CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Recovery)
-                        );
-                        break;
-                    case AtkPhase.Recovery:
-                        //Dbg.Log($"Cp {cp.I} fired finished recovery", cpData.enableDbgMsgs);
-                        CpUtils.TransitionToFallIdleOrWalk(cp.I);
-                        break;
-                    default:
-                        Debug.LogError($"Switch defaulted with {cpData.act_AtkPhase}");
-                        break;
+                //Dbg.Log($"Cp {cp.I} fired finished windup", cpData.enableDbgMsgs);
+                HomingProjMgr.inst.ShootProj(
+                    homingProjData,
+                    // TODO: Build hit data in the projectile (since it can change direction).
+                    new HitData(
+                        hitEffects,
+                        cpData.team,
+                        HitDirMode.WldDir,
+                        null,
+                        projSpawnPose.forward
+                    ),
+                    new HashSet<IHitReceiver>{ cp.unityObjs.hitReciever },
+                    projSpawnPose.position,
+                    projSpawnPose.forward,
+                    homingProjTgt
+                );
+                if (comboNode.GetNextNode(BufferableInput.None) != null) {
+                    CpMgr.inst.SwitchActSt(
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
+                        cp.I
+                    );
+                    return;
                 }
                 break;
             default:
@@ -84,32 +72,28 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
     }
 
     public void Tick() {
-        switch (cp.Data.act_AtkPhase) {
-            case AtkPhase.Windup:
-                //Dbg.Log($"Cp {cp.I} ticked windup", cp.Data.enableDbgMsgs);
-                CpUtils.UpdateMovInputData(
-                    cp.I,
-                    cp.Data.input_mov_LastNonZero,
-                    cp.Data.animDPos,
-                    0,
-                    180, // NOTE: Yaw speed is set here.
-                    float.PositiveInfinity
-                );
-                break;
-            case AtkPhase.Recovery:
-                //Dbg.Log($"Cp {cp.I} ticked recovery", cp.Data.enableDbgMsgs);
-                CpUtils.UpdateMovInputData(
-                    cp.I,
-                    cp.Data.input_mov_LastNonZero,
-                    cp.Data.animDPos,
-                    0,
-                    0,
-                    float.PositiveInfinity
-                );
-                break;
-            default:
-                Debug.LogError($"{cp.I} Switch defaulted with {cp.Data.act_AtkPhase}.");
-                break;
-        }
+        //Dbg.Log($"Cp {cp.I} ticked windup", cp.Data.enableDbgMsgs);
+        CpUtils.UpdateMovInputData(
+            cp.I,
+            cp.Data.input_mov_LastNonZero,
+            cp.Data.animDPos,
+            0,
+            180, // NOTE: Yaw speed is set here.
+            float.PositiveInfinity
+        );
+        //case AtkPhase.Recovery:
+        //    //Dbg.Log($"Cp {cp.I} ticked recovery", cp.Data.enableDbgMsgs);
+        //    CpUtils.UpdateMovInputData(
+        //        cp.I,
+        //        cp.Data.input_mov_LastNonZero,
+        //        cp.Data.animDPos,
+        //        0,
+        //        0,
+        //        float.PositiveInfinity
+        //    );
+        //    break;
+        //default:
+        //    Debug.LogError($"{cp.I} Switch defaulted with {cp.Data.act_AtkPhase}.");
+        //    break;
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
@@ -50,7 +49,7 @@ public struct AiCtrlData {
 }
 
 /// <summary>
-/// Grouped Animator state info used by <see cref="AnimEventPlr"/>.
+/// Grouped Animator state and animation event info used by <see cref="AnimEventPlr"/>.
 /// </summary>
 public struct AnimInfo {
     public int shortNameHash;
@@ -250,10 +249,10 @@ public struct Cp_ActSts {
 /// NOTE: When looping over SoA data, YOU MUST NOT REMOVE OR ADD NEW ENTITIES TO NOT CAUSE ERRORS WITH THE LOOP!! (10.9.2026) 
 /// </summary>
 public struct Cp_Data {
-    public AtkPhase act_AtkPhase;
     // NOTE: "act_" means action state specific data (11.9.2026)
     public float act_AtkFlying_TgtHorSpd;
     public float act_AtkJump_DownSpeedAfterJumpFinished;
+    public AtkPhase act_AtkPhase;
     public float act_Dodge_HorMovSpdMult;
     public float act_Dodge_YawSpd;
     public float act_Falling_HorAcc;
@@ -261,7 +260,6 @@ public struct Cp_Data {
     public float act_Falling_StartHgt;
     public float act_Falling_TgtHorSpd;
     public float act_BasicImpact_YawSpd;
-    public float act_BasicRecovery_MotInterpTimer;
     public float act_BasicWindup_MaxAngSpd;
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
@@ -320,7 +318,8 @@ public struct Cp_Data {
     public float2 input_mov_WhenLastSwitchedSt;
     public BufferableInput inputBuffer_BufferedInput;
     public float inputBuffer_RemainingTime;
-    public bool inputRotAllowed;
+    public bool yawAllowed;
+    public bool inputMovAllowed;
     /// <summary>
     /// Invulnerable (character ignores hits).
     /// </summary>

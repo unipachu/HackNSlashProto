@@ -11,7 +11,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         => true;
 
     public CpSt_Dodge Enter() {
-        cp.Data.inputRotAllowed = false;
+        cp.Data.yawAllowed = false;
         cp.Data.bufferedInputStSwitchAllowed = false;
         cp.Data.ignoreHits = true;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
@@ -29,7 +29,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
 
     public void Tick() {
         float angSpd = 0;
-        if (cp.Data.inputRotAllowed)
+        if (cp.Data.yawAllowed)
             angSpd = cp.Data.act_Dodge_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.I,

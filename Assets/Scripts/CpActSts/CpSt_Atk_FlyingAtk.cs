@@ -36,40 +36,40 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var cpData = cp.Data;
+        ref var cpData = ref cp.Data;
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                switch (cp.Data.act_AtkPhase) {
+                switch (cpData.act_AtkPhase) {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.aos[cp.I].animEventPlrData,
                             cpData.unityObjs.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
-                        cp.Data.act_AtkPhase = AtkPhase.Impact;
+                        cpData.act_AtkPhase = AtkPhase.Impact;
                         break;
                     case AtkPhase.Impact:
                         // NOTE: During impact we stop applying vertical animation root motion, and intead
                         // NOTE C: use gravity. Because of the animation logic however, the vertical movement
                         // NOTE C: caused by root motion is saved and used next tick as the starting downwards
                         // NOTE C: velocity when gravity acceleration is applied.
-                        cp.Data.isAffectedByGravity = true;
+                        cpData.isAffectedByGravity = true;
                         break;
                     case AtkPhase.Recovery:
                         CpUtils.TransitionToFallIdleOrWalk(cp.I);
                         break;
                     default:
-                        Debug.LogError($"Switch defaulted with {cp.Data.act_AtkPhase}");
+                        Debug.LogError($"Switch defaulted with {cpData.act_AtkPhase}");
                         break;
                 }
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.ResetNActivate(
-                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    cpData.unityObjs.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
-                    cp.Data.team
+                    cpData.team
                 );
                 break;
             default:
@@ -79,14 +79,14 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
     }
 
     public void Tick() {
-        Cp_UnityObjs unityComps = CpMgr.inst.aos[cp.I].unityObjs;
-        switch (cp.Data.act_AtkPhase) {
+        ref var cpData = ref cp.Data;
+        switch (cpData.act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(
                     cp.I,
-                    cp.Data.input_mov,
-                    cp.Data.animDPos,
-                    cp.Data.act_AtkFlying_TgtHorSpd,
+                    cpData.input_mov,
+                    cpData.animDPos,
+                    cpData.act_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
                 );
@@ -94,18 +94,18 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
             case AtkPhase.Impact:
                 CpUtils.UpdateMovInputData(
                     cp.I,
-                    cp.Data.input_mov,
-                    cp.Data.animDPos,
-                    cp.Data.act_AtkFlying_TgtHorSpd,
+                    cpData.input_mov,
+                    cpData.animDPos,
+                    cpData.act_AtkFlying_TgtHorSpd,
                     0,
                     float.PositiveInfinity
                 );
-                if (cp.Data.isGrounded) {
+                if (cpData.isGrounded) {
                     hitDealer.Deactivate();
-                    cp.Data.act_AtkPhase = AtkPhase.Recovery;
+                    cpData.act_AtkPhase = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                        unityComps.anim,
+                        cpData.unityObjs.anim,
                         CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Recovery)
                     );
                 }
@@ -121,7 +121,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 );
                 break;
             default:
-                Debug.LogError($"Switch defaulted with {cp.Data.act_AtkPhase}.");
+                Debug.LogError($"Switch defaulted with {cpData.act_AtkPhase}.");
                 break;
         }
     }
