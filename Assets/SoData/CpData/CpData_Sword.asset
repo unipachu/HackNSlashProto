@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpData_TestPistol
-  m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
+  m_Name: CpData_Sword
+  m_EditorClassIdentifier: Assembly-CSharp::So_CpData
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
   walkTgtHorSpd: 5
   walkYawSpd: 1000
   inputBufferDuration: 0.3
-  maxHP: 3
-  rHandItem: 1
+  maxHP: 2
+  rHandItem: 2
   team: 1
   enableDebugMsgs: 0
   st_AtkFlying_TgtHorSpeed: 2
   st_AtkJump_DownSpeedAfterJumpFinished: 10
   st_AtkHorSlash_Windup_YawSpd: 1000
-  st_Falling_LandingStFallDistThreshold: 3
+  st_Falling_LandingStFallDistThreshold: 2
   st_Falling_HorAcc: 10
   st_Falling_TgtHorSpd: 1
   st_Dodge_YawAngSpd: 400

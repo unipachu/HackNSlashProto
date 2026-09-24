@@ -7,8 +7,6 @@ using UnityEngine.AI;
 /// Capsule pawn general util methods. Consider organizing these better!
 /// </summary>
 public static class CpUtils{
-
-
     /// <summary>
     /// Finds next state to transition to based on input and held items. Returns null if no applicable
     /// state found.<br/>

@@ -28,8 +28,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4470678986349354851}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4470678986349354851}
   - component: {fileID: 7907835997315998730}
-  - component: {fileID: 5524437158675313570}
+  - component: {fileID: 9036740002409670725}
   m_Layer: 0
   m_Name: HomingProj
   m_TagString: Untagged
@@ -117,7 +117,7 @@ Transform:
   m_GameObject: {fileID: 8511137120282664907}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 20.21, y: 22.68, z: 0.17}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -136,8 +136,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04c9573a189c0bf4f8e703e14b9e9d6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HomingProj
-  hitDealer: {fileID: 5524437158675313570}
---- !u!114 &5524437158675313570
+  hitDealer: {fileID: 9036740002409670725}
+  poolI: 0
+--- !u!114 &9036740002409670725
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -146,14 +147,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8511137120282664907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033c107452eefb04abfba421a25e8263, type: 3}
+  m_Script: {fileID: 11500000, guid: e3b8976603a9f74428967cd11f346a7f, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitDealer
-  capsules:
-  - pt0: {x: 0, y: 0, z: 0}
-    pt1: {x: 0, y: 0, z: 0}
-    r: 0.25
-  capsuleLayerMask:
+  m_EditorClassIdentifier: Assembly-CSharp::HitDealer_SphereCast
+  sphere:
+    center: {x: 0, y: 0, z: 0}
+    r: 0.5
+  sphereLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  maxColliders: 100

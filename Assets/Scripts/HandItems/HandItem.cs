@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class HandItem : MonoBehaviour {
-    public HitDealer hitDealer;
-    public HitDealer aoeHitDealer;
+    public HitDealer_CapsuleSubstepper hitDealer;
+    public HitDealer_CapsuleSubstepper aoeHitDealer;
     public Transform projSpawnPose;
 }

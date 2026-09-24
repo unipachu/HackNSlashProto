@@ -179,13 +179,6 @@ public struct BtNodeDataOld {
     public BtNodeT t;
 }
 
-[Obsolete]
-public struct  BtNodeConfig {
-    public string dbgName;
-    public BtNodeT t;
-    public List<BtNodeConfig> children;
-}
-
 [Serializable]
 public struct CapsuleShape {
     public Vector3 pt0;
@@ -547,6 +540,17 @@ public struct MeleeWeaponData {
         this.atk0Dmg = atk0Dmg;
         this.atk1Dmg = atk1Dmg;
         this.atk2Dmg = atk2Dmg;
+    }
+}
+
+[Serializable]
+public struct SphereShape {
+    public Vector3 center;
+    public float r;
+
+    public SphereShape(Vector3 center, float r) {
+        this.center = center;
+        this.r = r;
     }
 }
 

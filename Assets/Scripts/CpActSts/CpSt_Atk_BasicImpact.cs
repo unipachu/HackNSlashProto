@@ -4,14 +4,18 @@ using UnityEngine;
 public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
     IComboNode comboNode;
     CpHandle cp;
-    HitDealer hitDealer;
+    IHitDealer hitDealer;
     HitEffects hitEffects;
 
     public CpSt_Atk_BasicImpact(CpHandle cp) {
         this.cp = cp;
     }
 
-    public CpSt_Atk_BasicImpact Enter(HitEffects hitEffects, IComboNode comboNode, HitDealer hitDealer) {
+    public CpSt_Atk_BasicImpact Enter(
+        HitEffects hitEffects,
+        IComboNode comboNode,
+        IHitDealer hitDealer
+    ) {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;

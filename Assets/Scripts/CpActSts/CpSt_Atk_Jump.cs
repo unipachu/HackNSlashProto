@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CpSt_Atk_Jump : IFsmSt_Cp {
     CpHandle cp;
-    HitDealer hitDealer;
+    IHitDealer hitDealer;
     HitEffects hitEffects;
 
     public CpSt_Atk_Jump(CpHandle cp) {
@@ -14,7 +14,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => typeof(TState) == typeof(CpSt_Falling) ? false : true;
 
-    public CpSt_Atk_Jump Enter(HitEffects hitEffects, HitDealer hitDealer) {
+    public CpSt_Atk_Jump Enter(HitEffects hitEffects, IHitDealer hitDealer) {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(

@@ -153,8 +153,6 @@ public enum KnockbackT : byte {
 }
 
 public enum PawnTeam : byte {
-    EnemyToAll,
-    FriendToAll,
     /// <summary>
     /// Default local player team.
     /// </summary>
@@ -165,6 +163,8 @@ public enum PawnTeam : byte {
     Team1,
     Team2,
     Team3,
+    EnemyToAll,
+    FriendToAll,
 }
 
 public enum Side : byte {

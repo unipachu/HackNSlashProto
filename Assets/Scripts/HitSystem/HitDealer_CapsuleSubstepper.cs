@@ -2,20 +2,21 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Add ICollisisionShapeHitDealer which implements the public methods. Then rename this to HitDealer_CapsuleSubstepper or similar.
-public class HitDealer : MonoBehaviour {
+/// <summary>
+/// Hit dealer using 
+/// </summary>
+public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     /// <summary>
     /// Param contains all <see cref="HitResult"/>s from one update.
     /// </summary>
     public event Action<HashSet<HitResult>> hitSomething;
 
     /// <summary>
-    /// Capsule shapes in local space.
+    /// Capsule shapes (or spheres) in local space.
     /// </summary>
     [SerializeField] CapsuleShape[] capsules = { };
-    [SerializeField] LayerMask capsuleLayerMask = Physics.AllLayers;
-    [Tooltip("Max colliders a phys query can save during one query.")]
-    [SerializeField] int maxOverlapCapsuleResults = 256;
+    [Tooltip("Set this always to the HitReciever layer!")]
+    [SerializeField] LayerMask capsuleLayerMask;
 
     CapsuleShape[] prevCapsuleWldPoses;
     HitEffects hitEffects;
@@ -110,8 +111,9 @@ public class HitDealer : MonoBehaviour {
     }
 
     /// <summary>
-    /// Call this when you want to activate the hit capsule. This can also be called when hit capsule is
-    /// already activated - it will then act as if it started the activation from the beginning.
+    /// Call this method when you want to activate the hit capsule. This can
+    /// also be called when hit capsule is already activated - it will then act as if it started the activation
+    /// from the beginning.
     /// </summary>
     /// <param name="hitSource">
     /// Used to calculate hit dir if using <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>.
@@ -127,7 +129,7 @@ public class HitDealer : MonoBehaviour {
         PawnTeam team
     ) {
         Dbg.Log(
-            $"{nameof(HitDealer)} was already active when {nameof(ResetNActivate)} was called. This"
+            $"{nameof(HitDealer_CapsuleSubstepper)} was already active when {nameof(ResetNActivate)} was called. This"
                 + $"should be fine, so ignore this message!",
             this,
             isActive
@@ -137,9 +139,9 @@ public class HitDealer : MonoBehaviour {
         this.hitSource = hitSource;
         this.team = team;
         ignoredHitRecievers.Clear();
-        // NOTE: We set the initial capsule world locations. During the first update of the hit dealer,
-        // NOTE C: there should be no substepped capsules since previous capsule positions equal to the
-        // NOTE C: current ones. (24.9.2026) 
+        // NOTE: Animation events calling this method should be fired in LateUpdate but before this classes
+        // NOTE C: LateUpdate is called. Then the initial positions of the hit capsules will
+        // NOTE C: be correctly processed.
         for (int capsuleI = 0; capsuleI < capsules.Length; capsuleI++) {
             CapsuleShape capsule = capsules[capsuleI];
             // Transform capsule into world space.
@@ -172,7 +174,7 @@ public class HitDealer : MonoBehaviour {
         float prevAxisLen = prevAxis.magnitude;
         float curAxisLen = curAxis.magnitude;
         float angDist = 0f;
-        // If capsule axis is 0, we cannot calculate angle.
+        // If capsule axis is 0 (a sphere instead of a capsule), we cannot calculate angle.
         if (prevAxisLen > Mathf.Epsilon && curAxisLen > Mathf.Epsilon)
             angDist = Vector3.Angle(prevAxis, curAxis);
         int numSubsteps = Mathf.Max(
@@ -183,6 +185,7 @@ public class HitDealer : MonoBehaviour {
             ))
         );
         Quaternion axisRot = Quaternion.identity;
+        // If capsule axis is 0 (a sphere instead of a capsule), we consider rotation to be identity.
         if (prevAxisLen > Mathf.Epsilon && curAxisLen > Mathf.Epsilon)
             axisRot = Quaternion.FromToRotation(prevAxis, curAxis);
         // NOTE: The last substep is the cur pose of the capsule.

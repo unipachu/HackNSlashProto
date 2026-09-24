@@ -226,12 +226,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1d74ecfbc5336f043b65c8cfdeb30013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicMeleeWeapon
+  comboGraphConfig: {fileID: 11400000, guid: d1ec75a1036a5b748aec2a2c07c9b000, type: 2}
+  hitDealer: {fileID: 1738826683922648006}
   hitEffects:
     dmg: 1
     knockbackT: 1
     knockbackStr: 1
-  hitDealer: {fileID: 1738826683922648006}
-  comboGraphConfig: {fileID: 11400000, guid: d1ec75a1036a5b748aec2a2c07c9b000, type: 2}
 --- !u!1 &5723746665550441109
 GameObject:
   m_ObjectHideFlags: 0
@@ -273,7 +273,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5723746665550441109}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 033c107452eefb04abfba421a25e8263, type: 3}
+  m_Script: {fileID: 11500000, guid: e0caf341974dd7945a49cf11187dabcb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HitDealer
   capsules:
@@ -286,12 +286,6 @@ MonoBehaviour:
   capsuleLayerMask:
     serializedVersion: 2
     m_Bits: 512
-  maxColliders: 10
-  hitEffects:
-    dmg: 0
-    knockbackT: 0
-    knockbackStr: 0
-  hitWldDir: {x: 0, y: 0, z: 0}
 --- !u!1 &7164331942654089889
 GameObject:
   m_ObjectHideFlags: 0
