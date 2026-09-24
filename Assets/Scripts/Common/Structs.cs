@@ -507,12 +507,15 @@ public struct HitEffects {
 }
 
 public struct HitResult {
-    public IHitReceiver hitReceiver;
+    /// <summary>
+    /// All hit recievers owned by the hit entity. Can be used to ignore them from further hits.
+    /// </summary>
+    public IHitReceiver[] allEntityHitReceivers;
     public bool hitIgnored;
     public bool wasBlocked;
 
-    public HitResult(IHitReceiver hitReceiver, bool hitIgnored, bool wasBlocked) {
-        this.hitReceiver = hitReceiver;
+    public HitResult(IHitReceiver[] allEntityHitReceivers, bool hitIgnored, bool wasBlocked) {
+        this.allEntityHitReceivers = allEntityHitReceivers;
         this.hitIgnored = hitIgnored;
         this.wasBlocked = wasBlocked;
     }

@@ -215,7 +215,7 @@ public class HitDealer : MonoBehaviour {
             );
             foreach (HitResult hitResult in hitResults) {
                 allHits.Add(hitResult);
-                ignoredHitRecievers.Add(hitResult.hitReceiver);
+                ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
             }
         }
     }

@@ -34,7 +34,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         cp.I
                     )
                 )
-                    return new(this, false, false);
+                    return new(new IHitReceiver[] { this }, false, false);
             }
             aos.lastRecievedHitDir = hitData.wldDir;
             aos.lastKnockbackStr = hitData.effects.knockbackStr;
@@ -71,6 +71,6 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
             }
         }
-        return new(this, aos.ignoreHits, false);
+        return new(new IHitReceiver[] { this }, aos.ignoreHits, false);
     }
 }
