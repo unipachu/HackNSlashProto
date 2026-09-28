@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
-    IHandItem_Hitter hitter;
     IHandItem_ProjectileSpawner projSpawner;
 
     public AnimInfo AnimInfo { get; }
@@ -10,13 +9,6 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
 
     public ComboNode_ShootProj(UnityEngine.Object handItemCtx, CpAnimInfoT animInfoT) {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
-        IHandItem_Hitter handItem_HitDealer = (IHandItem_Hitter)handItemCtx;
-        Debug.Assert(
-            handItem_HitDealer != null,
-            $"{handItemCtx.name} didn't implement {nameof(IHandItem_Hitter)}",
-            handItemCtx
-        );
-        this.hitter = handItem_HitDealer;
         IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)handItemCtx;
         Debug.Assert(
             projSpawner != null,
@@ -28,11 +20,12 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
 
     public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
         ComboNode_ShootProj thisNode = this;
-        return () => CpMgr.inst.aos[cpI].classRefs.actSts.atk_ShootHomingProj.Enter(
+        return () => CpMgr.inst.aos[cpI].classRefs.actSts.comboBranch_ShootHomingProj.Enter(
             thisNode,
-            thisNode.hitter.HitEffects,
+            thisNode.projSpawner.ProjHitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
+            thisNode.projSpawner.ProjT,
             CpMgr.inst.aos[cpI].classRefs.lockOnTgt.LockOnTrf
         );
     }

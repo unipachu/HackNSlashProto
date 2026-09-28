@@ -69,7 +69,8 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
-                    cpData.team
+                    cpData.team,
+                    Vector3.zero
                 );
                 break;
             default:

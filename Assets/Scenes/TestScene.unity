@@ -7636,6 +7636,53 @@ MonoBehaviour:
       Wait: 1
       Time: 2
     Restrictions: 0
+--- !u!1 &1732218849
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1732218851}
+  - component: {fileID: 1732218850}
+  m_Layer: 0
+  m_Name: ProjPool
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1732218850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732218849}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3febfd418337da74aae57adefbbe3251, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ProjPools
+  initialPoolAmount: 1
+  rayProjPrefab: {fileID: 3605874631302619221, guid: 309dcd476b5e76a43885c7dbea4dce67, type: 3}
+  sphereProjPrefab: {fileID: 7907835997315998730, guid: 9208ca19f08efe34eb8acb508ec5e151, type: 3}
+--- !u!4 &1732218851
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1732218849}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1745552594
 GameObject:
   m_ObjectHideFlags: 0
@@ -7711,7 +7758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: 58da4f9a0e7fb294cbcd23bd76d0054c, type: 2}
+  waveConfig: {fileID: 11400000, guid: 64f6a0f4b63feee4fab3a90c362d6497, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}
@@ -7984,8 +8031,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79b76106d724f9a478953d4b0e8718bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HomingProjMgr
-  homingProjPrefab: {fileID: 7907835997315998730, guid: 9208ca19f08efe34eb8acb508ec5e151, type: 3}
-  numOfPooledProj: 10
+  initCapacity: 10
 --- !u!4 &1861722109
 Transform:
   m_ObjectHideFlags: 0
@@ -9447,6 +9493,7 @@ SceneRoots:
   - {fileID: 404265975}
   - {fileID: 1861722109}
   - {fileID: 83296389}
+  - {fileID: 1732218851}
   - {fileID: 222021722}
   - {fileID: 1607186510}
   - {fileID: 832575519}

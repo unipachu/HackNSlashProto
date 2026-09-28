@@ -1,21 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// Basic branching combo state. Basically any combo move that doesn't have any extra functionality (in
-/// addition to the animation events) except to switch to next combo node (by input or by animation events).
+/// NOTE: The name of this is not very descriptive. This will use last non zero movement input to yaw the
+/// character but target hor movement is 0. So input still works for rotation.
 /// </summary>
-public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
+public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
     CpHandle cp;
     IComboNode comboNode;
 
-    public CpSt_Atk_BasicBranch(CpHandle cp) {
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir(CpHandle cp) {
         this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_Atk_BasicBranch Enter(IComboNode comboNode) {
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir Enter(IComboNode comboNode) {
         this.comboNode = comboNode;
         InputBufferUtils.Clear(
             ref cp.Data.inputBuffer_BufferedInput,
@@ -49,18 +49,23 @@ public class CpSt_Atk_BasicBranch : IFsmSt_Cp {
     }
 
     public void Tick() {
+        ref var cpData = ref cp.Data;
+        //Dbg.Log(
+        //    $"Cp {cp.I}: {nameof(cpData.act_BasicWindup_MaxAngSpd)}: {cpData.act_BasicWindup_MaxAngSpd}",
+        //    cpData.enableDbgMsgs
+        //);
         CpUtils.UpdateMovInputData(
             cp.I,
-            cp.Data.input_mov_WhenLastSwitchedSt,
-            cp.Data.animDPos,
+            cp.Data.input_mov_LastNonZero,
+            cpData.animDPos,
             0,
-            cp.Data.act_BasicWindup_MaxAngSpd,
+            cpData.act_BasicWindup_MaxAngSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (cp.Data.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
+        if (cpData.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
             return;
     }
 }

@@ -50,7 +50,8 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
-                    cp.Data.team
+                    cp.Data.team,
+                    Vector3.zero
                 );
                 break;
             case CpAnimEventT.HitDealerDeactivated:

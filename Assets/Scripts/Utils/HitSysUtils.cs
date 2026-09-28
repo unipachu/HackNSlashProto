@@ -189,4 +189,49 @@ public static class HitSysUtils {
             numHits
         );
     }
+
+    /// <summary>
+    /// Uses a <see cref="Physics.RaycastNonAlloc"/> from <paramref name="prevWldPt"/> to
+    /// <paramref name="curWldPt"/> to try and hit <see cref="IHitReceiver"/>s.
+    /// </summary>
+    /// <param name="hitMaxOnce">
+    /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
+    /// </param>
+    /// <param name="allowFriendlyFire">
+    /// Should allow hits that would be otherwise permitted by <see cref="PawnTeam"/> setup?
+    /// </param>
+    public static HashSet<HitResult> TryHitHitRecievers_Raycast(
+        HitData hitData,
+        bool hitMaxOnce,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        int layerMask,
+        Vector3 prevWldPt,
+        Vector3 curWldPt,
+        bool allowFriendlyFire = false,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        Vector3 castDir = curWldPt - prevWldPt;
+        float castDist = castDir.magnitude;
+        if (castDist <= Mathf.Epsilon)
+            return new HashSet<HitResult>(4);
+        // Normalize dir. Not sure if necessary for the raycast but jic.
+        castDir /= castDist;
+        RaycastHit[] RaycastResults = new RaycastHit[overlapResultsArraySize];
+        int numHits = Physics.RaycastNonAlloc(
+            prevWldPt,
+            castDir,
+            RaycastResults,
+            castDist,
+            layerMask,
+            qryTrgIxn
+        );
+        return ProcessCollisionQueryResults(
+            hitData,
+            hitMaxOnce,
+            ignoreHitRecievers,
+            allowFriendlyFire,
+            RaycastResults,
+            numHits
+        );
+    }
 }

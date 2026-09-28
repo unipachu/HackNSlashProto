@@ -21,11 +21,17 @@ public static class ComboGraphFactory{
                 case ComboNodeConfigT.BasicRecovery:
                     nodeList.Add(new ComboNode_BasicRecovery(nodes[i].animInfo));
                     break;
-                case ComboNodeConfigT.BasicBranch:
-                    nodeList.Add(new ComboNode_BasicBranch(nodes[i].animInfo));
+                case ComboNodeConfigT.RotateToWhenLastSwitchedStInputDir:
+                    nodeList.Add(new ComboNode_RotateToWhenLastSwitchedStInputDir(nodes[i].animInfo));
+                    break;
+                case ComboNodeConfigT.RotateToLastNonZeroInputDir:
+                    nodeList.Add(new ComboNode_RotateToLastNonZeroInput(nodes[i].animInfo));
                     break;
                 case ComboNodeConfigT.ShootProj:
                     nodeList.Add(new ComboNode_ShootProj(ctx, nodes[i].animInfo));
+                    break;
+                case ComboNodeConfigT.LaserAimNShootProj:
+                    nodeList.Add(new ComboNode_LaserAimNShootProj(ctx, nodes[i].animInfo));
                     break;
                 default:
                     Debug.LogError($"Defaulted with {nodes[i].t}.");

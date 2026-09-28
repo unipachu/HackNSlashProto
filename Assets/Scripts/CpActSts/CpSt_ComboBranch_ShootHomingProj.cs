@@ -1,32 +1,35 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
+public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
     IComboNode comboNode;
     CpHandle cp;
     HitEffects hitEffects;
     HomingProjData homingProjData;
     Transform projSpawnPose;
+    ProjT projT;
     Transform homingProjTgt;
 
-    public CpSt_Atk_ShootHomingProj(CpHandle cp) {
+    public CpSt_ComboBranch_ShootHomingProj(CpHandle cp) {
         this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_Atk_ShootHomingProj Enter(
+    public CpSt_ComboBranch_ShootHomingProj Enter(
         IComboNode comboNode,
         HitEffects hitEffects,
         HomingProjData homingProjData,
         Transform projSpawnPose,
+        ProjT projT,
         Transform homingProjTgt
     ) {
         this.comboNode = comboNode;
         this.hitEffects = hitEffects;
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
+        this.projT = projT;
         this.homingProjTgt = homingProjTgt;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
@@ -43,19 +46,15 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
             case CpAnimEventT.Finished:
                 //Dbg.Log($"Cp {cp.I} fired finished windup", cpData.enableDbgMsgs);
                 HomingProjMgr.inst.ShootProj(
+                    HitDirMode.WldDir,
+                    hitEffects,
                     homingProjData,
-                    // TODO: Build hit data in the projectile (since it can change direction).
-                    new HitData(
-                        hitEffects,
-                        cpData.team,
-                        HitDirMode.WldDir,
-                        null,
-                        projSpawnPose.forward
-                    ),
+                    projT,
                     new HashSet<IHitReceiver>{ cp.unityObjs.hitReciever },
+                    homingProjTgt,
+                    cpData.team,
                     projSpawnPose.position,
-                    projSpawnPose.forward,
-                    homingProjTgt
+                    projSpawnPose.forward
                 );
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
                     CpMgr.inst.SwitchActSt(
@@ -78,22 +77,8 @@ public class CpSt_Atk_ShootHomingProj : IFsmSt_Cp{
             cp.Data.input_mov_LastNonZero,
             cp.Data.animDPos,
             0,
-            180, // NOTE: Yaw speed is set here.
+            180, // NOTE: Yaw speed is set here. TODO: So
             float.PositiveInfinity
         );
-        //case AtkPhase.Recovery:
-        //    //Dbg.Log($"Cp {cp.I} ticked recovery", cp.Data.enableDbgMsgs);
-        //    CpUtils.UpdateMovInputData(
-        //        cp.I,
-        //        cp.Data.input_mov_LastNonZero,
-        //        cp.Data.animDPos,
-        //        0,
-        //        0,
-        //        float.PositiveInfinity
-        //    );
-        //    break;
-        //default:
-        //    Debug.LogError($"{cp.I} Switch defaulted with {cp.Data.act_AtkPhase}.");
-        //    break;
     }
 }

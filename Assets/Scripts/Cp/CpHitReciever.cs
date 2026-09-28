@@ -3,6 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Resolves recieved hits foe a capsule pawn.
 /// </summary>
+// TODO MAYBE: IHitRecievers should probably share some logic.
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 

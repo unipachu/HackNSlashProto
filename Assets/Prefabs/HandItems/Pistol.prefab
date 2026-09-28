@@ -799,12 +799,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BasicGun
   comboGraphConfig: {fileID: 11400000, guid: 11275182d38a78c49b2bef14d3d22db8, type: 2}
   meleeHitDealer: {fileID: 5092167040023849340}
-  hitEffects:
+  meleeHitEffects:
+    dmg: 1
+    knockbackT: 1
+    knockbackStr: 1
+  projHitEffects:
     dmg: 1
     knockbackT: 1
     knockbackStr: 1
   homingProjData:
     spd: 10
     maxLifetime: 4
-    homingStr: 1
+    homingStr: 2
   projSpawnPose: {fileID: 4093082790708201532}
+  projT: 1

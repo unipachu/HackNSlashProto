@@ -123,6 +123,7 @@ public static class CpUtils{
     /// NOTE: controller inputs do not directly affect movement data - instead they're read by the action
     /// state of the pawn which then sends inputs to the movement system with this method.
     /// </summary>
+    // You could combine tgtHorDir and tgtHorSpd to tgtHorVel
     public static void UpdateMovInputData(
         int cpI,
         float2 tgtHorDir,

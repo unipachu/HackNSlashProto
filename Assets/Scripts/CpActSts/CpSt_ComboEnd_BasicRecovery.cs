@@ -6,21 +6,21 @@ using UnityEngine;
 /// NOTE: Recovery action cannot be interrupted by input! If that's what you want, then use some other
 /// NOTE C: action e.g. BasicImpact. (6.9.2026)
 /// </summary>
-public class CpSt_Atk_BasicRecovery : IFsmSt_Cp {
+public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
     CpHandle cp;
     /// <summary>
     /// Normalized animation time when <see cref="Cp_Data.inputMovAllowed"/> is first read as true in Tick().
     /// </summary>
     float inputMovAllowedNrmTime;
 
-    public CpSt_Atk_BasicRecovery(CpHandle cp) {
+    public CpSt_ComboEnd_BasicRecovery(CpHandle cp) {
         this.cp = cp;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_Atk_BasicRecovery Enter(AnimInfo animInfo) {
+    public CpSt_ComboEnd_BasicRecovery Enter(AnimInfo animInfo) {
         ref var cpData = ref cp.Data;
         inputMovAllowedNrmTime = -1;
         cpData.comboAllowed = false;

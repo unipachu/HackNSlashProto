@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Hit dealer using 
+/// Hit dealer using one or more capsules. Substeps capsule poses between updates.
 /// </summary>
+// TODO: IHitDealers have similar logic, they could prbably be combined.
 public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     /// <summary>
     /// Param contains all <see cref="HitResult"/>s from one update.
@@ -18,7 +19,8 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     [Tooltip("Set this always to the HitReciever layer!")]
     [SerializeField] LayerMask capsuleLayerMask;
 
-    CapsuleShape[] prevCapsuleWldPoses;
+    List<CapsuleShape> dbgPrevSubsteppedWldCapsules = new(4);
+    HitDirMode hitDirMode;
     HitEffects hitEffects;
     Transform hitSource;
     /// <summary>
@@ -28,10 +30,11 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     // TODO MAYBE C: for less indirection and heap allocation but what ever.
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
     bool isActive;
+    CapsuleShape[] prevCapsuleWldPoses;
     PawnTeam team;
-    List<CapsuleShape> dbgPrevSubsteppedWldCapsules = new(4);
 
     public bool IsActive => isActive;
+    public Vector3 WldDir { get; set; }
 
     /// <summary>
     /// If the pt0 of a hit capsule linearily moves this much away from the previous substepped hitcapsule,
@@ -64,10 +67,9 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
                 var hitData = new HitData(
                     hitEffects,
                     team,
-                    // NOTE: This always uses HitDirMode.FromHitSourceTrfToHitReciever.
-                    HitDirMode.FromHitSourceTrfToHitReciever,
+                    hitDirMode,
                     hitSource,
-                    Vector3.zero
+                    WldDir
                 );
                 SubstepHitCapsules(allHits, capsule, prevCapsuleWldPoses[capsuleI], hitData);
                 prevCapsuleWldPoses[capsuleI] = capsule;
@@ -126,7 +128,8 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team
+        PawnTeam team,
+        Vector3 wldDir
     ) {
         Dbg.Log(
             $"{nameof(HitDealer_CapsuleSubstepper)} was already active when {nameof(ResetNActivate)} was called. This"
@@ -135,9 +138,11 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
             isActive
         );
         isActive = true;
+        this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
         this.hitSource = hitSource;
         this.team = team;
+        WldDir = wldDir;
         ignoredHitRecievers.Clear();
         // NOTE: Animation events calling this method should be fired in LateUpdate but before this classes
         // NOTE C: LateUpdate is called. Then the initial positions of the hit capsules will

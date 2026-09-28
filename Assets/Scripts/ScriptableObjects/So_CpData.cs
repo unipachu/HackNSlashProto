@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "CpData_", menuName = "Scriptable Object Data/CpData")]
+// TODO: Rename to So_CpConfig
 public class So_CpData : ScriptableObject {
     [Header("Capsule pawn base data."
         + "\nNOTE: State specific data starts with \"St_[state name]_\".")]

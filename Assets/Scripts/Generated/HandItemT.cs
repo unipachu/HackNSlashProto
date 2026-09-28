@@ -3,5 +3,6 @@
 public enum HandItemT : byte {
     Hammer = 0,
     Pistol = 1,
-    Sword = 2,
+    Sniper = 2,
+    Sword = 3,
 }

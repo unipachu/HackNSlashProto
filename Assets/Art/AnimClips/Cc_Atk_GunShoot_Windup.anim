@@ -78,7 +78,7 @@ AnimationClip:
         outWeight: {x: 0.33333334, y: 0.33333334, z: 0.33333334}
       - serializedVersion: 3
         time: 1
-        value: {x: -90.179, y: -53.162994, z: 121.3}
+        value: {x: -95.14, y: 67.061, z: 1.6690063}
         inSlope: {x: -0.51322997, y: 0, z: 0}
         outSlope: {x: -0.51322997, y: 0, z: 0}
         tangentMode: 0
@@ -928,7 +928,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: -90.179
+        value: -95.14
         inSlope: -0.51322997
         outSlope: -0.51322997
         tangentMode: 0
@@ -958,7 +958,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: -53.162994
+        value: 67.061
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -988,7 +988,7 @@ AnimationClip:
         outWeight: 0.33333334
       - serializedVersion: 3
         time: 1
-        value: 121.3
+        value: 1.6690063
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -1012,7 +1012,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: HipBone/HandHolderR/HandR
+    path: HipBone/HandHolderR
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1024,7 +1024,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: HipBone/HandHolderR/HandR
+    path: HipBone/HandHolderR
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1036,7 +1036,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: HipBone/HandHolderR/HandR
+    path: HipBone/HandHolderR
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1084,7 +1084,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: HipBone/HandHolderR
+    path: HipBone/HandHolderR/HandR
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1096,7 +1096,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: HipBone/HandHolderR
+    path: HipBone/HandHolderR/HandR
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -1108,7 +1108,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: HipBone/HandHolderR
+    path: HipBone/HandHolderR/HandR
     classID: 4
     script: {fileID: 0}
     flags: 0

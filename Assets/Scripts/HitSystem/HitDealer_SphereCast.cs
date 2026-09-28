@@ -22,7 +22,8 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
 
     SphereShape dbgPrevSphereWld;
     SphereShape dbgCurSphereWld;
-    SphereShape prevSphereWld;
+    bool firstTickAfterActivation;
+    HitDirMode hitDirMode;
     HitEffects hitEffects;
     Transform hitSource;
     /// <summary>
@@ -30,10 +31,11 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
     /// </summary>
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
     bool isActive;
-    bool firstTickAfterActivation;
+    SphereShape prevSphereWld;
     PawnTeam team;
 
     public bool IsActive => isActive;
+    public Vector3 WldDir { get; set; }
 
     // ------------------------------------------------------------------
     // Unity Callbacks
@@ -48,9 +50,9 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         var hitData = new HitData(
             hitEffects,
             team,
-            HitDirMode.FromHitSourceTrfToHitReciever,
+            hitDirMode,
             hitSource,
-            Vector3.zero
+            WldDir
         );
         if (firstTickAfterActivation) {
             ProcessInitialHitSphere(allHits, curWldSphere, hitData);
@@ -142,7 +144,8 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team
+        PawnTeam team,
+        Vector3 wldDir
     ) {
         Dbg.Log(
             $"{nameof(HitDealer_SphereCast)} was already active when {nameof(ResetNActivate)} was called. This"
@@ -152,9 +155,11 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         );
         isActive = true;
         firstTickAfterActivation = true;
+        this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
         this.hitSource = hitSource;
         this.team = team;
+        WldDir = wldDir;
         ignoredHitRecievers.Clear();
         SphereShape curWldSphere = sphere;
         curWldSphere.center = curWldSphere.center.TrfPtUnscaled(transform);

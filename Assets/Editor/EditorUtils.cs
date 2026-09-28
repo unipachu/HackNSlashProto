@@ -26,6 +26,8 @@ public static class EditorUtils {
         EditorUtility.SetDirty(catalog);
     }
 
+    // TODO: The numbering of old enum members should stay the same after the enum is modified and regenerated.
+    // TODO C: Previously nonexistent enum names should take the first number value available.
     public static void GenerateEnum(List<GameObject> items, string enumName, string enumPath) {
         string directory = Path.GetDirectoryName(enumPath);
         // NOTE: Creates directory if path doesn't exist!

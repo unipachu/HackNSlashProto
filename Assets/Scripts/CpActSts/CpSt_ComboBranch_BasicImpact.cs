@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
+public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
     IComboNode comboNode;
     CpHandle cp;
     IHitDealer hitDealer;
     HitEffects hitEffects;
 
-    public CpSt_Atk_BasicImpact(CpHandle cp) {
+    public CpSt_ComboBranch_BasicImpact(CpHandle cp) {
         this.cp = cp;
     }
 
-    public CpSt_Atk_BasicImpact Enter(
+    public CpSt_ComboBranch_BasicImpact Enter(
         HitEffects hitEffects,
         IComboNode comboNode,
         IHitDealer hitDealer
@@ -55,7 +55,8 @@ public class CpSt_Atk_BasicImpact : IFsmSt_Cp {
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver>{cp.unityObjs.hitReciever},
-                    cp.Data.team
+                    cp.Data.team,
+                    Vector3.zero
                 );
                 break;
             case CpAnimEventT.HitDealerDeactivated:

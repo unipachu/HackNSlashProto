@@ -14,35 +14,35 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::So_ComboGraph
   nodes:
   - t: 2
-    animInfo: 7
+    animInfo: 8
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 1
     node_RShldr: 255
     node_RTrg: 255
   - t: 0
-    animInfo: 5
+    animInfo: 6
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 2
     node_RShldr: 3
     node_RTrg: 255
   - t: 1
-    animInfo: 6
+    animInfo: 7
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 255
     node_RShldr: 255
     node_RTrg: 255
   - t: 0
-    animInfo: 8
+    animInfo: 9
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 4
     node_RShldr: 5
     node_RTrg: 255
   - t: 1
-    animInfo: 9
+    animInfo: 10
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 255

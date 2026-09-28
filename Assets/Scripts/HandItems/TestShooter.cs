@@ -14,10 +14,10 @@ public class TestShooter : MonoBehaviour {
     [SerializeField] Transform plr;
 
     float timer = 0;
-    HomingProjData projData;
+    HomingProjData homingProjData;
 
     private void Awake() {
-        projData = new(spd, maxLifetime, homingStr);
+        homingProjData = new(spd, maxLifetime, homingStr);
     }
 
     void Update(){
@@ -27,19 +27,16 @@ public class TestShooter : MonoBehaviour {
         if(timer > shootInterval) {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
-                projData,
-                // TODO: Build hit data in the projectile (since it can change direction).
-                new HitData(
-                    hitEffects,
-                    team,
-                    HitDirMode.WldDir,
-                    null,
-                    (plr.position - transform.position).normalized
-                ),
+                HitDirMode.WldDir,
+                hitEffects,
+                homingProjData,
+                ProjT.SphereProj,
                 null,
+                null,
+                team,
                 transform.position,
-                (plr.position - transform.position).normalized,
-                plr);
+                (plr.position - transform.position).normalized
+            );
         }
     }
 }

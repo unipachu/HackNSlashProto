@@ -215,12 +215,15 @@ public struct ComboNode_Transitions {
 /// </summary>
 public struct Cp_ActSts {
     public CpSt_Death death;
-    public CpSt_Atk_BasicImpact atk_BasicImpact;
-    public CpSt_Atk_BasicBranch atk_BasicBranch;
-    public CpSt_Atk_BasicRecovery atk_BasicRecovery;
     public CpSt_Atk_FlyingAtk atk_FlyingAtk;
     public CpSt_Atk_Jump atk_Jump;
-    public CpSt_Atk_ShootHomingProj atk_ShootHomingProj;
+    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
+    public CpSt_ComboBranch_BasicImpact comboBranch_BasicImpact;
+    public CpSt_ComboBranch_LaserAimNShootHomingProj comboBranch_LaserAimNShootHomingProj;
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir comboBranch_RotateToLastNonZeroInputDir;
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir comboBranch_RotateToWhenLastSwitchedStInputDir;
+    public CpSt_ComboEnd_BasicRecovery comboEnd_BasicRecovery;
+    public CpSt_ComboBranch_ShootHomingProj comboBranch_ShootHomingProj;
     public CpSt_Dodge dodge;
     public CpSt_Falling falling;
     public CpSt_FallLanding fallLanding;
@@ -230,12 +233,14 @@ public struct Cp_ActSts {
 
     public Cp_ActSts(CpHandle cp) {
         death = new(cp);
-        atk_BasicImpact = new(cp);
-        atk_BasicBranch = new(cp);
-        atk_BasicRecovery = new(cp);
+        comboBranch_BasicImpact = new(cp);
+        comboBranch_RotateToLastNonZeroInputDir = new(cp);
+        comboBranch_RotateToWhenLastSwitchedStInputDir = new(cp);
+        comboEnd_BasicRecovery = new(cp);
         atk_FlyingAtk = new(cp);
         atk_Jump = new(cp);
-        atk_ShootHomingProj = new(cp);
+        comboBranch_LaserAimNShootHomingProj = new(cp);
+        comboBranch_ShootHomingProj = new(cp);
         dodge = new(cp);
         falling = new(cp);
         fallLanding = new(cp);

@@ -42,11 +42,18 @@ public enum BufferableInput : byte {
     BtnE
 }
 
+public enum ProjT : byte {
+    ReyProj,
+    SphereProj,
+}
+
 public enum ComboNodeConfigT : byte {
     BasicImpact,
     BasicRecovery,
-    BasicBranch,
+    RotateToWhenLastSwitchedStInputDir,
+    LaserAimNShootProj,
     ShootProj,
+    RotateToLastNonZeroInputDir
 }
 
 /// <summary>
@@ -77,6 +84,7 @@ public enum CpAnimInfoT {
     atk_FlyingAtk_Impact,
     atk_FlyingAtk_Recovery,
     atk_FlyingAtk_Windup,
+    atk_GunShoot_AimPose,
     atk_GunShoot_Recovery,
     atk_GunShoot_Windup,
     atk_HorSlash0_Impact,
@@ -132,11 +140,11 @@ public enum Faces : byte {
 /// </summary>
 public enum HitDirMode : byte {
     /// <summary>
-    /// Calculates direction from <see cref="HitData.sourceTrf"/>
+    /// Calculates direction from <see cref="HitData.sourceTrf"/>.
     /// </summary>
     FromHitSourceTrfToHitReciever,
     /// <summary>
-    /// Calculates direction from <see cref="HitData.wldDir"/>
+    /// Calculates direction from <see cref="HitData.wldDir"/>.
     /// </summary>
     WldDir,
 }

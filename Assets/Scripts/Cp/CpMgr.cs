@@ -160,6 +160,8 @@ public class CpMgr : Singleton<CpMgr> {
         Tick_ReadMovInput();
         Tick_InputBuffer(dt);
         Tick_Fsm();
+        // TODO: Tick movement and animation root motion in LateUpdate so that we apply animation root motion
+        // TODO C: to the character from the animator update of same frame (and not the one before).
         Tick_Mov(dt);
     }
 
@@ -240,35 +242,36 @@ public class CpMgr : Singleton<CpMgr> {
 
     void Tick_Mov(float dt) {
         for (int i = 0; i < entityCount; i++) {
-            if (aos[i].pendingUnregister)
+            ref var cpData = ref GetData(i); 
+            if (cpData.pendingUnregister)
                 continue;
             //Dbg.Log(
-            //    $"tgtHorSpd: {soaData.movInput_tgtHorSpd[i]} "
-            //    + $"| additionalLinMov: {soaData.movInput_additionalLinMov[i]} \n"
-            //    + $"| tgtHorDir: {soaData.movInput_tgtHorDir[i]} "
-            //    + $"| horAcc: {soaData.movInput_horAcc[i]} "
-            //    + $"| yawSpd {soaData.movInput_yawSpd[i]}",
-            //    aosData[i].enableDebugMsgs
+            //    $"tgtHorSpd: {cpData.movInput_tgtHorSpd} "
+            //    + $"| additionalLinMov: {cpData.movInput_additionalLinMov} \n"
+            //    + $"| tgtHorDir: {cpData.movInput_tgtHorDir} "
+            //    + $"| horAcc: {cpData.movInput_horAcc} "
+            //    + $"| yawSpd {cpData.movInput_yawSpd}",
+            //    cpData.enableDbgMsgs
             //);
             Debug.Assert(
-                !float.IsNaN(GetData(i).vel_Hor.x) && !float.IsNaN(GetData(i).vel_Hor.y),
-                $"{i} vel_hor had NaN: {GetData(i).vel_Hor}"
+                !float.IsNaN(cpData.vel_Hor.x) && !float.IsNaN(cpData.vel_Hor.y),
+                $"{i} vel_hor had NaN: {cpData.vel_Hor}"
             );
             //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-            GetData(i).vel_Hor = Vector2.MoveTowards(
-                GetData(i).vel_Hor,
-                GetData(i).movInput_tgtHorDir * GetData(i).movInput_tgtHorSpd,
-                GetData(i).movInput_horAcc * dt
+            cpData.vel_Hor = Vector2.MoveTowards(
+                cpData.vel_Hor,
+                cpData.movInput_tgtHorDir * cpData.movInput_tgtHorSpd,
+                cpData.movInput_horAcc * dt
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
-            if (math.lengthsq(GetData(i).movInput_tgtHorDir) > 0.0001f) {
-                aos[i].handle.transform.rotation = TrfMathUtils.RotateFwdToTgt(
-                    inst.aos[i].handle.transform.rotation,
-                    GetData(i).movInput_yawSpd,
-                    GetData(i).movInput_tgtHorDir
+            if (math.lengthsq(  cpData.movInput_tgtHorDir) > 0.0001f) {
+                cpData.handle.transform.rotation = TrfMathUtils.RotateFwdToTgt(
+                    cpData.handle.transform.rotation,
+                    cpData.movInput_yawSpd,
+                    cpData.movInput_tgtHorDir
                 );
             }
-            if (GetData(i).isAffectedByGravity)
+            if (cpData.isAffectedByGravity)
                 // NOTE: This will override previously calculated horizontal velocity if the player is
                 // NOTE C: sliding down a slope. (9.9.2026)
                 CcMov.ApplyGravityNSlideDownSlopes(i, dt);
@@ -276,17 +279,17 @@ public class CpMgr : Singleton<CpMgr> {
                 // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
                 // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
                 // NOTE C: for vertical movement.
-                GetData(i).vel_Ver = 0;
+                cpData.vel_Ver = 0;
             // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
-            Vector3 totalMov = (Vector3)GetData(i).movInput_additionalLinMov
-                + new Vector3(GetData(i).vel_Hor.x, GetData(i).vel_Ver, GetData(i).vel_Hor.y) * dt;
+            Vector3 totalMov = (Vector3)cpData.movInput_additionalLinMov
+                + new Vector3(cpData.vel_Hor.x, cpData.vel_Ver, cpData.vel_Hor.y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
-            aos[i].unityObjs.cc.Move(totalMov);
+            cpData.unityObjs.cc.Move(totalMov);
             // Save final velocity back to cp data.
-            GetData(i).vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
-            GetData(i).vel_Ver = totalMov.y / dt;
+            cpData.vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
+            cpData.vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            aos[i].unityObjs.navMeshAgent.nextPosition = aos[i].handle.transform.position;
+            cpData.unityObjs.navMeshAgent.nextPosition = cpData.handle.transform.position;
         }
     }
 
