@@ -10,6 +10,7 @@ public class GameMgr : Singleton<GameMgr>{
 
     override protected void Awake(){
         base.Awake();
+        ApplySettings();
         WldHpBarMgr.inst.Init();
         CpMgr.inst.Init();
         AiCtrlMgr.inst.Init();
@@ -33,5 +34,10 @@ public class GameMgr : Singleton<GameMgr>{
     void LateUpdate() {
         CpMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
+    }
+
+    static void ApplySettings() {
+        Application.targetFrameRate = GameSettings.inst.targetFrameRate;
+        QualitySettings.vSyncCount = GameSettings.inst.vSyncCount;
     }
 }

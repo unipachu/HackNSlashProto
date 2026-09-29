@@ -7712,8 +7712,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0013d0800b32bd342936e4a75e4eef67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrConfigsManager
-  movInputSqrDeadzone: 0.2
   lookPointerSensitivity: 0.001
+  movInputSqrDeadzone: 0.2
+  targetFrameRate: -1
+  vSyncCount: 0
 --- !u!4 &1745552596
 Transform:
   m_ObjectHideFlags: 0
