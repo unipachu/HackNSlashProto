@@ -11,6 +11,7 @@ public class GameMgr : Singleton<GameMgr>{
     override protected void Awake(){
         base.Awake();
         ApplySettings();
+        TimeMgr.UpdateTimeScl();
         WldHpBarMgr.inst.Init();
         CpMgr.inst.Init();
         AiCtrlMgr.inst.Init();

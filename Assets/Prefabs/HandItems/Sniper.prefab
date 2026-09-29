@@ -972,6 +972,6 @@ MonoBehaviour:
   homingProjData:
     spd: 40
     maxLifetime: 2
-    homingStr: 1
+    homingStr: 0
   projSpawnPose: {fileID: 4093082790708201532}
   projT: 0

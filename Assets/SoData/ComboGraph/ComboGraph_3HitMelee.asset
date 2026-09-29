@@ -49,7 +49,7 @@ MonoBehaviour:
     node_RShldr: 255
     node_RTrg: 255
   - t: 0
-    animInfo: 10
+    animInfo: 11
     node_BtnE: 255
     node_LShldr: 255
     node_NoInput: 2
