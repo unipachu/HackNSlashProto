@@ -24,16 +24,17 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// Registers an AI controller and creates its per-entity runtime data.
     /// </summary>
     public void Register(
+        float aggroRange,
+        float atkRange,
         AiCtrlHandle newHandle,
         IBtNode newBt,
-        CpHandle controlledCp,
-        AiCtrlConfigData configData
+        CpHandle controlledCp
     ) {
         Debug.Assert(newHandle != null);
         int newI = entityCount;
         AiCtrlData newData = new AiCtrlData(
-            configData.aggroRange,
-            configData.atkRange,
+            aggroRange,
+            atkRange,
             newBt,
             controlledCp,
             newHandle

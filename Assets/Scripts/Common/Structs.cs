@@ -1,21 +1,6 @@
 using System;
-using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-
-/// <summary>
-/// Used to configure data of the ai controller.
-/// </summary>
-[Serializable]
-public struct AiCtrlConfigData {
-    public float aggroRange;
-    public float atkRange;
-
-    public AiCtrlConfigData(float aggroRange, float atkRange) {
-        this.aggroRange = aggroRange;
-        this.atkRange = atkRange;
-    }
-}
 
 public struct AiCtrlData {
     public float3 agentDesiredVel;
@@ -161,20 +146,6 @@ public struct AnimEventPlrData {
     /// Is this the first tick of the animation?
     /// </summary>
     public bool firstTick;
-}
-
-[Obsolete()]
-public struct BtNodeDataOld {
-    public int childCount;
-    /// <summary>
-    /// Id for optional data the node might use.
-    /// </summary>
-    public int dataId;
-    public int firstChild;
-    public int nextSibling;
-    public FixedString32Bytes nodeName;
-    public int parent;
-    public BtNodeT t;
 }
 
 [Serializable]

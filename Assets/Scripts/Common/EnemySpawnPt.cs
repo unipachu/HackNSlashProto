@@ -18,7 +18,7 @@ public class EnemySpawnPt : MonoBehaviour {
     }
 
     public void QuickSpawn(So_AiCpConfig enemyConfig) {
-        AiCtrlHandle aiCtrl = CpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
+        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
         EndSpawning(aiCtrl);
     }
 
@@ -30,7 +30,7 @@ public class EnemySpawnPt : MonoBehaviour {
             //ShaderUtils.SetFresnelAmount(sphereRenderer, 1 - t / spawnDuration);
             yield return null;
         }
-        AiCtrlHandle aiCtrl = CpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
+        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
         EndSpawning(aiCtrl);
     }
 

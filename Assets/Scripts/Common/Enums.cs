@@ -1,5 +1,13 @@
 // Add all public enums here.
 
+public enum AiCpT : byte {
+    Hammer,
+    Pistol,
+    Sniper,
+    Sword,
+    TestIdlingPistolHighHp,
+}
+
 public enum AtkPhase : byte {
     Windup,
     Impact,
@@ -29,7 +37,7 @@ public enum BtResult : byte {
     Running,
 }
 
-public enum BtT {
+public enum BtT : byte {
     FollowNAttack,
     Idle,
 }
@@ -59,7 +67,7 @@ public enum ComboNodeConfigT : byte {
 /// <summary>
 /// Animation events used by the capsule pawn Animator.
 /// </summary>
-public enum CpAnimEventT {
+public enum CpAnimEventT : byte {
     // NOTE: This doesn't mean that the character is grounded, only that the animation reached the point
     // NOTE C: where the vertical movement is no more controlled by the animation. (6.9.2026)
     AirtimeEnded,
@@ -80,7 +88,7 @@ public enum CpAnimEventT {
 /// <summary>
 /// All animation states of capsule pawn.
 /// </summary>
-public enum CpAnimInfoT {
+public enum CpAnimInfoT : byte {
     atk_FlyingAtk_Impact,
     atk_FlyingAtk_Recovery,
     atk_FlyingAtk_Windup,
@@ -149,7 +157,7 @@ public enum HitDirMode : byte {
     WldDir,
 }
 
-public enum HpBarTrailingSt {
+public enum HpBarTrailingSt : byte {
     DelayingDecrease,
     Decreasing,
     Settled,

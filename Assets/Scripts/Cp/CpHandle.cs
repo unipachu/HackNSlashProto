@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.AI;
 
 /// <summary>
-/// Used as a memory managed handle to the entity id. Also contains capsule pawn initialization data.<br/>
-/// NOTE: Set this to the root of the cp!
+/// Used as a memory managed handle to the entity index. Also contains capsule pawn initialization data.<br/>
+/// NOTE: Set this to the root of the capsule pawn!
 /// </summary>
 public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     [Header("Scriptable Object Data")]
@@ -20,7 +20,7 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     public Transform wldHpBarPos;
 
     /// <summary>
-    /// Index to the corresponding entity data <see cref="CpMgr"/>.
+    /// Index to the corresponding entity data in <see cref="CpMgr"/>.
     /// </summary>
     public int I { get; set; } = -1;
 

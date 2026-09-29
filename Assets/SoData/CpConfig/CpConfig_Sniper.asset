@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpData_Sniper
+  m_Name: CpConfig_Sniper
   m_EditorClassIdentifier: Assembly-CSharp::So_CpData
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
