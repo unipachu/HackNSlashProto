@@ -39,12 +39,10 @@ public class CpMgr : Singleton<CpMgr> {
         newCp.navMeshAgent.updatePosition = false;
         newCp.navMeshAgent.updateRotation = false;
         newAosData.handle = newCp;
-        newAosData.act_Dodge_HorMovSpdMult = 1.5f; // TODO: hard coded.
         newAosData.curStDur = 0;
-        newAosData.displayName = "Test Name"; // TODO: Set with so.
         newAosData.groundCastHitSomething = false;
         newAosData.groundCastNrm = float3.zero;
-        newAosData.hp_Cur = newCp.so_cpData.maxHP;
+        newAosData.hp_Cur = newCp.so_cpData.hp_Max;
         newAosData.input_mov = float2.zero;
         newAosData.input_mov_LastNonZero = float2.zero;
         newAosData.input_mov_WhenLastSwitchedSt = float2.zero;

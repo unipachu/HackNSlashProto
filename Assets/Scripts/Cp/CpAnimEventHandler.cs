@@ -45,7 +45,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.AirtimeEnded:
                 CpMgr.GetData(cpI).isAffectedByGravity = true;
-                CpMgr.GetData(cpI).vel_Ver = -CpMgr.GetData(cpI).handle.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
+                CpMgr.GetData(cpI).vel_Ver = -CpMgr.GetData(cpI).handle.so_cpData.act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
                 CpMgr.GetData(cpI).isAffectedByGravity = false;

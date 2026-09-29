@@ -30,11 +30,11 @@ public class CpSt_Dodge : IFsmSt_Cp {
     public void Tick() {
         float angSpd = 0;
         if (cp.Data.yawAllowed)
-            angSpd = cp.so_cpData.st_Dodge_YawAngSpd;
+            angSpd = cp.so_cpData.act_Dodge_YawAngSpd;
         CpUtils.UpdateMovInputData(
             cp.I,
             cp.Data.input_mov,
-            cp.Data.animDPos * cp.Data.act_Dodge_HorMovSpdMult,
+            cp.Data.animDPos * cp.so_cpData.act_Dodge_HorMovSpdMult,
             0,
             angSpd,
             float.PositiveInfinity

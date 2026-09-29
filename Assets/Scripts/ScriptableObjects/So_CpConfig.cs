@@ -1,11 +1,13 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "CpData_", menuName = "Scriptable Object Data/CpData")]
-// TODO: Rename to So_CpConfig
-public class So_CpData : ScriptableObject {
+[CreateAssetMenu(fileName = "CpConfig_", menuName = "Scriptable Object Data/CpConfig")]
+public class So_CpConfig : ScriptableObject {
     [Header("Capsule pawn base data."
         + "\nNOTE: State specific data starts with \"St_[state name]_\".")]
 
+    [Header("Ui")]
+    public string displayName = "Test Name";
+    
     [Header("General Movement Settings")]
     [Tooltip("If pawn succeeds isGrounded check, this is the vertical velocity "
         + "used to snap slightly hovering pawn to the ground.")]
@@ -14,41 +16,40 @@ public class So_CpData : ScriptableObject {
     public float walkHorAcc = 100;
     public float walkTgtHorSpd = 5;
     public float walkYawSpd = 1000;
+    public float windup_YawSpd = 1000;
 
     [Header("Input Settings")]
     [Tooltip("How long should inputs stay in the buffer (in sec)?")]
     public float inputBufferDuration = 0.3f;
 
     [Header("Health")]
-    public int maxHP = 100; // TODO: rename to hp_Max
+    public int hp_Max = 100;
 
     [Header("Equipment Settings")]
     public HandItemT rHandItem;
 
     [Header("Team Settings")]
-    public PawnTeam team = PawnTeam.EnemyToAll;
+    public PawnTeam team = PawnTeam.Team0;
 
     [Header("Debug")]
     public bool enableDbgMsgs = false;
 
     [Header("St_AtkFlying")]
-    public float st_AtkFlying_TgtHorSpeed = 2;
+    public float act_AtkFlying_TgtHorSpeed = 2;
 
     [Header("St_AtkJump")]
     [Tooltip("In m/s. Should be positive.")]
-    public float st_AtkJump_DownSpeedAfterJumpFinished = 10;
-
-    [Header("St_AtkHorSlash")]
-    public float windup_YawSpd = 1000;
+    public float act_AtkJump_DownSpeedAfterJumpFinished = 10;
 
     [Header("St_Falling")]
     [Tooltip("The distance the pawn needs to fall to enter landing animation when "
         + "hitting the ground.")]
-    public float st_Falling_LandingStFallDistThreshold = 2;
-    public float st_Falling_HorAcc = 10;
+    public float act_Falling_LandingStFallDistThreshold = 2;
+    public float act_Falling_HorAcc = 10;
     [Tooltip("Gives horizontal air control.")]
-    public float st_Falling_TgtHorSpd = 1;
+    public float act_Falling_TgtHorSpd = 1;
 
     [Header("St_Dodge")]
-    public float st_Dodge_YawAngSpd = 400;
+    public float act_Dodge_YawAngSpd = 400;
+    public float act_Dodge_HorMovSpdMult = 1.5f;
 }

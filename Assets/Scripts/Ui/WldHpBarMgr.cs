@@ -24,7 +24,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
 
     public void Register(Transform anchor, CpHandle cpHandle) {
         int newI = entityCount;
-        // TODO: Pool these.
+        // TODO MINOR: Pool these?
         WldHpBar hpBar = Instantiate(wldHpBarPrefab, wldHpBarLayer);
         WldHpBarData data = new() {
             anchor = anchor,
@@ -39,14 +39,14 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         data.cpHandle.Data.action_dmgTaken += hpBar.OnDmgTaken;
         data.cpHandle.Data.action_markedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
         data.cpHandle.Data.action_maxHpChanged += hpBar.OnMaxHpChanged;
-        data.cpHandle.Data.action_plrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
-        data.cpHandle.Data.action_plrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
+        data.cpHandle.Data.action_PlrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.Data.action_PlrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
         hpBar.I = newI;
         entityCount++;
         hpBar.gameObject.SetActive(false);
-        hpBar.SetName(cpHandle.Data.displayName);
-        hpBar.SetHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.maxHP);
-        hpBar.SetYellowHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.maxHP);
+        hpBar.SetName(cpHandle.so_cpData.displayName);
+        hpBar.SetHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.hp_Max);
+        hpBar.SetYellowHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.hp_Max);
     }
 
     /// <summary>
@@ -58,8 +58,8 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         data.cpHandle.Data.action_dmgTaken -= data.hpBar.OnDmgTaken;
         data.cpHandle.Data.action_markedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
         data.cpHandle.Data.action_maxHpChanged -= data.hpBar.OnMaxHpChanged;
-        data.cpHandle.Data.action_plrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
-        data.cpHandle.Data.action_plrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
+        data.cpHandle.Data.action_PlrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.Data.action_PlrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
         int lastId = entityCount - 1;
         WldHpBar swappedCtrl = i != lastId
             ? bars[lastId].hpBar

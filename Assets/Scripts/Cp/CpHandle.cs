@@ -7,7 +7,7 @@ using UnityEngine.AI;
 /// </summary>
 public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
     [Header("Scriptable Object Data")]
-    public So_CpData so_cpData;
+    public So_CpConfig so_cpData;
     
     [Header("Unity Obj Refs")]
     public Animator anim;

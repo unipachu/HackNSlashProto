@@ -87,7 +87,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     cp.I,
                     cpData.input_mov,
                     cpData.animDPos,
-                    cp.so_cpData.st_AtkFlying_TgtHorSpeed,
+                    cp.so_cpData.act_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );
@@ -97,7 +97,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     cp.I,
                     cpData.input_mov,
                     cpData.animDPos,
-                    cp.so_cpData.st_AtkFlying_TgtHorSpeed,
+                    cp.so_cpData.act_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );

@@ -29,14 +29,14 @@ public class CpSt_Falling : IFsmSt_Cp {
             cp.I,
             float2.zero,
             float3.zero,
-            cp.so_cpData.st_Falling_TgtHorSpd,
+            cp.so_cpData.act_Falling_TgtHorSpd,
             0,
-            cp.so_cpData.st_Falling_HorAcc
+            cp.so_cpData.act_Falling_HorAcc
         );
         if (cp.Data.isGrounded){
             //Debug.Log("Is grounded");
             float fallDist = cp.Data.act_Falling_StartHgt - cp.Data.handle.transform.position.y;
-            if(fallDist > cp.so_cpData.st_Falling_LandingStFallDistThreshold) {
+            if(fallDist > cp.so_cpData.act_Falling_LandingStFallDistThreshold) {
                 CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.I);
                 return;
             }

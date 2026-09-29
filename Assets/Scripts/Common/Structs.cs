@@ -255,7 +255,6 @@ public struct Cp_ActSts {
 public struct Cp_Data {
     // NOTE: "act_" means action state specific data (11.9.2026)
     public AtkPhase act_AtkPhase;
-    public float act_Dodge_HorMovSpdMult;
     public float act_Falling_StartHgt;
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
@@ -282,11 +281,11 @@ public struct Cp_Data {
     /// <summary>
     /// Invoked when local player ends the lock on to this.
     /// </summary>
-    public Action action_plrLockedOnEnded;
+    public Action action_PlrLockedOnEnded;
     /// <summary>
     /// Invoked when local player locks onto this.
     /// </summary>
-    public Action action_plrLockedOnStarted;
+    public Action action_PlrLockedOnStarted;
     public float3 animDPos;
     public quaternion animDRot;
     public AnimEventPlrData animEventPlrData;
@@ -294,7 +293,6 @@ public struct Cp_Data {
     public Cp_NonUnityObjClassRefs classRefs;
     public bool comboAllowed;
     public float curStDur;
-    public string displayName;
     public bool dodgeAllowed;
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
