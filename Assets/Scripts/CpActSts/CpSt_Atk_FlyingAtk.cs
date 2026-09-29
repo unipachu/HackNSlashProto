@@ -22,7 +22,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         cp.Data.act_AtkPhase = AtkPhase.Windup;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityObjs.anim,
+            cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Windup),
             0.1f
         );
@@ -43,7 +43,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     case AtkPhase.Windup:
                         AnimEventPlr.CrossfadeNInitAnimEventPlr(
                             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                            cpData.unityObjs.anim,
+                            cpData.handle.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Impact)
                         );
                         cpData.act_AtkPhase = AtkPhase.Impact;
@@ -65,11 +65,11 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.ResetNActivate(
-                    cpData.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    cpData.handle.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
-                    new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
-                    cpData.team,
+                    new HashSet<IHitReceiver> { cp.hitReciever },
+                    cp.so_cpData.team,
                     Vector3.zero
                 );
                 break;
@@ -87,7 +87,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     cp.I,
                     cpData.input_mov,
                     cpData.animDPos,
-                    cpData.act_AtkFlying_TgtHorSpd,
+                    cp.so_cpData.st_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );
@@ -97,7 +97,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     cp.I,
                     cpData.input_mov,
                     cpData.animDPos,
-                    cpData.act_AtkFlying_TgtHorSpd,
+                    cp.so_cpData.st_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );
@@ -106,7 +106,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     cpData.act_AtkPhase = AtkPhase.Recovery;
                     AnimEventPlr.CrossfadeNInitAnimEventPlr(
                         ref CpMgr.inst.aos[cp.I].animEventPlrData,
-                        cpData.unityObjs.anim,
+                        cpData.handle.anim,
                         CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Recovery)
                     );
                 }

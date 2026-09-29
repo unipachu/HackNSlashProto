@@ -39,7 +39,7 @@ public static class CpFactory {
         AiCtrlMgr.inst.Register(aiCtrl, bt, cp, aiCpConfig.data);
         CpMgr.StartListeningToCtrlInput(cp.I, aiCtrl);
         // Ui related
-        WldHpBarMgr.inst.Register(cp.unityObjs.wldHpBarPos, cp);
+        WldHpBarMgr.inst.Register(cp.wldHpBarPos, cp);
         return aiCtrl;
     }
 }

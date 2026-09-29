@@ -33,7 +33,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
         this.homingProjTgt = homingProjTgt;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityObjs.anim,
+            cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
@@ -50,9 +50,9 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
                     hitEffects,
                     homingProjData,
                     projT,
-                    new HashSet<IHitReceiver>{ cp.unityObjs.hitReciever },
+                    new HashSet<IHitReceiver>{ cp.hitReciever },
                     homingProjTgt,
-                    cpData.team,
+                    cp.so_cpData.team,
                     projSpawnPose.position,
                     projSpawnPose.forward
                 );

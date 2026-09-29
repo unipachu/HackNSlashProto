@@ -13,7 +13,7 @@ public class CpSt_Idle : IFsmSt_Cp {
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityObjs.anim,
+            cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
             0.1f
         );
@@ -29,7 +29,7 @@ public class CpSt_Idle : IFsmSt_Cp {
                 cp.Data.input_mov_LastNonZero,
                 float3.zero,
                 0,
-                cp.Data.walkYawSpd,
+                cp.so_cpData.walkYawSpd,
                 float.PositiveInfinity
             );
         else

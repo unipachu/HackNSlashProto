@@ -7,7 +7,7 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
-    public PawnTeam GetTeam => cp.Data.team;
+    public PawnTeam GetTeam => cp.so_cpData.team;
     bool IHitReceiver.IgnoreAllHits => cp.Data.ignoreHits;
 
     public HitResult ReceiveHit(HitData hitData) {
@@ -24,7 +24,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
             aos.hp_Cur -= hitData.effects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
             aos.action_dmgTaken?.Invoke(hitData.effects.dmg);
-            aos.action_curHpChanged?.Invoke(aos.hp_Cur, aos.hp_Max);
+            aos.action_curHpChanged?.Invoke(aos.hp_Cur, cp.so_cpData.maxHP);
             //Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
             if (aos.hp_Cur == 0) {
                 if (

@@ -19,7 +19,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         this.hitDealer = hitDealer;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityObjs.anim,
+            cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
@@ -32,11 +32,10 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var unityComps = CpMgr.inst.aos[cp.I].unityObjs;
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
                 cp.Data.isAffectedByGravity = true;
-                cp.Data.vel_Ver = -cp.Data.act_AtkJump_DownSpeedAfterJumpFinished;
+                cp.Data.vel_Ver = -cp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
                 cp.Data.isAffectedByGravity = false;
@@ -46,11 +45,11 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.ResetNActivate(
-                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    cp.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
-                    new HashSet<IHitReceiver> { cp.unityObjs.hitReciever },
-                    cp.Data.team,
+                    new HashSet<IHitReceiver> { cp.hitReciever },
+                    cp.so_cpData.team,
                     Vector3.zero
                 );
                 break;

@@ -23,7 +23,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         cp.Data.yawAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityObjs.anim,
+            cp.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -51,11 +51,11 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
                 hitDealer.ResetNActivate(
-                    cp.unityObjs.lockOnTrf, // NOTE: = character center point.
+                    cp.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
-                    new HashSet<IHitReceiver>{cp.unityObjs.hitReciever},
-                    cp.Data.team,
+                    new HashSet<IHitReceiver>{cp.hitReciever},
+                    cp.so_cpData.team,
                     Vector3.zero
                 );
                 break;
@@ -72,7 +72,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         ref var cpData = ref cp.Data;
         float angSpd = 0;
         if (cpData.yawAllowed)
-            angSpd = cpData.act_BasicImpact_YawSpd;
+            angSpd = cpData.handle.so_cpData.impact_YawSpd;
         CpUtils.UpdateMovInputData(
             cp.I,
             cpData.input_mov,

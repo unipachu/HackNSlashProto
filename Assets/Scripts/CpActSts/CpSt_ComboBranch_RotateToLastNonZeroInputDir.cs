@@ -23,7 +23,7 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityObjs.anim,
+            cp.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -59,7 +59,7 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
             cp.Data.input_mov_LastNonZero,
             cpData.animDPos,
             0,
-            cpData.act_BasicWindup_MaxAngSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
+            cpData.handle.so_cpData.windup_YawSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)

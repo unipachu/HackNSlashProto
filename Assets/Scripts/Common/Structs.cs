@@ -2,7 +2,6 @@ using System;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.AI;
 
 /// <summary>
 /// Used to configure data of the ai controller.
@@ -255,17 +254,9 @@ public struct Cp_ActSts {
 /// </summary>
 public struct Cp_Data {
     // NOTE: "act_" means action state specific data (11.9.2026)
-    public float act_AtkFlying_TgtHorSpd;
-    public float act_AtkJump_DownSpeedAfterJumpFinished;
     public AtkPhase act_AtkPhase;
     public float act_Dodge_HorMovSpdMult;
-    public float act_Dodge_YawSpd;
-    public float act_Falling_HorAcc;
-    public float act_Falling_LandingStFallDistThreshold;
     public float act_Falling_StartHgt;
-    public float act_Falling_TgtHorSpd;
-    public float act_BasicImpact_YawSpd;
-    public float act_BasicWindup_MaxAngSpd;
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
     /// </summary>
@@ -305,13 +296,10 @@ public struct Cp_Data {
     public float curStDur;
     public string displayName;
     public bool dodgeAllowed;
-    public bool enableDbgMsgs;
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
-    public float groundSnapVerDownSpd;
     public CpHandle handle;
     public int hp_Cur;
-    public int hp_Max;
     public float2 input_mov;
     /// <summary>
     /// Last nonzero movement input (in world space).
@@ -346,11 +334,6 @@ public struct Cp_Data {
     public Cp_NavTgtInfo navTgtInfo;
     public bool pendingUnregister;
     /// <summary>
-    /// Teams are used to prohibit friendly fire and for the ai to choose targets only from other teams.
-    /// </summary>
-    public PawnTeam team;
-    public Cp_UnityObjs unityObjs;
-    /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>
     public float2 vel_Hor;
@@ -358,9 +341,6 @@ public struct Cp_Data {
     /// Current vertical (Y) velocity.
     /// </summary>
     public float vel_Ver;
-    public float walkLinAcc;
-    public float walkMaxLinSpd;
-    public float walkYawSpd;
 }
 
 /// <summary>
@@ -411,21 +391,6 @@ public struct Cp_NonUnityObjClassRefs {
         st_cur = null;
         st_prev = null;
     }
-}
-
-/// <summary>
-/// Unity Object references for capsule pawn.
-/// </summary>
-[Serializable]
-public struct Cp_UnityObjs {
-    public Animator anim;
-    public CpAnimEventHandler animEventHandler;
-    public CharacterController cc;
-    public CpHitReciever hitReciever;
-    public NavMeshAgent navMeshAgent;
-    public Transform rHand;
-    public Transform lockOnTrf;
-    public Transform wldHpBarPos;
 }
 
 public struct CtrlInputData {

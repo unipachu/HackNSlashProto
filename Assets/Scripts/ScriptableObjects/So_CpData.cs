@@ -20,7 +20,7 @@ public class So_CpData : ScriptableObject {
     public float inputBufferDuration = 0.3f;
 
     [Header("Health")]
-    public int maxHP = 100;
+    public int maxHP = 100; // TODO: rename to hp_Max
 
     [Header("Equipment Settings")]
     public HandItemT rHandItem;
@@ -29,7 +29,7 @@ public class So_CpData : ScriptableObject {
     public PawnTeam team = PawnTeam.EnemyToAll;
 
     [Header("Debug")]
-    public bool enableDebugMsgs = false;
+    public bool enableDbgMsgs = false;
 
     [Header("St_AtkFlying")]
     public float st_AtkFlying_TgtHorSpeed = 2;
@@ -39,7 +39,7 @@ public class So_CpData : ScriptableObject {
     public float st_AtkJump_DownSpeedAfterJumpFinished = 10;
 
     [Header("St_AtkHorSlash")]
-    public float st_AtkHorSlash_Windup_YawSpd = 1000;
+    public float windup_YawSpd = 1000;
 
     [Header("St_Falling")]
     [Tooltip("The distance the pawn needs to fall to enter landing animation when "

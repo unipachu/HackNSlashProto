@@ -36,26 +36,15 @@ public class CpMgr : Singleton<CpMgr> {
         // NOTE C: pawn trf. NavMeshAgent will still move its own position and rotation which can cause
         // NOTE C: problems if you don't set the drifting navmesh position back to the transform position
         // NOTE C: and rotation every time you move the capsule pawn.
-        newCp.unityObjs.navMeshAgent.updatePosition = false;
-        newCp.unityObjs.navMeshAgent.updateRotation = false;
+        newCp.navMeshAgent.updatePosition = false;
+        newCp.navMeshAgent.updateRotation = false;
         newAosData.handle = newCp;
-        newAosData.act_BasicImpact_YawSpd = newCp.so_cpData.impact_YawSpd;
-        newAosData.act_BasicWindup_MaxAngSpd = newCp.so_cpData.st_AtkHorSlash_Windup_YawSpd;
-        newAosData.act_AtkJump_DownSpeedAfterJumpFinished
-            = newCp.so_cpData.st_AtkJump_DownSpeedAfterJumpFinished;
-        newAosData.act_Dodge_YawSpd = newCp.so_cpData.st_Dodge_YawAngSpd;
         newAosData.act_Dodge_HorMovSpdMult = 1.5f; // TODO: hard coded.
-        newAosData.act_Falling_LandingStFallDistThreshold
-            = newCp.so_cpData.st_Falling_LandingStFallDistThreshold;
-        newAosData.act_Falling_HorAcc = newCp.so_cpData.st_Falling_HorAcc;
-        newAosData.act_Falling_TgtHorSpd = newCp.so_cpData.st_Falling_TgtHorSpd;
         newAosData.curStDur = 0;
         newAosData.displayName = "Test Name"; // TODO: Set with so.
         newAosData.groundCastHitSomething = false;
         newAosData.groundCastNrm = float3.zero;
-        newAosData.groundSnapVerDownSpd = newCp.so_cpData.groundSnapVerDownSpd;
         newAosData.hp_Cur = newCp.so_cpData.maxHP;
-        newAosData.hp_Max = newCp.so_cpData.maxHP;
         newAosData.input_mov = float2.zero;
         newAosData.input_mov_LastNonZero = float2.zero;
         newAosData.input_mov_WhenLastSwitchedSt = float2.zero;
@@ -64,23 +53,16 @@ public class CpMgr : Singleton<CpMgr> {
         newAosData.isGrounded = true;
         newAosData.lastKnockbackStr = 0;
         newAosData.lastRecievedHitDir = float3.zero;
-        newAosData.team = newCp.so_cpData.team;
         newAosData.vel_Hor = float2.zero;
         newAosData.vel_Ver = 0;
-        newAosData.walkLinAcc = newCp.so_cpData.walkHorAcc;
-        newAosData.walkMaxLinSpd = newCp.so_cpData.walkTgtHorSpd;
-        newAosData.walkYawSpd = newCp.so_cpData.walkYawSpd;
-        newAosData.enableDbgMsgs = newCp.so_cpData.enableDebugMsgs;
-        newAosData.act_AtkFlying_TgtHorSpd = newCp.so_cpData.st_AtkFlying_TgtHorSpeed;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026) TODO: Put this into global variables.
         newAosData.navTgtInfo = new(false, false, 0.2f);
-        newAosData.unityObjs = newCp.unityObjs;
         IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpData.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
-            newCp.unityObjs.rHand.position,
-            newCp.unityObjs.rHand.rotation
+            newCp.rHand.position,
+            newCp.rHand.rotation
         );
-        rHandItem.Trf.parent = newCp.unityObjs.rHand;
+        rHandItem.Trf.parent = newCp.rHand;
         Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(newCp, null, rHandItem);
         newAosData.classRefs = newClassRefs;
         ArrayUtils.Add(ref aos, entityCount, newAosData);
@@ -135,7 +117,7 @@ public class CpMgr : Singleton<CpMgr> {
             if (aos[i].pendingUnregister)
                 continue;
             GetData(i).isGrounded = CcMov.IsGrounded(
-                aos[i].unityObjs.cc,
+                aos[i].handle.cc,
                 out bool hitSomething,
                 out RaycastHit groundCastResult
             );
@@ -284,12 +266,12 @@ public class CpMgr : Singleton<CpMgr> {
             Vector3 totalMov = (Vector3)cpData.movInput_additionalLinMov
                 + new Vector3(cpData.vel_Hor.x, cpData.vel_Ver, cpData.vel_Hor.y) * dt;
             //Debug.Log($"UpdateMov: totalMov: {totalMov}");
-            cpData.unityObjs.cc.Move(totalMov);
+            cpData.handle.cc.Move(totalMov);
             // Save final velocity back to cp data.
             cpData.vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
             cpData.vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            cpData.unityObjs.navMeshAgent.nextPosition = cpData.handle.transform.position;
+            cpData.handle.navMeshAgent.nextPosition = cpData.handle.transform.position;
         }
     }
 
@@ -316,8 +298,8 @@ public class CpMgr : Singleton<CpMgr> {
             AnimEventPlr.Tick(
                 i,
                 ref aos[i].animEventPlrData,
-                aos[i].unityObjs.anim,
-                aos[i].unityObjs.animEventHandler.animEvent
+                aos[i].handle.anim,
+                aos[i].handle.animEventHandler.animEvent
             );
         }
     }
@@ -420,10 +402,10 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < inst.entityCount; i++) {
             if (i == cpI)
                 continue;
-            PawnTeam candTeam = CpMgr.inst.aos[i].team;
+            PawnTeam candTeam = CpMgr.inst.aos[i].handle.so_cpData.team;
             if (candTeam == PawnTeam.FriendToAll)
                 continue;
-            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aos[cpI].team) {
+            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aos[cpI].handle.so_cpData.team) {
                 //Debug.Log("Found tgt: " + i);
                 return inst.aos[i].handle;
             }

@@ -13,7 +13,7 @@ public class CpSt_Walk : IFsmSt_Cp {
     public CpSt_Walk Enter() {
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            CpMgr.inst.aos[cp.I].unityObjs.anim,
+            cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.walk),
             0.5f
         );
@@ -28,9 +28,9 @@ public class CpSt_Walk : IFsmSt_Cp {
             cp.I,
             cp.Data.input_mov,
             float3.zero,
-            cp.Data.walkMaxLinSpd,
-            cp.Data.walkYawSpd,
-            cp.Data.walkLinAcc
+            cp.so_cpData.walkTgtHorSpd,
+            cp.so_cpData.walkYawSpd,
+            cp.so_cpData.walkHorAcc
         );
         if (CpUtils.TrySwitchStByBufferedInput(cp.I))
             return;

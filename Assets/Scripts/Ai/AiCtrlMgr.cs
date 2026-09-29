@@ -90,8 +90,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     void Tick_AgentMovInput() {
         for (int i = 0; i < entityCount; i++) {
-            int cpI = aos[i].cp.I;
-            var cpUnityComps = CpMgr.inst.aos[cpI].unityObjs;
+            CpHandle cp = aos[i].cp;
             //var cpClassRefs = CpMgr.inst.aos[cpI].classRefs;
             //Debug.Log("cpI " + cpI);
             if (aos[i].followTgt == null) {
@@ -99,12 +98,12 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 //    $"{cpI} Set agent desired vel to 0 because tgt was null: {cpClassRefs.lockedOnTgt}",
                 //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
-                cpUnityComps.navMeshAgent.ResetPath();
+                cp.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
                 continue;
             }
             // NOTE: nav mesh agent can drift away from the actual transform because nav mesh agents suck.
-            cpUnityComps.navMeshAgent.nextPosition = aos[i].cp.transform.position;
+            cp.navMeshAgent.nextPosition = aos[i].cp.transform.position;
             // NOTE: We need to check this manually since SetDestination does not have option to set
             // NOTE C: target sample position max distance.
             if (!aos[i].followTgt.IsOnNavMesh()) {
@@ -112,7 +111,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 //    $"{cpI} Set agent desired vel to 0 since tgt was not on navmesh.",
                 //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
-                cpUnityComps.navMeshAgent.ResetPath();
+                cp.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
                 continue;
             }
@@ -120,37 +119,37 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             // NOTE C: calculation (e.g. no path status) and if the agent is not currenly calculating a path.
             // NOTE C: I think this might be incorrect way to do it (maybe) but the agent navigation seems
             // NOTE C: to work well enough for now.
-            if (!cpUnityComps.navMeshAgent.hasPath) {
+            if (!cp.navMeshAgent.hasPath) {
                 //Dbg.Log($"{cpI} Agent had no path. Set destination.", CpMgr.GetAos(cpI).enableDbgMsgs);
-                cpUnityComps.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
+                cp.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
                 continue;
             }
             // If we are close enough to the destination, stop desiring movement.
             if (
                 Vector3.SqrMagnitude(
-                    cpUnityComps.navMeshAgent.destination - aos[i].cp.transform.position
+                    cp.navMeshAgent.destination - aos[i].cp.transform.position
                 ) < 0.1f // NOTE: Stopping distane is hard coded.
             ) {
                 //Dbg.Log(
                 //    $"{cpI} Set agent desired vel to 0 since we reached the target vicinity.",
                 //    CpMgr.GetAos(cpI).enableDbgMsgs
                 //);
-                cpUnityComps.navMeshAgent.ResetPath();
+                cp.navMeshAgent.ResetPath();
                 aos[i].agentDesiredVel = float3.zero;
                 continue;
             }
             // NOTE: We only use the current unfinished path if last path calculation was completed. This way
             // NOTE C: if we get sequential failed path finding attempts, the character will not move at all
             // NOTE C: (instead of jittering a little because of the partial paths).
-            if (cpUnityComps.navMeshAgent.pathPending) {
+            if (cp.navMeshAgent.pathPending) {
                 //Dbg.Log($"{cpI} Path was pending.", CpMgr.GetAos(cpI).enableDbgMsgs);
                 if (aos[i].prevCalculatePathSucceeded)
-                    aos[i].agentDesiredVel = cpUnityComps.navMeshAgent.desiredVelocity;
+                    aos[i].agentDesiredVel = cp.navMeshAgent.desiredVelocity;
                 else
                     aos[i].agentDesiredVel = float3.zero;
                 continue;
             }
-            if (cpUnityComps.navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete) {
+            if (cp.navMeshAgent.pathStatus == NavMeshPathStatus.PathComplete) {
                 aos[i].prevCalculatePathSucceeded = true;
                 //Debug.Log($"Entity i: {cpI}");
                 //Debug.Log($"prevCalculatePathSucceeded: {aos[i].prevCalculatePathSucceeded}");
@@ -164,14 +163,14 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 //Debug.Log($"steering tgt: {cpUnityComps.navMeshAgent.steeringTarget}");
                 // NOTE: We use desired velocity instead of steering target, because steering target doesn't
                 // NOTE C: use avoidance.
-                aos[i].agentDesiredVel = cpUnityComps.navMeshAgent.desiredVelocity;
+                aos[i].agentDesiredVel = cp.navMeshAgent.desiredVelocity;
             }
             else {
                 //Dbg.Log($"{i} Did not find path. Setting desired vel to 0.", data.enableDebugMsgs[i]);
                 aos[i].prevCalculatePathSucceeded = false;
                 aos[i].agentDesiredVel = float3.zero;
             }
-            cpUnityComps.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
+            cp.navMeshAgent.SetDestination(aos[i].followTgt.TrfToFollow.position);
         }
     }
 

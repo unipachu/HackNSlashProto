@@ -23,7 +23,7 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
         );
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.Data.unityObjs.anim,
+            cp.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -59,7 +59,7 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
             cpData.input_mov_WhenLastSwitchedSt,
             cpData.animDPos,
             0,
-            cpData.act_BasicWindup_MaxAngSpd,
+            cpData.handle.so_cpData.windup_YawSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)

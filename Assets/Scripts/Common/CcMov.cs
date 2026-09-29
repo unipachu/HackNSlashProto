@@ -12,10 +12,10 @@ public static class CcMov {
     public static void ApplyGravityNSlideDownSlopes(int cpI, float dt){
         ref var cpData = ref CpMgr.GetData(cpI);
         if (cpData.isGrounded)
-            cpData.vel_Ver = -cpData.groundSnapVerDownSpd * dt;
+            cpData.vel_Ver = -cpData.handle.so_cpData.groundSnapVerDownSpd * dt;
         // Freefalling and slope down sliding.
         else {
-            cpData.vel_Ver = CpMgr.inst.aos[cpI].unityObjs.cc.velocity.y;
+            cpData.vel_Ver = cpData.handle.cc.velocity.y;
             // Ground cast gave a result but the ground was too steep to be considered
             // "isGrounded" so slide down the slope instead.
             if (cpData.groundCastHitSomething) {
@@ -30,7 +30,7 @@ public static class CcMov {
                     slideDir = math.down();
                 // We use the last velocitys component along the slope as last speed, though we
                 // clamp it to disallow uphill sliding.
-                float slideSpd = math.max(0, math.dot(CpMgr.inst.aos[cpI].unityObjs.cc.velocity, slideDir));
+                float slideSpd = math.max(0, math.dot(cpData.handle.cc.velocity, slideDir));
                 float3 newVel = slideDir * slideSpd;
                 newVel += newAcc * dt;
                 cpData.vel_Ver = newVel.y;

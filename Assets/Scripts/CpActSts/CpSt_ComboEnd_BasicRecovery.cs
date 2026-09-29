@@ -27,7 +27,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
         cpData.inputMovAllowed = false;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref cpData.animEventPlrData,
-            cpData.unityObjs.anim,
+            cpData.handle.anim,
             animInfo,
             0.1f
         );
@@ -62,9 +62,9 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
             cp.I,
             cpData.input_mov,
             float3.zero,
-            cpData.walkMaxLinSpd * interpValue,
-            cpData.walkYawSpd * interpValue,
-            cpData.walkLinAcc
+            cp.so_cpData.walkTgtHorSpd * interpValue,
+            cp.so_cpData.walkYawSpd * interpValue,
+            cp.so_cpData.walkHorAcc
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;

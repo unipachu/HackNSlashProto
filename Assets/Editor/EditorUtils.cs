@@ -26,8 +26,17 @@ public static class EditorUtils {
         EditorUtility.SetDirty(catalog);
     }
 
-    // TODO: The numbering of old enum members should stay the same after the enum is modified and regenerated.
-    // TODO C: Previously nonexistent enum names should take the first number value available.
+    // NOTE: The numbering of old enum members doesn't stay the same after the enum is modified and regenerated.
+    // NOTE C: This doesn't affect code, but can lead to enum fields in Inspectors to be changed, since they
+    // NOTE C: save the number value of the member (instead of the name of the member). In the Inspector, types
+    // NOTE C: are best set with prefab or scriptable object references, or by just hard coding each type as a
+    // NOTE C: separate field (though this forces code compilation if new types are added and is
+    // NOTE C: less designer-friendly).
+    // TODO MINOR: If you wanted to use the enum in the inspector, you could check if a enum already exists and
+    // TODO MINOR C: keep the respective number values for each member that exist between the old and the new
+    // TODO MINOR C: enums, this way the inspector values for those members would stay the same. You would have
+    // TODO MINOR C: to also change the catalog generation logic to allow for e.g. empty catalog indexes,
+    // TODO MINOR C: if a middle member in the corresponding enum is removed.
     public static void GenerateEnum(List<GameObject> items, string enumName, string enumPath) {
         string directory = Path.GetDirectoryName(enumPath);
         // NOTE: Creates directory if path doesn't exist!
