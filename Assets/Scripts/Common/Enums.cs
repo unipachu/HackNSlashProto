@@ -55,13 +55,11 @@ public enum ProjT : byte {
     SphereProj,
 }
 
-public enum ComboNodeConfigT : byte {
-    BasicImpact,
-    BasicRecovery,
-    RotateToWhenLastSwitchedStInputDir,
-    LaserAimNShootProj,
-    ShootProj,
-    RotateToLastNonZeroInputDir
+public enum ComboGraphT : byte {
+    LaserAimNShoot,
+    Melee3Hit,
+    MeleeSingleHit,
+    ShootProj
 }
 
 /// <summary>

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpawner, IHandItem_Comboer {
     [SerializeField] AimLaser aimLaser;
-    [SerializeField] So_ComboGraph comboGraphConfig;
+    [SerializeField] ComboGraphT comboGraphT;
     [SerializeField] HitDealer_CapsuleSubstepper meleeHitDealer;
     [SerializeField] HitEffects meleeHitEffects = new HitEffects(1, KnockbackT.Weak, 1);
     [SerializeField] HitEffects projHitEffects = new HitEffects(1, KnockbackT.Weak, 1);
@@ -26,6 +26,6 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
     public Transform Trf => transform;
 
     void Awake() {
-        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphConfig.nodes);
+        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphT);
     }
 }

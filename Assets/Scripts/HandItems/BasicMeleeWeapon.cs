@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitter {
-    [SerializeField] So_ComboGraph comboGraphConfig;
+    [SerializeField] ComboGraphT comboGraphT;
     [SerializeField] HitDealer_CapsuleSubstepper hitDealer;
     [SerializeField] HitEffects hitEffects = new HitEffects(1, KnockbackT.Weak, 1);
 
@@ -16,6 +16,6 @@ public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitt
     public Transform Trf => transform;
 
     void Awake() {
-        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphConfig.nodes);
+        comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphT);
     }
 }

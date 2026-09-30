@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public class ComboNode_RotateToLastNonZeroInput : IComboNode, IComboNodeTransitionsHolder {
     public AnimInfo AnimInfo { get; set; }

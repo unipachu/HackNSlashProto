@@ -11,7 +11,7 @@ public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_BasicImpact(UnityEngine.Object ctx, CpAnimInfoT animInfoT) {
+    public ComboNode_BasicImpact(CpAnimInfoT animInfoT, UnityEngine.Object ctx) {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
         IHandItem_Hitter handItem_HitDealer = (IHandItem_Hitter)ctx;
         Debug.Assert(

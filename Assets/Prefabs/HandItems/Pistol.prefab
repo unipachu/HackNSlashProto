@@ -797,7 +797,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6aa224c800f6ef4cbf997d38da59d3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicGun
-  comboGraphConfig: {fileID: 11400000, guid: 11275182d38a78c49b2bef14d3d22db8, type: 2}
+  aimLaser: {fileID: 0}
+  comboGraphT: 3
   meleeHitDealer: {fileID: 5092167040023849340}
   meleeHitEffects:
     dmg: 1

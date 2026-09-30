@@ -7,13 +7,13 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_ShootProj(UnityEngine.Object handItemCtx, CpAnimInfoT animInfoT) {
+    public ComboNode_ShootProj(CpAnimInfoT animInfoT, UnityEngine.Object ctx) {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
-        IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)handItemCtx;
+        IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)ctx;
         Debug.Assert(
             projSpawner != null,
-            $"{handItemCtx.name} didn't implement {nameof(IHandItem_ProjectileSpawner)}",
-            handItemCtx
+            $"{ctx.name} didn't implement {nameof(IHandItem_ProjectileSpawner)}",
+            ctx
         );
         this.projSpawner = projSpawner;
     }

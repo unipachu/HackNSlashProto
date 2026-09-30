@@ -161,23 +161,26 @@ public struct CapsuleShape {
     }
 }
 
-[Serializable]
-public struct ComboNodeConfig {
-    public ComboNodeConfigT t;
-    public CpAnimInfoT animInfo;
-    public byte node_BtnE;
-    public byte node_LShldr;
-    public byte node_NoInput;
-    public byte node_RShldr;
-    public byte node_RTrg;
-}
-
 public struct ComboNode_Transitions {
     public IComboNode node_BtnE;
     public IComboNode node_LShldr;
     public IComboNode node_NoInput;
     public IComboNode node_RShldr;
     public IComboNode node_RTrg;
+
+    public ComboNode_Transitions(
+        IComboNode node_BtnE,
+        IComboNode node_LShldr,
+        IComboNode node_NoInput,
+        IComboNode node_RShldr,
+        IComboNode node_RTrg
+    ) {
+        this.node_BtnE = node_BtnE;
+        this.node_LShldr = node_LShldr;
+        this.node_NoInput = node_NoInput;
+        this.node_RShldr = node_RShldr;
+        this.node_RTrg = node_RTrg;
+    }
 }
 
 /// <summary>
