@@ -8,10 +8,12 @@ public struct AiCtrlData {
     public float atkRange;
     public IBtNode bt;
     public CpHandle cp;
+    public Vector3 cpPrevPos;
     public CtrlInputData ctrlInputData;
     public IFollowTgt followTgt;
     public AiCtrlHandle handle;
     public bool prevCalculatePathSucceeded;
+    public float repathTimer;
 
     public AiCtrlData(
         float aggroRange,
@@ -25,10 +27,12 @@ public struct AiCtrlData {
         this.atkRange = atkRange;
         this.bt = bt;
         this.cp = cp;
+        this.cpPrevPos = cp.transform.position;
         ctrlInputData = default;
         followTgt = null;
         this.handle = handle;
         prevCalculatePathSucceeded = false;
+        this.repathTimer = 0;
     }
 }
 
@@ -190,12 +194,12 @@ public struct Cp_ActSts {
     public CpSt_Death death;
     public CpSt_Atk_FlyingAtk atk_FlyingAtk;
     public CpSt_Atk_Jump atk_Jump;
-    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
     public CpSt_ComboBranch_BasicImpact comboBranch_BasicImpact;
     public CpSt_ComboBranch_LaserAimNShootHomingProj comboBranch_LaserAimNShootHomingProj;
     public CpSt_ComboBranch_RotateToLastNonZeroInputDir comboBranch_RotateToLastNonZeroInputDir;
     public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir comboBranch_RotateToWhenLastSwitchedStInputDir;
     public CpSt_ComboEnd_BasicRecovery comboEnd_BasicRecovery;
+    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
     public CpSt_ComboBranch_ShootHomingProj comboBranch_ShootHomingProj;
     public CpSt_Dodge dodge;
     public CpSt_Falling falling;

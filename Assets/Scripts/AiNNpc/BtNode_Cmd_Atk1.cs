@@ -14,6 +14,7 @@ public class BtNode_Cmd_Atk1 : IBtNode{
         int cpI = aiCtrlData.cp.I;
         int aiCtrlId = aiCtrl.I;
         aiCtrlData.ctrlInputData.input_Atk_Light = true;
+
         float2 horDesiredVel = new(
             aiCtrlData.agentDesiredVel.x,
             aiCtrlData.agentDesiredVel.z

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AiCpConfig_Sword
   m_EditorClassIdentifier: Assembly-CSharp::So_AiCpConfig
   aggroRange: 20
-  atkRange: 3
+  atkRange: 0
   cpPrefab: {fileID: 1940119809236364732, guid: dedfb3ce99c0d3441ab4463e44084de2, type: 3}
   btT: 0

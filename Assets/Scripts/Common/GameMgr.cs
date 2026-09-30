@@ -26,10 +26,11 @@ public class GameMgr : Singleton<GameMgr>{
     }
     
     void Update() {
+        float dt = Time.deltaTime;
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
-        AiCtrlMgr.inst.Tick();
-        CpMgr.inst.Tick(Time.deltaTime);
-        EnemyWaveMgr.inst.Tick(Time.deltaTime, Time.time);
+        AiCtrlMgr.inst.Tick(dt);
+        CpMgr.inst.Tick(dt);
+        EnemyWaveMgr.inst.Tick(dt, Time.time);
     }
 
     void LateUpdate() {

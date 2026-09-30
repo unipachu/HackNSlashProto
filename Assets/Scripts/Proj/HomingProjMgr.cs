@@ -8,6 +8,7 @@ using UnityEngine;
 /// <summary>
 /// Overengineered homing projectile manager using BurstCompiled jobs.
 /// </summary>
+// TODO MAYBE: Projectile collisions can also be burst jobbed: https://youtu.be/WrzrtMxLgpc?si=SZRfdWvTdvntndu5
 public class HomingProjMgr : Singleton<HomingProjMgr> {
     [SerializeField] int initCapacity = 10;
 

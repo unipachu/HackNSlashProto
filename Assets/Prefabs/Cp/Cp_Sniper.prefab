@@ -56,6 +56,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Cp_Sniper
       objectReference: {fileID: 0}
+    - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: m_Radius
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: avoidancePriority
+      value: 49
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -6672,6 +6672,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AiCtrlMgr
   initCapacity: 1
+  useCustomAvoidance: 0
+  repathInterval: 0.25
+  repathTgtMoveDist: 0.5
+  separationRadius: 4
+  separationWeight: 1.5
+  maxTurnRate: 0
 --- !u!4 &1533031326
 Transform:
   m_ObjectHideFlags: 0
@@ -7806,7 +7812,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: 64f6a0f4b63feee4fab3a90c362d6497, type: 2}
+  waveConfig: {fileID: 11400000, guid: a2c84b25a25789947bbadcb99e8cc22e, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}

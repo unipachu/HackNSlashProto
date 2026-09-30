@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: AiCpConfig_Hammer
   m_EditorClassIdentifier: Assembly-CSharp::So_NpcSetup
   aggroRange: 20
-  atkRange: 3
+  atkRange: 0
   cpPrefab: {fileID: 6910655718621986424, guid: 2a159f2280a1a374c8eff4124df4a7f7, type: 3}
   btT: 0
