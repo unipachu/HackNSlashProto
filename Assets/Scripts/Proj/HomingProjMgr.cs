@@ -78,6 +78,17 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         }
     }
 
+    void OnDestroy() {
+        curLifetime.Dispose();
+        dir.Dispose();
+        hasTgt.Dispose();
+        homingStr.Dispose();
+        maxLifetime.Dispose();
+        pos.Dispose();
+        spd.Dispose();
+        tgtPos.Dispose();
+    }
+
     /// <summary>
     /// Shoot a homing projectile.
     /// </summary>
@@ -150,17 +161,6 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         entityCount--;
         if (swappedProj != null)
             swappedProj.IInMgr = projI;
-    }
-
-    void OnDestroy() {
-        curLifetime.Dispose();
-        dir.Dispose();
-        hasTgt.Dispose();
-        homingStr.Dispose();
-        maxLifetime.Dispose();
-        pos.Dispose();
-        spd.Dispose();
-        tgtPos.Dispose();
     }
 
     [BurstCompile]

@@ -7713,7 +7713,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ProjPools
   initialPoolAmount: 1
   rayProjPrefab: {fileID: 3605874631302619221, guid: 309dcd476b5e76a43885c7dbea4dce67, type: 3}
-  sphereProjPrefab: {fileID: 7907835997315998730, guid: 9208ca19f08efe34eb8acb508ec5e151, type: 3}
+  sphereProjPrefab: {fileID: 3751351679992926009, guid: 9208ca19f08efe34eb8acb508ec5e151, type: 3}
 --- !u!4 &1732218851
 Transform:
   m_ObjectHideFlags: 0

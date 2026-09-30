@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// TODO: Rename to SphereProj. Do this after pushing, because this will likely break proj prefab.
-public class HomingProj : MonoBehaviour, IProj {
+public class SphereProj : MonoBehaviour, IProj {
     [Header("Refs")]
     public HitDealer_SphereCast hitDealer;
     public TrailRenderer trailRenderer;

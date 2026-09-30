@@ -9,19 +9,19 @@ public class ProjPools : Singleton<ProjPools> {
     [Tooltip("How many objects pooled per pool in Awake?")]
     [SerializeField] int initialPoolAmount = 1;
     [SerializeField] RayProj rayProjPrefab;
-    [SerializeField] HomingProj sphereProjPrefab;
+    [SerializeField] SphereProj sphereProjPrefab;
 
     RayProj[] rayProjPool;
     int rayProjPoolUsedLength;
-    HomingProj[] sphereProjPool;
+    SphereProj[] sphereProjPool;
     int sphereProjPoolUsedLength;
 
     protected override void Awake() {
         base.Awake();
         rayProjPool = new RayProj[initialPoolAmount];
-        sphereProjPool = new HomingProj[initialPoolAmount];
+        sphereProjPool = new SphereProj[initialPoolAmount];
         for (int i = 0; i < initialPoolAmount; i++) {
-            HomingProj sphereProj = Instantiate(sphereProjPrefab, transform);
+            SphereProj sphereProj = Instantiate(sphereProjPrefab, transform);
             sphereProj.IInMgr = -1;
             sphereProj.gameObject.SetActive(false);
             sphereProjPool[i] = sphereProj;
