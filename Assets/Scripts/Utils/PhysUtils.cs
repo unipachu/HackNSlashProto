@@ -71,6 +71,174 @@ public static class PhysUtils{
     }
 
     /// <summary>
+    /// Performs a non-allocating capsule overlap query and also calculates contact-like information for each
+    /// overlapping collider. When only one capsule tip is overlapping, a raycast is performed from the
+    /// non-overlapping tip to the overlapping tip to obtain the actual surface point and normal. When both
+    /// or neither tip is overlapping, the closest point to the capsule center is used as the hit point and
+    /// a separation direction is derived from the corresponding fallback position.
+    /// </summary>
+    /// <param name="capsule">World-space capsule to query with.</param>
+    /// <param name="layerMask">Layer mask used by the overlap query.</param>
+    /// <param name="overlapResults">Preallocated collider result array.</param>
+    /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
+    /// <param name="separationDirs">Preallocated array receiving the calculated separation directions.</param>
+    /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
+    /// <returns>The number of colliders found by the overlap query.</returns>
+    public static int OverlapCapsuleNonAllocWithContactInfo(
+        CapsuleShape capsule,
+        int layerMask,
+        Collider[] overlapResults,
+        Vector3[] hitPts,
+        Vector3[] separationDirs,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        int numCols = Physics.OverlapCapsuleNonAlloc(
+            capsule.pt0,
+            capsule.pt1,
+            capsule.r,
+            overlapResults,
+            layerMask,
+            qryTrgIxn
+        );
+        Vector3 capsuleCenter = (capsule.pt0 + capsule.pt1) * 0.5f;
+        Vector3 capsuleAxis = capsule.pt1 - capsule.pt0;
+        float capsuleAxisLength = capsuleAxis.magnitude;
+        Vector3 capsuleAxisNrm = capsuleAxisLength > Mathf.Epsilon
+            ? capsuleAxis / capsuleAxisLength
+            : Vector3.zero;
+        Vector3 tipPt0 = capsule.pt0 - capsuleAxisNrm * capsule.r;
+        Vector3 tipPt1 = capsule.pt1 + capsuleAxisNrm * capsule.r;
+        Vector3 tipToTip = tipPt1 - tipPt0;
+        float tipToTipLength = tipToTip.magnitude;
+        Vector3 tipToTipDir = tipToTipLength > Mathf.Epsilon
+            ? tipToTip / tipToTipLength
+            : Vector3.zero;
+        for (int i = 0; i < numCols; i++) {
+            Collider collider = overlapResults[i];
+            Vector3 closestToTipPt0 = collider.ClosestPoint(tipPt0);
+            Vector3 closestToTipPt1 = collider.ClosestPoint(tipPt1);
+            bool tipPt0Overlapping = closestToTipPt0 == tipPt0;
+            bool tipPt1Overlapping = closestToTipPt1 == tipPt1;
+            if (tipPt1Overlapping && !tipPt0Overlapping) {
+                if (collider.Raycast(
+                    new Ray(tipPt0, tipToTipDir),
+                    out RaycastHit hit,
+                    tipToTipLength
+                )) {
+                    hitPts[i] = hit.point;
+                    separationDirs[i] = hit.normal;
+                    continue;
+                }
+            }
+            else if (tipPt0Overlapping && !tipPt1Overlapping) {
+                if (collider.Raycast(
+                    new Ray(tipPt1, -tipToTipDir),
+                    out RaycastHit hit,
+                    tipToTipLength
+                )) {
+                    hitPts[i] = hit.point;
+                    separationDirs[i] = hit.normal;
+                    continue;
+                }
+            }
+            hitPts[i] = collider.ClosestPoint(capsuleCenter);
+            if (tipPt0Overlapping && tipPt1Overlapping) {
+                Vector3 separationDir = hitPts[i] - capsuleCenter;
+                separationDirs[i] = separationDir.sqrMagnitude > 0f
+                    ? separationDir.normalized
+                    : Vector3.up;
+            }else {
+                Vector3 separationDir = capsuleCenter - collider.transform.position;
+                separationDirs[i] = separationDir.sqrMagnitude > 0f
+                    ? separationDir.normalized
+                    : Vector3.up;
+            }
+        }
+        return numCols;
+    }
+
+    /// <summary>
+    /// Performs a non-allocating sphere overlap query and calculates contact-like information for each
+    /// overlapping collider. If the sphere center is outside a collider, the closest point on the collider
+    /// to the sphere center is used and a raycast is performed from the sphere center to that point. If the
+    /// sphere center is inside the collider, a point on the sphere surface in the direction from the
+    /// collider origin to the sphere center is tested. If that point is outside the collider, a raycast is
+    /// performed from that point toward the sphere center. If both the sphere center and surface point are
+    /// inside the collider, the sphere center is used as the hit point and the separation direction is
+    /// taken from the collider origin to the sphere center, or Vector3.up when that direction is zero.
+    /// </summary>
+    /// <param name="sphere">World-space sphere to query with.</param>
+    /// <param name="layerMask">Layer mask used by the overlap query.</param>
+    /// <param name="overlapResults">Preallocated collider result array.</param>
+    /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
+    /// <param name="separationDirs">Preallocated array receiving the calculated separation directions.</param>
+    /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
+    /// <returns>The number of colliders found by the overlap query.</returns>
+    public static int OverlapSphereNonAllocWithContactInfo(
+        SphereShape sphere,
+        int layerMask,
+        Collider[] overlapResults,
+        Vector3[] hitPts,
+        Vector3[] separationDirs,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        int numCols = Physics.OverlapSphereNonAlloc(
+            sphere.center,
+            sphere.r,
+            overlapResults,
+            layerMask,
+            qryTrgIxn
+        );
+        for (int i = 0; i < numCols; i++) {
+            Collider collider = overlapResults[i];
+            Vector3 closestToCenter = collider.ClosestPoint(sphere.center);
+            bool centerOverlapping = closestToCenter == sphere.center;
+            if (!centerOverlapping) {
+                Vector3 centerToClosest = closestToCenter - sphere.center;
+                float distance = centerToClosest.magnitude;
+                if (collider.Raycast(
+                    new Ray(sphere.center, centerToClosest / distance),
+                    out RaycastHit hit,
+                    distance
+                )) {
+                    hitPts[i] = hit.point;
+                    separationDirs[i] = hit.normal;
+                    continue;
+                }
+            }else {
+                Vector3 centerToCollider = collider.transform.position - sphere.center;
+                Vector3 sphereSurfaceDir = -centerToCollider;
+                if (sphereSurfaceDir.sqrMagnitude <= 0f)
+                    sphereSurfaceDir = Vector3.up;
+                else
+                    sphereSurfaceDir.Normalize();
+                Vector3 sphereSurfacePt = sphere.center + sphereSurfaceDir * sphere.r;
+                Vector3 closestToSurface = collider.ClosestPoint(sphereSurfacePt);
+                bool surfaceOverlapping = closestToSurface == sphereSurfacePt;
+                if (!surfaceOverlapping) {
+                    Vector3 surfaceToCenter = sphere.center - sphereSurfacePt;
+                    float distance = surfaceToCenter.magnitude;
+                    if (collider.Raycast(
+                        new Ray(sphereSurfacePt, surfaceToCenter / distance),
+                        out RaycastHit hit,
+                        distance
+                    )) {
+                        hitPts[i] = hit.point;
+                        separationDirs[i] = hit.normal;
+                        continue;
+                    }
+                }
+            }
+            hitPts[i] = sphere.center;
+            Vector3 separationDir = sphere.center - collider.transform.position;
+            separationDirs[i] = separationDir.sqrMagnitude > 0f
+                ? separationDir.normalized
+                : Vector3.up;
+        }
+        return numCols;
+    }
+
+    /// <summary>
     /// Transforms a point from unscaled Rigidbody local space to world space,
     /// using the Rigidbody's position and rotation.
     /// </summary>

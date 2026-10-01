@@ -217,6 +217,15 @@ public static class MathUtils {
     }
 
     /// <summary>
+    /// Normalizes vector, or if a close to zero vector, returns up vector.
+    /// </summary>
+    public static Vector3 NrmSafe(this Vector3 vec) {
+        if(vec.sqrMagnitude > 0.0001f)
+            return vec.normalized;
+        return Vector3.up;
+    }
+
+    /// <summary>
     /// Projects vector onto a plane defined by the planes's normal.
     /// </summary>
     public static float3 ProjectOnPlane(this float3 vec, float3 planeNrm)

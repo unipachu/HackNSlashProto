@@ -1,4 +1,5 @@
 using Unity.Mathematics;
+using UnityEngine;
 
 public class BtNode_Cmd_Atk1 : IBtNode{
     AiCtrlHandle aiCtrl;
@@ -14,10 +15,12 @@ public class BtNode_Cmd_Atk1 : IBtNode{
         int cpI = aiCtrlData.cp.I;
         int aiCtrlId = aiCtrl.I;
         aiCtrlData.ctrlInputData.input_Atk_Light = true;
-
+        Vector3 dirToTgt = (aiCtrlData.followTgt.TrfToFollow.position - aiCtrlData.cp.transform.position);
+        if (dirToTgt.sqrMagnitude > 0.0001f)
+            dirToTgt = dirToTgt.normalized;
         float2 horDesiredVel = new(
-            aiCtrlData.agentDesiredVel.x,
-            aiCtrlData.agentDesiredVel.z
+            dirToTgt.x,
+            dirToTgt.z
         );
         // Agent can have 0 desired velocity, thus to avoid NaNs:
         if (math.lengthsq(horDesiredVel) > 0.0001f)

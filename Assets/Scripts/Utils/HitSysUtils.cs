@@ -1,109 +1,87 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
 
 public static class HitSysUtils {
     const int overlapResultsArraySize = 256;
 
-    public static HitResult DealHit(HitData hitData, IHitReceiver hitReceiver)
-        => hitReceiver.ReceiveHit(hitData);
-
-    /// <summary>
-    /// Uses a <see cref="Physics.OverlapCapsuleNonAlloc"/> to try and hit <see cref="IHitReceiver"/>s.
-    /// </summary>
-    /// <param name="hitMaxOnce">
-    /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
-    /// </param>
-    /// <param name="allowFriendlyFire">
-    /// Should allow hits that would be otherwise premitted by <see cref="PawnTeam"/> setup?
-    /// </param>
-    public static HashSet<HitResult> TryHitHitRecievers_OverlapCapsule(
-        HitData hitData,
-        bool hitMaxOnce,
-        HashSet<IHitReceiver> ignoreHitRecievers,
-        int layerMask,
-        CapsuleShape wldCapsule,
-        bool allowFriendlyFire = false,
-        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
-    ) {
-        Collider[] overlapCapsuleResults = new Collider[overlapResultsArraySize];
-        int numCols = Physics.OverlapCapsuleNonAlloc(
-            wldCapsule.pt0,
-            wldCapsule.pt1,
-            wldCapsule.r,
-            overlapCapsuleResults,
-            layerMask,
-            qryTrgIxn
-        );
-        return ProcessCollisionQueryResults(
-            hitData,
-            hitMaxOnce,
-            ignoreHitRecievers,
-            allowFriendlyFire,
-            overlapCapsuleResults,
-            numCols
-        );
-    }
-
-    static HashSet<HitResult> ProcessCollisionQueryResults(
-        HitData hitData,
-        bool hitMaxOnce,
-        HashSet<IHitReceiver> ignoreHitRecievers,
+    static HashSet<HitResult> ProcessOverlapShapeResults(
         bool allowFriendlyFire,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        bool hitMaxOnce,
+        Vector3[] hitPt,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        int numCols,
         Collider[] overlapShapeResults,
-        int numCols
+        Vector3[] separationDir,
+        Transform srcTrf,
+        Team team
     ) {
         HashSet<HitResult> results = new(4);
         for (int i = 0; i < numCols; i++) {
             IHitReceiver hitReceiver = overlapShapeResults[i].GetComponent<IHitReceiver>();
-            if (hitReceiver == null)
+            if (!TryProcessHitReceiver(
+                allowFriendlyFire,
+                hitDealerMovDir,
+                hitDirMode,
+                hitEffects,
+                hitPt[i],
+                hitReceiver,
+                out HitResult hitResult, 
+                ignoreHitRecievers,
+                separationDir[i],
+                srcTrf,
+                team
+            ))
                 continue;
-            if (hitReceiver.IgnoreAllHits)
-                continue;
-            PawnTeam receiverTeam = hitReceiver.GetTeam;
-            if (receiverTeam == PawnTeam.FriendToAll)
-                continue;
-            if (
-                receiverTeam != PawnTeam.EnemyToAll
-                    && receiverTeam == hitData.team
-                    && !allowFriendlyFire
-            )
-                continue;
-            if (ignoreHitRecievers.Contains(hitReceiver))
-                continue;
-            results.Add(DealHit(hitData, hitReceiver));
+            results.Add(hitResult);
             if (hitMaxOnce)
                 break;
         }
         return results;
     }
 
-    static HashSet<HitResult> ProcessCollisionQueryResults(
-        HitData hitData,
-        bool hitMaxOnce,
-        HashSet<IHitReceiver> ignoreHitRecievers,
+    /// <param name="hitMaxOnce">
+    /// Only hit first eligible hit reciever (ignore other hit recievers in the collision query result.
+    /// </param>
+    /// <param name="ignoreHitRecievers">
+    /// All hit recievers we do not want to hit, e.g. the hit recievers of the hitter.
+    /// </param>
+    /// <param name="allowFriendlyFire">
+    /// Allow hitting hit recievers of the same <see cref="Team"/>.
+    /// </param>
+    static HashSet<HitResult> ProcessCastResults(
         bool allowFriendlyFire,
         RaycastHit[] castResults,
-        int numHits
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        bool hitMaxOnce,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        int numHits,
+        Transform srcTrf,
+        Team team
     ) {
         HashSet<HitResult> results = new(4);
         for (int i = 0; i < numHits; i++) {
-            IHitReceiver hitReceiver = castResults[i].collider.GetComponent<IHitReceiver>();
-            if (hitReceiver == null)
+            if (!TryProcessHitReceiver(
+                allowFriendlyFire,
+                hitDealerMovDir,
+                hitDirMode,
+                hitEffects,
+                castResults[i].point,
+                castResults[i].collider.GetComponent<IHitReceiver>(), 
+                out HitResult hitResult,
+                ignoreHitRecievers,
+                castResults[i].normal,
+                srcTrf,
+                team
+            ))
                 continue;
-            if (hitReceiver.IgnoreAllHits)
-                continue;
-            PawnTeam receiverTeam = hitReceiver.GetTeam;
-            if (receiverTeam == PawnTeam.FriendToAll)
-                continue;
-            if (
-                receiverTeam != PawnTeam.EnemyToAll
-                    && receiverTeam == hitData.team
-                    && !allowFriendlyFire
-            )
-                continue;
-            if (ignoreHitRecievers.Contains(hitReceiver))
-                continue;
-            results.Add(DealHit(hitData, hitReceiver));
+            results.Add(hitResult);
             if (hitMaxOnce)
                 break;
         }
@@ -111,38 +89,89 @@ public static class HitSysUtils {
     }
 
     /// <summary>
-    /// Uses a <see cref="Physics.OverlapSphereNonAlloc"/> to try and hit <see cref="IHitReceiver"/>s.
+    /// NOTE: Uses the tip of the capsule closest to pt1 to calculate hit point (with Collider.ClosestPoint)
+    /// and separation direction (from the capsule tip to the closest point). This does not give as nice
+    /// results as using raycast hit dealers but I don't know any better solution (except maybe trying to
+    /// use raycasts, but that also isn't very neat).
     /// </summary>
-    /// <param name="hitMaxOnce">
-    /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
-    /// </param>
-    /// <param name="allowFriendlyFire">
-    /// Should allow hits that would be otherwise permitted by <see cref="PawnTeam"/> setup?
-    /// </param>
-    public static HashSet<HitResult> TryHitHitRecievers_OverlapSphere(
-        HitData hitData,
+    public static HashSet<HitResult> TryHitHitRecievers_OverlapCapsule(
+        bool allowFriendlyFire,
+        CapsuleShape hitDealerCapsuleWld,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
         bool hitMaxOnce,
         HashSet<IHitReceiver> ignoreHitRecievers,
         int layerMask,
-        SphereShape wldSphere,
-        bool allowFriendlyFire = false,
+        Transform srcTrf,
+        Team team,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        Collider[] overlapCapsuleResults = new Collider[overlapResultsArraySize];
+        Vector3[] hitPts = new Vector3[overlapResultsArraySize];
+        Vector3[] separationDirs = new Vector3[overlapResultsArraySize];
+        int numCols = PhysUtils.OverlapCapsuleNonAllocWithContactInfo(
+            hitDealerCapsuleWld,
+            layerMask,
+            overlapCapsuleResults,
+            hitPts,
+            separationDirs,
+            qryTrgIxn
+        );
+        return ProcessOverlapShapeResults(
+            allowFriendlyFire,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            hitMaxOnce,
+            hitPts,
+            ignoreHitRecievers,
+            numCols,
+            overlapCapsuleResults,
+            separationDirs,
+            srcTrf,
+            team
+        );
+    }
+
+
+    public static HashSet<HitResult> TryHitHitRecievers_OverlapSphere(
+        bool allowFriendlyFire,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        bool hitMaxOnce,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        int layerMask,
+        SphereShape hitDealerSphereWld,
+        Transform srcTrf,
+        Team team,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         Collider[] overlapSphereResults = new Collider[overlapResultsArraySize];
-        int numCols = Physics.OverlapSphereNonAlloc(
-            wldSphere.center,
-            wldSphere.r,
-            overlapSphereResults,
+        Vector3[] hitPts = new Vector3[overlapResultsArraySize];
+        Vector3[] separationDirs = new Vector3[overlapResultsArraySize];
+        int numCols = PhysUtils.OverlapSphereNonAllocWithContactInfo(
+            hitDealerSphereWld,
             layerMask,
+            overlapSphereResults,
+            hitPts,
+            separationDirs,
             qryTrgIxn
         );
-        return ProcessCollisionQueryResults(
-            hitData,
-            hitMaxOnce,
-            ignoreHitRecievers,
+        return ProcessOverlapShapeResults(
             allowFriendlyFire,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            hitMaxOnce,
+            hitPts,
+            ignoreHitRecievers,
+            numCols,
             overlapSphereResults,
-            numCols
+            separationDirs,
+            srcTrf,
+            team
         );
     }
 
@@ -153,16 +182,20 @@ public static class HitSysUtils {
     /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
     /// </param>
     /// <param name="allowFriendlyFire">
-    /// Should allow hits that would be otherwise permitted by <see cref="PawnTeam"/> setup?
+    /// Should allow hits that would be otherwise permitted by <see cref="Team"/> setup?
     /// </param>
     public static HashSet<HitResult> TryHitHitRecievers_SphereCast(
-        HitData hitData,
+        bool allowFriendlyFire,
+        SphereShape curWldSphere,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
         bool hitMaxOnce,
         HashSet<IHitReceiver> ignoreHitRecievers,
         int layerMask,
         SphereShape prevWldSphere,
-        SphereShape curWldSphere,
-        bool allowFriendlyFire = false,
+        Transform srcTrf,
+        Team team,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         Vector3 castDir = curWldSphere.center - prevWldSphere.center;
@@ -180,13 +213,17 @@ public static class HitSysUtils {
             layerMask,
             qryTrgIxn
         );
-        return ProcessCollisionQueryResults(
-            hitData,
-            hitMaxOnce,
-            ignoreHitRecievers,
+        return ProcessCastResults(
             allowFriendlyFire,
             sphereCastResults,
-            numHits
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            hitMaxOnce,
+            ignoreHitRecievers,
+            numHits,
+            srcTrf,
+            team
         );
     }
 
@@ -198,16 +235,20 @@ public static class HitSysUtils {
     /// Should we only hit first found eligible <see cref="IHitReceiver"/>?
     /// </param>
     /// <param name="allowFriendlyFire">
-    /// Should allow hits that would be otherwise permitted by <see cref="PawnTeam"/> setup?
+    /// Should allow hits that would be otherwise permitted by <see cref="Team"/> setup?
     /// </param>
     public static HashSet<HitResult> TryHitHitRecievers_Raycast(
-        HitData hitData,
+        bool allowFriendlyFire,
+        Vector3 curWldPt,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
         bool hitMaxOnce,
         HashSet<IHitReceiver> ignoreHitRecievers,
         int layerMask,
         Vector3 prevWldPt,
-        Vector3 curWldPt,
-        bool allowFriendlyFire = false,
+        Transform srcTrf,
+        Team team,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         Vector3 castDir = curWldPt - prevWldPt;
@@ -216,22 +257,61 @@ public static class HitSysUtils {
             return new HashSet<HitResult>(4);
         // Normalize dir. Not sure if necessary for the raycast but jic.
         castDir /= castDist;
-        RaycastHit[] RaycastResults = new RaycastHit[overlapResultsArraySize];
+        RaycastHit[] raycastResults = new RaycastHit[overlapResultsArraySize];
         int numHits = Physics.RaycastNonAlloc(
             prevWldPt,
             castDir,
-            RaycastResults,
+            raycastResults,
             castDist,
             layerMask,
             qryTrgIxn
         );
-        return ProcessCollisionQueryResults(
-            hitData,
+        return ProcessCastResults(
+            allowFriendlyFire,
+            raycastResults,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
             hitMaxOnce,
             ignoreHitRecievers,
-            allowFriendlyFire,
-            RaycastResults,
-            numHits
+            numHits,
+            srcTrf,
+            team
         );
+    }
+
+    static bool TryProcessHitReceiver(
+        bool allowFriendlyFire,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        Vector3 hitPt,
+        IHitReceiver hitReceiver,
+        out HitResult hitResult,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        Vector3 separationDir,
+        Transform srcTrf,
+        Team team
+    ) {
+        hitResult = default;
+        if (hitReceiver == null)
+            return false;
+        if (hitReceiver.IgnoreAllHits)
+            return false;
+        Team receiverTeam = hitReceiver.GetTeam;
+        if (receiverTeam == Team.FriendToAll)
+            return false;
+        if (
+            receiverTeam != Team.EnemyToAll
+                && receiverTeam == team
+                && !allowFriendlyFire
+        )
+            return false;
+        if (ignoreHitRecievers.Contains(hitReceiver))
+            return false;
+        // Deal hit.
+        HitData hitData = new(hitDealerMovDir, hitDirMode, hitEffects, hitPt,separationDir, srcTrf, team);
+        hitResult = hitReceiver.ReceiveHit(hitData);
+        return true;
     }
 }

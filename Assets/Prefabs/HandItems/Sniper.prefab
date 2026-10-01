@@ -959,14 +959,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BasicGun
   aimLaser: {fileID: 5295744257320935573}
-  comboGraphConfig: {fileID: 11400000, guid: f80d5cee5383e3e4cbaa81eab68e3e71, type: 2}
+  comboGraphT: 0
   meleeHitDealer: {fileID: 5092167040023849340}
   meleeHitEffects:
     dmg: 1
+    hitT: 0
     knockbackT: 1
     knockbackStr: 1
   projHitEffects:
     dmg: 2
+    hitT: 3
     knockbackT: 1
     knockbackStr: 1
   homingProjData:

@@ -496,5 +496,6 @@ MonoBehaviour:
   hitDealer: {fileID: 5092167040023849340}
   hitEffects:
     dmg: 1
+    hitT: 1
     knockbackT: 1
     knockbackStr: 2

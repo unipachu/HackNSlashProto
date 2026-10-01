@@ -5,8 +5,8 @@ using UnityEngine;
 /// </summary>
 public class TestShooter : MonoBehaviour {
     [SerializeField] bool shoot = true;
-    [SerializeField] HitEffects hitEffects = new(10, KnockbackT.Weak, 0.5f);
-    [SerializeField] PawnTeam team = PawnTeam.EnemyToAll;
+    [SerializeField] HitEffects hitEffects = new(10, HitT.Blunt, KnockbackT.Weak, 0.5f);
+    [SerializeField] Team team = Team.EnemyToAll;
     [SerializeField] float spd = 3;
     [SerializeField] float maxLifetime = 10;
     [SerializeField] float homingStr = 2;
@@ -27,7 +27,7 @@ public class TestShooter : MonoBehaviour {
         if(timer > shootInterval) {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
-                HitDirMode.WldDir,
+                HitDirMode.HitDealerMovDir,
                 hitEffects,
                 homingProjData,
                 ProjT.SphereProj,

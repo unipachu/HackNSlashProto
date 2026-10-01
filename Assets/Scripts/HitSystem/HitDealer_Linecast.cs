@@ -18,38 +18,38 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
 
     Vector3 dbgPrevWldPt;
     Vector3 dbgCurWldPt;
-    Vector3 prevWldPt;
     HitDirMode hitDirMode;
     HitEffects hitEffects;
-    Transform hitSource;
     /// <summary>
     /// We use this to ignore hit recievers already hit during one activation.
     /// </summary>
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
-    bool isActive;
-    PawnTeam team;
+    Vector3 prevWldPt;
+    Transform srcTrf;
+    Team team;
 
-    public bool IsActive => isActive;
-    public Vector3 WldDir { get; set; }
+    public bool IsActive { get; private set; }
+    public Vector3 HitDealerMovDir { get; set; }
 
     // ------------------------------------------------------------------
     // Unity Callbacks
     // ------------------------------------------------------------------
 
     void LateUpdate() {
-        if (!isActive)
+        if (!IsActive)
             return;
         HashSet<HitResult> allHits = new(4);
         Vector3 curWldPt = transform.position;
-        // TODO: Where is the option for other hit modes? Wtf?
-        var hitData = new HitData(
-            hitEffects,
-            team,
+        ProcessSweptHitPoint(
+            allHits,
+            curWldPt,
+            HitDealerMovDir,
             hitDirMode,
-            hitSource,
-            WldDir
+            hitEffects,
+            ignoredHitRecievers,
+            srcTrf,
+            team
         );
-        ProcessSweptHitPoint(allHits, curWldPt, hitData);
         dbgPrevWldPt = prevWldPt;
         dbgCurWldPt = curWldPt;
         prevWldPt = curWldPt;
@@ -58,7 +58,7 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
     }
 
     void OnDrawGizmos() {
-        if (isActive) {
+        if (IsActive) {
             Gizmos.color = Color.red;
             Gizmos.DrawLine(dbgPrevWldPt, dbgCurWldPt);
             Gizmos.DrawSphere(dbgCurWldPt, 0.02f);
@@ -73,21 +73,31 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
     // ------------------------------------------------------------------
 
     public void Deactivate() {
-        isActive = false;
+        IsActive = false;
     }
 
     void ProcessSweptHitPoint(
         HashSet<HitResult> allHits,
         Vector3 curWldPt,
-        HitData hitData
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        Transform srcTrf,
+        Team team
     ) {
         HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_Raycast(
-            hitData,
             false,
-            ignoredHitRecievers,
+            curWldPt,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            false,
+            ignoreHitRecievers,
             lineLayerMask,
             prevWldPt,
-            curWldPt
+            srcTrf,
+            team
         );
         foreach (HitResult hitResult in hitResults) {
             allHits.Add(hitResult);
@@ -100,32 +110,32 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
     /// called when the hit dealer is already activated - it will then act as if it
     /// started the activation from the beginning.
     /// </summary>
-    /// <param name="hitSource">
+    /// <param name="srcTrf">
     /// Used to calculate hit dir if using <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>.
     /// </param>
     /// <param name="ignoreHitRecievers">
     /// You should add the recievers owned by the hitter here (if you don't want it to hit itself).
     /// </param>
     public void ResetNActivate(
-        Transform hitSource,
+        Transform srcTrf,
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team,
+        Team team,
         Vector3 wldDir
     ) {
         Dbg.Log(
             $"{nameof(HitDealer_Linecast)} was already active when {nameof(ResetNActivate)} was called. This"
                 + $" should be fine, so ignore this message!",
             this,
-            isActive
+            IsActive
         );
-        isActive = true;
+        IsActive = true;
         this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
-        this.hitSource = hitSource;
+        this.srcTrf = srcTrf;
         this.team = team;
-        WldDir = wldDir;
+        HitDealerMovDir = wldDir;
         ignoredHitRecievers.Clear();
         prevWldPt = transform.position;
         if (ignoreHitRecievers != null)

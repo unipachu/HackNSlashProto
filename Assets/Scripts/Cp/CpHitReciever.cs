@@ -7,7 +7,7 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
-    public PawnTeam GetTeam => cp.so_cpData.team;
+    public Team GetTeam => cp.so_cpData.team;
     bool IHitReceiver.IgnoreAllHits => cp.Data.ignoreHits;
 
     public HitResult ReceiveHit(HitData hitData) {
@@ -21,9 +21,9 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         ref Cp_Data aos = ref cp.Data;
         var classRefs = aos.classRefs;
         if (!aos.ignoreHits) {
-            aos.hp_Cur -= hitData.effects.dmg;
+            aos.hp_Cur -= hitData.hitEffects.dmg;
             aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
-            aos.action_dmgTaken?.Invoke(hitData.effects.dmg);
+            aos.action_dmgTaken?.Invoke(hitData.hitEffects.dmg);
             aos.action_curHpChanged?.Invoke(aos.hp_Cur, cp.so_cpData.hp_Max);
             //Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
             if (aos.hp_Cur == 0) {
@@ -37,10 +37,21 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                 )
                     return new(new IHitReceiver[] { this }, false, false);
             }
-            aos.lastRecievedHitDir = hitData.wldDir;
-            aos.lastKnockbackStr = hitData.effects.knockbackStr;
+            switch (hitData.hitDirMode) {
+                case HitDirMode.FromHitSourceTrfToHitReciever:
+                    Vector3 dir = transform.position - hitData.srcTrf.position;
+                    aos.lastRecievedHitDir = dir.NrmSafe();
+                    break;
+                case HitDirMode.HitDealerMovDir:
+                    aos.lastRecievedHitDir = hitData.hitDealerMovDir;
+                    break;
+                default:
+                    Debug.LogError($"Defaulted: {hitData.hitDirMode}");
+                    break;
+            }
+            aos.lastKnockbackStr = hitData.hitEffects.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpI]}.");
-            switch (hitData.effects.knockbackT) {
+            switch (hitData.hitEffects.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:

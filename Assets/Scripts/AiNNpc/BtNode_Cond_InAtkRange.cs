@@ -15,6 +15,8 @@ public class BtNode_Cond_InAtkRange : IBtNode{
         //    data.cp,
         //    CpMgr.GetAos(data.cp.Id).enableDbgMsgs
         //);
+        // TODO MINOR: We should probably check if the path to player is within certain distance, not just
+        // C: distance, because that can make enemies try to hit player through walls.
         return AiCtrlMgr.IsWithinDistToFollowTgt(
             aiCtrl.I,
             data.atkRange

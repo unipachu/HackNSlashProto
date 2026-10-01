@@ -70,7 +70,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
                 continue;
             }
             IProj proj = projObjs[j];
-            proj.HitDealer.WldDir = dir[j];
+            proj.HitDealer.HitDealerMovDir = dir[j];
             proj.Trf.SetPositionAndRotation(
                 pos[j],
                 Quaternion.LookRotation(dir[j])
@@ -100,7 +100,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         ProjT projT,
         HashSet<IHitReceiver> shooterHitRecievers,
         Transform tgt,
-        PawnTeam team,
+        Team team,
         Vector3 wldStartPos,
         Vector3 wldStartDir
     ) {

@@ -25,17 +25,17 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
     bool firstTickAfterActivation;
     HitDirMode hitDirMode;
     HitEffects hitEffects;
-    Transform hitSource;
+    Transform srcTrf;
     /// <summary>
     /// We use this to ignore hit recievers already hit during one activation.
     /// </summary>
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
     bool isActive;
     SphereShape prevSphereWld;
-    PawnTeam team;
+    Team team;
 
     public bool IsActive => isActive;
-    public Vector3 WldDir { get; set; }
+    public Vector3 HitDealerMovDir { get; set; }
 
     // ------------------------------------------------------------------
     // Unity Callbacks
@@ -45,23 +45,32 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         if (!isActive)
             return;
         HashSet<HitResult> allHits = new(4);
-        SphereShape curWldSphere = sphere;
-        curWldSphere.center = curWldSphere.center.TrfPtUnscaled(transform);
-        var hitData = new HitData(
-            hitEffects,
-            team,
-            hitDirMode,
-            hitSource,
-            WldDir
-        );
+        SphereShape hitDealerSphereWld = sphere;
+        hitDealerSphereWld.center = hitDealerSphereWld.center.TrfPtUnscaled(transform);
         if (firstTickAfterActivation) {
-            ProcessInitialHitSphere(allHits, curWldSphere, hitData);
+            ProcessInitialHitSphere(
+                allHits,
+                hitDealerSphereWld,
+                HitDealerMovDir,
+                hitDirMode,
+                hitEffects,
+                srcTrf,
+                team
+            );
             firstTickAfterActivation = false;
         } else
-            ProcessSweptHitSphere(allHits, curWldSphere, hitData);
+            ProcessSweptHitSphere(
+                allHits,
+                hitDealerSphereWld,
+                HitDealerMovDir,
+                hitDirMode,
+                hitEffects,
+                srcTrf,
+                team
+            );
         dbgPrevSphereWld = prevSphereWld;
-        dbgCurSphereWld = curWldSphere;
-        prevSphereWld = curWldSphere;
+        dbgCurSphereWld = hitDealerSphereWld;
+        prevSphereWld = hitDealerSphereWld;
         if (allHits.Count != 0)
             hitSomething?.Invoke(allHits);
     }
@@ -93,15 +102,24 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
     
     void ProcessInitialHitSphere(
         HashSet<HitResult> allHits,
-        SphereShape curWldSphere,
-        HitData hitData
+        SphereShape hitDealerSphereWld,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        Transform srcTrf,
+        Team team
     ) {
         HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_OverlapSphere(
-            hitData,
+            false,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
             false,
             ignoredHitRecievers,
             sphereLayerMask,
-            curWldSphere
+            hitDealerSphereWld,
+            srcTrf,
+            team
         );
         foreach (HitResult hitResult in hitResults) {
             allHits.Add(hitResult);
@@ -112,15 +130,20 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
     void ProcessSweptHitSphere(
         HashSet<HitResult> allHits,
         SphereShape curWldSphere,
-        HitData hitData
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        Transform srcTrf,
+        Team team
     ) {
         HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_SphereCast(
-            hitData,
             false,
+            curWldSphere, hitDealerMovDir, hitDirMode, hitEffects, false,
             ignoredHitRecievers,
             sphereLayerMask,
             prevSphereWld,
-            curWldSphere
+            srcTrf,
+            team
         );
         foreach (HitResult hitResult in hitResults) {
             allHits.Add(hitResult);
@@ -144,7 +167,7 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team,
+        Team team,
         Vector3 wldDir
     ) {
         Dbg.Log(
@@ -157,9 +180,9 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         firstTickAfterActivation = true;
         this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
-        this.hitSource = hitSource;
+        this.srcTrf = hitSource;
         this.team = team;
-        WldDir = wldDir;
+        HitDealerMovDir = wldDir;
         ignoredHitRecievers.Clear();
         SphereShape curWldSphere = sphere;
         curWldSphere.center = curWldSphere.center.TrfPtUnscaled(transform);

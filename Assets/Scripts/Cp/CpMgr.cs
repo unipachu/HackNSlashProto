@@ -400,10 +400,10 @@ public class CpMgr : Singleton<CpMgr> {
         for (int i = 0; i < inst.entityCount; i++) {
             if (i == cpI)
                 continue;
-            PawnTeam candTeam = CpMgr.inst.aos[i].handle.so_cpData.team;
-            if (candTeam == PawnTeam.FriendToAll)
+            Team candTeam = CpMgr.inst.aos[i].handle.so_cpData.team;
+            if (candTeam == Team.FriendToAll)
                 continue;
-            if (candTeam == PawnTeam.EnemyToAll || candTeam != CpMgr.inst.aos[cpI].handle.so_cpData.team) {
+            if (candTeam == Team.EnemyToAll || candTeam != CpMgr.inst.aos[cpI].handle.so_cpData.team) {
                 //Debug.Log("Found tgt: " + i);
                 return inst.aos[i].handle;
             }

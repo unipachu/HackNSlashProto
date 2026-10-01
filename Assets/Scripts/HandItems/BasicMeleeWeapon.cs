@@ -4,7 +4,7 @@ using UnityEngine;
 public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitter {
     [SerializeField] ComboGraphT comboGraphT;
     [SerializeField] HitDealer_CapsuleSubstepper hitDealer;
-    [SerializeField] HitEffects hitEffects = new HitEffects(1, KnockbackT.Weak, 1);
+    [SerializeField] HitEffects hitEffects = new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1);
 
     List<IComboNode> comboGraph;
 

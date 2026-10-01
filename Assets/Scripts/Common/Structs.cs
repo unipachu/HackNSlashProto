@@ -403,42 +403,60 @@ public struct EnemyWave_EnemyEntry {
 }
 
 public struct HitData {
-    public HitEffects effects;
-    public PawnTeam team;
-    public HitDirMode dirMode;
+    public HitEffects hitEffects;
+    public Team team;
+    public HitDirMode hitDirMode;
+    /// <summary>
+    /// The world position of the where the raycast has hit, or if using overlap shape, an approximation of
+    /// a hit point.
+    /// </summary>
+    public Vector3 hitPt;
+    /// <summary>
+    /// The normal at the hit location of the raycast, or if using an overlap shape, an approximation
+    /// of a normal.
+    /// </summary>
+    public Vector3 separationDir;
     /// <summary>
     /// Used to calculate hit direction if <see cref="HitDirMode"/> is set to
-    /// <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>.
+    /// <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>. E.g. this should be the root/center point of a
+    /// character's body who initiates the hit with its melee weapon if we want knock back to be away from
+    /// that character.
     /// </summary>
-    public Transform sourceTrf;
-    public Vector3 wldDir;
+    public Transform srcTrf;
+    public Vector3 hitDealerMovDir;
 
     public HitData(
-        HitEffects effects,
-        PawnTeam team,
-        HitDirMode dirMode,
-        Transform sourceTrf,
-        Vector3 wldDir
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        Vector3 hitPt,
+        Vector3 separationDir,
+        Transform srcTrf,
+        Team team
     ) {
-        this.effects = effects;
+        this.hitDealerMovDir = hitDealerMovDir;
+        this.hitDirMode = hitDirMode;
+        this.hitEffects = hitEffects;
+        this.hitPt = hitPt;
+        this.separationDir = separationDir;
+        this.srcTrf = srcTrf;
         this.team = team;
-        this.dirMode = dirMode;
-        this.sourceTrf = sourceTrf;
-        this.wldDir = wldDir;
     }
 }
 
 [Serializable]
 public struct HitEffects {
     public int dmg;
+    public HitT hitT;
     public KnockbackT knockbackT;
     /// <summary>
     /// This is multiplied by the knockback animation root motion.
     /// </summary>
     public float knockbackStr;
 
-    public HitEffects(int dmg, KnockbackT knockbackT, float knockbackStr) {
+    public HitEffects(int dmg, HitT hitT, KnockbackT knockbackT, float knockbackStr) {
         this.dmg = dmg;
+        this.hitT = hitT;
         this.knockbackT = knockbackT;
         this.knockbackStr = knockbackStr;
     }

@@ -29,7 +29,7 @@ public class So_CpConfig : ScriptableObject {
     public HandItemT rHandItem;
 
     [Header("Team Settings")]
-    public PawnTeam team = PawnTeam.Team0;
+    public Team team = Team.Team0;
 
     [Header("Debug")]
     public bool enableDbgMsgs = false;

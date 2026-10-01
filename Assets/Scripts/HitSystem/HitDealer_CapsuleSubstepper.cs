@@ -22,7 +22,7 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     List<CapsuleShape> dbgPrevSubsteppedWldCapsules = new(4);
     HitDirMode hitDirMode;
     HitEffects hitEffects;
-    Transform hitSource;
+    Transform srcTrf;
     /// <summary>
     /// We use this to ignore hit recievers already hit during one activation
     /// </summary>
@@ -31,10 +31,10 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     HashSet<IHitReceiver> ignoredHitRecievers = new(4);
     bool isActive;
     CapsuleShape[] prevCapsuleWldPoses;
-    PawnTeam team;
+    Team team;
 
     public bool IsActive => isActive;
-    public Vector3 WldDir { get; set; }
+    public Vector3 HitDealerMovDir { get; set; }
 
     /// <summary>
     /// If the pt0 of a hit capsule linearily moves this much away from the previous substepped hitcapsule,
@@ -64,14 +64,11 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
                 // Transform capsule into world space.
                 capsule.pt0 = capsule.pt0.TrfPtUnscaled(transform);
                 capsule.pt1 = capsule.pt1.TrfPtUnscaled(transform);
-                var hitData = new HitData(
-                    hitEffects,
-                    team,
-                    hitDirMode,
-                    hitSource,
-                    WldDir
+                SubstepHitCapsules(
+                    allHits,
+                    capsule,
+                    prevCapsuleWldPoses[capsuleI]
                 );
-                SubstepHitCapsules(allHits, capsule, prevCapsuleWldPoses[capsuleI], hitData);
                 prevCapsuleWldPoses[capsuleI] = capsule;
             }
             if (allHits.Count != 0)
@@ -128,7 +125,7 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team,
+        Team team,
         Vector3 wldDir
     ) {
         Dbg.Log(
@@ -140,9 +137,9 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
         isActive = true;
         this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
-        this.hitSource = hitSource;
+        this.srcTrf = hitSource;
         this.team = team;
-        WldDir = wldDir;
+        HitDealerMovDir = wldDir;
         ignoredHitRecievers.Clear();
         // NOTE: Animation events calling this method should be fired in LateUpdate but before this classes
         // NOTE C: LateUpdate is called. Then the initial positions of the hit capsules will
@@ -170,8 +167,7 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
     void SubstepHitCapsules(
         HashSet<HitResult> allHits,
         CapsuleShape curWldCapsule,
-        CapsuleShape prevWldCapsule,
-        HitData hitData
+        CapsuleShape prevWldCapsule
     ) {
         Vector3 prevAxis = prevWldCapsule.pt1 - prevWldCapsule.pt0;
         Vector3 curAxis = curWldCapsule.pt1 - curWldCapsule.pt0;
@@ -215,11 +211,15 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
             substepCapsule.r = Mathf.Lerp(prevWldCapsule.r, curWldCapsule.r, t);
             dbgPrevSubsteppedWldCapsules.Add(substepCapsule);
             HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_OverlapCapsule(
-                hitData,
-                false,
+                false, substepCapsule,
+                HitDealerMovDir,
+                hitDirMode,
+                hitEffects,
+                false, 
                 ignoredHitRecievers,
                 capsuleLayerMask,
-                substepCapsule
+                srcTrf,
+                team
             );
             foreach (HitResult hitResult in hitResults) {
                 allHits.Add(hitResult);

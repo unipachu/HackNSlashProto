@@ -146,13 +146,32 @@ public enum Faces : byte {
 /// </summary>
 public enum HitDirMode : byte {
     /// <summary>
-    /// Calculates direction from <see cref="HitData.sourceTrf"/>.
+    /// Calculates direction from <see cref="HitData.srcTrf"/>.
     /// </summary>
     FromHitSourceTrfToHitReciever,
     /// <summary>
-    /// Calculates direction from <see cref="HitData.wldDir"/>.
+    /// Calculates direction from <see cref="HitData.hitDealerMovDir"/>.
     /// </summary>
-    WldDir,
+    HitDealerMovDir,
+}
+
+public enum HitT : byte {
+    /// <summary>
+    /// With dull objects e.g. hammers.
+    /// </summary>
+    Blunt,
+    /// <summary>
+    /// With cutting objects e.g. sword slash.
+    /// </summary>
+    Cut,
+    /// <summary>
+    /// With e.g. bombs.
+    /// </summary>
+    Explosion,
+    /// <summary>
+    /// With puncturing e.g. bullets or sword tips.
+    /// </summary>
+    Pierce,
 }
 
 public enum HpBarTrailingSt : byte {
@@ -167,7 +186,7 @@ public enum KnockbackT : byte {
     Strong
 }
 
-public enum PawnTeam : byte {
+public enum Team : byte {
     /// <summary>
     /// Default local player team.
     /// </summary>
@@ -182,7 +201,19 @@ public enum PawnTeam : byte {
     FriendToAll,
 }
 
+public enum SfxId : byte {
+    DefaultPierce,
+    DefaultLightSlam,
+    MetalPierce,
+    MetalLightSlam,
+}
+
 public enum Side : byte {
     Left,
     Right,
+}
+
+public enum SurfaceT : byte {
+    Default,
+    Metal,
 }

@@ -63,7 +63,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         aimLaser.Tick();
         if (cpData.curStDur > 1) { // TODO: so
             HomingProjMgr.inst.ShootProj(
-                HitDirMode.WldDir,
+                HitDirMode.HitDealerMovDir,
                 hitEffects,
                 homingProjData,
                 projT,

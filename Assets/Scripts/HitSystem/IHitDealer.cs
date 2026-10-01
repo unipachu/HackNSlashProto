@@ -5,7 +5,7 @@ using UnityEngine;
 /// Can deal hits to hit recievers.
 /// </summary>
 public interface IHitDealer{
-    Vector3 WldDir { get; set; }
+    Vector3 HitDealerMovDir { get; set; }
     
     public void Deactivate();
 
@@ -14,7 +14,7 @@ public interface IHitDealer{
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        PawnTeam team,
+        Team team,
         Vector3 wldDir
     );
 }
