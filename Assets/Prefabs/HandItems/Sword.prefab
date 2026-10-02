@@ -320,7 +320,7 @@ MonoBehaviour:
     r: 0.27
   capsuleLayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 704
 --- !u!1 &6707570474400046529
 GameObject:
   m_ObjectHideFlags: 0

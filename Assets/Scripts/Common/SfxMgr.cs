@@ -24,6 +24,7 @@ public class SfxMgr : Singleton<SfxMgr>{
             Debug.LogError($"No AudioClip assigned for {sfxId}.", this);
             return;
         }
-        AudioSource.PlayClipAtPoint(clip, pos);
+        //Debug.Log($"Played: {sfxId} at pos {pos}");
+        AudioSource.PlayClipAtPoint(clip, pos, 1);
     }
 }

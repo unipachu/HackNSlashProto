@@ -13,8 +13,8 @@ TagManager:
   - UI
   - StaticEnv
   - DynamicEnv
-  - CharacterMovement
-  - HitReceiver
+  - PawnMovement
+  - PawnHitReceiver
   - 
   - 
   - 

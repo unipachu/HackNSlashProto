@@ -417,10 +417,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4703338260daf9458b3b69fa6caee18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SfxMgr
-  defaultPierce: {fileID: 0}
-  defaultLightSlam: {fileID: 0}
-  metalPierce: {fileID: 0}
-  metalLightSlam: {fileID: 0}
+  defaultPierce: {fileID: 8300000, guid: 9b4b16b34802dd2488b9909c598bee3f, type: 3}
+  defaultLightSlam: {fileID: 8300000, guid: 9b4b16b34802dd2488b9909c598bee3f, type: 3}
+  metalPierce: {fileID: 8300000, guid: ab4daaa815d50404fa8207c8bea6fa31, type: 3}
+  metalLightSlam: {fileID: 8300000, guid: 868bfe3f1e595fb4e8e8ca09eb7084c4, type: 3}
 --- !u!4 &68886427
 Transform:
   m_ObjectHideFlags: 0
@@ -6545,6 +6545,59 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1485299129}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1523755174
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1523755175}
+  - component: {fileID: 1523755176}
+  m_Layer: 0
+  m_Name: ParticleFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1523755175
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523755174}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1523755176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1523755174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1999cabdbb7e64d4aabd09de2575943d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ParticleFactory
+  sparksParPrefab: {fileID: 6268619501200565201, guid: 6b9eddf79f785264098729444e11ccb9, type: 3}
+  bloodParPrefab: {fileID: 6268619501200565201, guid: 6b9eddf79f785264098729444e11ccb9, type: 3}
+  smokeParPrefab: {fileID: 6268619501200565201, guid: 6b9eddf79f785264098729444e11ccb9, type: 3}
+  sparksPoolSz: 8
+  bloodPoolSz: 8
+  smokePoolSz: 16
+  maxSparksPoolSz: 64
+  maxBloodPoolSz: 64
+  maxSmokePoolSz: 64
 --- !u!1 &1532699570
 GameObject:
   m_ObjectHideFlags: 0
@@ -6554,6 +6607,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1532699571}
+  - component: {fileID: 1532699575}
   - component: {fileID: 1532699574}
   - component: {fileID: 1532699573}
   - component: {fileID: 1532699572}
@@ -6573,7 +6627,7 @@ Transform:
   m_GameObject: {fileID: 1532699570}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -11.98, y: 3.34, z: -18.47}
+  m_LocalPosition: {x: 2.03, y: 3.34, z: -18.47}
   m_LocalScale: {x: 1.1061, y: 8.347904, z: 1.1061}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6625,7 +6679,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 531428ed0c760ac4880d9b142ebdde5a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -6657,6 +6711,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1532699570}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1532699575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532699570}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f10efc2b85756dc46afb1d5db565e6af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnvSurfaceHitReciever
+  surfaceT: 1
 --- !u!1 &1532979961
 GameObject:
   m_ObjectHideFlags: 0
@@ -7862,7 +7929,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: 64f6a0f4b63feee4fab3a90c362d6497, type: 2}
+  waveConfig: {fileID: 11400000, guid: 64e0db9dbcdcd774c935a49d80bf5030, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}
@@ -8559,6 +8626,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1958505973}
+  - component: {fileID: 1958505977}
   - component: {fileID: 1958505976}
   - component: {fileID: 1958505975}
   - component: {fileID: 1958505974}
@@ -8630,7 +8698,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 1e5ab8b3aec14c442b4e851b08cde8a0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8662,6 +8730,19 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1958505972}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1958505977
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1958505972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f10efc2b85756dc46afb1d5db565e6af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnvSurfaceHitReciever
+  surfaceT: 0
 --- !u!1 &1967043709
 GameObject:
   m_ObjectHideFlags: 0
@@ -9596,6 +9677,7 @@ SceneRoots:
   - {fileID: 900887753}
   - {fileID: 404265975}
   - {fileID: 1861722109}
+  - {fileID: 1523755175}
   - {fileID: 83296389}
   - {fileID: 1732218851}
   - {fileID: 68886427}

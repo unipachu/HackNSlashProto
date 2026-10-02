@@ -153,7 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HitDealer_Linecast
   lineLayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 704
 --- !u!96 &-1274567675709279923
 TrailRenderer:
   serializedVersion: 4

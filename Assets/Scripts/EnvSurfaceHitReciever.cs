@@ -18,14 +18,53 @@ public class EnvSurfaceHitReciever : MonoBehaviour, IHitReceiver{
         return new(new IHitReceiver[] { this }, false, false);
     }
 
-    // TODO: Move to utils
     static void SpawnSurfaceHitEffects(SurfaceT surfaceT, HitData hitData) {
-        // TODO: Read hit type from hit data i.e. slash, slam, piecer, or explosion
         switch (surfaceT) {
             case SurfaceT.Default:
-                SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                switch (hitData.hitEffects.hitT) {
+                    case HitT.Blunt:
+                        SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Cut:
+                        SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Explosion:
+                        SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Pierce:
+                        SfxMgr.inst.PlaySfx(SfxId.DefaultPierce, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    default:
+                        Debug.LogError($"Defaulted: {hitData.hitEffects.hitT}");
+                        break;
+                }
                 break;
             case SurfaceT.Metal:
+                switch (hitData.hitEffects.hitT) {
+                    case HitT.Blunt:
+                        SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Cut:
+                        SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Explosion:
+                        SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    case HitT.Pierce:
+                        SfxMgr.inst.PlaySfx(SfxId.MetalPierce, hitData.hitPt);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        break;
+                    default:
+                        Debug.LogError($"Defaulted: {hitData.hitEffects.hitT}");
+                        break;
+                }
                 break;
             default:
                 Debug.LogError($"Defaulted: {surfaceT}");

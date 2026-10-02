@@ -156,7 +156,7 @@ MonoBehaviour:
     r: 0.5
   sphereLayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 704
 --- !u!96 &547038847413372352
 TrailRenderer:
   serializedVersion: 4

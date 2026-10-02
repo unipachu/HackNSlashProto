@@ -230,6 +230,7 @@ MonoBehaviour:
   hitDealer: {fileID: 1738826683922648006}
   hitEffects:
     dmg: 1
+    hitT: 0
     knockbackT: 1
     knockbackStr: 1
 --- !u!1 &5723746665550441109
@@ -285,7 +286,7 @@ MonoBehaviour:
     r: 0.25
   capsuleLayerMask:
     serializedVersion: 2
-    m_Bits: 512
+    m_Bits: 704
 --- !u!1 &7164331942654089889
 GameObject:
   m_ObjectHideFlags: 0
