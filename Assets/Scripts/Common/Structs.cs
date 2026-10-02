@@ -413,7 +413,7 @@ public struct HitData {
     public Vector3 hitPt;
     /// <summary>
     /// The normal at the hit location of the raycast, or if using an overlap shape, an approximation
-    /// of a normal.
+    /// of the hit point normal.
     /// </summary>
     public Vector3 separationDir;
     /// <summary>
@@ -467,12 +467,10 @@ public struct HitResult {
     /// All hit recievers owned by the hit entity. Can be used to ignore them from further hits.
     /// </summary>
     public IHitReceiver[] allEntityHitReceivers;
-    public bool hitIgnored;
     public bool wasBlocked;
 
-    public HitResult(IHitReceiver[] allEntityHitReceivers, bool hitIgnored, bool wasBlocked) {
+    public HitResult(IHitReceiver[] allEntityHitReceivers, bool wasBlocked) {
         this.allEntityHitReceivers = allEntityHitReceivers;
-        this.hitIgnored = hitIgnored;
         this.wasBlocked = wasBlocked;
     }
 }

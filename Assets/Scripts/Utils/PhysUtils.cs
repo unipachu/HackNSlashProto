@@ -73,9 +73,11 @@ public static class PhysUtils{
     /// <summary>
     /// Performs a non-allocating capsule overlap query and also calculates contact-like information for each
     /// overlapping collider. When only one capsule tip is overlapping, a raycast is performed from the
-    /// non-overlapping tip to the overlapping tip to obtain the actual surface point and normal. When both
-    /// or neither tip is overlapping, the closest point to the capsule center is used as the hit point and
-    /// a separation direction is derived from the corresponding fallback position.
+    /// non-overlapping tip toward the overlapping tip to obtain the actual surface point and normal. When
+    /// both tips are overlapping, the collider's closest point to the capsule center is used as the hit
+    /// point and a separation direction is derived from that point. When neither tip is overlapping, the
+    /// collider's closest point to the capsule center is found and a raycast is performed from tip pt0
+    /// toward that point; if the raycast misses, a center-based separation direction is used as a fallback.
     /// </summary>
     /// <param name="capsule">World-space capsule to query with.</param>
     /// <param name="layerMask">Layer mask used by the overlap query.</param>
@@ -129,8 +131,7 @@ public static class PhysUtils{
                     separationDirs[i] = hit.normal;
                     continue;
                 }
-            }
-            else if (tipPt0Overlapping && !tipPt1Overlapping) {
+            }else if (tipPt0Overlapping && !tipPt1Overlapping) {
                 if (collider.Raycast(
                     new Ray(tipPt1, -tipToTipDir),
                     out RaycastHit hit,
@@ -148,10 +149,24 @@ public static class PhysUtils{
                     ? separationDir.normalized
                     : Vector3.up;
             }else {
-                Vector3 separationDir = capsuleCenter - collider.transform.position;
-                separationDirs[i] = separationDir.sqrMagnitude > 0f
-                    ? separationDir.normalized
-                    : Vector3.up;
+                Vector3 closestToCenterPt = collider.ClosestPoint(capsuleCenter);
+                Vector3 toClosestPt = closestToCenterPt - tipPt0;
+                float toClosestPtLength = toClosestPt.magnitude;
+                if (toClosestPtLength > Mathf.Epsilon &&
+                    collider.Raycast(
+                        new Ray(tipPt0, toClosestPt / toClosestPtLength),
+                        out RaycastHit hit,
+                        toClosestPtLength
+                    )) {
+                    hitPts[i] = hit.point;
+                    separationDirs[i] = hit.normal;
+                }else {
+                    hitPts[i] = closestToCenterPt;
+                    Vector3 separationDir = capsuleCenter - collider.transform.position;
+                    separationDirs[i] = separationDir.sqrMagnitude > 0f
+                        ? separationDir.normalized
+                        : Vector3.up;
+                }
             }
         }
         return numCols;

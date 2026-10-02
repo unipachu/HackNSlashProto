@@ -16,6 +16,7 @@ public class GameMgr : Singleton<GameMgr>{
         CpMgr.inst.Init();
         AiCtrlMgr.inst.Init();
         ParticleFactory.inst.Init();
+        SfxMgr.inst.Init();
     }
     private void Start() {
         CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);

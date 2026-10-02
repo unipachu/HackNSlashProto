@@ -35,7 +35,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                         cp.I
                     )
                 )
-                    return new(new IHitReceiver[] { this }, false, false);
+                    return new(new IHitReceiver[] { this }, false);
             }
             switch (hitData.hitDirMode) {
                 case HitDirMode.FromHitSourceTrfToHitReciever:
@@ -83,6 +83,6 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
             }
         }
-        return new(new IHitReceiver[] { this }, aos.ignoreHits, false);
+        return new(new IHitReceiver[] { this }, false);
     }
 }

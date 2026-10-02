@@ -15,7 +15,7 @@ public class EnvSurfaceHitReciever : MonoBehaviour, IHitReceiver{
         //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
         //);
         SpawnSurfaceHitEffects(surfaceT, hitData);
-        return new(new IHitReceiver[] { this }, false, false);
+        return new(new IHitReceiver[] { this }, false);
     }
 
     static void SpawnSurfaceHitEffects(SurfaceT surfaceT, HitData hitData) {

@@ -421,6 +421,13 @@ MonoBehaviour:
   defaultLightSlam: {fileID: 8300000, guid: 9b4b16b34802dd2488b9909c598bee3f, type: 3}
   metalPierce: {fileID: 8300000, guid: ab4daaa815d50404fa8207c8bea6fa31, type: 3}
   metalLightSlam: {fileID: 8300000, guid: 868bfe3f1e595fb4e8e8ca09eb7084c4, type: 3}
+  poolSize: 32
+  defaultVol: 1
+  defaultSpatialBlend: 1
+  defaultRolloffMode: 0
+  defaultminDist: 5
+  defaultMaxDist: 30
+  outputAudioMixerGroup: {fileID: 0}
 --- !u!4 &68886427
 Transform:
   m_ObjectHideFlags: 0
@@ -1688,7 +1695,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b31d2948b7d19de4384e6c03c4c6edd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeMgr
-  baseTimeScl: 1
+  baseTimeScl: 0.5
   slowMotionTimeScl: 0.25
 --- !u!4 &234415365
 Transform:
