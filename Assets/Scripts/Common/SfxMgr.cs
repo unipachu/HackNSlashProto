@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Audio;
+using static UnityEditor.PlayerSettings;
 
 /// <summary>
 /// Plays sound effects using a pool of reusable <see cref="AudioSource"/>s.
@@ -45,7 +46,7 @@ public class SfxMgr : Singleton<SfxMgr> {
             audioSrc.maxDistance = defaultMaxDist;
             // TODO MAYBE: Audio srcs should be attached to moving objects for doppler effect to propely work.
             // C: So this manager is not fit for it at all, but this is good enough for this project.
-            audioSrc.dopplerLevel = 0f;
+            audioSrc.dopplerLevel = 0;
             audioSrc.outputAudioMixerGroup = outputAudioMixerGroup;
             sfxSrcs[i] = audioSrc;
         }
@@ -77,7 +78,12 @@ public class SfxMgr : Singleton<SfxMgr> {
             Debug.LogWarning($"SfxMgr pool empty while playing {sfxId}. Consider pooling more audio srcs", this);
             return;
         }
-        audioSrc.spatialBlend = 0f;
+        audioSrc.volume = defaultVol;
+        audioSrc.spatialBlend = 0;
+        audioSrc.rolloffMode = defaultRolloffMode;
+        audioSrc.minDistance = defaultminDist;
+        audioSrc.maxDistance = defaultMaxDist;
+        audioSrc.transform.position = transform.position; // Makes it easier to debug sounds.
         audioSrc.clip = clip;
         audioSrc.Play();
     }
