@@ -45,6 +45,10 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
             return;
         HashSet<HitResult> allHits = new(4);
         SphereShape hitDealerSphereWld =  new(sphere.center.TrfPtUnscaled(transform), sphere.r);
+        // NOTE: We ALWAYS also process the start position of the current sphere sweep shape. CapsuleCast
+        // C: IGNORES all colliders that are already overlapping with the start position of the cast. This can
+        // C: lead to colliders moving into the path of the cast to be ignored and by doing an overlap sphere
+        // C: at the cast start pos we mitigate this problem.
         ProcessOverlapHitSphere(
             allHits,
             prevSphereWld,

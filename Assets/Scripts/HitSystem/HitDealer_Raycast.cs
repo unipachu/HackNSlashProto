@@ -4,17 +4,16 @@ using UnityEngine;
 
 /// <summary>
 /// Hit dealer using a single point in world space. The point is swept from its previous
-/// world position to its current world position using a linecast.
+/// world position to its current world position using a raycast.
 /// </summary>
-// TODO: Rename to HitDealer_Raycast
-public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
+public class HitDealer_Raycast : MonoBehaviour, IHitDealer {
     /// <summary>
     /// Param contains all <see cref="HitResult"/>s from one update.
     /// </summary>
     public event Action<HashSet<HitResult>> hitSomething;
 
     [Tooltip("Set this always to the HitReciever layer!")]
-    [SerializeField] LayerMask lineLayerMask;
+    [SerializeField] LayerMask rayLayerMask;
 
     Vector3 dbgPrevWldPt;
     Vector3 dbgCurWldPt;
@@ -94,7 +93,7 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
             hitEffects,
             false,
             ignoreHitRecievers,
-            lineLayerMask,
+            rayLayerMask,
             prevWldPt,
             srcTrf,
             team
@@ -106,7 +105,7 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
     }
 
     /// <summary>
-    /// Call this when you want to activate the linecast hit dealer. This can also be
+    /// Call this when you want to activate the raycast hit dealer. This can also be
     /// called when the hit dealer is already activated - it will then act as if it
     /// started the activation from the beginning.
     /// </summary>
@@ -125,7 +124,7 @@ public class HitDealer_Linecast : MonoBehaviour, IHitDealer {
         Vector3 wldDir
     ) {
         Dbg.Log(
-            $"{nameof(HitDealer_Linecast)} was already active when {nameof(ResetNActivate)} was called. This"
+            $"{nameof(HitDealer_Raycast)} was already active when {nameof(ResetNActivate)} was called. This"
                 + $" should be fine, so ignore this message!",
             this,
             IsActive

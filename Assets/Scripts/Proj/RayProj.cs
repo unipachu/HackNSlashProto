@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class RayProj : MonoBehaviour, IProj{
     [Header("Refs")]
-    public HitDealer_Linecast hitDealer;
+    public HitDealer_Raycast hitDealer;
     public TrailRenderer trailRenderer;
 
     public GameObject Go => gameObject;

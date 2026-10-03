@@ -10,6 +10,80 @@ public class DebugUtils : MonoBehaviour {
     /// </summary>
     public static Color DefaultColor = Color.white;
 
+    static Mesh arrowHeadMesh;
+
+    public static void OnDrawGizmos_DrawArrow(Vector3 startPt, Vector3 arrowVec, Color? color = null) {
+        Color prevColor = Gizmos.color;
+        Color arrowCol = color ?? DefaultColor;
+        const float startSphereRad = 0.05f;
+        if (arrowVec.IsZeroOrNearlyZero()) {
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(startPt, startSphereRad);
+            Gizmos.color = prevColor;
+            return;
+        }
+        Vector3 normArrowVec = arrowVec.normalized;
+        Vector3 arrowTip = startPt + arrowVec;
+        float arrowHeadLen = Mathf.Min(0.075f, arrowVec.magnitude * 0.25f);
+        float arrowHeadRad = arrowHeadLen * 0.5f;
+        Vector3 arrowHeadBasePt = arrowTip - normArrowVec * arrowHeadLen;
+        Color arrowHeadCol = new Color(
+            arrowCol.r * 0.8f,
+            arrowCol.g * 0.8f,
+            arrowCol.b * 0.8f,
+            arrowCol.a
+        );
+        Gizmos.color = Color.white;
+        Gizmos.DrawSphere(startPt, startSphereRad);
+        Gizmos.color = arrowCol;
+        Gizmos.DrawLine(startPt, arrowHeadBasePt);
+        if (arrowHeadMesh == null) {
+            arrowHeadMesh = new Mesh();
+            arrowHeadMesh.name = "DbgGizmoArrowHead";
+            arrowHeadMesh.vertices = new[] {
+            // Side 0
+            new Vector3(-1f, 0f, -1f),
+            new Vector3(-1f, 0f, 1f),
+            new Vector3(0f, 1f, 0f),
+            // Side 1
+            new Vector3(-1f, 0f, 1f),
+            new Vector3(1f, 0f, 1f),
+            new Vector3(0f, 1f, 0f),
+            // Side 2
+            new Vector3(1f, 0f, 1f),
+            new Vector3(1f, 0f, -1f),
+            new Vector3(0f, 1f, 0f),
+            // Side 3
+            new Vector3(1f, 0f, -1f),
+            new Vector3(-1f, 0f, -1f),
+            new Vector3(0f, 1f, 0f),
+            // Bottom
+            new Vector3(-1f, 0f, -1f),
+            new Vector3(1f, 0f, -1f),
+            new Vector3(1f, 0f, 1f),
+            new Vector3(-1f, 0f, 1f)
+        };
+            arrowHeadMesh.triangles = new[] {
+            0, 1, 2,
+            3, 4, 5,
+            6, 7, 8,
+            9, 10, 11,
+            12, 13, 14,
+            12, 14, 15
+        };
+            arrowHeadMesh.RecalculateNormals();
+        }
+        Quaternion arrowHeadRot = Quaternion.FromToRotation(Vector3.up, normArrowVec);
+        Gizmos.color = arrowHeadCol;
+        Gizmos.DrawMesh(
+            arrowHeadMesh,
+            arrowHeadBasePt,
+            arrowHeadRot,
+            new Vector3(arrowHeadRad, arrowHeadLen, arrowHeadRad)
+        );
+        Gizmos.color = prevColor;
+    }
+
     /// <summary>
     /// Draws a wireframe capsule between the given points with the specified radius.
     /// Call this in MonoBehaviour's OnDrawGizmos or OnDrawGizmosSelected methods.

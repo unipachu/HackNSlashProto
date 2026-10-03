@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4470678986349354851}
   - component: {fileID: 3605874631302619221}
-  - component: {fileID: 1199904723827510900}
+  - component: {fileID: 2826761099665004640}
   - component: {fileID: -1274567675709279923}
   m_Layer: 0
   m_Name: RayProj
@@ -137,9 +137,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0103ab084165aff418a4d21e59704c57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RayProj
-  hitDealer: {fileID: 1199904723827510900}
+  hitDealer: {fileID: 2826761099665004640}
   trailRenderer: {fileID: -1274567675709279923}
---- !u!114 &1199904723827510900
+--- !u!114 &2826761099665004640
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,10 +148,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8511137120282664907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb79d432f6ddcab459df359d0baa6087, type: 3}
+  m_Script: {fileID: 11500000, guid: 729ee4eacbf06414f82983bf4b783d57, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HitDealer_Linecast
-  lineLayerMask:
+  m_EditorClassIdentifier: Assembly-CSharp::HitDealer_Raycast
+  rayLayerMask:
     serializedVersion: 2
     m_Bits: 704
 --- !u!96 &-1274567675709279923
