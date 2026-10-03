@@ -77,7 +77,7 @@ public static class PhysUtils{
     /// 1.5 units opposite the movement direction and cast back toward its current position. If a capsule
     /// cast hit matches an overlapping collider, its hit point and normal are returned. If the movement
     /// direction is close to zero, a raycast is instead performed from the capsule center toward the
-    /// collider position using half the capsule height as the maximum distance. If no raycast provides
+    /// collider position using half the capsule height as the maximum distance. If no cast provides
     /// contact information, the capsule center is used as the hit point and <see cref="Vector3.zero"/>
     /// is used as the normal.
     /// </summary>
@@ -168,29 +168,21 @@ public static class PhysUtils{
 
     /// <summary>
     /// Performs a non-allocating sphere overlap query and calculates contact-like information for each
-    /// overlapping collider. If the sphere center is outside a collider, the closest point on the collider
-    /// to the sphere center is used and a raycast is performed from the sphere center to that point. If the
-    /// sphere center is inside the collider, a point on the sphere surface in the direction from the
-    /// collider origin to the sphere center is tested. If that point is outside the collider, a raycast is
-    /// performed from that point toward the sphere center. If no raycast provides contact information, the
-    /// sphere center is used as the hit point and <see cref="Vector3.zero"/> is used as the normal.
-    /// For a non-convex <see cref="MeshCollider"/>, a raycast is instead performed from the sphere surface
-    /// opposite the movement direction toward the sphere center. If the movement direction is close to zero
-    /// or the raycast fails, the sphere center and <see cref="Vector3.zero"/> are used as the hit point
-    /// and normal.<br/>
-    /// NOTE: When using this method, make sure to consider cases where the normal is ~zero (raycast failed
-    /// or contact information could not be calculated)!
+    /// overlapping collider. If the movement direction is not
+    /// <see cref="MathUtils.IsZeroOrNearlyZero"/>, the sphere is moved 1.5 units opposite the movement
+    /// direction and cast back toward its current position. If a sphere cast hit matches an overlapping
+    /// collider, its hit point and normal are returned. If the movement direction is close to zero, a
+    /// raycast is instead performed from the sphere center toward the collider position using the sphere
+    /// radius as the maximum distance. If no cast provides contact information, the sphere center is
+    /// used as the hit point and <see cref="Vector3.zero"/> is used as the normal.
     /// </summary>
     /// <param name="sphere">World-space sphere to query with.</param>
-    /// <param name="layerMask">Layer mask used by the overlap query.</param>
+    /// <param name="layerMask">Layer mask used by the overlap and sphere cast queries.</param>
     /// <param name="overlapResults">Preallocated collider result array.</param>
     /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
     /// <param name="movDir">
-    /// Used for the <see cref="Collider.Raycast"/> direction to try calculate hit point and normal if the
-    /// collider is a non-convex <see cref="MeshCollider"/>. The ray starts on the sphere surface opposite
-    /// the movement direction and points toward the sphere center. If its magnitude is less than or equal
-    /// to 0.001f, the hit point is set to <paramref name="sphere"/> center and the normal is set to
-    /// <see cref="Vector3.zero"/>.
+    /// Movement direction used to perform the sphere cast. If its magnitude is less than or equal to
+    /// 0.001f, the sphere cast is skipped and a center-based raycast is used instead.
     /// </param>
     /// <param name="normals">Preallocated array receiving the calculated normals.</param>
     /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
@@ -211,70 +203,56 @@ public static class PhysUtils{
             layerMask,
             qryTrgIxn
         );
-        for (int i = 0; i < numCols; i++) {
-            Collider collider = overlapResults[i];
-            if (collider is MeshCollider meshCollider && !meshCollider.convex) {
-                if (!movDir.IsZeroOrNearlyZero()) {
-                    Vector3 normMovDir = movDir.normalized;
-                    Vector3 sphereSurfacePt = sphere.center - normMovDir * sphere.r;
-                    // NOTE: We use raycast 1.5 times the diameter to allow to find closeby hitpoint that
-                    // C: doesn't necessarily exist where the sphere overlaps with the collider since finding
-                    // C: a specific point on the overlapped surface can be hard.
-                    float rayDistance = sphere.r * 3f;
-                    if (collider.Raycast(
-                        new Ray(sphereSurfacePt, normMovDir),
-                        out RaycastHit hit,
-                        rayDistance
-                    )) {
-                        hitPts[i] = hit.point;
-                        normals[i] = hit.normal;
-                        continue;
-                    }
-                }
+        if (!movDir.IsZeroOrNearlyZero()) {
+            Vector3 normMovDir = movDir.normalized;
+            Vector3 castOffset = -normMovDir * 1.5f;
+            Vector3 castCenter = sphere.center + castOffset;
+            // NOTE: Cast results can have more hits than the overlap results. Here we make the assumption that
+            // C: overlapResults.Length has enough room for both query results.
+            // TODO MINOR: This could be provided by the method caller to avoid needless allocation.
+            RaycastHit[] castResults = new RaycastHit[overlapResults.Length];
+            int numCastHits = Physics.SphereCastNonAlloc(
+                castCenter,
+                sphere.r,
+                normMovDir,
+                castResults,
+                1.5f, // This is an arbitrary number. We cast 1.5 units away from the overlap sphere.
+                layerMask,
+                qryTrgIxn
+            );
+            for (int i = 0; i < numCols; i++) {
                 hitPts[i] = sphere.center;
                 normals[i] = Vector3.zero;
-                continue;
+                Collider collider = overlapResults[i];
+                for (int j = 0; j < numCastHits; j++) {
+                    if (castResults[j].collider != collider)
+                        continue;
+                    hitPts[i] = castResults[j].point;
+                    normals[i] = castResults[j].normal;
+                    break;
+                }
+                Dbg.Log("Failed to find a normal.", collider, normals[i] == Vector3.zero);
             }
-            Vector3 closestToCenter = collider.ClosestPoint(sphere.center);
-            bool centerOverlapping = closestToCenter == sphere.center;
-            if (!centerOverlapping) {
-                Vector3 centerToClosest = closestToCenter - sphere.center;
-                float distance = centerToClosest.magnitude;
-                if (collider.Raycast(
-                    new Ray(sphere.center, centerToClosest / distance),
-                    out RaycastHit hit,
-                    distance
-                )) {
+        }
+        else {
+            float rayDist = sphere.r;
+            for (int i = 0; i < numCols; i++) {
+                Collider col = overlapResults[i];
+                Vector3 sphereToCol = col.transform.position - sphere.center;
+                if (!sphereToCol.IsZeroOrNearlyZero() &&
+                    col.Raycast(
+                        new Ray(sphere.center, sphereToCol.normalized),
+                        out RaycastHit hit,
+                        rayDist
+                    )) {
                     hitPts[i] = hit.point;
                     normals[i] = hit.normal;
-                    continue;
                 }
-            }else {
-                Vector3 centerToCollider = collider.transform.position - sphere.center;
-                Vector3 sphereSurfaceDir = -centerToCollider;
-                if (sphereSurfaceDir.sqrMagnitude <= 0)
-                    sphereSurfaceDir = Vector3.up;
-                else
-                    sphereSurfaceDir.Normalize();
-                Vector3 sphereSurfacePt = sphere.center + sphereSurfaceDir * sphere.r;
-                Vector3 closestToSurface = collider.ClosestPoint(sphereSurfacePt);
-                bool surfaceOverlapping = closestToSurface == sphereSurfacePt;
-                if (!surfaceOverlapping) {
-                    Vector3 surfaceToCenter = sphere.center - sphereSurfacePt;
-                    float distance = surfaceToCenter.magnitude;
-                    if (collider.Raycast(
-                        new Ray(sphereSurfacePt, surfaceToCenter / distance),
-                        out RaycastHit hit,
-                        distance
-                    )) {
-                        hitPts[i] = hit.point;
-                        normals[i] = hit.normal;
-                        continue;
-                    }
+                else {
+                    hitPts[i] = sphere.center;
+                    normals[i] = Vector3.zero;
                 }
             }
-            hitPts[i] = sphere.center;
-            normals[i] = Vector3.zero;
         }
         return numCols;
     }
