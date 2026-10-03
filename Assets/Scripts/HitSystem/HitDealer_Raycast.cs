@@ -39,6 +39,19 @@ public class HitDealer_Raycast : MonoBehaviour, IHitDealer {
             return;
         HashSet<HitResult> allHits = new(4);
         Vector3 curWldPt = transform.position;
+        // NOTE: We ALWAYS also process the start position of the current raycast sweep.
+        // Raycast ignores colliders that the ray starts inside, so this overlap catches receivers
+        // already overlapping the point at the start of the sweep.
+        ProcessOverlapHitPt(
+            allHits,
+            prevWldPt,
+            HitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            ignoredHitRecievers,
+            srcTrf,
+            team
+        );
         ProcessSweptHitPoint(
             allHits,
             curWldPt,
@@ -73,6 +86,34 @@ public class HitDealer_Raycast : MonoBehaviour, IHitDealer {
 
     public void Deactivate() {
         IsActive = false;
+    }
+
+    void ProcessOverlapHitPt(
+        HashSet<HitResult> allHits,
+        Vector3 hitDealerPtWld,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        Transform srcTrf,
+        Team team
+    ) {
+        HashSet<HitResult> hitResults = HitSysUtils.TryHitHitRecievers_OverlapPt(
+            false,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            false,
+            ignoreHitRecievers,
+            rayLayerMask,
+            hitDealerPtWld,
+            srcTrf,
+            team
+        );
+        foreach (HitResult hitResult in hitResults) {
+            allHits.Add(hitResult);
+            ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
+        }
     }
 
     void ProcessSweptHitPoint(

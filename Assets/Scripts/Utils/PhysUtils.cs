@@ -119,6 +119,8 @@ public static class PhysUtils{
             // C: overlapResults.Length has enough room for both query results.
             // TODO MINOR: This could be provided by the method caller to avoid needless allocation.
             RaycastHit[] castResults = new RaycastHit[overlapResults.Length];
+            // NOTE: Unity only has Collider.Raycast, there's no Collider.CapsuleCast for some reason, so we
+            // C: unfortunately have to use the more expensive Physics.CapsuleCastNonAlloc.
             int numCastHits = Physics.CapsuleCastNonAlloc(
                 castPt0,
                 castPt1,
@@ -140,11 +142,11 @@ public static class PhysUtils{
                     normals[i] = castResults[j].normal;
                     break;
                 }
-                Dbg.Log(
-                    $"Overlap capsule with movDir {movDir} failed to find a normal for {col.name}.",
-                    col,
-                    normals[i] == Vector3.zero
-                );
+                //Dbg.Log(
+                //    $"Overlap capsule with movDir {movDir} failed to find a normal for {col.name}.",
+                //    col,
+                //    normals[i] == Vector3.zero
+                //);
             }
         } else {
             // We use half capsule height for the raycast.
@@ -168,19 +170,101 @@ public static class PhysUtils{
                 }
                 hitPts[i] = capsuleCenter;
                 normals[i] = Vector3.zero;
+                //Dbg.Log(
+                //    $"Zero-movDir contact failed for {col.name}. "
+                //    + $"hasRayDir={hasRayDir}, rayHit={rayHit}, "
+                //    + $"capsuleCenter={capsuleCenter}, colliderPos={col.transform.position}, "
+                //    + $"rayDist={halfCapsuleHgt}"
+                //    + $"capsuleToCol{capsuleToCol}",
+                //    col
+                //);
+            }
+        }
+        //DbgGizmoFactory.DrawVectorGizmos(hitPts, normals, numCols);
+        return numCols;
+    }
+
+    /// <summary>
+    /// Performs a non-allocating point overlap query and calculates contact-like information for each
+    /// overlapping collider. If the movement direction is not
+    /// <see cref="MathUtils.IsZeroOrNearlyZero"/>, a ray is cast from 1.5 units opposite the movement
+    /// direction toward the point against each overlapping collider. If a raycast hits, its hit point and
+    /// normal are returned. If the movement direction is close to zero, a raycast is performed from the
+    /// point toward the collider position. If no raycast provides contact information, the queried point
+    /// is used as the hit point and <see cref="Vector3.zero"/> is used as the normal.
+    /// </summary>
+    /// <param name="pt">World-space point to query.</param>
+    /// <param name="layerMask">Layer mask used by the overlap and raycast queries.</param>
+    /// <param name="overlapResults">Preallocated collider result array.</param>
+    /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
+    /// <param name="movDir">Movement direction used to determine the raycast direction.</param>
+    /// <param name="normals">Preallocated array receiving the calculated normals.</param>
+    /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
+    /// <returns>The number of colliders found by the overlap query.</returns>
+    public static int OverlapPtNonAllocWithContactInfo(
+        Vector3 pt,
+        int layerMask,
+        Collider[] overlapResults,
+        Vector3[] hitPts,
+        Vector3 movDir,
+        Vector3[] normals,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        int numCols = Physics.OverlapSphereNonAlloc(
+            pt,
+            0f,
+            overlapResults,
+            layerMask,
+            qryTrgIxn
+        );
+        if (!movDir.IsZeroOrNearlyZero()) {
+            Vector3 normMovDir = movDir.normalized;
+            Vector3 rayStartPt = pt - normMovDir * 1.5f;
+            for (int i = 0; i < numCols; i++) {
+                hitPts[i] = pt;
+                normals[i] = Vector3.zero;
+                Collider col = overlapResults[i];
+                if (col.Raycast(
+                    new Ray(rayStartPt, normMovDir),
+                    out RaycastHit hit,
+                    1.5f
+                )) {
+                    hitPts[i] = hit.point;
+                    normals[i] = hit.normal;
+                }
+            }
+        }
+        else {
+            for (int i = 0; i < numCols; i++) {
+                Collider col = overlapResults[i];
+                Vector3 ptToCol = col.transform.position - pt;
+                bool hasRayDir = !ptToCol.IsZeroOrNearlyZero();
+                bool rayHit = false;
+                if (hasRayDir) {
+                    rayHit = col.Raycast(
+                        new Ray(pt, ptToCol.normalized),
+                        out RaycastHit hit,
+                        ptToCol.magnitude
+                    );
+                    if (rayHit) {
+                        hitPts[i] = hit.point;
+                        normals[i] = hit.normal;
+                        continue;
+                    }
+                }
+                hitPts[i] = pt;
+                normals[i] = Vector3.zero;
                 Dbg.Log(
-                    $"Zero-movDir contact failed for {col.name}. "
+                    $"Zero-movDir point contact failed for {col.name}. "
                     + $"hasRayDir={hasRayDir}, rayHit={rayHit}, "
-                    + $"capsuleCenter={capsuleCenter}, colliderPos={col.transform.position}, "
-                    + $"rayDist={halfCapsuleHgt}"
-                    + $"capsuleToCol{capsuleToCol}",
+                    + $"pt={pt}, colliderPos={col.transform.position}, "
+                    + $"rayDist={ptToCol.magnitude}, "
+                    + $"ptToCol={ptToCol}",
                     col
                 );
             }
         }
-        for (int i = 0; i < numCols; i++) {
-            DbgGizmoFactory.DrawVectorGizmo(hitPts[i], normals[i]);
-        }
+        //DbgGizmoFactory.DrawVectorGizmos(hitPts, normals, numCols);
         return numCols;
     }
 
@@ -229,6 +313,8 @@ public static class PhysUtils{
             // C: overlapResults.Length has enough room for both query results.
             // TODO MINOR: This could be provided by the method caller to avoid needless allocation.
             RaycastHit[] castResults = new RaycastHit[overlapResults.Length];
+            // NOTE: Unity only has Collider.Raycast, there's no Collider.SphereCast for some reason, so we
+            // C: unfortunately have to use the more expensive Physics.SphereCastNonAlloc. 
             int numCastHits = Physics.SphereCastNonAlloc(
                 castCenter,
                 sphere.r,
@@ -249,13 +335,14 @@ public static class PhysUtils{
                     normals[i] = castResults[j].normal;
                     break;
                 }
-                Dbg.Log(
-                    $"Overlap sphere with movDir {movDir} failed to find a normal for {col.name}.",
-                    col,
-                    normals[i] == Vector3.zero
-                );
+                //Dbg.Log(
+                //    $"Overlap sphere with movDir {movDir} failed to find a normal for {col.name}.",
+                //    col,
+                //    normals[i] == Vector3.zero
+                //);
             }
-        }else {
+        }
+        else {
             float rayDist = sphere.r;
             for (int i = 0; i < numCols; i++) {
                 Collider col = overlapResults[i];
@@ -276,19 +363,17 @@ public static class PhysUtils{
                 }
                 hitPts[i] = sphere.center;
                 normals[i] = Vector3.zero;
-                Dbg.Log(
-                    $"Zero-movDir contact failed for {col.name}. "
-                    + $"hasRayDir={hasRayDir}, rayHit={rayHit}, "
-                    + $"sphereCenter={sphere.center}, colliderPos={col.transform.position}, "
-                    + $"rayDist={rayDist}, "
-                    + $"sphereToCol={sphereToCol}",
-                    col
-                );
+                //Dbg.Log(
+                //    $"Zero-movDir contact failed for {col.name}. "
+                //    + $"hasRayDir={hasRayDir}, rayHit={rayHit}, "
+                //    + $"sphereCenter={sphere.center}, colliderPos={col.transform.position}, "
+                //    + $"rayDist={rayDist}, "
+                //    + $"sphereToCol={sphereToCol}",
+                //    col
+                //);
             }
         }
-        for (int i = 0; i < numCols; i++) {
-            DbgGizmoFactory.DrawVectorGizmo(hitPts[i], normals[i]);
-        }
+        //DbgGizmoFactory.DrawVectorGizmos(hitPts, normals, numCols);
         return numCols;
     }
 

@@ -516,6 +516,19 @@ public struct SphereShape {
     }
 }
 
+[Serializable]
+public struct VectorGizmo {
+    public Vector3 pt;
+    public Vector3 dir;
+    public float expireTime;
+
+    public VectorGizmo(Vector3 pt, Vector3 dir, float expireTime) {
+        this.pt = pt;
+        this.dir = dir;
+        this.expireTime = expireTime;
+    }
+}
+
 public struct WldHpBarData {
     public Transform anchor;
     public float barVisibleUntil;

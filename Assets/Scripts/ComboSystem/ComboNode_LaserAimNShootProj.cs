@@ -26,8 +26,7 @@ public class ComboNode_LaserAimNShootProj : IComboNode, IComboNodeTransitionsHol
             thisNode.projSpawner.ProjHitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
-            thisNode.projSpawner.ProjT,
-            CpMgr.inst.aos[cpI].classRefs.lockOnTgt.LockOnTrf
+            thisNode.projSpawner.ProjT
         );
     }
 

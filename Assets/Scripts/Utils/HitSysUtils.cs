@@ -133,6 +133,46 @@ public static class HitSysUtils {
         );
     }
 
+    public static HashSet<HitResult> TryHitHitRecievers_OverlapPt(
+        bool allowFriendlyFire,
+        Vector3 hitDealerMovDir,
+        HitDirMode hitDirMode,
+        HitEffects hitEffects,
+        bool hitMaxOnce,
+        HashSet<IHitReceiver> ignoreHitRecievers,
+        int layerMask,
+        Vector3 hitDealerPtWld,
+        Transform srcTrf,
+        Team team,
+        QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
+    ) {
+        Collider[] overlapPtResults = new Collider[overlapResultsArraySize];
+        Vector3[] hitPts = new Vector3[overlapResultsArraySize];
+        Vector3[] separationDirs = new Vector3[overlapResultsArraySize];
+        int numCols = PhysUtils.OverlapPtNonAllocWithContactInfo(
+            hitDealerPtWld,
+            layerMask,
+            overlapPtResults,
+            hitPts,
+            hitDealerMovDir,
+            separationDirs,
+            qryTrgIxn
+        );
+        return ProcessOverlapShapeResults(
+            allowFriendlyFire,
+            hitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            hitMaxOnce,
+            hitPts,
+            ignoreHitRecievers,
+            numCols,
+            overlapPtResults,
+            separationDirs,
+            srcTrf,
+            team
+        );
+    }
 
     public static HashSet<HitResult> TryHitHitRecievers_OverlapSphere(
         bool allowFriendlyFire,
@@ -290,7 +330,7 @@ public static class HitSysUtils {
         IHitReceiver hitReceiver,
         out HitResult hitResult,
         HashSet<IHitReceiver> ignoreHitRecievers,
-        Vector3 separationDir,
+        Vector3 normal,
         Transform srcTrf,
         Team team
     ) {
@@ -310,8 +350,9 @@ public static class HitSysUtils {
             return false;
         if (ignoreHitRecievers.Contains(hitReceiver))
             return false;
+        DbgGizmoFactory.DrawVectorGizmo(hitPt, normal);
         // Deal hit.
-        HitData hitData = new(hitDealerMovDir, hitDirMode, hitEffects, hitPt,separationDir, srcTrf, team);
+        HitData hitData = new(hitDealerMovDir, hitDirMode, hitEffects, hitPt, normal, srcTrf, team);
         hitResult = hitReceiver.ReceiveHit(hitData);
         return true;
     }

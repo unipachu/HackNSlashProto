@@ -3,7 +3,6 @@ using UnityEngine;
 /// <summary>
 /// Resolves recieved hits foe a capsule pawn.
 /// </summary>
-// TODO MAYBE: IHitRecievers should probably share some logic.
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] CpHandle cp;
 
@@ -18,15 +17,37 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         //    $"  {nameof(hitData.effects.knockbackStr)}: {hitData.effects.knockbackStr}\n" +
         //    $"  {nameof(hitData.wldDir)}: {hitData.wldDir}"
         //);
-        ref Cp_Data aos = ref cp.Data;
-        var classRefs = aos.classRefs;
-        if (!aos.ignoreHits) {
-            aos.hp_Cur -= hitData.hitEffects.dmg;
-            aos.hp_Cur = Mathf.Max(0, aos.hp_Cur);
-            aos.action_dmgTaken?.Invoke(hitData.hitEffects.dmg);
-            aos.action_curHpChanged?.Invoke(aos.hp_Cur, cp.so_cpData.hp_Max);
+        ref Cp_Data cpData = ref cp.Data;
+        var classRefs = cpData.classRefs;
+        if (!cpData.ignoreHits) {
+            cpData.hp_Cur -= hitData.hitEffects.dmg;
+            cpData.hp_Cur = Mathf.Max(0, cpData.hp_Cur);
+            cpData.action_dmgTaken?.Invoke(hitData.hitEffects.dmg);
+            cpData.action_curHpChanged?.Invoke(cpData.hp_Cur, cp.so_cpData.hp_Max);
+            var safeHitNormal = hitData.normal.NrmSafe();
+            switch (hitData.hitEffects.hitT) {
+                case HitT.Blunt:
+                    SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                    ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
+                    break;
+                case HitT.Cut:
+                    SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                    ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
+                    break;
+                case HitT.Explosion:
+                    SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
+                    ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
+                    break;
+                case HitT.Pierce:
+                    SfxMgr.inst.PlaySfx(SfxId.DefaultPierce, hitData.hitPt);
+                    ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
+                    break;
+                default:
+                    Debug.LogError($"Defaulted: {hitData.hitEffects.hitT}");
+                    break;
+            }
             //Dbg.Log($"New HP: {aos.hp_Cur}", this, aos.enableDbgMsgs);
-            if (aos.hp_Cur == 0) {
+            if (cpData.hp_Cur == 0) {
                 if (
                     CpMgr.inst.TrySwitchActSt(
                         () => classRefs.actSts.death.Enter(
@@ -40,25 +61,25 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
             switch (hitData.hitDirMode) {
                 case HitDirMode.FromHitSourceTrfToHitReciever:
                     Vector3 dir = transform.position - hitData.srcTrf.position;
-                    aos.lastRecievedHitDir = dir.NrmSafe();
+                    cpData.lastRecievedHitDir = dir.NrmSafe();
                     break;
                 case HitDirMode.HitDealerMovDir:
-                    aos.lastRecievedHitDir = hitData.hitDealerMovDir;
+                    cpData.lastRecievedHitDir = hitData.hitDealerMovDir;
                     break;
                 default:
                     Debug.LogError($"Defaulted: {hitData.hitDirMode}");
                     break;
             }
-            aos.lastKnockbackStr = hitData.hitEffects.knockbackStr;
+            cpData.lastKnockbackStr = hitData.hitEffects.knockbackStr;
             //Debug.Log($"knockback str: {data.lastKnockbackStr[cpI]}.");
             switch (hitData.hitEffects.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
                     Vector3 horHitDir = new Vector3(
-                        aos.lastRecievedHitDir.x,
+                        cpData.lastRecievedHitDir.x,
                         0,
-                        aos.lastRecievedHitDir.z
+                        cpData.lastRecievedHitDir.z
                     );
                     // If you, for some reason, set the hit direction to Vector3.zero.
                     if (horHitDir.sqrMagnitude < 0.0001f)

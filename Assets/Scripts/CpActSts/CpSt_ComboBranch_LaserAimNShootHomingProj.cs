@@ -9,7 +9,6 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
     HomingProjData homingProjData;
     Transform projSpawnPose;
     ProjT projT;
-    Transform homingProjTgt;
 
     public CpSt_ComboBranch_LaserAimNShootHomingProj(CpHandle cp) {
         this.cp = cp;
@@ -24,8 +23,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         HitEffects hitEffects,
         HomingProjData homingProjData,
         Transform projSpawnPose,
-        ProjT projT,
-        Transform projTgt
+        ProjT projT
     ) {
         this.aimLaser = aimLaser;
         this.comboNode = comboNode;
@@ -33,7 +31,6 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.projT = projT;
-        this.homingProjTgt = projTgt;
         AnimEventPlr.CrossfadeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
@@ -62,13 +59,16 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         );
         aimLaser.Tick();
         if (cpData.curStDur > 1) { // TODO: so
+            Transform tgt = null;
+            if (cpData.classRefs.lockOnTgt != null)
+                tgt = cpData.classRefs.lockOnTgt.LockOnTrf;
             HomingProjMgr.inst.ShootProj(
                 HitDirMode.HitDealerMovDir,
                 hitEffects,
                 homingProjData,
                 projT,
                 new HashSet<IHitReceiver> { cp.hitReciever },
-                homingProjTgt,
+                tgt,
                 cp.so_cpData.team,
                 projSpawnPose.position,
                 projSpawnPose.forward
