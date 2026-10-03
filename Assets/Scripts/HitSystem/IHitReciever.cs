@@ -7,5 +7,11 @@ public interface IHitReceiver {
     /// </summary>
     public Team GetTeam { get; }
     public bool IgnoreAllHits { get; }
+    /// <summary>
+    /// NOTE: <see cref="HitData.normal"/> can be zero if overlap shape failed to get
+    /// hit reciever surface normal.
+    /// </summary>
+    /// <param name="hitData"></param>
+    /// <returns></returns>
     public HitResult ReceiveHit(HitData hitData);
 }

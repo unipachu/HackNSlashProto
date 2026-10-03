@@ -19,24 +19,26 @@ public class EnvSurfaceHitReciever : MonoBehaviour, IHitReceiver{
     }
 
     static void SpawnSurfaceHitEffects(SurfaceT surfaceT, HitData hitData) {
+        // If hit failed to find a normal, we use up direction.
+        var safeHitNormal = hitData.normal.NrmSafe();
         switch (surfaceT) {
             case SurfaceT.Default:
                 switch (hitData.hitEffects.hitT) {
                     case HitT.Blunt:
                         SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Cut:
                         SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Explosion:
                         SfxMgr.inst.PlaySfx(SfxId.DefaultLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Pierce:
                         SfxMgr.inst.PlaySfx(SfxId.DefaultPierce, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     default:
                         Debug.LogError($"Defaulted: {hitData.hitEffects.hitT}");
@@ -47,19 +49,19 @@ public class EnvSurfaceHitReciever : MonoBehaviour, IHitReceiver{
                 switch (hitData.hitEffects.hitT) {
                     case HitT.Blunt:
                         SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Cut:
                         SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Explosion:
                         SfxMgr.inst.PlaySfx(SfxId.MetalLightSlam, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     case HitT.Pierce:
                         SfxMgr.inst.PlaySfx(SfxId.MetalPierce, hitData.hitPt);
-                        ParticleFactory.inst.PlaySparks(hitData.hitPt, hitData.separationDir);
+                        ParticleFactory.inst.PlaySparks(hitData.hitPt, safeHitNormal);
                         break;
                     default:
                         Debug.LogError($"Defaulted: {hitData.hitEffects.hitT}");

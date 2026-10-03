@@ -403,19 +403,20 @@ public struct EnemyWave_EnemyEntry {
 }
 
 public struct HitData {
-    public HitEffects hitEffects;
-    public Team team;
+    public Vector3 hitDealerMovDir;
     public HitDirMode hitDirMode;
+    public HitEffects hitEffects;
     /// <summary>
-    /// The world position of the where the raycast has hit, or if using overlap shape, an approximation of
-    /// a hit point.
+    /// The world position of the where the raycast has hit, or if using overlap shape,
+    /// an approximation of a hit point.
     /// </summary>
     public Vector3 hitPt;
     /// <summary>
-    /// The normal at the hit location of the raycast, or if using an overlap shape, an approximation
-    /// of the hit point normal.
+    /// The normal at the hit location of the raycast, or if using an overlap shape, a normal on
+    /// the <see cref="IHitReceiver"/> surface at a approximate hit point, or
+    /// <see cref="Vector3.zero"/> if failed to get normal at the approximate hit point!
     /// </summary>
-    public Vector3 separationDir;
+    public Vector3 normal;
     /// <summary>
     /// Used to calculate hit direction if <see cref="HitDirMode"/> is set to
     /// <see cref="HitDirMode.FromHitSourceTrfToHitReciever"/>. E.g. this should be the root/center point of a
@@ -423,14 +424,14 @@ public struct HitData {
     /// that character.
     /// </summary>
     public Transform srcTrf;
-    public Vector3 hitDealerMovDir;
+    public Team team;
 
     public HitData(
         Vector3 hitDealerMovDir,
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         Vector3 hitPt,
-        Vector3 separationDir,
+        Vector3 normal,
         Transform srcTrf,
         Team team
     ) {
@@ -438,7 +439,7 @@ public struct HitData {
         this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
         this.hitPt = hitPt;
-        this.separationDir = separationDir;
+        this.normal = normal;
         this.srcTrf = srcTrf;
         this.team = team;
     }

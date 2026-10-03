@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
 
 public static class HitSysUtils {
     const int overlapResultsArraySize = 256;
@@ -115,6 +113,7 @@ public static class HitSysUtils {
             layerMask,
             overlapCapsuleResults,
             hitPts,
+            hitDealerMovDir,
             separationDirs,
             qryTrgIxn
         );
@@ -156,6 +155,7 @@ public static class HitSysUtils {
             layerMask,
             overlapSphereResults,
             hitPts,
+            hitDealerMovDir,
             separationDirs,
             qryTrgIxn
         );

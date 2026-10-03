@@ -83,7 +83,7 @@ public static class PhysUtils{
     /// <param name="layerMask">Layer mask used by the overlap query.</param>
     /// <param name="overlapResults">Preallocated collider result array.</param>
     /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
-    /// <param name="separationDirs">Preallocated array receiving the calculated separation directions.</param>
+    /// <param name="normals">Preallocated array receiving the calculated normals.</param>
     /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
     /// <returns>The number of colliders found by the overlap query.</returns>
     public static int OverlapCapsuleNonAllocWithContactInfo(
@@ -91,7 +91,8 @@ public static class PhysUtils{
         int layerMask,
         Collider[] overlapResults,
         Vector3[] hitPts,
-        Vector3[] separationDirs,
+        Vector3 movDir,
+        Vector3[] normals,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         int numCols = Physics.OverlapCapsuleNonAlloc(
@@ -128,7 +129,7 @@ public static class PhysUtils{
                     tipToTipLength
                 )) {
                     hitPts[i] = hit.point;
-                    separationDirs[i] = hit.normal;
+                    normals[i] = hit.normal;
                     continue;
                 }
             }else if (tipPt0Overlapping && !tipPt1Overlapping) {
@@ -138,14 +139,14 @@ public static class PhysUtils{
                     tipToTipLength
                 )) {
                     hitPts[i] = hit.point;
-                    separationDirs[i] = hit.normal;
+                    normals[i] = hit.normal;
                     continue;
                 }
             }
             hitPts[i] = collider.ClosestPoint(capsuleCenter);
             if (tipPt0Overlapping && tipPt1Overlapping) {
                 Vector3 separationDir = hitPts[i] - capsuleCenter;
-                separationDirs[i] = separationDir.sqrMagnitude > 0f
+                normals[i] = separationDir.sqrMagnitude > 0f
                     ? separationDir.normalized
                     : Vector3.up;
             }else {
@@ -159,11 +160,11 @@ public static class PhysUtils{
                         toClosestPtLength
                     )) {
                     hitPts[i] = hit.point;
-                    separationDirs[i] = hit.normal;
+                    normals[i] = hit.normal;
                 }else {
                     hitPts[i] = closestToCenterPt;
                     Vector3 separationDir = capsuleCenter - collider.transform.position;
-                    separationDirs[i] = separationDir.sqrMagnitude > 0f
+                    normals[i] = separationDir.sqrMagnitude > 0f
                         ? separationDir.normalized
                         : Vector3.up;
                 }
@@ -178,15 +179,27 @@ public static class PhysUtils{
     /// to the sphere center is used and a raycast is performed from the sphere center to that point. If the
     /// sphere center is inside the collider, a point on the sphere surface in the direction from the
     /// collider origin to the sphere center is tested. If that point is outside the collider, a raycast is
-    /// performed from that point toward the sphere center. If both the sphere center and surface point are
-    /// inside the collider, the sphere center is used as the hit point and the separation direction is
-    /// taken from the collider origin to the sphere center, or Vector3.up when that direction is zero.
+    /// performed from that point toward the sphere center. If no raycast provides contact information, the
+    /// sphere center is used as the hit point and <see cref="Vector3.zero"/> is used as the normal.
+    /// For a non-convex <see cref="MeshCollider"/>, a raycast is instead performed from the sphere surface
+    /// opposite the movement direction toward the sphere center. If the movement direction is close to zero
+    /// or the raycast fails, the sphere center and <see cref="Vector3.zero"/> are used as the hit point
+    /// and normal.<br/>
+    /// NOTE: When using this method, make sure to consider cases where the normal is ~zero (raycast failed
+    /// or contact information could not be calculated)!
     /// </summary>
     /// <param name="sphere">World-space sphere to query with.</param>
     /// <param name="layerMask">Layer mask used by the overlap query.</param>
     /// <param name="overlapResults">Preallocated collider result array.</param>
     /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
-    /// <param name="separationDirs">Preallocated array receiving the calculated separation directions.</param>
+    /// <param name="movDir">
+    /// Used for the <see cref="Collider.Raycast"/> direction to try calculate hit point and normal if the
+    /// collider is a non-convex <see cref="MeshCollider"/>. The ray starts on the sphere surface opposite
+    /// the movement direction and points toward the sphere center. If its magnitude is less than or equal
+    /// to 0.001f, the hit point is set to <paramref name="sphere"/> center and the normal is set to
+    /// <see cref="Vector3.zero"/>.
+    /// </param>
+    /// <param name="normals">Preallocated array receiving the calculated normals.</param>
     /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
     /// <returns>The number of colliders found by the overlap query.</returns>
     public static int OverlapSphereNonAllocWithContactInfo(
@@ -194,7 +207,8 @@ public static class PhysUtils{
         int layerMask,
         Collider[] overlapResults,
         Vector3[] hitPts,
-        Vector3[] separationDirs,
+        Vector3 movDir,
+        Vector3[] normals,
         QueryTriggerInteraction qryTrgIxn = QueryTriggerInteraction.Collide
     ) {
         int numCols = Physics.OverlapSphereNonAlloc(
@@ -206,6 +220,28 @@ public static class PhysUtils{
         );
         for (int i = 0; i < numCols; i++) {
             Collider collider = overlapResults[i];
+            if (collider is MeshCollider meshCollider && !meshCollider.convex) {
+                if (!movDir.IsNearlyZero()) {
+                    Vector3 normMovDir = movDir.normalized;
+                    Vector3 sphereSurfacePt = sphere.center - normMovDir * sphere.r;
+                    // NOTE: We use raycast 1.5 times the diameter to allow to find closeby hitpoint that
+                    // C: doesn't necessarily exist where the sphere overlaps with the collider since finding
+                    // C: a specific point on the overlapped surface can be hard.
+                    float rayDistance = sphere.r * 3f;
+                    if (collider.Raycast(
+                        new Ray(sphereSurfacePt, normMovDir),
+                        out RaycastHit hit,
+                        rayDistance
+                    )) {
+                        hitPts[i] = hit.point;
+                        normals[i] = hit.normal;
+                        continue;
+                    }
+                }
+                hitPts[i] = sphere.center;
+                normals[i] = Vector3.zero;
+                continue;
+            }
             Vector3 closestToCenter = collider.ClosestPoint(sphere.center);
             bool centerOverlapping = closestToCenter == sphere.center;
             if (!centerOverlapping) {
@@ -217,13 +253,13 @@ public static class PhysUtils{
                     distance
                 )) {
                     hitPts[i] = hit.point;
-                    separationDirs[i] = hit.normal;
+                    normals[i] = hit.normal;
                     continue;
                 }
             }else {
                 Vector3 centerToCollider = collider.transform.position - sphere.center;
                 Vector3 sphereSurfaceDir = -centerToCollider;
-                if (sphereSurfaceDir.sqrMagnitude <= 0f)
+                if (sphereSurfaceDir.sqrMagnitude <= 0)
                     sphereSurfaceDir = Vector3.up;
                 else
                     sphereSurfaceDir.Normalize();
@@ -239,16 +275,13 @@ public static class PhysUtils{
                         distance
                     )) {
                         hitPts[i] = hit.point;
-                        separationDirs[i] = hit.normal;
+                        normals[i] = hit.normal;
                         continue;
                     }
                 }
             }
             hitPts[i] = sphere.center;
-            Vector3 separationDir = sphere.center - collider.transform.position;
-            separationDirs[i] = separationDir.sqrMagnitude > 0f
-                ? separationDir.normalized
-                : Vector3.up;
+            normals[i] = Vector3.zero;
         }
         return numCols;
     }

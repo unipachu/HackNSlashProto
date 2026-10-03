@@ -8,6 +8,11 @@ using UnityEngine;
 /// </summary>
 public static class MathUtils {
     /// <summary>
+    /// For a squared magnitude, this corresponds to: 0.0001f.
+    /// </summary>
+    public static float eps = 0.00000001f;
+
+    /// <summary>
     /// Applies a rotation offset to a base rotation.
     /// </summary>
     public static Quaternion AddRotOfs(this Quaternion baseRot, Quaternion ofsRot)
@@ -69,7 +74,7 @@ public static class MathUtils {
         if (angDeg > 180f)
             angDeg -= 360f;
         // Angle axis can apparently return small numerical noise values so:
-        if (Mathf.Abs(angDeg) < 0.0001f)
+        if (Mathf.Abs(angDeg) < eps)
             return Vector3.zero;
         return axis * (angDeg * Mathf.Deg2Rad / dt);
     }
@@ -110,12 +115,12 @@ public static class MathUtils {
     /// Can be used to e.g. see how a follow target hand rotation affects the rotation of an (axis-locked)
     /// key in a key hole.
     /// </summary>
-    public static float ExtractSignedTwistAng(Quaternion rot, Vector3 axis, float magThld = 1e-8f) {
+    public static float ExtractSignedTwistAng(Quaternion rot, Vector3 axis) {
         // The dot product requires normalized axis.
         axis.Normalize();
         // Ensure equivalent quaternions are represented consistently. This prevents discontinuities where
         // the same rotation can appear as two different quaternions.
-        if (rot.w < 0f)
+        if (rot.w < 0)
             rot = new Quaternion(-rot.x, -rot.y, -rot.z, -rot.w);
         // Quaternion is projected onto the axis vector to only keep the part of the rotation
         // around the axis.
@@ -125,13 +130,13 @@ public static class MathUtils {
         // to axis), twist is zero length and can't be normalized.
         // TODO MAYBE: Intuitively you can imagine how 180deg swing could work - figure out the math.
         float twistSqrMag = twist.x * twist.x + twist.y * twist.y + twist.z * twist.z + twist.w * twist.w;
-        if (twistSqrMag < magThld)
-            return 0f;
+        if (twistSqrMag < eps)
+            return 0;
         twist.Normalize();
         // NOTE: Any orientation can be represented by angle axis - that's what we do here.
         twist.ToAngleAxis(out float angleDeg, out Vector3 twistAxis);
         // Make sure the original axis and twist axis point in the same direction.
-        if (Vector3.Dot(twistAxis, axis) < 0f)
+        if (Vector3.Dot(twistAxis, axis) < 0)
             angleDeg = -angleDeg;
         return angleDeg * Mathf.Deg2Rad;
     }
@@ -197,9 +202,10 @@ public static class MathUtils {
     /// <summary>
     /// Checks whether a vector is approximately zero using its squared
     /// magnitude, avoiding the less performant <see cref="Vector3.magnitude"/>.
+    /// Uses <see cref="eps"/>.
     /// </summary>
-    public static bool IsNearlyZero(this Vector3 vec, float magThld = 1e-8f)
-        => vec.sqrMagnitude < magThld;
+    public static bool IsNearlyZero(this Vector3 vec)
+        => vec.sqrMagnitude < eps;
 
     /// <summary>
     /// Calculates linear velocity from a previous and current position over a time step.
@@ -211,8 +217,8 @@ public static class MathUtils {
     /// Normalizes angle to 0-360 degrees.
     /// </summary>
     public static float Nrm360(float ang) {
-        ang %= 360f;
-        if (ang < 0f) ang += 360f;
+        ang %= 360;
+        if (ang < 0f) ang += 360;
         return ang;
     }
 
@@ -220,9 +226,18 @@ public static class MathUtils {
     /// Normalizes vector, or if a close to zero vector, returns up vector.
     /// </summary>
     public static Vector3 NrmSafe(this Vector3 vec) {
-        if(vec.sqrMagnitude > 0.0001f)
-            return vec.normalized;
-        return Vector3.up;
+        if(vec.IsNearlyZero())
+            return Vector3.up;
+        return vec.normalized;
+    }
+
+    /// <summary>
+    /// Returns input vector, or if a close to zero vector, returns up vector.
+    /// </summary>
+    public static Vector3 OrUpSafe(this Vector3 vec) {
+        if (vec.IsNearlyZero())
+            return Vector3.up;
+        return vec;
     }
 
     /// <summary>

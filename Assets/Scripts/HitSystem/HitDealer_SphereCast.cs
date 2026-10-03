@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Hit dealer using a single sphere. The sphere is swept from its previous world position
-/// to its current world position using a sphere cast. On the first tick after activation,
-/// an overlap sphere is used so that receivers already overlapping the sphere are hit.
+/// Hit dealer using a single sphere. The sphere is swept from its previous world position to its current world
+/// position using a sphere cast. An overlap sphere is also performed at the previous world position to detect
+/// receivers already overlapping the sphere at the start of the sweep.
 /// </summary>
 public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
     /// <summary>
@@ -22,7 +22,6 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
 
     SphereShape dbgPrevSphereWld;
     SphereShape dbgCurSphereWld;
-    bool firstTickAfterActivation;
     HitDirMode hitDirMode;
     HitEffects hitEffects;
     Transform srcTrf;
@@ -45,29 +44,25 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         if (!isActive)
             return;
         HashSet<HitResult> allHits = new(4);
-        SphereShape hitDealerSphereWld = sphere;
-        hitDealerSphereWld.center = hitDealerSphereWld.center.TrfPtUnscaled(transform);
-        if (firstTickAfterActivation) {
-            ProcessInitialHitSphere(
-                allHits,
-                hitDealerSphereWld,
-                HitDealerMovDir,
-                hitDirMode,
-                hitEffects,
-                srcTrf,
-                team
-            );
-            firstTickAfterActivation = false;
-        } else
-            ProcessSweptHitSphere(
-                allHits,
-                hitDealerSphereWld,
-                HitDealerMovDir,
-                hitDirMode,
-                hitEffects,
-                srcTrf,
-                team
-            );
+        SphereShape hitDealerSphereWld =  new(sphere.center.TrfPtUnscaled(transform), sphere.r);
+        ProcessOverlapHitSphere(
+            allHits,
+            prevSphereWld,
+            HitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            srcTrf,
+            team
+        );
+        ProcessSweptHitSphere(
+            allHits,
+            hitDealerSphereWld,
+            HitDealerMovDir,
+            hitDirMode,
+            hitEffects,
+            srcTrf,
+            team
+        );
         dbgPrevSphereWld = prevSphereWld;
         dbgCurSphereWld = hitDealerSphereWld;
         prevSphereWld = hitDealerSphereWld;
@@ -100,7 +95,7 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
         isActive = false;
     }
     
-    void ProcessInitialHitSphere(
+    void ProcessOverlapHitSphere(
         HashSet<HitResult> allHits,
         SphereShape hitDealerSphereWld,
         Vector3 hitDealerMovDir,
@@ -177,7 +172,6 @@ public class HitDealer_SphereCast : MonoBehaviour, IHitDealer {
             isActive
         );
         isActive = true;
-        firstTickAfterActivation = true;
         this.hitDirMode = hitDirMode;
         this.hitEffects = hitEffects;
         this.srcTrf = hitSource;
