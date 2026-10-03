@@ -176,7 +176,8 @@ public static class HitSysUtils {
     }
 
     /// <summary>
-    /// Uses a <see cref="Physics.SphereCastNonAlloc"/> from <paramref name="prevWldSphere"/> to <paramref name="curWldSphere"/> to try and hit <see cref="IHitReceiver"/>s.
+    /// Uses a <see cref="Physics.SphereCastNonAlloc"/> from <paramref name="prevWldSphere"/> to
+    /// <paramref name="curWldSphere"/> to try and hit <see cref="IHitReceiver"/>s.
     /// </summary>
     /// <param name="hitMaxOnce">
     /// Should we only hit first found eligible <see cref="IHitReceiver"/>?

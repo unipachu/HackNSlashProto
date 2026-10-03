@@ -551,7 +551,7 @@ MonoBehaviour:
   poolSize: 32
   defaultVol: 1
   defaultSpatialBlend: 1
-  defaultRolloffMode: 0
+  defaultRolloffMode: 1
   defaultminDist: 5
   defaultMaxDist: 30
   outputAudioMixerGroup: {fileID: 0}

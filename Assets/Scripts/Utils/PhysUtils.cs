@@ -71,18 +71,24 @@ public static class PhysUtils{
     }
 
     /// <summary>
-    /// Performs a non-allocating capsule overlap query and also calculates contact-like information for each
-    /// overlapping collider. When only one capsule tip is overlapping, a raycast is performed from the
-    /// non-overlapping tip toward the overlapping tip to obtain the actual surface point and normal. When
-    /// both tips are overlapping, the collider's closest point to the capsule center is used as the hit
-    /// point and a separation direction is derived from that point. When neither tip is overlapping, the
-    /// collider's closest point to the capsule center is found and a raycast is performed from tip pt0
-    /// toward that point; if the raycast misses, a center-based separation direction is used as a fallback.
+    /// Performs a non-allocating capsule overlap query and calculates contact-like information for each
+    /// overlapping collider. If the movement direction is not
+    /// <see cref="MathUtils.IsZeroOrNearlyZero"/>, the capsule is moved
+    /// 1.5 units opposite the movement direction and cast back toward its current position. If a capsule
+    /// cast hit matches an overlapping collider, its hit point and normal are returned. If the movement
+    /// direction is close to zero, a raycast is instead performed from the capsule center toward the
+    /// collider position using half the capsule height as the maximum distance. If no raycast provides
+    /// contact information, the capsule center is used as the hit point and <see cref="Vector3.zero"/>
+    /// is used as the normal.
     /// </summary>
     /// <param name="capsule">World-space capsule to query with.</param>
-    /// <param name="layerMask">Layer mask used by the overlap query.</param>
+    /// <param name="layerMask">Layer mask used by the overlap and capsule cast queries.</param>
     /// <param name="overlapResults">Preallocated collider result array.</param>
     /// <param name="hitPts">Preallocated array receiving the calculated hit points.</param>
+    /// <param name="movDir">
+    /// Movement direction used to perform the capsule cast. If its magnitude is less than or equal to
+    /// 0.001f, the capsule cast is skipped and a center-based raycast is used instead.
+    /// </param>
     /// <param name="normals">Preallocated array receiving the calculated normals.</param>
     /// <param name="qryTrgIxn">Specifies how trigger colliders are handled.</param>
     /// <returns>The number of colliders found by the overlap query.</returns>
@@ -104,69 +110,56 @@ public static class PhysUtils{
             qryTrgIxn
         );
         Vector3 capsuleCenter = (capsule.pt0 + capsule.pt1) * 0.5f;
-        Vector3 capsuleAxis = capsule.pt1 - capsule.pt0;
-        float capsuleAxisLength = capsuleAxis.magnitude;
-        Vector3 capsuleAxisNrm = capsuleAxisLength > Mathf.Epsilon
-            ? capsuleAxis / capsuleAxisLength
-            : Vector3.zero;
-        Vector3 tipPt0 = capsule.pt0 - capsuleAxisNrm * capsule.r;
-        Vector3 tipPt1 = capsule.pt1 + capsuleAxisNrm * capsule.r;
-        Vector3 tipToTip = tipPt1 - tipPt0;
-        float tipToTipLength = tipToTip.magnitude;
-        Vector3 tipToTipDir = tipToTipLength > Mathf.Epsilon
-            ? tipToTip / tipToTipLength
-            : Vector3.zero;
-        for (int i = 0; i < numCols; i++) {
-            Collider collider = overlapResults[i];
-            Vector3 closestToTipPt0 = collider.ClosestPoint(tipPt0);
-            Vector3 closestToTipPt1 = collider.ClosestPoint(tipPt1);
-            bool tipPt0Overlapping = closestToTipPt0 == tipPt0;
-            bool tipPt1Overlapping = closestToTipPt1 == tipPt1;
-            if (tipPt1Overlapping && !tipPt0Overlapping) {
-                if (collider.Raycast(
-                    new Ray(tipPt0, tipToTipDir),
-                    out RaycastHit hit,
-                    tipToTipLength
-                )) {
-                    hitPts[i] = hit.point;
-                    normals[i] = hit.normal;
-                    continue;
+        if (!movDir.IsZeroOrNearlyZero()) {
+            Vector3 normMovDir = movDir.normalized;
+            Vector3 castOffset = -normMovDir * 1.5f;
+            Vector3 castPt0 = capsule.pt0 + castOffset;
+            Vector3 castPt1 = capsule.pt1 + castOffset;
+            // NOTE: Cast results can have more hits than the overlap results. Here we make the assumption that
+            // C: overlapResults.Length has enough room for both query results.
+            // TODO MINOR: This could be provided by the method caller to avoid needless allocation.
+            RaycastHit[] castResults = new RaycastHit[overlapResults.Length];
+            int numCastHits = Physics.CapsuleCastNonAlloc(
+                castPt0,
+                castPt1,
+                capsule.r,
+                normMovDir,
+                castResults,
+                1.5f, // This is an arbitraty number. We cast 1.5 units away from the overlap capsule.
+                layerMask,
+                qryTrgIxn
+            );
+            for (int i = 0; i < numCols; i++) {
+                hitPts[i] = capsuleCenter;
+                normals[i] = Vector3.zero;
+                Collider collider = overlapResults[i];
+                for (int j = 0; j < numCastHits; j++) {
+                    if (castResults[j].collider != collider)
+                        continue;
+                    hitPts[i] = castResults[j].point;
+                    normals[i] = castResults[j].normal;
+                    break;
                 }
-            }else if (tipPt0Overlapping && !tipPt1Overlapping) {
-                if (collider.Raycast(
-                    new Ray(tipPt1, -tipToTipDir),
-                    out RaycastHit hit,
-                    tipToTipLength
-                )) {
-                    hitPts[i] = hit.point;
-                    normals[i] = hit.normal;
-                    continue;
-                }
+                Dbg.Log("Failed to find a normal.", collider, normals[i] == Vector3.zero);
             }
-            hitPts[i] = collider.ClosestPoint(capsuleCenter);
-            if (tipPt0Overlapping && tipPt1Overlapping) {
-                Vector3 separationDir = hitPts[i] - capsuleCenter;
-                normals[i] = separationDir.sqrMagnitude > 0f
-                    ? separationDir.normalized
-                    : Vector3.up;
-            }else {
-                Vector3 closestToCenterPt = collider.ClosestPoint(capsuleCenter);
-                Vector3 toClosestPt = closestToCenterPt - tipPt0;
-                float toClosestPtLength = toClosestPt.magnitude;
-                if (toClosestPtLength > Mathf.Epsilon &&
-                    collider.Raycast(
-                        new Ray(tipPt0, toClosestPt / toClosestPtLength),
+        } else {
+            float capsuleHgt = (capsule.pt1 - capsule.pt0).magnitude + capsule.r * 2f;
+            float rayDist = capsuleHgt * 0.5f;
+            for (int i = 0; i < numCols; i++) {
+                Collider col = overlapResults[i];
+                Vector3 capsuleToCol = col.transform.position - capsuleCenter;
+                if (!capsuleToCol.IsZeroOrNearlyZero() &&
+                    col.Raycast(
+                        new Ray(capsuleCenter, capsuleToCol.normalized),
                         out RaycastHit hit,
-                        toClosestPtLength
+                        rayDist
                     )) {
                     hitPts[i] = hit.point;
                     normals[i] = hit.normal;
-                }else {
-                    hitPts[i] = closestToCenterPt;
-                    Vector3 separationDir = capsuleCenter - collider.transform.position;
-                    normals[i] = separationDir.sqrMagnitude > 0f
-                        ? separationDir.normalized
-                        : Vector3.up;
+                }
+                else {
+                    hitPts[i] = capsuleCenter;
+                    normals[i] = Vector3.zero;
                 }
             }
         }
@@ -221,7 +214,7 @@ public static class PhysUtils{
         for (int i = 0; i < numCols; i++) {
             Collider collider = overlapResults[i];
             if (collider is MeshCollider meshCollider && !meshCollider.convex) {
-                if (!movDir.IsNearlyZero()) {
+                if (!movDir.IsZeroOrNearlyZero()) {
                     Vector3 normMovDir = movDir.normalized;
                     Vector3 sphereSurfacePt = sphere.center - normMovDir * sphere.r;
                     // NOTE: We use raycast 1.5 times the diameter to allow to find closeby hitpoint that

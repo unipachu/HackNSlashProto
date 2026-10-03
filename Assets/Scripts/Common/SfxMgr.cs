@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.Audio;
-using static UnityEditor.PlayerSettings;
 
 /// <summary>
-/// Plays sound effects using a pool of reusable <see cref="AudioSource"/>s.
+/// Plays sound effects using a pool of reusable <see cref="AudioSource"/>s.<br/>
+/// NOTE: Only works for static sound effects (with no doppler effect). Moving AudioSources should likely
+/// be attached to the game objects that are supposed to make the sound.
 /// </summary>
 public class SfxMgr : Singleton<SfxMgr> {
     [Header("Default")]
@@ -20,7 +21,7 @@ public class SfxMgr : Singleton<SfxMgr> {
     [Header("Default Sound Settings")]
     [SerializeField] float defaultVol = 1;
     [SerializeField, Range(0f, 1f)] float defaultSpatialBlend = 1;
-    [SerializeField] AudioRolloffMode defaultRolloffMode = AudioRolloffMode.Logarithmic;
+    [SerializeField] AudioRolloffMode defaultRolloffMode = AudioRolloffMode.Linear;
     [SerializeField] float defaultminDist = 5;
     [SerializeField] float defaultMaxDist = 30;
     [SerializeField] AudioMixerGroup outputAudioMixerGroup;

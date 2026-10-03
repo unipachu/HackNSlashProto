@@ -162,7 +162,7 @@ public static class MathUtils {
     /// Basically returns new rotation that is rot rotated by the angVel for dt seconds.
     /// </summary>
     public static Quaternion IntegrateRot(this Quaternion rot, Vector3 angVel, float dt) {
-        if (angVel.IsNearlyZero())
+        if (angVel.IsZeroOrNearlyZero())
             return rot;
         return Quaternion.AngleAxis(angVel.magnitude * Mathf.Rad2Deg * dt, angVel.normalized) * rot;
     }
@@ -204,7 +204,7 @@ public static class MathUtils {
     /// magnitude, avoiding the less performant <see cref="Vector3.magnitude"/>.
     /// Uses <see cref="eps"/>.
     /// </summary>
-    public static bool IsNearlyZero(this Vector3 vec)
+    public static bool IsZeroOrNearlyZero(this Vector3 vec)
         => vec.sqrMagnitude < eps;
 
     /// <summary>
@@ -226,7 +226,7 @@ public static class MathUtils {
     /// Normalizes vector, or if a close to zero vector, returns up vector.
     /// </summary>
     public static Vector3 NrmSafe(this Vector3 vec) {
-        if(vec.IsNearlyZero())
+        if(vec.IsZeroOrNearlyZero())
             return Vector3.up;
         return vec.normalized;
     }
@@ -235,7 +235,7 @@ public static class MathUtils {
     /// Returns input vector, or if a close to zero vector, returns up vector.
     /// </summary>
     public static Vector3 OrUpSafe(this Vector3 vec) {
-        if (vec.IsNearlyZero())
+        if (vec.IsZeroOrNearlyZero())
             return Vector3.up;
         return vec;
     }
@@ -297,7 +297,7 @@ public static class MathUtils {
         Quaternion dRot = DRot(currRot, tgtRot);
         dRot.ToAngleAxis(out float angleDeg, out Vector3 axis);
         Vector3 springAcc = Vector3.zero;
-        if (!IsNearlyZero(axis)) {
+        if (!IsZeroOrNearlyZero(axis)) {
             if (angleDeg > 180f)
                 angleDeg -= 360f;
             springAcc = axis.normalized * (angleDeg * Mathf.Deg2Rad * spring);
