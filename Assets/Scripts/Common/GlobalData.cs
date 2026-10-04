@@ -4,16 +4,18 @@ using UnityEngine;
 /// Values that are shared between all entities.
 /// </summary>
 public class GlobalData : Singleton<GlobalData> {
-    [Tooltip("What physics layers are considered for ground checks?")]
-    public LayerMask groundMask = Physics.AllLayers;
+    [Tooltip("Duration of the visual effect that warns the player of enemy spawning there.")]
+    public float enemySpawnAnimDur = 2;
     [Tooltip("In m/s^2. Should be around 9.81.")]
     public float gravitationalAcc = 10;
+    [Tooltip("What physics layers are considered for ground checks?")]
+    public LayerMask groundMask = Physics.AllLayers;
     [Tooltip("Duration which an input stays in the input buffer.")]
     public float inputBuffer_Dur = 0.3f;
     [Tooltip("How far is the ground allowed to be below a capsule pawn for the pawn to be considered grounded?")]
     public float isGroundedChkDist = 0.1f;
     [Tooltip("Max downwards speed when falling for characters.")]
     public float maxFallSpd = 30;
-    [Tooltip("Duration of the visual effect that warns the player of enemy spawning there.")]
-    public float enemySpawnAnimDur = 2;
+    [Tooltip("Window (in seconds) after an attack during which another attack is considered 'successive'.")]
+    public float successiveAtkWindow = 1.5f;
 }

@@ -7,10 +7,6 @@ using UnityEngine.InputSystem;
 /// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
 /// </summary>
 public class PlrMgr : Singleton<PlrMgr>, ICpCtrlInputter {
-    [Header("Player stats")]
-    [Tooltip("Window (in seconds) after an attack during which another attack is considered 'successive'.")]
-    public float successiveAtkWindow = 1.5f;
-
     [Header("Input Action Asset")]
     [SerializeField] InputActionAsset inputActs;
     [SerializeField] string actionMapName = "Player";

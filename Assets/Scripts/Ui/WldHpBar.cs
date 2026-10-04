@@ -53,7 +53,7 @@ public class WldHpBar : MonoBehaviour {
         SetDmgText(dmgTaken + data.accumulatedDmg);
         data.accumulatedDmg = data.accumulatedDmg + dmgTaken;
         data.barVisibleUntil = now + WldHpBarMgr.inst.barVisibleDur;
-        data.dmgNumberVisibleUntil = now + PlrMgr.inst.successiveAtkWindow;
+        data.dmgNumberVisibleUntil = now + GlobalData.inst.successiveAtkWindow;
     }
 
     public void OnMaxHpChanged(int curHp, int newMaxHp) {

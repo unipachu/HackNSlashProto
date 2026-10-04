@@ -1,16 +1,29 @@
 // NOTE: Make sure singleton execution order is so that the singletons are Awoken before
 // NOTE C: a dependent singleton manager is awoken!
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class GameMgr : Singleton<GameMgr>{
+public class GameMgr : Singleton<GameMgr> {
     [SerializeField] PlrMgr plrMgr;
-    // TODO: PlrMgr should be responsible for spawning the player.
     [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
+    [Header("Game Over")]
+    [SerializeField] CanvasGroup gameOverScreen;
+    [SerializeField] float gameOverFadeDur = 0.5f;
+    [Tooltip("Game over duration in unscaled time.")]
+    [SerializeField] float gameOverVisibleDur = 3f;
+
     [HideInInspector] CpHandle plrCp;
 
-    override protected void Awake(){
+    bool gameOver;
+    float gameOverTimer;
+
+    // -------------------------------------------------------------------------
+    // Unity Callbacks
+    // -------------------------------------------------------------------------
+
+    override protected void Awake() {
         base.Awake();
         ApplySettings();
         TimeMgr.UpdateTimeScl();
@@ -21,7 +34,10 @@ public class GameMgr : Singleton<GameMgr>{
         SfxMgr.inst.Init();
         CamMgr.inst.Init();
     }
+
     private void Start() {
+        Debug.Assert(gameOverScreen != null, "Game over screen was null!");
+        gameOverScreen.gameObject.SetActive(false);
         plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
         plrCp.Data.action_markedForPendingUnregister += OnPlrMarkedForPendingUnregister;
         EnemyWaveMgr.inst.StartSpawningWaves(true);
@@ -30,8 +46,10 @@ public class GameMgr : Singleton<GameMgr>{
     void FixedUpdate() {
         CpMgr.inst.FixedTick();
     }
-    
+
     void Update() {
+        if (gameOver)
+            UpdateGameOver();
         float dt = Time.deltaTime;
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick(dt);
@@ -46,6 +64,20 @@ public class GameMgr : Singleton<GameMgr>{
         HudMgr.inst.LateTick();
     }
 
+    // -------------------------------------------------------------------------
+    // Other Methods
+    // -------------------------------------------------------------------------
+
+    void UpdateGameOver() {
+        gameOverTimer += Time.unscaledDeltaTime;
+        float fadeNrm = gameOverFadeDur > 0f
+            ? Mathf.Clamp01(gameOverTimer / gameOverFadeDur)
+            : 1f;
+        gameOverScreen.alpha = fadeNrm;
+        if (gameOverTimer >= gameOverFadeDur + gameOverVisibleDur)
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
     static void ApplySettings() {
         Application.targetFrameRate = GameSettings.inst.targetFrameRate;
         QualitySettings.vSyncCount = GameSettings.inst.vSyncCount;
@@ -57,5 +89,10 @@ public class GameMgr : Singleton<GameMgr>{
     void OnPlrMarkedForPendingUnregister() {
         plrCp.Data.action_markedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
         CamMgr.inst.movByInputAllowed = false;
+        TimeMgr.SetSlowMotion(true);
+        gameOver = true;
+        gameOverTimer = 0f;
+        gameOverScreen.alpha = 0f;
+        gameOverScreen.gameObject.SetActive(true);
     }
 }
