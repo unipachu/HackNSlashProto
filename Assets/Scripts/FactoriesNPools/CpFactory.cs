@@ -10,7 +10,7 @@ public static class CpFactory {
         return cp;
     }
 
-    public static void SpawnPlrCpAtSpawnPt(
+    public static CpHandle SpawnPlrCpAtSpawnPt(
         CpHandle prefab,
         Transform spawnPt,
         PlrMgr ctrl,
@@ -20,6 +20,7 @@ public static class CpFactory {
         CpHandle cp = SpawnCpAtSpawnPt(prefab, spawnPt);
         CpMgr.StartListeningToCtrlInput(cp.I, ctrl);
         cam.Target.TrackingTarget = cp.transform;
-
+        HudMgr.inst.SetPlr(cp);
+        return cp;
     }
 }

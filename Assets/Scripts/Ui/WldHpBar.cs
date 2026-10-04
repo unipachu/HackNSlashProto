@@ -21,11 +21,7 @@ public class WldHpBar : MonoBehaviour {
     }
 
     public void SetHp(int curHp, int maxHp) {
-        //Debug.Log($"Set hp bar curhp: {curHp}, maxhp: {maxHp}");
-        float nrmHp = maxHp > 0
-            ? Mathf.Clamp01((float)curHp / maxHp)
-            : 0;
-        imgDmgRed.fillAmount = nrmHp;
+        UiUtils.SetHp(imgDmgRed, curHp, maxHp);
     }
 
     public void SetYellowHp(int hp, int maxHp) {

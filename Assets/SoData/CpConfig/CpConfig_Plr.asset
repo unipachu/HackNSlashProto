@@ -20,7 +20,7 @@ MonoBehaviour:
   walkYawSpd: 1000
   windup_YawSpd: 1000
   inputBufferDuration: 0.3
-  hp_Max: 100
+  hp_Max: 2
   rHandItem: 3
   team: 0
   enableDbgMsgs: 0

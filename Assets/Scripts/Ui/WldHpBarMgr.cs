@@ -89,34 +89,20 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             //Debug.Log($"{nameof(WldHpBarMgr)} {nameof(entityCount)}: {entityCount}");
             ref WldHpBarData data = ref bars[i];
             bool barShouldBeVisible = data.isLocked || now < data.barVisibleUntil;
-            // Hide bar and reset trailing yellow
             if (!barShouldBeVisible) {
-                data.hpBar.imgDmgYellow.fillAmount = data.hpBar.imgDmgRed.fillAmount;
-                data.trailingSt = HpBarTrailingSt.Settled;
+                UiUtils.ResetYellowTrail(data.hpBar.imgDmgRed, data.hpBar.imgDmgYellow, ref data.trailData);
                 data.hpBar.gameObject.SetActive(false);
                 continue;
             }
             // Move yellow trail.
-            if (data.hpBar.imgDmgYellow.fillAmount > data.hpBar.imgDmgRed.fillAmount)
-                switch (data.trailingSt) {
-                    case HpBarTrailingSt.DelayingDecrease:
-                        if(now > data.trailingDelayStartTime + yellowWaitUntilTrail)
-                            data.trailingSt = HpBarTrailingSt.Decreasing;
-                        break;
-                    case HpBarTrailingSt.Decreasing:
-                        data.hpBar.imgDmgYellow.fillAmount -= yellowBarSpd * Time.deltaTime;
-                        if(data.hpBar.imgDmgYellow.fillAmount <= data.hpBar.imgDmgRed.fillAmount) {
-                            data.hpBar.imgDmgYellow.fillAmount = data.hpBar.imgDmgRed.fillAmount;
-                            data.trailingSt = HpBarTrailingSt.Settled;
-                        }
-                        break;
-                    case HpBarTrailingSt.Settled:
-                        data.trailingSt = HpBarTrailingSt.DelayingDecrease;
-                        data.trailingDelayStartTime = now;
-                        break;
-                    default:
-                        break;
-                }
+            UiUtils.UpdateYellowTrail(
+                data.hpBar.imgDmgRed,
+                data.hpBar.imgDmgYellow,
+                ref data.trailData,
+                now,
+                yellowBarSpd,
+                yellowWaitUntilTrail
+            );
             // Handle dmg number visibility
             if (now > data.dmgNumberVisibleUntil) {
                 data.accumulatedDmg = 0;

@@ -6,7 +6,6 @@ using UnityEngine;
 /// </summary>
 public class CamMgr : Singleton<CamMgr>{
     [Header("Cam Rotation Settings")]
-    [SerializeField] bool camMovByInputAllowed = true;
     [SerializeField] float horSpd = 360;
     [SerializeField] float verSpd = 360;
     [Tooltip("Smaller the number the more the camera tilts up.")]
@@ -22,16 +21,18 @@ public class CamMgr : Singleton<CamMgr>{
     [SerializeField] CinemachinePanTilt panTilt;
     [SerializeField] CinemachineBrain brain;
 
+    [HideInInspector] public bool movByInputAllowed = true;
+    
     Vector3 camFwdDir = Vector3.zero;
 
     public Vector3 CamFwdDir => camFwdDir;
 
-    void Start() {
+    public void Init() {
         SaveCamFwdDir();
     }
 
-    void LateUpdate() {
-        if (camMovByInputAllowed) {
+    public void LateTick() {
+        if (movByInputAllowed) {
             MoveCamPosOnOrbitsByInput();
             RotateCam();
         }

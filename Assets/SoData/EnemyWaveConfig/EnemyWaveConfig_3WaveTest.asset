@@ -24,7 +24,7 @@ MonoBehaviour:
     enemies:
     - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}
       amount: 1
-    - enemyConfig: {fileID: 11400000, guid: ac2ab9f7a2756f8438fc4972e8fad280, type: 2}
+    - enemyConfig: {fileID: 11400000, guid: 986b792fc33994e449bf2890c39f0df3, type: 2}
       amount: 1
     - enemyConfig: {fileID: 11400000, guid: 82f77790c4c9ea34b9880622f9afa450, type: 2}
       amount: 1

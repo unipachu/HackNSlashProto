@@ -227,9 +227,6 @@ public struct Cp_ActSts {
     }
 }
 
-/// <summary>
-/// NOTE: When looping over SoA data, YOU MUST NOT REMOVE OR ADD NEW ENTITIES TO NOT CAUSE ERRORS WITH THE LOOP!! (10.9.2026) 
-/// </summary>
 public struct Cp_Data {
     // NOTE: "act_" means action state specific data (11.9.2026)
     public AtkPhase act_AtkPhase;
@@ -489,6 +486,11 @@ public struct HomingProjData {
     }
 }
 
+public struct HpBarTrailData {
+    public float delayStartTime;
+    public HpBarTrailingSt st;
+}
+
 public struct MeleeWeaponData {
     public int atk0Dmg;
     public int atk1Dmg;
@@ -530,15 +532,14 @@ public struct VectorGizmo {
 }
 
 public struct WldHpBarData {
+    public int accumulatedDmg;
     public Transform anchor;
     public float barVisibleUntil;
     public CpHandle cpHandle;
     public float dmgNumberVisibleUntil;
     public WldHpBar hpBar;
     public bool isLocked;
-    public int accumulatedDmg;
     public bool pendingUnregister;
     public RectTransform rect;
-    public HpBarTrailingSt trailingSt;
-    public float trailingDelayStartTime;
+    public HpBarTrailData trailData;
 }

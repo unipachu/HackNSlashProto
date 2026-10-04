@@ -8,6 +8,8 @@ public class GameMgr : Singleton<GameMgr>{
     [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
+    [HideInInspector] CpHandle plrCp;
+
     override protected void Awake(){
         base.Awake();
         ApplySettings();
@@ -17,9 +19,11 @@ public class GameMgr : Singleton<GameMgr>{
         AiCtrlMgr.inst.Init();
         ParticleFactory.inst.Init();
         SfxMgr.inst.Init();
+        CamMgr.inst.Init();
     }
     private void Start() {
-        CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
+        plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
+        plrCp.Data.action_markedForPendingUnregister += OnPlrMarkedForPendingUnregister;
         EnemyWaveMgr.inst.StartSpawningWaves(true);
     }
 
@@ -37,11 +41,21 @@ public class GameMgr : Singleton<GameMgr>{
 
     void LateUpdate() {
         CpMgr.inst.LateTick();
+        CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
+        HudMgr.inst.LateTick();
     }
 
     static void ApplySettings() {
         Application.targetFrameRate = GameSettings.inst.targetFrameRate;
         QualitySettings.vSyncCount = GameSettings.inst.vSyncCount;
+    }
+
+    /// <summary>
+    /// Game over logic.
+    /// </summary>
+    void OnPlrMarkedForPendingUnregister() {
+        plrCp.Data.action_markedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
+        CamMgr.inst.movByInputAllowed = false;
     }
 }

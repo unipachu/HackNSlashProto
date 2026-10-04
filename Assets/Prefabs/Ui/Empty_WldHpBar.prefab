@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2824879089402902663}
   - component: {fileID: 1693728939315897410}
   m_Layer: 0
-  m_Name: Image_DmgRed
+  m_Name: Image_Red
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -70,7 +70,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.804
+  m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 1737650699008407961}
   - component: {fileID: 1317904196971909218}
   m_Layer: 0
-  m_Name: Image_DmgYelow
+  m_Name: Image_Yellow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -553,7 +553,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 0.94
+  m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0

@@ -380,8 +380,18 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     public static ref AiCtrlData GetData(AiCtrlHandle aiCtrlHandle)
         => ref inst.aos[aiCtrlHandle.I];
 
-    public static bool HasFollowTgt(int aiCtrlI)
-        => GetData(aiCtrlI).followTgt != null;
+    public static bool HasFollowTgt(int aiCtrlI) {
+        //Debug.Log($"{aiCtrlI} followTgt: {GetData(aiCtrlI).followTgt}");
+        //if(GetData(aiCtrlI).followTgt != null) {
+        //    Debug.Log($"{aiCtrlI} followTgt should not be null: {GetData(aiCtrlI).followTgt}");
+        //    Dbg.Log($"{aiCtrlI} followTgt.TrfToFollow: "
+        //        + $"{GetData(aiCtrlI).followTgt.TrfToFollow}");
+        //}
+        // NOTE: When you call Destroy for a Unity object, a interface reference to that object will return
+        // C: null, BUT interface reference might not be marked null yet so it is considered not null.
+        // C: Therefore you need the cast first:
+        return GetData(aiCtrlI).followTgt is UnityEngine.Object unityObj && unityObj != null;
+    }
 
     public static bool IsWithinDistToFollowTgt(int aiCtrlI, float maxDist) {
         Debug.Assert(
