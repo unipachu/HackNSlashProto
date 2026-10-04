@@ -11,7 +11,7 @@ public class CpSt_Idle : IFsmSt_Cp {
     => true;
 
     public CpSt_Idle Enter() {
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
@@ -47,7 +47,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         if (CpUtils.TrySwitchStByBufferedInput(cp.I))
             return;
         if (math.all(cp.Data.input_mov != float2.zero)) {
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cp.I);
+            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), cp.I, true);
             return;
         }
     }

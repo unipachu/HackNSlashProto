@@ -119,7 +119,7 @@ public struct AnimEventPlrData {
     /// <summary>
     /// Last frame's normalized time from the animator.<br/>
     /// NOTE: This will go over 1 if animation loops.<br/>
-    /// NOTE 2: This resets to 0 when <see cref="AnimEventPlr.CrossfadeNInitAnimEventPlr"/> is called and thus is
+    /// NOTE 2: This resets to 0 when <see cref="AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr"/> is called and thus is
     /// safe to use after a state switch even if <see cref="Animator"/> has not been updated
     /// for the new state yet.
     /// </summary>

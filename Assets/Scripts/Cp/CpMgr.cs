@@ -370,25 +370,10 @@ public class CpMgr : Singleton<CpMgr> {
         inst.aos[cpI].classRefs.cpCtrl = ctrl;
     }
 
-    /// <summary>
-    /// NOTE: Never directly call Fsm.Switch state since that will bypass calling
-    /// <see cref="OnStateSwitched"/>. (10.9.2026)
-    /// </summary>
-    public void SwitchActSt(Func<IFsmSt_Cp> enterFunc, int cpI){
-        Fsm.SwitchSt(
-            enterFunc,
-            ref aos[cpI].classRefs.st_cur,
-            ref aos[cpI].classRefs.st_prev,
-            ref GetData(cpI).isSwitchingSt
-            //GetData(cpI).enableDbgMsgs
-        );
-        OnStateSwitched(cpI, aos[cpI].classRefs.st_cur);
-    }
-
     public void SwitchToInitActSt(int cpI) {
         //Debug.Log($"{cpI} switching to init state", this);
         // NOTE: This is currently always enters to idle state. (6.9.2026)
-        SwitchActSt(() => aos[cpI].classRefs.actSts.idle.Enter(), cpI);
+        TrySwitchActSt(() => aos[cpI].classRefs.actSts.idle.Enter(), cpI, true);
         //Debug.Log($"{cpI} state initialized to : {nameof(Cp_ActSts.idle)}", this);
     }
 
@@ -411,20 +396,34 @@ public class CpMgr : Singleton<CpMgr> {
         return null;
     }
 
+
     /// <summary>
     /// NOTE: Never directly call <see cref="Fsm.TrySwitchState"/> since that will bypass calling
     /// <see cref="OnStateSwitched"/>, so call this instead!. (10.9.2026)
     /// NOTE 2: <paramref name="enterFunc"/> return type needs to be generic (instead of IFsmSt_Cp), otherwise
     /// information of the new state type is lost. (12.9.2026)
     /// </summary>
-    public bool TrySwitchActSt<TNewState>(Func<TNewState> enterFunc, int cpI) where TNewState : IFsmSt_Cp {
+    /// <param name="forceStSwitch">Skip state transition checks and force state swtich?</param>
+    public bool TrySwitchActSt<TNewState>(Func<TNewState> enterFunc, int cpI, bool forceStSwitch = false)
+    where TNewState : class, IFsmSt_Cp {
+        if (forceStSwitch) {
+            Fsm.SwitchSt(
+                enterFunc,
+                ref aos[cpI].classRefs.st_cur,
+                ref aos[cpI].classRefs.st_prev,
+                ref GetData(cpI).isSwitchingSt
+                //GetData(cpI).handle.so_cpData.enableDbgMsgs
+            );
+            OnStateSwitched(cpI, aos[cpI].classRefs.st_cur);
+            return true;
+        }
         if(
             Fsm.TrySwitchState(
                 enterFunc,
                 ref aos[cpI].classRefs.st_cur,
                 ref aos[cpI].classRefs.st_prev,
                 ref GetData(cpI).isSwitchingSt
-                //GetData(cpI).enableDbgMsgs
+                //GetData(cpI).handle.so_cpData.enableDbgMsgs
             )
         ) {
             OnStateSwitched(cpI, aos[cpI].classRefs.st_cur);

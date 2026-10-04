@@ -17,7 +17,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
     public CpSt_Atk_Jump Enter(HitEffects hitEffects, IHitDealer hitDealer) {
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_JumpVerSlam),

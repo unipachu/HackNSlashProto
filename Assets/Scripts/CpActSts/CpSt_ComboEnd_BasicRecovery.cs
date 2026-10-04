@@ -25,7 +25,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
         inputMovAllowedNrmTime = -1;
         cpData.comboAllowed = false;
         cpData.inputMovAllowed = false;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpData.animEventPlrData,
             cpData.handle.anim,
             animInfo,
@@ -74,7 +74,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
                 ref cpData.inputBuffer_BufferedInput,
                 ref cpData.inputBuffer_RemainingTime)
             ) {
-                CpMgr.inst.SwitchActSt(() => CpMgr.inst.aos[cp.I].classRefs.actSts.dodge.Enter(), cp.I);
+                CpMgr.inst.TrySwitchActSt(() => CpMgr.inst.aos[cp.I].classRefs.actSts.dodge.Enter(), cp.I, true);
                 return;
             }
         }

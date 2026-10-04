@@ -1969,7 +1969,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &229536500
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4966,15 +4966,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b69ccb9ece984ad46be8d2ab953feb9e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GlobalDataBootstrap
-  enemySpawnAnimDur: 2
-  gravitationalAcc: 10
-  groundMask:
+  <animSampleRate>k__BackingField: 30
+  <enemySpawnAnimDur>k__BackingField: 2
+  <gravitationalAcc>k__BackingField: 10
+  <groundMask>k__BackingField:
     serializedVersion: 2
-    m_Bits: 4294967295
-  inputBuffer_Dur: 0.3
-  isGroundedChkDist: 0.1
-  maxFallSpd: 30
-  successiveAtkWindow: 1.5
+    m_Bits: 192
+  <inputBuffer_Dur>k__BackingField: 0.3
+  <isGroundedChkDist>k__BackingField: 0.1
+  <maxFallSpd>k__BackingField: 30
+  <successiveAtkWindow>k__BackingField: 1.5
 --- !u!4 &900887753
 Transform:
   m_ObjectHideFlags: 0
@@ -9193,7 +9194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: 58da4f9a0e7fb294cbcd23bd76d0054c, type: 2}
+  waveConfig: {fileID: 11400000, guid: 64f6a0f4b63feee4fab3a90c362d6497, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}

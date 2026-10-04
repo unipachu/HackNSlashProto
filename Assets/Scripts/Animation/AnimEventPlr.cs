@@ -21,28 +21,35 @@ public static class AnimEventPlr {
     // --------------------------------------------------------------------------------------------
 
     /// <summary>
-    /// Starts crossfade and initializes animation event data.
+    /// Starts crossfade and initializes animation event data.<br/>
+    /// NOTE: EXCEPCT ANIMATION SAMPLE RATE TO ALWAYS BE 30 FOR FIXED TIME -> NORMALIZED TIME CONVERSION!
     /// </summary>
-    /// <param name="nrmTransDur">Duration of the transition in the NEXT animation's normalized time.</param>
-    /// <param name="nrmStartOffset">Normalized start time of the next animation.</param>
+    /// <param name="fixedTransDur">Duration of the transition in fixed time (seconds).</param>
+    /// <param name="fixedTimeOffset">Fixed start time (seconds) of the next animation.</param>
     /// <param name="fireEventsBeforeStartOffset">
     /// Should we fire animations before start offset during first tick?
     /// </param>
-    public static void CrossfadeNInitAnimEventPlr(
+    public static void CrossFadeInFixedTimeNInitAnimEventPlr(
         ref AnimEventPlrData animEventPlrData,
         Animator anim,
         AnimInfo animInfo,
-        float nrmTransDur = 0.1f,
-        float nrmStartOffset = 0,
+        float fixedTransDur = 0.1f,
+        float fixedTimeOffset = 0,
         bool fireEventsBeforeStartOffset = true
     ) {
-        //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {nrmTransDur}, and "
-        //    + $"startOffset: {startOffset}.");
-        anim.CrossFade(
+        //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {fixedTransDur}, and "
+        //    + $"startOffset: {fixedTimeOffset}.");
+        anim.CrossFadeInFixedTime(
             animInfo.shortNameHash,
-            nrmTransDur,
+            fixedTransDur,
             animInfo.animLayer,
-            nrmStartOffset
+            fixedTimeOffset
+        );
+        float nrmStartOffset = AnimUtils.TimeIntoAnimationToNormalizedTime(
+            fixedTimeOffset,
+            animInfo.lastFrame,
+            // NOTE: Currently anim sample rate should be shared by all animations!
+            GlobalData.inst.animSampleRate
         );
         InitAnimEventPlrData(
             ref animEventPlrData,
@@ -226,12 +233,12 @@ public static class AnimEventPlr {
     static void InitAnimEventPlrData(
         ref AnimEventPlrData animEventPlrData,
         AnimInfo animInfo,
-        float startOffset = 0,
+        float nrmStartOffset = 0,
         bool fireEventsBeforeStartOffset = true
     ) {
         animEventPlrData.animInfo = animInfo;
-        animEventPlrData.prevTotalNrmT = startOffset;
-        animEventPlrData.cursor = startOffset;
+        animEventPlrData.prevTotalNrmT = nrmStartOffset;
+        animEventPlrData.cursor = nrmStartOffset;
         animEventPlrData.loopCount = 0;
         animEventPlrData.loopsSinceRebase = 0;
         animEventPlrData.finished = false;

@@ -20,7 +20,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
         cp.Data.ignoreHits = true;
         cp.Data.isAffectedByGravity = false;
         cp.Data.act_AtkPhase = AtkPhase.Windup;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Windup),
@@ -41,7 +41,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
             case CpAnimEventT.Finished:
                 switch (cpData.act_AtkPhase) {
                     case AtkPhase.Windup:
-                        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+                        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
                             ref CpMgr.inst.aos[cp.I].animEventPlrData,
                             cpData.handle.anim,
                             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Impact)
@@ -104,7 +104,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                 if (cpData.isGrounded) {
                     hitDealer.Deactivate();
                     cpData.act_AtkPhase = AtkPhase.Recovery;
-                    AnimEventPlr.CrossfadeNInitAnimEventPlr(
+                    AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
                         ref CpMgr.inst.aos[cp.I].animEventPlrData,
                         cpData.handle.anim,
                         CpAnimInfoFactory.Construct(CpAnimInfoT.atk_FlyingAtk_Recovery)

@@ -21,7 +21,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         this.hitEffects = hitEffects;
         cp.Data.comboAllowed = false;
         cp.Data.yawAllowed = false;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             comboNode.AnimInfo,
@@ -41,9 +41,10 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.inst.SwitchActSt(
+                    CpMgr.inst.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                        cp.I
+                        cp.I,
+                        true
                     );
                     return;
                 }

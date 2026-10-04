@@ -77,7 +77,7 @@ public static class CpUtils{
             && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.falling.Enter(), cpI);
+            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.falling.Enter(), cpI, true);
             return true;
         }
         return false;
@@ -90,9 +90,9 @@ public static class CpUtils{
         var classRefs = CpMgr.inst.aos[cpI].classRefs;
         SwitchToFallingStIfNotGrounded(cpI);
         if (math.all(CpMgr.GetData(cpI).input_mov != float2.zero))
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.walk.Enter(), cpI);
+            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), cpI, true);
         else
-            CpMgr.inst.SwitchActSt(() => classRefs.actSts.idle.Enter(), cpI);
+            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), cpI, true);
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ public static class CpUtils{
                     ref CpMgr.GetData(cpI).inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.SwitchActSt(enterFunc, cpI);
+            CpMgr.inst.TrySwitchActSt(enterFunc, cpI, true);
             return true;
         }
         return false;
@@ -160,7 +160,7 @@ public static class CpUtils{
                     ref CpMgr.GetData(cpI).inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.SwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpI), cpI);
+            CpMgr.inst.TrySwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpI), cpI, true);
             return true;
         }
         return false;

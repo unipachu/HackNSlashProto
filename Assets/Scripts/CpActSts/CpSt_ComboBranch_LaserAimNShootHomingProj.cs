@@ -31,7 +31,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         this.homingProjData = homingProjData;
         this.projSpawnPose = projSpawnPose;
         this.projT = projT;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_AimPose),
@@ -74,9 +74,10 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
                 projSpawnPose.forward
             );
             if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                CpMgr.inst.SwitchActSt(
+                CpMgr.inst.TrySwitchActSt(
                     comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                    cp.I
+                    cp.I,
+                    true
                 );
                 return;
             }

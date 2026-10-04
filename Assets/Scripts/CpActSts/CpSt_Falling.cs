@@ -13,11 +13,11 @@ public class CpSt_Falling : IFsmSt_Cp {
 
     public CpSt_Falling Enter() {
         cp.Data.act_Falling_StartHgt = cp.Data.handle.transform.position.y;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.falling),
-            4 // NOTE: Transition is long to give a sense of accleration during falling. // TODO: So.
+            2 // NOTE: Transition is long to give a sense of accleration during falling. // TODO: So.
         );
         return this;
     }
@@ -37,7 +37,7 @@ public class CpSt_Falling : IFsmSt_Cp {
             //Debug.Log("Is grounded");
             float fallDist = cp.Data.act_Falling_StartHgt - cp.Data.handle.transform.position.y;
             if(fallDist > cp.so_cpData.act_Falling_LandingStFallDistThreshold) {
-                CpMgr.inst.SwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.I);
+                CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.I, true);
                 return;
             }
             CpUtils.TransitionToFallIdleOrWalk(cp.I);

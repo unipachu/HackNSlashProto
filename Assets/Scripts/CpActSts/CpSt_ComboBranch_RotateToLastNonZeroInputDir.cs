@@ -21,7 +21,7 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
             ref cp.Data.inputBuffer_BufferedInput,
             ref cp.Data.inputBuffer_RemainingTime
         );
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             comboNode.AnimInfo,
@@ -35,9 +35,10 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.inst.SwitchActSt(
+                    CpMgr.inst.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                        cp.I
+                        cp.I,
+                        true
                     );
                     return;
                 }

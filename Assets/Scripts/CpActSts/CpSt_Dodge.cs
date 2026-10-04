@@ -14,7 +14,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         cp.Data.yawAllowed = false;
         cp.Data.bufferedInputStSwitchAllowed = false;
         cp.Data.ignoreHits = true;
-        AnimEventPlr.CrossfadeNInitAnimEventPlr(
+        AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref CpMgr.inst.aos[cp.I].animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.dodge),
