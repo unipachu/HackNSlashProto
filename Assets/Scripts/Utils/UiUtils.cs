@@ -30,9 +30,9 @@ public static class UiUtils {
         }
     }
 
-    public static void SetHp(Image imgHp, int curHp, int maxHp) {
-        imgHp.fillAmount = maxHp > 0
-            ? Mathf.Clamp01((float)curHp / maxHp)
+    public static void SetBarFill(Image img, int curAmount, int maxAmount) {
+        img.fillAmount = maxAmount > 0
+            ? Mathf.Clamp01((float)curAmount / maxAmount)
             : 0f;
     }
 

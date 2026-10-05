@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpawner, IHandItem_Comboer {
+    public event Action<HashSet<HitResult>> hitSomething;
+
     [SerializeField] AimLaser aimLaser;
     [SerializeField] ComboGraphT comboGraphT;
     [SerializeField] HitDealer_CapsuleSubstepper meleeHitDealer;
@@ -29,7 +32,16 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
     public ProjT ProjT => projT;
     public Transform Trf => transform;
 
+
     void Awake() {
         comboGraph = ComboGraphFactory.GenerateComboGraph(this, comboGraphT);
+    }
+
+    void OnEnable() {
+        meleeHitDealer.hitSomething += hitSomething;
+    }
+
+    void OnDisable() {
+        meleeHitDealer.hitSomething -= hitSomething;
     }
 }

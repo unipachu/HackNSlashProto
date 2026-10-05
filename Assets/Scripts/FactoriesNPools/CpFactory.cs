@@ -13,14 +13,14 @@ public static class CpFactory {
     public static CpHandle SpawnPlrCpAtSpawnPt(
         CpHandle prefab,
         Transform spawnPt,
-        PlrMgr ctrl,
+        PlrCtrl ctrl,
         CinemachineCamera cam
     ) {
         //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");
         CpHandle cp = SpawnCpAtSpawnPt(prefab, spawnPt);
         CpMgr.StartListeningToCtrlInput(cp.I, ctrl);
         cam.Target.TrackingTarget = cp.transform;
-        HudMgr.inst.SetPlr(cp);
+        PlrMgr.inst.SetPlr(cp);
         return cp;
     }
 }

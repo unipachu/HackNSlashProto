@@ -27,6 +27,7 @@ public class TestShooter : MonoBehaviour {
         if(timer > shootInterval) {
             timer = 0;
             HomingProjMgr.inst.ShootProj(
+                null,
                 HitDirMode.HitDealerMovDir,
                 hitEffects,
                 homingProjData,

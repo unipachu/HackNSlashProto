@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -30,4 +31,8 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
 
     public bool IsOnNavMesh()
         => CpUtils.IsOnNavMesh(I);
+
+    public void OnHitSomething(HashSet<HitResult> hits) {
+        Data.action_HitSomething?.Invoke(hits);
+    }
 }

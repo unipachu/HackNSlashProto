@@ -15,7 +15,7 @@ public class CamMgr : Singleton<CamMgr>{
     [SerializeField] bool invY = false;
 
     [Header("Refs")]
-    [SerializeField] PlrMgr plrCtrl;
+    [SerializeField] PlrCtrl plrCtrl;
     public CinemachineCamera cam;
     [SerializeField] CinemachineOrbitalFollow orbitalFollow;
     [SerializeField] CinemachinePanTilt panTilt;
@@ -41,13 +41,13 @@ public class CamMgr : Singleton<CamMgr>{
 
     void MoveCamPosOnOrbitsByInput() {
         // Mouse delta rot
-        Vector2 look = plrCtrl.Input_Look_Pointer;
+        Vector2 look = plrCtrl.Input_PointerDelta;
         orbitalFollow.HorizontalAxis.Value
             += look.x * horSpd;
         orbitalFollow.VerticalAxis.Value
             += look.y * verSpd * (invY ? -1 : 1);
         // Gamepad vel based rot
-        look = plrCtrl.Input_Look_Gamepad;
+        look = plrCtrl.Input_RStick;
         orbitalFollow.HorizontalAxis.Value
             += look.x * horSpd * Time.deltaTime;
         orbitalFollow.VerticalAxis.Value

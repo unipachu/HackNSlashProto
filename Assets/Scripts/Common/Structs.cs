@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -234,25 +235,29 @@ public struct Cp_Data {
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
     /// </summary>
-    public Action<int, int> action_curHpChanged;
+    public Action<int, int> action_CurHpChanged;
     /// <summary>
     /// Should be called when cp enters death/dying state (not when in unregisters). Param is cp in dying state.
     /// </summary>
-    public Action<CpHandle> action_died;
+    public Action<CpHandle> action_Died;
     /// <summary>
     /// Param is the damage taken.
     /// </summary>
-    public Action<int> action_dmgTaken;
+    public Action<int> action_DmgTaken;
+    /// <summary>
+    /// Hit of the pawn connected to a <see cref="IHitReceiver"/> and dealt damage. Param is dmg dealt.
+    /// </summary>
+    public Action<HashSet<HitResult>> action_HitSomething;
     /// <summary>
     /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
     /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
     /// <see cref="Cp_Data.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
     /// </summary>
-    public Action action_markedForPendingUnregister;
+    public Action action_MarkedForPendingUnregister;
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
     /// </summary>
-    public Action<int, int> action_maxHpChanged;
+    public Action<int, int> action_MaxHpChanged;
     /// <summary>
     /// Invoked when local player ends the lock on to this.
     /// </summary>
@@ -370,13 +375,13 @@ public struct Cp_NonUnityObjClassRefs {
 }
 
 public struct CtrlInputData {
-    public bool input_Atk_Light;
-    public bool input_Atk_Heavy;
-    public bool input_Atk_Ult;
-    public bool input_Dodge;
-    public Vector2 input_Look_Gamepad;
-    public Vector2 input_Look_Pointer;
-    public Vector2 input_Mov;
+    public bool input_B;
+    public bool input_Lb;
+    public Vector2 input_LStick;
+    public Vector2 input_PointerDelta;
+    public bool input_Rb;
+    public Vector2 input_RStick;
+    public bool input_Rt;
 }
 
 [Serializable]
@@ -468,11 +473,13 @@ public struct HitResult {
     /// All hit recievers owned by the hit entity. Can be used to ignore them from further hits.
     /// </summary>
     public IHitReceiver[] allEntityHitReceivers;
-    public bool wasBlocked;
+    public int dmgDealt;
+    public bool blocked;
 
-    public HitResult(IHitReceiver[] allEntityHitReceivers, bool wasBlocked) {
+    public HitResult(IHitReceiver[] allEntityHitReceivers, int dmgDealt, bool blocked) {
         this.allEntityHitReceivers = allEntityHitReceivers;
-        this.wasBlocked = wasBlocked;
+        this.dmgDealt = dmgDealt;
+        this.blocked = blocked;
     }
 }
 

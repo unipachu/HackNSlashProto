@@ -69,7 +69,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             newHandle
         );
         ArrayUtils.Add(ref aos, newI, newData);
-        controlledCp.Data.action_markedForPendingUnregister += newHandle.OnCpMarkedForUnregister;
+        controlledCp.Data.action_MarkedForPendingUnregister += newHandle.OnCpMarkedForUnregister;
         newHandle.I = newI;
         // NOTE: This is here because we use custom avoidance. If you want to use Unity's
         // NOTE C: avoidance, comment this out.
@@ -90,7 +90,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
             );
             return;
         }
-        GetData(i).cp.Data.action_markedForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
+        GetData(i).cp.Data.action_MarkedForPendingUnregister -= GetData(i).handle.OnCpMarkedForUnregister;
         int lastId = entityCount - 1;
         AiCtrlHandle swappedCtrl = i != lastId
             ? aos[lastId].handle
@@ -327,7 +327,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                 $"f{Time.frameCount} pos {pos} tgt {tgtPos} dest {agent.destination} "
                     + $"steerTgt {agent.steeringTarget} pathEnd {agent.pathEndPosition} status "
                     + $"{agent.pathStatus} pending {agent.pathPending} hasPath {agent.hasPath} desVel "
-                    + $"{aos[i].agentDesiredVel} input_Mov {aos[i].ctrlInputData.input_Mov}",
+                    + $"{aos[i].agentDesiredVel} input_Mov {aos[i].ctrlInputData.input_LStick}",
                 cp.so_cpData.enableDbgMsgs
             );
         }
@@ -357,10 +357,10 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// </summary>
     void Tick_ResetWasPressedThisFrameInputs() {
         for (int i = 0; i < entityCount; i++) {
-            aos[i].ctrlInputData.input_Atk_Light = false;
-            aos[i].ctrlInputData.input_Atk_Heavy = false;
-            aos[i].ctrlInputData.input_Atk_Ult = false;
-            aos[i].ctrlInputData.input_Dodge = false;
+            aos[i].ctrlInputData.input_Rb = false;
+            aos[i].ctrlInputData.input_Rt = false;
+            aos[i].ctrlInputData.input_Lb = false;
+            aos[i].ctrlInputData.input_B = false;
         }
     }
 

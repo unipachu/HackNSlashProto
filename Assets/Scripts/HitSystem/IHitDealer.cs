@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,11 +6,13 @@ using UnityEngine;
 /// Can deal hits to hit recievers.
 /// </summary>
 public interface IHitDealer{
+    public event Action<HashSet<HitResult>> hitSomething;
+
     Vector3 HitDealerMovDir { get; set; }
     
-    public void Deactivate();
+    void Deactivate();
 
-    public void ResetNActivate(
+    void ResetNActivate(
         Transform hitSource,
         HitDirMode hitDirMode,
         HitEffects hitEffects,

@@ -1,71 +1,69 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-/// <summary>
-/// Uses input to command CustomCharacterController
-/// NOTE: This class is (or should be) set to run before default time, just
-/// NOTE C: after UnityEngine.InputSystem.PlayerInput in Project Settings -> Script Execution Order.
-/// </summary>
-public class PlrMgr : Singleton<PlrMgr>, ICpCtrlInputter {
-    [Header("Input Action Asset")]
-    [SerializeField] InputActionAsset inputActs;
-    [SerializeField] string actionMapName = "Player";
+public class PlrMgr : Singleton<PlrMgr>{
+    CpHandle cp;
+    int curUlt;
+    int maxUlt = 5;
 
-    [Header("Input Action Refs")]
-    [SerializeField] InputActionProperty inputAct_Atk_Light;
-    [SerializeField] InputActionProperty inputAct_Atk_Heavy;
-    [SerializeField] InputActionProperty inputAct_Atk_Ult;
-    [SerializeField] InputActionProperty inputAct_Dodge;
-    [SerializeField] InputActionProperty inputAct_Look_Gamepad;
-    [SerializeField] InputActionProperty inputAct_Look_Pointer;
-    [SerializeField] InputActionProperty inputAct_Mov;
+    // -------------------------------------------------------------------------------
+    // Tick Methods
+    // -------------------------------------------------------------------------------
 
-    [Header("Refs")]
-    [SerializeField] CamMgr camMgr;
-
-    CtrlInputData data;
-
-    public Vector2 Input_Look_Gamepad => data.input_Look_Gamepad;
-    /// <summary>
-    /// Gives mouse delta.
-    /// </summary>
-    public Vector2 Input_Look_Pointer => data.input_Look_Pointer;
-    public Vector2 Input_Mov => data.input_Mov;
-
-    void OnEnable() {
-        inputActs.FindActionMap(actionMapName).Enable();
+    public void LateTick() {
+        if (cp != null)
+            HudMgr.inst.Tick();
     }
 
-    // Update is called once per frame
-    void Update(){
-        ReadInputs();
+    // -------------------------------------------------------------------------------
+    // Other Methods
+    // -------------------------------------------------------------------------------
+
+    public void SetPlr(CpHandle cp) {
+        Debug.Assert(this.cp == null, "Player already set!");
+        this.cp = cp;
+        cp.Data.action_HitSomething += OnPlrHitSomething;
+        cp.Data.action_CurHpChanged += OnPlrCurHpChanged;
+        cp.Data.action_MaxHpChanged += OnPlrMaxHpChanged;
+        cp.Data.action_MarkedForPendingUnregister += OnPlrMarkedForPendingUnregister;
+        HudMgr.inst.SetHp(cp.Data.hp_Cur, cp.so_cpData.hp_Max);
+        HudMgr.inst.ResetYellowTrail();
+        HudMgr.inst.SetUlt(0, maxUlt);
     }
 
-    void OnDisable(){
-        inputActs.FindActionMap(actionMapName).Disable();
-    }
-    
-    void ReadInputs(){
-        data.input_Atk_Light = inputAct_Atk_Light.action.WasPressedThisFrame();
-        data.input_Atk_Heavy = inputAct_Atk_Heavy.action.WasPressedThisFrame();
-        data.input_Atk_Ult = inputAct_Atk_Ult.action.WasPressedThisFrame();
-        data.input_Dodge = inputAct_Dodge.action.WasPressedThisFrame();
-        data.input_Look_Gamepad = inputAct_Look_Gamepad.action.ReadValue<Vector2>();
-        data.input_Look_Pointer = inputAct_Look_Pointer.action.ReadValue<Vector2>()
-            * GameSettings.inst.lookPointerSensitivity;
-        // NOTE: We use camera relative movement input.
-        data.input_Mov = MathUtils.TrfInputByBasis(
-            inputAct_Mov.action.ReadValue<Vector2>(),
-            camMgr.CamFwdDir
-        );
-        //Debug.Log($"input_Mov: {input_Mov}.");
+    void ClearPlr() {
+        Debug.Assert(cp != null, "No player was set!");
+        cp.Data.action_CurHpChanged -= OnPlrCurHpChanged;
+        cp.Data.action_MaxHpChanged -= OnPlrMaxHpChanged;
+        cp.Data.action_HitSomething -= OnPlrHitSomething;
+        cp.Data.action_MarkedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
+        cp = null;
+        HudMgr.inst.ResetYellowTrail();
     }
 
-    public bool TryConsume_Atk_Light() => CtrlUtils.TryConsume(ref data.input_Atk_Light);
+    void OnPlrCurHpChanged(int curHp, int maxHp) {
+        HudMgr.inst.SetHp(curHp, maxHp);
+    }
 
-    public bool TryConsume_Atk_Heavy() => CtrlUtils.TryConsume(ref data.input_Atk_Heavy);
+    void OnPlrHitSomething(HashSet<HitResult> hitResults) {
+        foreach(var hitResult in hitResults) {
+            // We increase ult meter for each hit that dealt damage.
+            if (hitResult.dmgDealt > 0)
+                curUlt++;
+            if(curUlt == maxUlt) {
+                // TODO: Play some effect etc?
+                break;
+            }
+        }
+        Debug.Log($"Updated Ult meter to: {curUlt}");
+        HudMgr.inst.SetUlt(curUlt, maxUlt);
+    }
 
-    public bool TryConsume_Atk_Ult() => CtrlUtils.TryConsume(ref data.input_Atk_Ult);
+    void OnPlrMarkedForPendingUnregister() {
+        ClearPlr();
+    }
 
-    public bool TryConsume_Dodge() => CtrlUtils.TryConsume(ref data.input_Dodge);
+    void OnPlrMaxHpChanged(int curHp, int maxHp) {
+        HudMgr.inst.SetHp(curHp, maxHp);
+    }
 }

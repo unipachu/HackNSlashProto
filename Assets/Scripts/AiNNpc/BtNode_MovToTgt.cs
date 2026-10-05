@@ -20,9 +20,9 @@ public class BtNode_MovToTgt : IBtNode{
         // Agent can have 0 desired velocity, thus to avoid NaNs:
         if (math.lengthsq(horDesiredVel) > 0.0001f)
             // Movement input should always be max 1 length.
-            data.ctrlInputData.input_Mov = math.normalize(horDesiredVel);
+            data.ctrlInputData.input_LStick = math.normalize(horDesiredVel);
         else
-            data.ctrlInputData.input_Mov = float2.zero;
+            data.ctrlInputData.input_LStick = float2.zero;
         //Dbg.Log($"{cpI} bt node: {typeof(BtNode_MovToTgt).Name} mov input: "
         //        + $"{data.ctrlInputData.input_Mov}",
         //    data.cp,

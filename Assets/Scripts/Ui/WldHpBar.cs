@@ -21,7 +21,7 @@ public class WldHpBar : MonoBehaviour {
     }
 
     public void SetHp(int curHp, int maxHp) {
-        UiUtils.SetHp(imgDmgRed, curHp, maxHp);
+        UiUtils.SetBarFill(imgDmgRed, curHp, maxHp);
     }
 
     public void SetYellowHp(int hp, int maxHp) {

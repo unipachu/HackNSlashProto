@@ -61,6 +61,7 @@ public class CpMgr : Singleton<CpMgr> {
             newCp.rHand.rotation
         );
         rHandItem.Trf.parent = newCp.rHand;
+        rHandItem.hitSomething += newCp.OnHitSomething;
         Cp_NonUnityObjClassRefs newClassRefs = new Cp_NonUnityObjClassRefs(newCp, null, rHandItem);
         newAosData.classRefs = newClassRefs;
         ArrayUtils.Add(ref aos, entityCount, newAosData);
@@ -80,6 +81,7 @@ public class CpMgr : Singleton<CpMgr> {
             Debug.LogError($"{cpI} was greaterequal to {entityCount}!");
             return;
         }
+        aos[cpI].classRefs.rHandItem.hitSomething -= aos[cpI].handle.OnHitSomething;
         GameObject.Destroy(aos[cpI].handle.gameObject);
         int lastI = entityCount - 1;
         CpHandle swappedCp = cpI != lastI ? aos[lastI].handle : null;
@@ -150,12 +152,12 @@ public class CpMgr : Singleton<CpMgr> {
             ref var cpData = ref GetData(i);
             if(cpData.cooldownTimer_Dodge > 0 && !cpData.cooldownFreezed_Dodge)
                 cpData.cooldownTimer_Dodge = Mathf.Max(0, cpData.cooldownTimer_Dodge - dt);
-            Dbg.Log(
-                $"cp {i} {nameof(cpData.cooldownTimer_Dodge)}: {cpData.cooldownTimer_Dodge}, " 
-                    + $"{nameof(cpData.cooldownFreezed_Dodge)}: {cpData.cooldownFreezed_Dodge}",
-                cpData.handle,
-                cpData.handle.so_cpData.enableDbgMsgs
-            );
+            //Dbg.Log(
+            //    $"cp {i} {nameof(cpData.cooldownTimer_Dodge)}: {cpData.cooldownTimer_Dodge}, " 
+            //        + $"{nameof(cpData.cooldownFreezed_Dodge)}: {cpData.cooldownFreezed_Dodge}",
+            //    cpData.handle,
+            //    cpData.handle.so_cpData.enableDbgMsgs
+            //);
         }
     }
 
@@ -177,9 +179,9 @@ public class CpMgr : Singleton<CpMgr> {
             //GetAos(i).input_atk_Heavy = aos[i].classRefs.cpCtrl.TryConsume_Atk_Heavy();
             //GetAos(i).input_atk_Ult = aos[i].classRefs.cpCtrl.TryConsume_Atk_Ult();
             //GetAos(i).input_dodge = aos[i].classRefs.cpCtrl.TryConsume_Dodge();
-            if (aos[i].classRefs.cpCtrl.Input_Mov.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone) {
-                GetData(i).input_mov = aos[i].classRefs.cpCtrl.Input_Mov;
-                GetData(i).input_mov_LastNonZero = aos[i].classRefs.cpCtrl.Input_Mov;
+            if (aos[i].classRefs.cpCtrl.Input_LStick.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone) {
+                GetData(i).input_mov = aos[i].classRefs.cpCtrl.Input_LStick;
+                GetData(i).input_mov_LastNonZero = aos[i].classRefs.cpCtrl.Input_LStick;
             } else
                 GetData(i).input_mov = Vector2.zero;
             //Dbg.Log($"light attack input: {GetAos(i).input_atk_Light}", cp[i], aosData[i].enableDbgMsgs);
@@ -361,7 +363,7 @@ public class CpMgr : Singleton<CpMgr> {
             GetData(cpI).input_mov_WhenLastSwitchedSt
                 = GetData(cpI).input_mov;
         else {
-            if (aos[cpI].classRefs.cpCtrl.Input_Mov.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone)
+            if (aos[cpI].classRefs.cpCtrl.Input_LStick.sqrMagnitude > GameSettings.inst.movInputSqrDeadzone)
                 GetData(cpI).input_mov_WhenLastSwitchedSt
                     = GetData(cpI).input_mov;
             else
@@ -377,7 +379,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// </summary>
     public void MarkForPendingUnregister(int cpI) {
         aos[cpI].pendingUnregister = true;
-        aos[cpI].action_markedForPendingUnregister?.Invoke();
+        aos[cpI].action_MarkedForPendingUnregister?.Invoke();
     }
 
     /// <summary>

@@ -35,10 +35,10 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             barVisibleUntil = 0f
         };
         ArrayUtils.Add(ref bars, entityCount, data);
-        data.cpHandle.Data.action_curHpChanged += hpBar.OnCurHpChanged;
-        data.cpHandle.Data.action_dmgTaken += hpBar.OnDmgTaken;
-        data.cpHandle.Data.action_markedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
-        data.cpHandle.Data.action_maxHpChanged += hpBar.OnMaxHpChanged;
+        data.cpHandle.Data.action_CurHpChanged += hpBar.OnCurHpChanged;
+        data.cpHandle.Data.action_DmgTaken += hpBar.OnDmgTaken;
+        data.cpHandle.Data.action_MarkedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.Data.action_MaxHpChanged += hpBar.OnMaxHpChanged;
         data.cpHandle.Data.action_PlrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
         data.cpHandle.Data.action_PlrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
         hpBar.I = newI;
@@ -54,10 +54,10 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     /// </summary>
     public void Unregister(int i) {
         ref var data = ref bars[i];
-        data.cpHandle.Data.action_curHpChanged -= data.hpBar.OnCurHpChanged;
-        data.cpHandle.Data.action_dmgTaken -= data.hpBar.OnDmgTaken;
-        data.cpHandle.Data.action_markedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
-        data.cpHandle.Data.action_maxHpChanged -= data.hpBar.OnMaxHpChanged;
+        data.cpHandle.Data.action_CurHpChanged -= data.hpBar.OnCurHpChanged;
+        data.cpHandle.Data.action_DmgTaken -= data.hpBar.OnDmgTaken;
+        data.cpHandle.Data.action_MarkedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.Data.action_MaxHpChanged -= data.hpBar.OnMaxHpChanged;
         data.cpHandle.Data.action_PlrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
         data.cpHandle.Data.action_PlrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
         int lastId = entityCount - 1;

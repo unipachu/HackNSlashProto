@@ -10,24 +10,24 @@ public class AiCtrlHandle : ICpCtrlInputter {
     public int I { get; set; } = -1;
 
     public ref AiCtrlData Data => ref AiCtrlMgr.inst.aos[I];
-    public Vector2 Input_Look_Gamepad => AiCtrlMgr.GetData(I).ctrlInputData.input_Look_Gamepad;
+    public Vector2 Input_RStick => AiCtrlMgr.GetData(I).ctrlInputData.input_RStick;
     /// <summary>
     /// Gives mouse delta.
     /// </summary>
-    public Vector2 Input_Look_Pointer => AiCtrlMgr.GetData(I).ctrlInputData.input_Look_Pointer;
-    public Vector2 Input_Mov => AiCtrlMgr.GetData(I).ctrlInputData.input_Mov;
+    public Vector2 Input_PointerDelta => AiCtrlMgr.GetData(I).ctrlInputData.input_PointerDelta;
+    public Vector2 Input_LStick => AiCtrlMgr.GetData(I).ctrlInputData.input_LStick;
     
     public bool TryConsume_Atk_Light()
-        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Atk_Light);
+        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Rb);
 
     public bool TryConsume_Atk_Heavy()
-        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Atk_Heavy);
+        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Rt);
 
     public bool TryConsume_Atk_Ult()
-        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Atk_Ult);
+        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Lb);
 
     public bool TryConsume_Dodge()
-        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_Dodge);
+        => CtrlUtils.TryConsume(ref AiCtrlMgr.GetData(I).ctrlInputData.input_B);
 
     public void OnCpMarkedForUnregister() {
         AiCtrlMgr.inst.Unregister(I);

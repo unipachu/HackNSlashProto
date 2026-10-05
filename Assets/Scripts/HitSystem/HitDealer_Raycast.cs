@@ -110,10 +110,7 @@ public class HitDealer_Raycast : MonoBehaviour, IHitDealer {
             srcTrf,
             team
         );
-        foreach (HitResult hitResult in hitResults) {
-            allHits.Add(hitResult);
-            ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
-        }
+        HitSysUtils.SaveHitResults(allHits, hitResults, ignoredHitRecievers);
     }
 
     void ProcessSweptHitPoint(
@@ -139,10 +136,7 @@ public class HitDealer_Raycast : MonoBehaviour, IHitDealer {
             srcTrf,
             team
         );
-        foreach (HitResult hitResult in hitResults) {
-            allHits.Add(hitResult);
-            ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
-        }
+        HitSysUtils.SaveHitResults(allHits, hitResults, ignoredHitRecievers);
     }
 
     /// <summary>

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameMgr : Singleton<GameMgr> {
-    [SerializeField] PlrMgr plrMgr;
+    [SerializeField] PlrCtrl plrMgr;
     [SerializeField] CpHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
@@ -39,7 +39,7 @@ public class GameMgr : Singleton<GameMgr> {
         Debug.Assert(gameOverScreen != null, "Game over screen was null!");
         gameOverScreen.gameObject.SetActive(false);
         plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
-        plrCp.Data.action_markedForPendingUnregister += OnPlrMarkedForPendingUnregister;
+        plrCp.Data.action_Died += OnPlrDied;
         EnemyWaveMgr.inst.StartSpawningWaves(true);
     }
 
@@ -61,7 +61,7 @@ public class GameMgr : Singleton<GameMgr> {
         CpMgr.inst.LateTick(Time.deltaTime);
         CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
-        HudMgr.inst.LateTick();
+        PlrMgr.inst.LateTick();
     }
 
     // -------------------------------------------------------------------------
@@ -86,8 +86,8 @@ public class GameMgr : Singleton<GameMgr> {
     /// <summary>
     /// Game over logic.
     /// </summary>
-    void OnPlrMarkedForPendingUnregister() {
-        plrCp.Data.action_markedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
+    void OnPlrDied(CpHandle cp) {
+        plrCp.Data.action_Died -= OnPlrDied;
         CamMgr.inst.movByInputAllowed = false;
         TimeMgr.SetSlowMotion(true);
         gameOver = true;

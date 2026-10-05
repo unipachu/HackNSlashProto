@@ -46,6 +46,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
             case CpAnimEventT.Finished:
                 //Dbg.Log($"Cp {cp.I} fired finished windup", cpData.enableDbgMsgs);
                 HomingProjMgr.inst.ShootProj(
+                    cpData.action_HitSomething,
                     HitDirMode.HitDealerMovDir,
                     hitEffects,
                     homingProjData,

@@ -63,6 +63,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
             if (cpData.classRefs.lockOnTgt != null)
                 tgt = cpData.classRefs.lockOnTgt.LockOnTrf;
             HomingProjMgr.inst.ShootProj(
+                cpData.action_HitSomething,
                 HitDirMode.HitDealerMovDir,
                 hitEffects,
                 homingProjData,

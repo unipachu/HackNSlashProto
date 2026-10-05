@@ -206,7 +206,8 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
                 float axisLen = Mathf.Lerp(prevAxisLen, curAxisLen, t);
                 Vector3 substepAxis = substepRot * prevAxis.normalized * axisLen;
                 substepCapsule.pt1 = substepCapsule.pt0 + substepAxis;
-            } else
+            }
+            else
                 substepCapsule.pt1 = Vector3.Lerp(prevWldCapsule.pt1, curWldCapsule.pt1, t);
             substepCapsule.r = Mathf.Lerp(prevWldCapsule.r, curWldCapsule.r, t);
             dbgPrevSubsteppedWldCapsules.Add(substepCapsule);
@@ -216,16 +217,13 @@ public class HitDealer_CapsuleSubstepper : MonoBehaviour, IHitDealer {
                 HitDealerMovDir,
                 hitDirMode,
                 hitEffects,
-                false, 
+                false,
                 ignoredHitRecievers,
                 capsuleLayerMask,
                 srcTrf,
                 team
             );
-            foreach (HitResult hitResult in hitResults) {
-                allHits.Add(hitResult);
-                ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
-            }
+            HitSysUtils.SaveHitResults(allHits, hitResults, ignoredHitRecievers);
         }
     }
 }

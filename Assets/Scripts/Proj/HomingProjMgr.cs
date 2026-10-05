@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -94,6 +95,7 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
     /// Shoot a homing projectile.
     /// </summary>
     public void ShootProj(
+        Action<HashSet<HitResult>> action_HitSomething,
         HitDirMode hitDirMode,
         HitEffects hitEffects,
         HomingProjData projData,
@@ -130,6 +132,9 @@ public class HomingProjMgr : Singleton<HomingProjMgr> {
         proj.Tgt = tgt;
         proj.Trf.SetPositionAndRotation(wldStartPos, Quaternion.LookRotation(wldStartDir));
         proj.TrailRenderer.Clear();
+        // TODO: I'm not sure if this is dangerous since when the cp dies, it doesn't unsubscribe atm.
+        if(action_HitSomething != null)
+            proj.HitDealer.hitSomething += action_HitSomething;
         proj.HitDealer.ResetNActivate(
             proj.Trf,
             hitDirMode,

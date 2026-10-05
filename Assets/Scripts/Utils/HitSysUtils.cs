@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -84,6 +85,17 @@ public static class HitSysUtils {
                 break;
         }
         return results;
+    }
+
+    public static void SaveHitResults(
+        HashSet<HitResult> allHits,
+        HashSet<HitResult> hitResults,
+        HashSet<IHitReceiver> ignoredHitRecievers
+    ) {
+        foreach (HitResult hitResult in hitResults) {
+            allHits.Add(hitResult);
+            ignoredHitRecievers.UnionWith(hitResult.allEntityHitReceivers);
+        }
     }
 
     /// <summary>
