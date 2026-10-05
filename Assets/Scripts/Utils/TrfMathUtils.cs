@@ -63,17 +63,31 @@ public static class TrfMathUtils {
     /// Rotates forward towards the target vector in xz-plane.
     /// </summary>
     /// <param name="tgtInXZPlane">Forward direction in XZ-plane.</param>
-    public static quaternion RotateFwdToTgt(quaternion rot, float maxAngSpd, float2 tgtInXZPlane) {
-        if (math.all(tgtInXZPlane == float2.zero))
+    public static Quaternion RotateFwdTowardsTgt(
+        this Quaternion rot,
+        float dt,
+        float maxAngSpd,
+        Vector2 tgtInXZPlane
+    ) {
+        if (tgtInXZPlane.IsZeroOrNearlyZero())
             return rot;
-        float3 dir3D = new float3(tgtInXZPlane.x, 0, tgtInXZPlane.y);
-        if (math.lengthsq(dir3D) < 0.0001f) {
-            Debug.LogWarning("Look rotation viewing vector was zero");
-            return rot;
-        }
-        quaternion tgtRot = quaternion.LookRotation(dir3D, Vector3.up);
-        return rot.RotateTowards(tgtRot, maxAngSpd * Time.deltaTime);
+        Vector3 dir3D = new Vector3(tgtInXZPlane.x, 0f, tgtInXZPlane.y);
+        Quaternion tgtRot = Quaternion.LookRotation(dir3D, Vector3.up);
+        return Quaternion.RotateTowards(rot, tgtRot, maxAngSpd * dt);
     }
+
+    /// <summary>
+    /// Snaps rotation's forward towards the target vector in xz-plane while keeping local up aligned with
+    /// world up. Returns <paramref name="rot"/> if <paramref name="tgtInXZPlane"/> is invalid.
+    /// </summary>
+    /// <param name="tgtInXZPlane">Forward direction in XZ-plane.</param>
+    public static Quaternion RotateFwdTowardsTgt(this Quaternion rot, Vector2 tgtInXZPlane) {
+        if (tgtInXZPlane.IsZeroOrNearlyZero())
+            return rot;
+        Vector3 dir3D = new Vector3(tgtInXZPlane.x, 0f, tgtInXZPlane.y);
+        return Quaternion.LookRotation(dir3D, Vector3.up);
+    }
+
 
     /// <summary>
     /// Transforms a point from unscaled local space to world space,

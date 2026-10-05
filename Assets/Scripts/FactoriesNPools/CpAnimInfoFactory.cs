@@ -75,7 +75,7 @@ public static class CpAnimInfoFactory {
             CpAnimInfoT.dodge => new(
                 Animator.StringToHash("Cc_Dodge"), 0, false, 18,
                 (3, CpAnimEventT.YawAllowed),
-                (13, CpAnimEventT.InvulEnd),
+                (16, CpAnimEventT.InvulEnd),
                 (17, CpAnimEventT.BufferedInputStSwitchAllowed),
                 (18, CpAnimEventT.Finished)),
             CpAnimInfoT.falling => new(

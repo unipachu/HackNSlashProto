@@ -18,6 +18,9 @@ public class So_CpConfig : ScriptableObject {
     public float walkYawSpd = 1000;
     public float windup_YawSpd = 1000;
 
+    [Header("Cooldown Durations")]
+    public float cooldownDur_Dodge = 0.2f;
+
     [Header("Input Settings")]
     [Tooltip("How long should inputs stay in the buffer (in sec)?")]
     public float inputBufferDuration = 0.3f;
@@ -51,5 +54,6 @@ public class So_CpConfig : ScriptableObject {
 
     [Header("St_Dodge")]
     public float act_Dodge_YawAngSpd = 400;
+    [Tooltip("Reach of the dodge move. Multiplies root motion.")]
     public float act_Dodge_HorMovSpdMult = 1.5f;
 }

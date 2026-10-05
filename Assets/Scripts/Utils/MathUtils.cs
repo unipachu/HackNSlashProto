@@ -201,6 +201,14 @@ public static class MathUtils {
 
     /// <summary>
     /// Checks whether a vector is approximately zero using its squared
+    /// magnitude, avoiding the less performant <see cref="Vector2.magnitude"/>.
+    /// Uses <see cref="eps"/>.
+    /// </summary>
+    public static bool IsZeroOrNearlyZero(this Vector2 vec)
+        => vec.sqrMagnitude < eps;
+
+    /// <summary>
+    /// Checks whether a vector is approximately zero using its squared
     /// magnitude, avoiding the less performant <see cref="Vector3.magnitude"/>.
     /// Uses <see cref="eps"/>.
     /// </summary>

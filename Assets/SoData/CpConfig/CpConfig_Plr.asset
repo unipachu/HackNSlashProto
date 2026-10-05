@@ -19,15 +19,16 @@ MonoBehaviour:
   walkTgtHorSpd: 7
   walkYawSpd: 1000
   windup_YawSpd: 1000
+  cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 10
   rHandItem: 3
   team: 0
-  enableDbgMsgs: 0
+  enableDbgMsgs: 1
   act_AtkFlying_TgtHorSpeed: 2
   act_AtkJump_DownSpeedAfterJumpFinished: 10
   act_Falling_LandingStFallDistThreshold: 2
   act_Falling_HorAcc: 10
   act_Falling_TgtHorSpd: 1
   act_Dodge_YawAngSpd: 400
-  act_Dodge_HorMovSpdMult: 1.5
+  act_Dodge_HorMovSpdMult: 1

@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
   m_Name: CpConfig_TestPistol
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
+  displayName: Test Name
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
   walkTgtHorSpd: 5
   walkYawSpd: 1000
   windup_YawSpd: 1000
+  cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 3
   rHandItem: 1
@@ -29,3 +31,4 @@ MonoBehaviour:
   act_Falling_HorAcc: 10
   act_Falling_TgtHorSpd: 1
   act_Dodge_YawAngSpd: 400
+  act_Dodge_HorMovSpdMult: 1

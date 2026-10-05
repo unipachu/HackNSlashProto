@@ -137,12 +137,26 @@ public class CpMgr : Singleton<CpMgr> {
             aos[i].navTgtInfo.hasUpdatedNavTgtInfoThisTick = false;
             GetData(i).curStDur += dt;
         }
+        Tick_Cooldowns(dt);
         Tick_ReadMovInput();
         Tick_InputBuffer(dt);
         Tick_Fsm();
-        // TODO: Tick movement and animation root motion in LateUpdate so that we apply animation root motion
-        // TODO C: to the character from the animator update of same frame (and not the one before).
-        Tick_Mov(dt);
+    }
+
+    void Tick_Cooldowns(float dt) {
+        for (int i = 0; i < entityCount; i++) {
+            if (aos[i].pendingUnregister)
+                continue;
+            ref var cpData = ref GetData(i);
+            if(cpData.cooldownTimer_Dodge > 0 && !cpData.cooldownFreezed_Dodge)
+                cpData.cooldownTimer_Dodge = Mathf.Max(0, cpData.cooldownTimer_Dodge - dt);
+            Dbg.Log(
+                $"cp {i} {nameof(cpData.cooldownTimer_Dodge)}: {cpData.cooldownTimer_Dodge}, " 
+                    + $"{nameof(cpData.cooldownFreezed_Dodge)}: {cpData.cooldownFreezed_Dodge}",
+                cpData.handle,
+                cpData.handle.so_cpData.enableDbgMsgs
+            );
+        }
     }
 
     void Tick_Fsm() {
@@ -220,64 +234,14 @@ public class CpMgr : Singleton<CpMgr> {
         }
     }
 
-    void Tick_Mov(float dt) {
-        for (int i = 0; i < entityCount; i++) {
-            ref var cpData = ref GetData(i); 
-            if (cpData.pendingUnregister)
-                continue;
-            //Dbg.Log(
-            //    $"tgtHorSpd: {cpData.movInput_tgtHorSpd} "
-            //    + $"| additionalLinMov: {cpData.movInput_additionalLinMov} \n"
-            //    + $"| tgtHorDir: {cpData.movInput_tgtHorDir} "
-            //    + $"| horAcc: {cpData.movInput_horAcc} "
-            //    + $"| yawSpd {cpData.movInput_yawSpd}",
-            //    cpData.enableDbgMsgs
-            //);
-            Debug.Assert(
-                !float.IsNaN(cpData.vel_Hor.x) && !float.IsNaN(cpData.vel_Hor.y),
-                $"{i} vel_hor had NaN: {cpData.vel_Hor}"
-            );
-            //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
-            cpData.vel_Hor = Vector2.MoveTowards(
-                cpData.vel_Hor,
-                cpData.movInput_tgtHorDir * cpData.movInput_tgtHorSpd,
-                cpData.movInput_horAcc * dt
-            );
-            // Skip rotation if character is already rotated towards linear movement target direction.
-            if (math.lengthsq(  cpData.movInput_tgtHorDir) > 0.0001f) {
-                cpData.handle.transform.rotation = TrfMathUtils.RotateFwdToTgt(
-                    cpData.handle.transform.rotation,
-                    cpData.movInput_yawSpd,
-                    cpData.movInput_tgtHorDir
-                );
-            }
-            if (cpData.isAffectedByGravity)
-                // NOTE: This will override previously calculated horizontal velocity if the player is
-                // NOTE C: sliding down a slope. (9.9.2026)
-                CcMov.ApplyGravityNSlideDownSlopes(i, dt);
-            else
-                // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
-                // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
-                // NOTE C: for vertical movement.
-                cpData.vel_Ver = 0;
-            // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
-            Vector3 totalMov = (Vector3)cpData.movInput_additionalLinMov
-                + new Vector3(cpData.vel_Hor.x, cpData.vel_Ver, cpData.vel_Hor.y) * dt;
-            //Debug.Log($"UpdateMov: totalMov: {totalMov}");
-            cpData.handle.cc.Move(totalMov);
-            // Save final velocity back to cp data.
-            cpData.vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
-            cpData.vel_Ver = totalMov.y / dt;
-            // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
-            cpData.handle.navMeshAgent.nextPosition = cpData.handle.transform.position;
-        }
-    }
-
     // ------------------------------------------------------------
     // Late Tick Methods
     // ------------------------------------------------------------
 
-    public void LateTick() {
+    public void LateTick(float dt) {
+        // NOTE: We move character controller right after animation update so that animation rootmotion is
+        // C: applied instantly.
+        LateTick_Mov(dt);
         LateTick_AnimEventPlr();
         LateTick_Fsm();
         LateTick_UnregisterNDestroyPending();
@@ -307,6 +271,60 @@ public class CpMgr : Singleton<CpMgr> {
             if (aos[i].pendingUnregister)
                 continue;
             aos[i].classRefs.st_cur.LateTick();
+        }
+    }
+
+    void LateTick_Mov(float dt) {
+        for (int i = 0; i < entityCount; i++) {
+            ref var cpData = ref GetData(i);
+            if (cpData.pendingUnregister)
+                continue;
+            //Dbg.Log(
+            //    $"tgtHorSpd: {cpData.movInput_tgtHorSpd} "
+            //    + $"| additionalLinMov: {cpData.movInput_additionalLinMov} \n"
+            //    + $"| tgtHorDir: {cpData.movInput_tgtHorDir} "
+            //    + $"| horAcc: {cpData.movInput_horAcc} "
+            //    + $"| yawSpd {cpData.movInput_yawSpd}",
+            //    cpData.enableDbgMsgs
+            //);
+            Debug.Assert(
+                !float.IsNaN(cpData.vel_Hor.x) && !float.IsNaN(cpData.vel_Hor.y),
+                $"{i} vel_hor had NaN: {cpData.vel_Hor}"
+            );
+            //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
+            cpData.vel_Hor = Vector2.MoveTowards(
+                cpData.vel_Hor,
+                cpData.movInput_tgtHorDir * cpData.movInput_tgtHorSpd,
+                cpData.movInput_horAcc * dt
+            );
+            // Skip rotation if character is already rotated towards linear movement target direction.
+            if (math.lengthsq(cpData.movInput_tgtHorDir) > 0.0001f) {
+                cpData.handle.transform.rotation = TrfMathUtils.RotateFwdTowardsTgt(
+                    cpData.handle.transform.rotation,
+                    dt,
+                    cpData.movInput_yawSpd,
+                    cpData.movInput_tgtHorDir
+                );
+            }
+            if (cpData.isAffectedByGravity)
+                // NOTE: This will override previously calculated horizontal velocity if the player is
+                // NOTE C: sliding down a slope. (9.9.2026)
+                CcMov.ApplyGravityNSlideDownSlopes(i, dt);
+            else
+                // NOTE: If not using gravitational acceleration, ver velocity is reseted every tick. This
+                // NOTE C: way we don't accidentally accumulate velocity when using animation root motion
+                // NOTE C: for vertical movement.
+                cpData.vel_Ver = 0;
+            // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
+            Vector3 totalMov = (Vector3)cpData.movInput_additionalLinMov
+                + new Vector3(cpData.vel_Hor.x, cpData.vel_Ver, cpData.vel_Hor.y) * dt;
+            //Debug.Log($"UpdateMov: totalMov: {totalMov}");
+            cpData.handle.cc.Move(totalMov);
+            // Save final velocity back to cp data.
+            cpData.vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
+            cpData.vel_Ver = totalMov.y / dt;
+            // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
+            cpData.handle.navMeshAgent.nextPosition = cpData.handle.transform.position;
         }
     }
 

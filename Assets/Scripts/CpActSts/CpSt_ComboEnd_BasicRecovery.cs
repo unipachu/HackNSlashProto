@@ -68,7 +68,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
         );
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
-        if (cpData.dodgeAllowed) {
+        if (cpData.dodgeAllowed && cpData.cooldownTimer_Dodge == 0) {
             if (InputBufferUtils.TryConsumeInput(
                 BufferableInput.BtnE,
                 ref cpData.inputBuffer_BufferedInput,

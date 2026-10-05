@@ -15,8 +15,11 @@ public static class CpUtils{
     /// </summary>
     public static Func<IFsmSt_Cp> FindStateEnterFunc(BufferableInput input, int cpI) {
         var classRefs = CpMgr.inst.aos[cpI].classRefs;
-        if(input == BufferableInput.BtnE)
-            return () => classRefs.actSts.dodge.Enter();
+        if(input == BufferableInput.BtnE) {
+            if(CpMgr.inst.aos[cpI].cooldownTimer_Dodge == 0)
+                return () => classRefs.actSts.dodge.Enter();
+            return null;
+        }
         if (classRefs.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
                 BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpI),
@@ -48,6 +51,14 @@ public static class CpUtils{
         static Func<IFsmSt_Cp> GetEnterFunc(IComboNode comboStart, int cpI)
             => comboStart == null ? null : comboStart.GetEnterFunc(cpI);
     }
+
+    /// <summary>
+    /// Cooldown related and such conditions for state switching shared by most <see cref="IFsmSt.CanSwitchTo"/>.
+    /// </summary>
+    // TODO MINOR: I'm not using this for anyhitng...
+    public static bool GeneralSwitchStConditions<TState>(CpHandle cp) where TState : IFsmSt
+        => typeof(TState) != typeof(CpSt_Dodge)
+            || cp.Data.cooldownTimer_Dodge <= 0f;
 
     /// <summary>
     /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
@@ -99,7 +110,7 @@ public static class CpUtils{
     /// Can be used from neutral states like "walk" or "idle" to transition to new states with input.<br/>
     /// Returns true if succeeded changing state.
     /// </summary>
-    public static bool TrySwitchStByBufferedInput(int cpI) {
+    public static bool TrySwitchStFromNeutralStByBufferedInput(int cpI) {
         BufferableInput input = CpMgr.GetData(cpI).inputBuffer_BufferedInput;
         if(input == BufferableInput.None)
             return false;

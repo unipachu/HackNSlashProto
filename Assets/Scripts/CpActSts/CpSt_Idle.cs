@@ -44,7 +44,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
             return;
         // Try consume input
-        if (CpUtils.TrySwitchStByBufferedInput(cp.I))
+        if (CpUtils.TrySwitchStFromNeutralStByBufferedInput(cp.I))
             return;
         if (math.all(cp.Data.input_mov != float2.zero)) {
             CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), cp.I, true);

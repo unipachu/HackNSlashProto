@@ -58,7 +58,7 @@ public class GameMgr : Singleton<GameMgr> {
     }
 
     void LateUpdate() {
-        CpMgr.inst.LateTick();
+        CpMgr.inst.LateTick(Time.deltaTime);
         CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
         HudMgr.inst.LateTick();

@@ -32,7 +32,7 @@ public class CpSt_Walk : IFsmSt_Cp {
             cp.so_cpData.walkYawSpd,
             cp.so_cpData.walkHorAcc
         );
-        if (CpUtils.TrySwitchStByBufferedInput(cp.I))
+        if (CpUtils.TrySwitchStFromNeutralStByBufferedInput(cp.I))
             return;
         if (math.all(cp.Data.input_mov == float2.zero)) {
             CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), cp.I, true);

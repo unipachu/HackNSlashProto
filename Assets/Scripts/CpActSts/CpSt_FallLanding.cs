@@ -34,7 +34,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
             0,
             float.PositiveInfinity
         );
-        if (cp.Data.dodgeAllowed) {
+        if (cp.Data.dodgeAllowed && cp.Data.cooldownTimer_Dodge == 0) {
             if (
                 InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,

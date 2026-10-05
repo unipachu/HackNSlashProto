@@ -11,20 +11,30 @@ public class CpSt_Dodge : IFsmSt_Cp {
         => true;
 
     public CpSt_Dodge Enter() {
-        cp.Data.yawAllowed = false;
-        cp.Data.bufferedInputStSwitchAllowed = false;
-        cp.Data.ignoreHits = true;
+        ref var cpData = ref cp.Data;
+        cpData.yawAllowed = false;
+        cpData.bufferedInputStSwitchAllowed = false;
+        cpData.ignoreHits = true;
+        cpData.cooldownTimer_Dodge = cp.so_cpData.cooldownDur_Dodge;
+        cpData.cooldownFreezed_Dodge = true;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            ref cpData.animEventPlrData,
             cp.anim,
             CpAnimInfoFactory.Construct(CpAnimInfoT.dodge),
             0.1f
+        );
+        // NOTE: We instantly rotate towards movement input direction.
+        cpData.handle.transform.rotation = TrfMathUtils.RotateFwdTowardsTgt(
+            cpData.handle.transform.rotation,
+            cpData.movInput_tgtHorDir
         );
         return this;
     }
 
     public void Exit() {
-        cp.Data.ignoreHits = false;
+        ref var cpData = ref cp.Data;
+        cpData.ignoreHits = false;
+        cpData.cooldownFreezed_Dodge = false;
     }
 
     public void Tick() {
@@ -39,10 +49,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
             angSpd,
             float.PositiveInfinity
         );
-        if (
-            cp.Data.bufferedInputStSwitchAllowed
-                && CpUtils.TrySwitchStByBufferedInput(cp.I)
-        )
+        if (cp.Data.bufferedInputStSwitchAllowed && CpUtils.TrySwitchStFromNeutralStByBufferedInput(cp.I))
             return;
     }
 

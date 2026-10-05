@@ -267,6 +267,9 @@ public struct Cp_Data {
     public bool bufferedInputStSwitchAllowed;
     public Cp_NonUnityObjClassRefs classRefs;
     public bool comboAllowed;
+    // Cooldown freeze fields can be used to stop cooldown timer from advancing.
+    public bool cooldownFreezed_Dodge;
+    public float cooldownTimer_Dodge;
     public float curStDur;
     public bool dodgeAllowed;
     public bool groundCastHitSomething;
