@@ -2077,6 +2077,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6030ca2f392cfe24ab34aba6e3cae51d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrMgr
+  config: {fileID: 11400000, guid: 87d91f95df981ea4a82dbf011034a79d, type: 2}
+  curUlt: 0
 --- !u!4 &255534950
 Transform:
   m_ObjectHideFlags: 0

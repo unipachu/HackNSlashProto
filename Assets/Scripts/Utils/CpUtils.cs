@@ -34,11 +34,15 @@ public static class CpUtils{
         // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
         if (classRefs.rHandItem is IHandItem_Hitter hitter) {
             // TODO: Do not hard code hit effects!
-            if(input == BufferableInput.LShldr)
-                return () => classRefs.actSts.atk_FlyingAtk.Enter(
-                    new HitEffects(3, HitT.Blunt, KnockbackT.Weak, 5),
-                    hitter.HitDealer
-                );
+            if(input == BufferableInput.LShldr) {
+                // TODO: ehh, this method is supposed to be generic for all CPs but now it uses PlrMgr...
+                if(PlrMgr.inst.TryConsumeUltMeter())
+                    return () => classRefs.actSts.atk_FlyingAtk.Enter(
+                        new HitEffects(3, HitT.Blunt, KnockbackT.Weak, 5),
+                        hitter.HitDealer
+                    );
+                return null;
+            }
             // TODO: Do not hard code hit effects!
             if(input == BufferableInput.RTrg)
                 return () => classRefs.actSts.atk_Jump.Enter(
