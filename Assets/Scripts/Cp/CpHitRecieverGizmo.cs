@@ -9,6 +9,9 @@ public class CpHitRecieverGizmo : MonoBehaviour{
     [SerializeField] bool drawGizmo = true;
     [SerializeField] Color vulnerableColor = Color.darkViolet;
     [SerializeField] Color invulnerableColor = Color.cyan;
+    [Tooltip("This expects the collider to not be scaled by parent transforms. If it is however, use is "
+        + "this to scale the gizmo.")]
+    [SerializeField] Vector3 sizeMult = new(1,1,1);
 
     [Header("External Refs")]
     [SerializeField] CpHandle cp;
@@ -20,9 +23,9 @@ public class CpHitRecieverGizmo : MonoBehaviour{
             return;
         Color color = cp.Data.ignoreHits ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {
-            float radius = capsuleCollider.radius;
-            float height = Mathf.Max(capsuleCollider.height, radius * 2f);
-            float cylinderHeight = height - radius * 2f;
+            var radiusMult = Mathf.Max(sizeMult.x, sizeMult.z);
+            float radius = capsuleCollider.radius * radiusMult;
+            float cylinderHeight = Mathf.Max(capsuleCollider.height - capsuleCollider.radius * 2f, 0f);
             Vector3 center = capsuleCollider.center;
             Vector3 top = center + Vector3.up * (cylinderHeight * 0.5f);
             Vector3 bottom = center - Vector3.up * (cylinderHeight * 0.5f);
@@ -36,7 +39,7 @@ public class CpHitRecieverGizmo : MonoBehaviour{
         else if (col is SphereCollider sphereCollider) {
             DebugUtils.OnDrawGizmos_DrawSphere(
                 col.transform.TransformPoint(sphereCollider.center),
-                sphereCollider.radius,
+                sphereCollider.radius * Mathf.Max(sizeMult.x, sizeMult.z),
                 color
             );
         }
@@ -44,7 +47,10 @@ public class CpHitRecieverGizmo : MonoBehaviour{
             Matrix4x4 oldMatrix = Gizmos.matrix;
             Gizmos.color = color;
             Gizmos.matrix = col.transform.localToWorldMatrix;
-            DebugUtils.OnDrawGizmos_DrawWireCube(boxCollider.center, boxCollider.size);
+            DebugUtils.OnDrawGizmos_DrawWireCube(
+                boxCollider.center,
+                Vector3.Scale(boxCollider.size, sizeMult)
+            );
             Gizmos.matrix = oldMatrix;
         }
     }

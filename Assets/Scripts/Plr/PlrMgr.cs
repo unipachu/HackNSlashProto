@@ -44,7 +44,7 @@ public class PlrMgr : Singleton<PlrMgr>{
                 break;
             }
         }
-        Debug.Log($"Updated Ult meter to: {curUlt}");
+        //Debug.Log($"Updated Ult meter to: {curUlt}");
         HudMgr.inst.SetUlt(curUlt, config.maxUlt);
     }
 
@@ -69,8 +69,8 @@ public class PlrMgr : Singleton<PlrMgr>{
     }
 
     public bool TryConsumeUltMeter() {
-        Debug.Log($"Plr tried to consume ult meter. {nameof(curUlt)}: {curUlt}, " 
-            + $"{nameof(config.maxUlt)}: {config.maxUlt}.");
+        //Debug.Log($"Plr tried to consume ult meter. {nameof(curUlt)}: {curUlt}, " 
+        //    + $"{nameof(config.maxUlt)}: {config.maxUlt}.");
         if (curUlt == config.maxUlt) {
             curUlt = 0;
             HudMgr.inst.SetUlt(curUlt, config.maxUlt);

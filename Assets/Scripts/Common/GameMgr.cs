@@ -35,7 +35,7 @@ public class GameMgr : Singleton<GameMgr> {
         CamMgr.inst.Init();
     }
 
-    private void Start() {
+    void Start() {
         Debug.Assert(gameOverScreen != null, "Game over screen was null!");
         gameOverScreen.gameObject.SetActive(false);
         plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);

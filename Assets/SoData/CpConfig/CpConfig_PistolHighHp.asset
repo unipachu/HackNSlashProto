@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
   m_Name: CpConfig_PistolHighHp
   m_EditorClassIdentifier: Assembly-CSharp::So_CpData
-  displayName: Test Name
+  displayName: High HP Pistol Enemy
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
@@ -22,7 +22,7 @@ MonoBehaviour:
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 100
-  rHandItem: 1
+  rHandItem: 2
   team: 1
   enableDbgMsgs: 0
   act_AtkFlying_TgtHorSpeed: 2

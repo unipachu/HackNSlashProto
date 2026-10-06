@@ -72,10 +72,24 @@ public static class CpAnimInfoFactory {
                 (40, CpAnimEventT.AirtimeEnded),
                 (44, CpAnimEventT.HitDealerDeactivated),
                 (61, CpAnimEventT.Finished)),
+            CpAnimInfoT.atk_VerSlash0_Impact => new(
+                Animator.StringToHash("Cc_Atk_VerSlash0_Impact"), 0, false, 26,
+                (4, CpAnimEventT.HitDealerActivated),
+                (14, CpAnimEventT.HitDealerDeactivated),
+                (14, CpAnimEventT.ComboAllowed),
+                (16, CpAnimEventT.ComboDisallowed),
+                (26, CpAnimEventT.Finished)),
+            CpAnimInfoT.atk_VerSlash0_Recovery => new(
+                Animator.StringToHash("Cc_Atk_VerSlash0_Recovery"), 0, false, 43,
+                (35, CpAnimEventT.InputMovAllowed),
+                (43, CpAnimEventT.Finished)),
+            CpAnimInfoT.atk_VerSlash0_Windup => new(
+                Animator.StringToHash("Cc_Atk_VerSlash0_Windup"), 0, false, 60,
+                (60, CpAnimEventT.Finished)),
             CpAnimInfoT.dodge => new(
                 Animator.StringToHash("Cc_Dodge"), 0, false, 18,
                 (3, CpAnimEventT.YawAllowed),
-                (12, CpAnimEventT.InvulEnd),
+                (16, CpAnimEventT.InvulEnd),
                 (17, CpAnimEventT.BufferedInputStSwitchAllowed),
                 (18, CpAnimEventT.Finished)),
             CpAnimInfoT.falling => new(

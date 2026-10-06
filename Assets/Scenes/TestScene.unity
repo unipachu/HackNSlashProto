@@ -2078,7 +2078,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrMgr
   config: {fileID: 11400000, guid: 87d91f95df981ea4a82dbf011034a79d, type: 2}
-  curUlt: 0
 --- !u!4 &255534950
 Transform:
   m_ObjectHideFlags: 0
@@ -9607,7 +9606,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4c9e9806fd70fe4a8733d79c402ee8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyServer
-  waveConfig: {fileID: 11400000, guid: 64f6a0f4b63feee4fab3a90c362d6497, type: 2}
+  waveConfig: {fileID: 11400000, guid: 77700d0d313d0c441a53085872c0d3c6, type: 2}
   spawnPoints:
   - {fileID: 811341118}
   - {fileID: 1562747232}

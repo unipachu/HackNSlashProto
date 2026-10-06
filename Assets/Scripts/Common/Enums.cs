@@ -57,8 +57,9 @@ public enum ProjT : byte {
 
 public enum ComboGraphT : byte {
     LaserAimNShoot,
-    Melee3Hit,
-    MeleeSingleHit,
+    Melee3HorHit,
+    MeleeSingleHorHit,
+    MeleeSingleVerHit,
     ShootProj
 }
 
@@ -100,6 +101,9 @@ public enum CpAnimInfoT : byte {
     atk_HorSlash1_Recovery,
     atk_HorSlash2_Impact,
     atk_JumpVerSlam,
+    atk_VerSlash0_Impact,
+    atk_VerSlash0_Recovery,
+    atk_VerSlash0_Windup,
     dodge,
     falling,
     fallLanding,

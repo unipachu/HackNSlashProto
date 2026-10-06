@@ -17,8 +17,9 @@ public static class ComboGraphFactory {
     public static List<IComboNode> GenerateComboGraph(UnityEngine.Object ctx, ComboGraphT comboGraphT)
         => comboGraphT switch {
             ComboGraphT.LaserAimNShoot => LaserAimNShoot(ctx),
-            ComboGraphT.Melee3Hit => Melee3Hit(ctx),
-            ComboGraphT.MeleeSingleHit => MeleeSingleHit(ctx),
+            ComboGraphT.Melee3HorHit => Melee3HorHit(ctx),
+            ComboGraphT.MeleeSingleHorHit => MeleeSingleHorHit(ctx),
+            ComboGraphT.MeleeSingleVerHit => MeleeSingleVerHit(ctx),
             ComboGraphT.ShootProj => ShootProj(ctx),
             _ => GeneralUtils.LogErrorForInput<ComboGraphT, List<IComboNode>>(comboGraphT)
         };
@@ -33,7 +34,7 @@ public static class ComboGraphFactory {
         return nodes;
     }
 
-    static List<IComboNode> Melee3Hit(UnityEngine.Object ctx) {
+    static List<IComboNode> Melee3HorHit(UnityEngine.Object ctx) {
         var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpAnimInfoT.atk_HorSlash0_Windup);
         var i1 = new ComboNode_BasicImpact(CpAnimInfoT.atk_HorSlash0_Impact, ctx);
         var i2 = new ComboNode_BasicRecovery(CpAnimInfoT.atk_HorSlash0_Recovery);
@@ -47,10 +48,20 @@ public static class ComboGraphFactory {
         return new List<IComboNode> {i0, i1, i2, i3, i4, i5};
     }
 
-    static List<IComboNode> MeleeSingleHit(UnityEngine.Object ctx) {
+    // TODO MINOR: Combine single hit combo generators into one method.
+    static List<IComboNode> MeleeSingleHorHit(UnityEngine.Object ctx) {
         var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpAnimInfoT.atk_HorSlash0_Windup);
         var i1 = new ComboNode_BasicImpact(CpAnimInfoT.atk_HorSlash0_Impact, ctx);
         var i2 = new ComboNode_BasicRecovery(CpAnimInfoT.atk_HorSlash0_Recovery);
+        i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
+        i1.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
+        return new List<IComboNode> {i0, i1, i2 };
+    }
+
+    static List<IComboNode> MeleeSingleVerHit(UnityEngine.Object ctx) {
+        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpAnimInfoT.atk_VerSlash0_Windup);
+        var i1 = new ComboNode_BasicImpact(CpAnimInfoT.atk_VerSlash0_Impact, ctx);
+        var i2 = new ComboNode_BasicRecovery(CpAnimInfoT.atk_VerSlash0_Recovery);
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         i1.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
         return new List<IComboNode> {i0, i1, i2 };
