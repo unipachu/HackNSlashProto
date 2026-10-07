@@ -9588,7 +9588,7 @@ GameObject:
   - component: {fileID: 1753333071}
   - component: {fileID: 1753333070}
   m_Layer: 0
-  m_Name: EnemyServer
+  m_Name: EnemyWaveMgr
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

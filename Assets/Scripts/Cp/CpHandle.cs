@@ -6,7 +6,7 @@ using UnityEngine.AI;
 /// Used as a memory managed handle to the entity index. Also contains capsule pawn initialization data.<br/>
 /// NOTE: Set this to the root of the capsule pawn!
 /// </summary>
-public class CpHandle : MonoBehaviour, ILockOnTargetable, IPawn, IFollowTgt {
+public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
     public So_CpConfig so_cpData;
     

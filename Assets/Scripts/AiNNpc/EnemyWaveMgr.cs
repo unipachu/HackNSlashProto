@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
@@ -21,6 +20,33 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
 
     public int CurrentWaveIndex => currentWaveIndex;
     public int CurrentEnemyCount => currentEnemyCount;
+
+    // -----------------------------------------------------------------------------
+    // Tick Methods
+    // -----------------------------------------------------------------------------
+
+    public void Tick(float dt, float now) {
+        if (!spawningWavesStarted)
+            return;
+        if (spawningWave)
+            return;
+        if (!HasNextWave())
+            return;
+        EnemyWave currentWave = waveConfig.waves[currentWaveIndex];
+        if (ShouldForceNextWave(currentWave)) {
+            StartNextWave(false);
+            return;
+        }
+        if (now < nextWaveTime)
+            return;
+        if (ShouldBlockNextWave(currentWave))
+            return;
+        StartNextWave(false);
+    }
+
+    // -----------------------------------------------------------------------------
+    // Other Methods
+    // -----------------------------------------------------------------------------
 
     bool HasNextWave()
         => currentWaveIndex + 1 < waveConfig.waves.Length;
@@ -96,25 +122,6 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
         // Randomize first pawn pt
         nextSpawnPtI = UnityEngine.Random.Range(0, spawnPoints.Length);
         StartNextWave(instaSpawnFirstWave);
-    }
-
-    public void Tick(float dt, float now) {
-        if (!spawningWavesStarted)
-            return;
-        if (spawningWave)
-            return;
-        if (!HasNextWave())
-            return;
-        EnemyWave currentWave = waveConfig.waves[currentWaveIndex];
-        if (ShouldForceNextWave(currentWave)) {
-            StartNextWave(false);
-            return;
-        }
-        if (now < nextWaveTime)
-            return;
-        if (ShouldBlockNextWave(currentWave))
-            return;
-        StartNextWave(false);
     }
 
     /// <summary>

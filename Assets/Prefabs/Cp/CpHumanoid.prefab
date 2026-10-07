@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 5079058612890601784}
   - component: {fileID: 8087861647241408892}
   m_Layer: 8
-  m_Name: Cp
+  m_Name: CpHumanoid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

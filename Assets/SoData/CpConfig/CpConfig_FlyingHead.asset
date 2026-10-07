@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
+  m_Name: CpConfig_FlyingHead
+  m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
+  displayName: Flying Head
+  groundSnapVerDownSpd: 1000
+  impact_YawSpd: 1200
+  walkHorAcc: 100
+  walkTgtHorSpd: 5
+  walkYawSpd: 1000
+  windup_YawSpd: 1000
+  cooldownDur_Dodge: 0.2
+  inputBufferDuration: 0.3
+  hp_Max: 4
+  ignoredKnockback: 0
+  knockbackStrMult: 1
+  rHandItem: 1
+  team: 1
+  enableDbgMsgs: 0
+  act_AtkFlying_TgtHorSpeed: 2
+  act_AtkJump_DownSpeedAfterJumpFinished: 10
+  act_Falling_LandingStFallDistThreshold: 2
+  act_Falling_HorAcc: 10
+  act_Falling_TgtHorSpd: 1
+  act_Dodge_YawAngSpd: 400
+  act_Dodge_HorMovSpdMult: 1
