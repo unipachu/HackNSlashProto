@@ -14,14 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::So_CpData
   displayName: Sniper Enemy
   groundSnapVerDownSpd: 1000
-  impact_YawSpd: 1200
+  impact_YawSpd: 105
   walkHorAcc: 100
-  walkTgtHorSpd: 5
+  walkTgtHorSpd: 5.18
   walkYawSpd: 1000
-  windup_YawSpd: 1000
+  windup_YawSpd: 105
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 2
+  ignoredKnockback: 0
+  knockbackStrMult: 1
   rHandItem: 3
   team: 1
   enableDbgMsgs: 0

@@ -54,7 +54,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
             cpData.input_mov_LastNonZero,
             cpData.animDPos,
             0,
-            180, // NOTE: Yaw speed is set here. // TODO: so
+            cp.so_cpData.impact_YawSpd, // NOTE: Yaw speed is set here.
             float.PositiveInfinity
         );
         aimLaser.Tick();

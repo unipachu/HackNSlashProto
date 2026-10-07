@@ -79,7 +79,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
             cp.Data.input_mov_LastNonZero,
             cp.Data.animDPos,
             0,
-            180, // NOTE: Yaw speed is set here. TODO: So
+            cp.so_cpData.impact_YawSpd, // NOTE: Yaw speed is set here.
             float.PositiveInfinity
         );
     }
