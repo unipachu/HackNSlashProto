@@ -21,10 +21,12 @@ MonoBehaviour:
   windup_YawSpd: 1000
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
-  hp_Max: 10
+  hp_Max: 99
+  ignoredKnockback: 0
+  knockbackStrMult: 1
   rHandItem: 4
   team: 0
-  enableDbgMsgs: 1
+  enableDbgMsgs: 0
   act_AtkFlying_TgtHorSpeed: 2
   act_AtkJump_DownSpeedAfterJumpFinished: 10
   act_Falling_LandingStFallDistThreshold: 2

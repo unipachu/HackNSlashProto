@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 58c131435c2ea8f418c220b3636d65fb, type: 3}
   m_Name: PlrCpConfig_Test
   m_EditorClassIdentifier: Assembly-CSharp::So_PlrCpConfig
-  maxUlt: 5
+  maxUlt: 2

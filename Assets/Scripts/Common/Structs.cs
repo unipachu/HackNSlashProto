@@ -281,6 +281,11 @@ public struct Cp_Data {
     public float3 groundCastNrm;
     public CpHandle handle;
     public int hp_Cur;
+    /// <summary>
+    /// Ignored knockback when true.<br/>
+    /// NOTE: This overrides <see cref="So_CpConfig.ignoredKnockback"/> when true.
+    /// </summary>
+    public bool hyperArmor;
     public float2 input_mov;
     /// <summary>
     /// Last nonzero movement input (in world space).

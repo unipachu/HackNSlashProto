@@ -21,7 +21,9 @@ MonoBehaviour:
   windup_YawSpd: 1000
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
-  hp_Max: 2
+  hp_Max: 4
+  ignoredKnockback: 0
+  knockbackStrMult: 1
   rHandItem: 1
   team: 1
   enableDbgMsgs: 0

@@ -28,6 +28,12 @@ public class So_CpConfig : ScriptableObject {
     [Header("Health")]
     public int hp_Max = 100;
 
+    [Header("Hit Recieving Settings")]
+    [Tooltip("Does not apply knockback this strength and below.\n" 
+        + "NOTE: Cp entities have a hyperarmor bool field that overrides this when true.")]
+    public KnockbackT ignoredKnockback = KnockbackT.None;
+    public float knockbackStrMult = 1;
+
     [Header("Equipment Settings")]
     public HandItemT rHandItem;
 

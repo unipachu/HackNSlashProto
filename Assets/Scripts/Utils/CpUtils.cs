@@ -38,7 +38,7 @@ public static class CpUtils{
                 // TODO: ehh, this method is supposed to be generic for all CPs but now it uses PlrMgr...
                 if(PlrMgr.inst.TryConsumeUltMeter())
                     return () => classRefs.actSts.atk_FlyingAtk.Enter(
-                        new HitEffects(3, HitT.Blunt, KnockbackT.Weak, 5),
+                        new HitEffects(3, HitT.Blunt, KnockbackT.Strong, 5),
                         hitter.HitDealer
                     );
                 return null;
@@ -46,7 +46,7 @@ public static class CpUtils{
             // TODO: Do not hard code hit effects!
             if(input == BufferableInput.RTrg)
                 return () => classRefs.actSts.atk_Jump.Enter(
-                    new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1),
+                    new HitEffects(1, HitT.Blunt, KnockbackT.Strong, 1),
                     hitter.HitDealer
                 );
         }

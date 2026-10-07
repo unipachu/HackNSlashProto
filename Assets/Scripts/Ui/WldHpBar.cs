@@ -47,6 +47,7 @@ public class WldHpBar : MonoBehaviour {
         GetData.barVisibleUntil = Time.time + WldHpBarMgr.inst.barVisibleDur;
     }
 
+    // TODO: Do you need both this AND the OnCurHpChanged?
     public void OnDmgTaken(int dmgTaken) {
         ref var data = ref GetData;
         var now = Time.time;

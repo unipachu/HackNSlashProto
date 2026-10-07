@@ -38,7 +38,7 @@ public class CpSt_Death : IFsmSt_Cp {
         CpUtils.UpdateMovInputData(
             cp.I,
             float2.zero,
-            cp.Data.animDPos,
+            cp.Data.animDPos * cp.Data.lastKnockbackStr * cp.so_cpData.knockbackStrMult,
             0,
             0,
             float.PositiveInfinity

@@ -35,6 +35,9 @@ public class PlrMgr : Singleton<PlrMgr>{
     }
 
     void OnPlrHitSomething(HashSet<HitResult> hitResults) {
+        // NOTE: Cannot gain ult meter when doing ult attack.
+        if (cp.Data.classRefs.st_cur == cp.Data.classRefs.actSts.atk_FlyingAtk)
+            return;
         foreach(var hitResult in hitResults) {
             // We increase ult meter for each hit that dealt damage.
             if (hitResult.dmgDealt > 0)
