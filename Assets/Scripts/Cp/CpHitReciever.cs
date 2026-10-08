@@ -4,13 +4,13 @@ using UnityEngine;
 /// Resolves recieved hits foe a capsule pawn.
 /// </summary>
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
-    [SerializeField] CpHandle cp;
+    [SerializeField] InterfaceReference<ICp> cp;
 
-    public Team GetTeam => cp.so_cpData.team;
+    public Team GetTeam => cp.Value.So_CpCommonConfig.team;
     /// <summary>
     /// NOTE This should be checked BEFORE calling <see cref="CpHitReciever.ReceiveHit"/>!
     /// </summary>
-    bool IHitReceiver.IgnoreAllHits => cp.Data.ignoreHits;
+    bool IHitReceiver.IgnoreAllHits => cp.Value.CommonData.ignoreHits;
 
     public HitResult ReceiveHit(HitData hitData) {
         //Dbg.Log(
@@ -22,13 +22,11 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         //    this,
         //    cp.so_cpData.enableDbgMsgs
         //);
-        ref Cp_Data cpData = ref cp.Data;
-        var classRefs = cpData.classRefs;
-        var dmgDealt = Mathf.Min(hitData.hitEffects.dmg, cpData.hp_Cur);
-        cpData.hp_Cur -= dmgDealt;
+        var dmgDealt = Mathf.Min(hitData.hitEffects.dmg, cp.Value.CommonData.hp_Cur);
+        cp.Value.CommonData.hp_Cur -= dmgDealt;
         if(dmgDealt != 0) {
-            cpData.action_DmgTaken?.Invoke(hitData.hitEffects.dmg);
-            cpData.action_CurHpChanged?.Invoke(cpData.hp_Cur, cp.so_cpData.hp_Max);
+            cp.Value.CommonData.action_DmgTaken?.Invoke(hitData.hitEffects.dmg);
+            cp.Value.CommonData.action_CurHpChanged?.Invoke(cp.Value.CommonData.hp_Cur, cp.Value.So_CpCommonConfig.hp_Max);
         }
         var safeHitNormal = hitData.normal.NrmSafe();
         switch (hitData.hitEffects.hitT) {
@@ -53,43 +51,39 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                 break;
         }
         //Dbg.Log(
-        //    $"New HP: {cpData.hp_Cur}",
+        //    $"New HP: {cp.ValueData.hp_Cur}",
         //    this,
-        //    cpData.handle.so_cpData.enableDbgMsgs
+        //    cp.ValueData.handle.so_cpData.enableDbgMsgs
         //);
-        CalculateHitDir(cp, hitData);
-        cpData.lastKnockbackStr = hitData.hitEffects.knockbackStr;
+        CalculateHitDir(cp.Value, hitData);
+        cp.Value.CommonData.lastKnockbackStr = hitData.hitEffects.knockbackStr;
         //Dbg.Log(
         //    $"{nameof(hitData.hitEffects.knockbackStr)}: {hitData.hitEffects.knockbackStr}, "
         //        + $"{nameof(hitData.hitEffects.knockbackT)}: {hitData.hitEffects.knockbackT}.",
         //    this,
-        //    cp.so_cpData.enableDbgMsgs
+        //    cp.Value.so_cp.CommonData.enableDbgMsgs
         //);
-        if (cpData.hp_Cur == 0) {
+        if (cp.Value.CommonData.hp_Cur == 0) {
+            //Dbg.Log("Character hp went to 0!", this, cp.Value.So_CpCommonConfig.enableDbgMsgs);
             if (
-                CpMgr.inst.TrySwitchActSt(
-                    () => classRefs.actSts.death.Enter(
-                        FindKnockbackAnim(cp)
-                    ),
-                    cp.I
-                )
+                cp.Value.TryEnterDeathSt()
             )
                 return new(new IHitReceiver[] { this }, dmgDealt, false);
         }
-        if (!cpData.hyperArmor) {
+        if (!cp.Value.CommonData.hyperArmor) {
             switch (hitData.hitEffects.knockbackT) {
                 case KnockbackT.None:
                     break;
                 case KnockbackT.Weak:
                     if (
-                        cp.so_cpData.ignoredKnockback != KnockbackT.Weak
-                            && cp.so_cpData.ignoredKnockback != KnockbackT.Strong
+                        cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Weak
+                            && cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Strong
                     )
-                        SetupNEnterKnockbackSt(cp);
+                        cp.Value.TrySetupNEnterKnockbackSt();
                     break;
                 case KnockbackT.Strong:
-                    if (cp.so_cpData.ignoredKnockback != KnockbackT.Strong)
-                        SetupNEnterKnockbackSt(cp);
+                    if (cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Strong)
+                        cp.Value.TrySetupNEnterKnockbackSt();
                     break;
                 default:
                     Debug.LogError("Switch defaulted", this);
@@ -99,15 +93,14 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         return new(new IHitReceiver[] { this }, dmgDealt, false);
     }
 
-    static void CalculateHitDir(CpHandle cp, HitData hitData) {
-        ref var cpData = ref cp.Data;
+    static void CalculateHitDir(ICp cp, HitData hitData) {
         switch (hitData.hitDirMode) {
             case HitDirMode.FromHitSourceTrfToHitReciever:
-                Vector3 dir = cp.transform.position - hitData.srcTrf.position;
-                cpData.lastRecievedHitDir = dir.NrmSafe();
+                Vector3 dir = cp.Go.transform.position - hitData.srcTrf.position;
+                cp.CommonData.lastRecievedHitDir = dir.NrmSafe();
                 break;
             case HitDirMode.HitDealerMovDir:
-                cpData.lastRecievedHitDir = hitData.hitDealerMovDir;
+                cp.CommonData.lastRecievedHitDir = hitData.hitDealerMovDir;
                 break;
             default:
                 Debug.LogError($"Defaulted: {hitData.hitDirMode}");
@@ -115,28 +108,5 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         }
     }
 
-    static void SetupNEnterKnockbackSt(CpHandle cp) {
-        CpMgr.inst.TrySwitchActSt(
-            () => cp.Data.classRefs.actSts.knockback.Enter(FindKnockbackAnim(cp)),
-            cp.I
-        );
-    }
 
-    static AnimInfo FindKnockbackAnim(CpHandle cp) {
-        var cpData = cp.Data;
-        Vector3 horHitDir = new Vector3(
-            cpData.lastRecievedHitDir.x,
-            0,
-            cpData.lastRecievedHitDir.z
-        );
-        // If you, for some reason, set the hit direction to Vector3.zero.
-        if (horHitDir.sqrMagnitude < 0.0001f)
-            horHitDir = Vector3.down;
-        else
-            horHitDir.Normalize();
-        if (Vector3.Dot(horHitDir, cp.transform.forward) > 0)
-            // TODO MAYBE: Create different animation for "strong knockback".
-            return CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Fwd);
-        return CpAnimInfoFactory.Construct(CpAnimInfoT.knockback_Weak_Bwd);
-    }
 }

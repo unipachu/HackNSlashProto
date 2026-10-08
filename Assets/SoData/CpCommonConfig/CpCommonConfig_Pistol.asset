@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpConfig_Hammer
+  m_Name: CpCommonConfig_Pistol
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
-  displayName: Hammer Enemy
+  displayName: Pistol Enemy
   groundSnapVerDownSpd: 1000
-  impact_YawSpd: 1200
+  impact_YawSpd: 105
   walkHorAcc: 100
   walkTgtHorSpd: 5
   walkYawSpd: 1000
-  windup_YawSpd: 1000
+  windup_YawSpd: 105
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
-  hp_Max: 4
+  hp_Max: 3
   ignoredKnockback: 0
   knockbackStrMult: 1
-  rHandItem: 1
+  rHandItem: 2
   team: 1
   enableDbgMsgs: 0
   act_AtkFlying_TgtHorSpeed: 2

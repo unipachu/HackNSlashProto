@@ -8,7 +8,8 @@ using UnityEngine.AI;
 /// </summary>
 public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
-    public So_CpConfig so_cpData;
+    public So_CpCommonConfig so_cpCommonData;
+    public So_CpHumdConfig so_cpHumdConfig;
     
     [Header("Unity Obj Refs")]
     public Animator anim;
@@ -25,14 +26,55 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     /// </summary>
     public int I { get; set; } = -1;
 
-    public ref Cp_Data Data => ref CpMgr.inst.aos[I];
+    public Animator Anim => anim;
+    public CpAnimEventHandler AnimEventHandler => animEventHandler;
+    public CharacterController Cc => cc;
+    public So_CpCommonConfig So_CpCommonConfig => so_cpCommonData;
+    public ref Cp_CommonData CommonData => ref CpMgr.inst.commonData[I];
+    public GameObject Go => gameObject;
+    public ref CpHumd_Data HumdData => ref CpMgr.inst.humdData[I];
     public Transform LockOnTrf => lockOnTrf;
+    public NavMeshAgent NavMeshAgent => navMeshAgent;
     public Transform TrfToFollow => transform;
+    public Transform WldHpBarPos => wldHpBarPos;
 
     public bool IsOnNavMesh()
-        => CpUtils.IsOnNavMesh(I);
+        => CpUtils.IsOnNavMesh(ref CommonData);
 
     public void OnHitSomething(HashSet<HitResult> hits) {
-        Data.action_HitSomething?.Invoke(hits);
+        CommonData.action_HitSomething?.Invoke(hits);
+    }
+
+    public bool TrySetupNEnterKnockbackSt()
+        => CpMgr.TrySwitchActSt(
+            () => HumdData.classRefs.actSts.knockback.Enter(FindKnockbackAnim()),
+            ref CommonData
+        );
+
+    public AnimInfo FindKnockbackAnim() {
+        Vector3 horHitDir = new Vector3(
+            CommonData.lastRecievedHitDir.x,
+            0,
+            CommonData.lastRecievedHitDir.z
+        );
+        // If you, for some reason, set the hit direction to Vector3.zero.
+        if (horHitDir.sqrMagnitude < 0.0001f)
+            horHitDir = Vector3.down;
+        else
+            horHitDir.Normalize();
+        if (Vector3.Dot(horHitDir, transform.forward) > 0)
+            // TODO MAYBE: Create different animation for "strong knockback".
+            return CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Fwd);
+        return CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Bwd);
+    }
+
+    public bool TryEnterDeathSt() {
+        if (CpMgr.TrySwitchActSt(
+            () => HumdData.classRefs.actSts.death.Enter(FindKnockbackAnim()),
+                ref CommonData
+            )
+        )
+            return true;
+        return false;
     }
 }

@@ -52,9 +52,17 @@ PrefabInstance:
       propertyPath: so_cpData
       value: 
       objectReference: {fileID: 11400000, guid: 38b6913a23466714b896af7255a9b4df, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: 38b6913a23466714b896af7255a9b4df, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9fa8bb1bfff43dc489a2516100df02e7, type: 2}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
-      value: Cp_Sword
+      value: CpHumanoid_Sword
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Radius

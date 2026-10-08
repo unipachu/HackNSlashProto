@@ -8,7 +8,7 @@ public struct AiCtrlData {
     public float aggroRange;
     public float atkRange;
     public IBtNode bt;
-    public CpHandle cp;
+    public ICp cp;
     public Vector3 cpPrevPos;
     public CtrlInputData ctrlInputData;
     public IFollowTgt followTgt;
@@ -20,7 +20,7 @@ public struct AiCtrlData {
         float aggroRange,
         float atkRange, 
         IBtNode bt,
-        CpHandle cp,
+        ICp cp,
         AiCtrlHandle handle
     ) {
         agentDesiredVel = Vector3.zero;
@@ -28,7 +28,7 @@ public struct AiCtrlData {
         this.atkRange = atkRange;
         this.bt = bt;
         this.cp = cp;
-        this.cpPrevPos = cp.transform.position;
+        this.cpPrevPos = cp.Go.transform.position;
         ctrlInputData = default;
         followTgt = null;
         this.handle = handle;
@@ -93,9 +93,12 @@ public struct AnimEvent {
     /// </summary>
     public float nrmT;
     /// <summary>
-    /// Unique id for the animation event.
+    /// Unique type of the animation event.
     /// </summary>
-    public CpAnimEventT id;
+    // TODO MAYBE: This could be a generic since it might make more sense to have separate animation events
+    // C: for different animated objects. However this game only has one or two animated characters so we
+    // C: just use the same enum for them all.
+    public CpAnimEventT t;
 
     /// <param name="frame">
     /// Frame of the animation event.<br/>
@@ -105,10 +108,10 @@ public struct AnimEvent {
     /// Index of the last frame of the animation. In the Animation window, this is the frame
     /// on the timeline where the animation bar changes to dark grey.
     /// </param>
-    /// <param name="id">Unique name for the action event, used to check against a switch case.</param>
-    public AnimEvent(int frame, int lastFrame, CpAnimEventT id) {
+    /// <param name="t">Unique name for the action event, used to check against a switch case.</param>
+    public AnimEvent(int frame, int lastFrame, CpAnimEventT t) {
         nrmT = frame / (float)lastFrame;
-        this.id = id;
+        this.t = t;
     }
 }
 
@@ -167,18 +170,18 @@ public struct CapsuleShape {
 }
 
 public struct ComboNode_Transitions {
-    public IComboNode node_BtnE;
-    public IComboNode node_LShldr;
-    public IComboNode node_NoInput;
-    public IComboNode node_RShldr;
-    public IComboNode node_RTrg;
+    public IComboNode_CpHumanoid node_BtnE;
+    public IComboNode_CpHumanoid node_LShldr;
+    public IComboNode_CpHumanoid node_NoInput;
+    public IComboNode_CpHumanoid node_RShldr;
+    public IComboNode_CpHumanoid node_RTrg;
 
     public ComboNode_Transitions(
-        IComboNode node_BtnE,
-        IComboNode node_LShldr,
-        IComboNode node_NoInput,
-        IComboNode node_RShldr,
-        IComboNode node_RTrg
+        IComboNode_CpHumanoid node_BtnE,
+        IComboNode_CpHumanoid node_LShldr,
+        IComboNode_CpHumanoid node_NoInput,
+        IComboNode_CpHumanoid node_RShldr,
+        IComboNode_CpHumanoid node_RTrg
     ) {
         this.node_BtnE = node_BtnE;
         this.node_LShldr = node_LShldr;
@@ -188,50 +191,8 @@ public struct ComboNode_Transitions {
     }
 }
 
-/// <summary>
-/// All action states available for capsule pawn.
-/// </summary>
-public struct Cp_ActSts {
-    public CpSt_Death death;
-    public CpSt_Atk_FlyingAtk atk_FlyingAtk;
-    public CpSt_Atk_Jump atk_Jump;
-    public CpSt_ComboBranch_BasicImpact comboBranch_BasicImpact;
-    public CpSt_ComboBranch_LaserAimNShootHomingProj comboBranch_LaserAimNShootHomingProj;
-    public CpSt_ComboBranch_RotateToLastNonZeroInputDir comboBranch_RotateToLastNonZeroInputDir;
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir comboBranch_RotateToWhenLastSwitchedStInputDir;
-    public CpSt_ComboEnd_BasicRecovery comboEnd_BasicRecovery;
-    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
-    public CpSt_ComboBranch_ShootHomingProj comboBranch_ShootHomingProj;
-    public CpSt_Dodge dodge;
-    public CpSt_Falling falling;
-    public CpSt_FallLanding fallLanding;
-    public CpSt_Idle idle;
-    public CpSt_Knockback knockback;
-    public CpSt_Walk walk;
-
-    public Cp_ActSts(CpHandle cp) {
-        death = new(cp);
-        comboBranch_BasicImpact = new(cp);
-        comboBranch_RotateToLastNonZeroInputDir = new(cp);
-        comboBranch_RotateToWhenLastSwitchedStInputDir = new(cp);
-        comboEnd_BasicRecovery = new(cp);
-        atk_FlyingAtk = new(cp);
-        atk_Jump = new(cp);
-        comboBranch_LaserAimNShootHomingProj = new(cp);
-        comboBranch_ShootHomingProj = new(cp);
-        dodge = new(cp);
-        falling = new(cp);
-        fallLanding = new(cp);
-        idle = new(cp);
-        knockback = new(cp);
-        walk = new(cp);
-    }
-}
-
-public struct Cp_Data {
-    // NOTE: "act_" means action state specific data (11.9.2026)
+public struct Cp_CommonData {
     public AtkPhase act_AtkPhase;
-    public float act_Falling_StartHgt;
     /// <summary>
     /// Parameters are (curHp, maxHp) (NOT the changed amount)!
     /// </summary>
@@ -239,7 +200,7 @@ public struct Cp_Data {
     /// <summary>
     /// Should be called when cp enters death/dying state (not when in unregisters). Param is cp in dying state.
     /// </summary>
-    public Action<CpHandle> action_Died;
+    public Action<ICp> action_Died;
     /// <summary>
     /// Param is the damage taken.
     /// </summary>
@@ -249,9 +210,10 @@ public struct Cp_Data {
     /// </summary>
     public Action<HashSet<HitResult>> action_HitSomething;
     /// <summary>
-    /// Objects having reference to this <see cref="CpHandle"/> should listen to this Action and nullify the
-    /// reference when this is invoked. Other way would be to check both <see cref="CpHandle"/> == null and
-    /// <see cref="Cp_Data.pendingUnregister"/>, which is tiresome compared to subscribing to this action.
+    /// Objects having reference to this <see cref="ICp"/> should listen to this Action and nullify the
+    /// reference when this is invoked. Other way would be to check both <see cref="ICp"/> == null and
+    /// <see cref="CpHumd_Data.pendingUnregister"/>, which is tiresome compared to subscribing to
+    /// this action.
     /// </summary>
     public Action action_MarkedForPendingUnregister;
     /// <summary>
@@ -266,24 +228,22 @@ public struct Cp_Data {
     /// Invoked when local player locks onto this.
     /// </summary>
     public Action action_PlrLockedOnStarted;
-    public float3 animDPos;
-    public quaternion animDRot;
+    /// <summary>
+    /// Root motion from <see cref="Animator"/>.
+    /// </summary>
+    public Pose animDPose;
     public AnimEventPlrData animEventPlrData;
     public bool bufferedInputStSwitchAllowed;
     public Cp_NonUnityObjClassRefs classRefs;
     public bool comboAllowed;
-    // Cooldown freeze fields can be used to stop cooldown timer from advancing.
-    public bool cooldownFreezed_Dodge;
-    public float cooldownTimer_Dodge;
     public float curStDur;
-    public bool dodgeAllowed;
     public bool groundCastHitSomething;
     public float3 groundCastNrm;
-    public CpHandle handle;
+    public ICp handle;
     public int hp_Cur;
     /// <summary>
     /// Ignored knockback when true.<br/>
-    /// NOTE: This overrides <see cref="So_CpConfig.ignoredKnockback"/> when true.
+    /// NOTE: This overrides <see cref="So_CpCommonConfig.ignoredKnockback"/> when true.
     /// </summary>
     public bool hyperArmor;
     public float2 input_mov;
@@ -330,6 +290,60 @@ public struct Cp_Data {
 }
 
 /// <summary>
+/// All action states available for capsule pawn.
+/// </summary>
+public struct CpHumanoid_ActSts {
+    public CpSt_Death death;
+    public CpSt_Atk_FlyingAtk atk_FlyingAtk;
+    public CpSt_Atk_Jump atk_Jump;
+    public CpSt_ComboBranch_BasicImpact comboBranch_BasicImpact;
+    public CpSt_ComboBranch_LaserAimNShootHomingProj comboBranch_LaserAimNShootHomingProj;
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir comboBranch_RotateToLastNonZeroInputDir;
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir comboBranch_RotateToWhenLastSwitchedStInputDir;
+    public CpSt_ComboEnd_BasicRecovery comboEnd_BasicRecovery;
+    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
+    public CpSt_ComboBranch_ShootHomingProj comboBranch_ShootHomingProj;
+    public CpSt_Dodge dodge;
+    public CpSt_Falling falling;
+    public CpSt_FallLanding fallLanding;
+    public CpSt_Idle idle;
+    public CpSt_Knockback knockback;
+    public CpSt_Walk walk;
+
+    public CpHumanoid_ActSts(CpHandle cp) {
+        death = new(cp);
+        comboBranch_BasicImpact = new(cp);
+        comboBranch_RotateToLastNonZeroInputDir = new(cp);
+        comboBranch_RotateToWhenLastSwitchedStInputDir = new(cp);
+        comboEnd_BasicRecovery = new(cp);
+        atk_FlyingAtk = new(cp);
+        atk_Jump = new(cp);
+        comboBranch_LaserAimNShootHomingProj = new(cp);
+        comboBranch_ShootHomingProj = new(cp);
+        dodge = new(cp);
+        falling = new(cp);
+        fallLanding = new(cp);
+        idle = new(cp);
+        knockback = new(cp);
+        walk = new(cp);
+    }
+}
+
+/// <summary>
+/// <see cref="CpHandle"/> specific data.
+/// </summary>
+public struct CpHumd_Data {
+    // NOTE: "act_" means action state specific data (11.9.2026)
+    public float act_Falling_StartHgt;
+    public CpHumanoid_NonUnityObjClassRefs classRefs;
+    // Cooldown freeze fields can be used to stop cooldown timer from advancing.
+    public bool cooldownFreezed_Dodge;
+    public float cooldownTimer_Dodge;
+    public bool dodgeAllowed;
+    public CpHandle handle;
+}
+
+/// <summary>
 /// Info so that this pawn can be used as a navigation target BY OTHER PAWNS.
 /// </summary>
 [Serializable]
@@ -359,23 +373,32 @@ public struct Cp_NavTgtInfo {
 /// Cp class dependencies that do not derive from Unity's Object class.
 /// </summary>
 public struct Cp_NonUnityObjClassRefs {
-    public Cp_ActSts actSts;
-    public ICpCtrlInputter cpCtrl;
+    public ICpCtrl cpCtrl;
     /// <summary>
     /// Other pawn this is pawn is locked onto.
     /// </summary>
     public ILockOnTargetable lockOnTgt;
-    public IHandItem rHandItem;
     public IFsmSt_Cp st_cur;
     public IFsmSt_Cp st_prev;
 
-    public Cp_NonUnityObjClassRefs(CpHandle cp, ICpCtrlInputter cpCtrl, IHandItem rHandItem) {
-        actSts = new Cp_ActSts(cp);
+    public Cp_NonUnityObjClassRefs(ICpCtrl cpCtrl) {
         this.cpCtrl = cpCtrl;
         lockOnTgt = null;
-        this.rHandItem = rHandItem;
         st_cur = null;
         st_prev = null;
+    }
+}
+
+/// <summary>
+/// Cp class dependencies that do not derive from Unity's Object class.
+/// </summary>
+public struct CpHumanoid_NonUnityObjClassRefs {
+    public CpHumanoid_ActSts actSts;
+    public IHandItem rHandItem;
+
+    public CpHumanoid_NonUnityObjClassRefs(CpHandle cp, IHandItem rHandItem) {
+        actSts = new CpHumanoid_ActSts(cp);
+        this.rHandItem = rHandItem;
     }
 }
 
@@ -550,7 +573,7 @@ public struct WldHpBarData {
     public int accumulatedDmg;
     public Transform anchor;
     public float barVisibleUntil;
-    public CpHandle cpHandle;
+    public ICp cpHandle;
     public float dmgNumberVisibleUntil;
     public WldHpBar hpBar;
     public bool isLocked;

@@ -2,28 +2,28 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
-    IComboNode comboNode;
-    CpHandle cp;
+    IComboNode_CpHumanoid comboNode;
+    CpHandle cpHumd;
     IHitDealer hitDealer;
     HitEffects hitEffects;
 
-    public CpSt_ComboBranch_BasicImpact(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_ComboBranch_BasicImpact(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public CpSt_ComboBranch_BasicImpact Enter(
         HitEffects hitEffects,
-        IComboNode comboNode,
+        IComboNode_CpHumanoid comboNode,
         IHitDealer hitDealer
     ) {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
         this.hitEffects = hitEffects;
-        cp.Data.comboAllowed = false;
-        cp.Data.yawAllowed = false;
+        cpHumd.CommonData.comboAllowed = false;
+        cpHumd.CommonData.yawAllowed = false;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
+            ref cpHumd.CommonData.animEventPlrData,
+            cpHumd.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -41,9 +41,9 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.inst.TrySwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                        cp.I,
+                    CpMgr.TrySwitchActSt(
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
+                        ref cpHumd.CommonData,
                         true
                     );
                     return;
@@ -52,11 +52,11 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
             case CpAnimEventT.HitDealerActivated:
                 //Debug.Log($"rHandEquippable null: {classRefs.rHandEquippable == null}");
                 hitDealer.ResetNActivate(
-                    cp.lockOnTrf, // NOTE: = character center point.
+                    cpHumd.lockOnTrf, // NOTE: = character center point.
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
-                    new HashSet<IHitReceiver>{cp.hitReciever},
-                    cp.so_cpData.team,
+                    new HashSet<IHitReceiver>{cpHumd.hitReciever},
+                    cpHumd.so_cpCommonData.team,
                     Vector3.zero
                 );
                 break;
@@ -70,21 +70,21 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
     }
 
     public void Tick() {
-        ref var cpData = ref cp.Data;
+        ref var commonData = ref cpHumd.CommonData;
         float angSpd = 0;
-        if (cpData.yawAllowed)
-            angSpd = cpData.handle.so_cpData.impact_YawSpd;
+        if (commonData.yawAllowed)
+            angSpd = cpHumd.so_cpCommonData.impact_YawSpd;
         CpUtils.UpdateMovInputData(
-            cp.I,
-            cpData.input_mov,
-            cpData.animDPos,
+            ref commonData,
+            commonData.input_mov,
+            commonData.animDPose.position,
             0,
             angSpd,
             float.PositiveInfinity
         );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
-        if (cpData.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
+        if (commonData.comboAllowed && CpUtils.TryAnyComboInputTransition(cpHumd, comboNode))
             return;
     }
 }

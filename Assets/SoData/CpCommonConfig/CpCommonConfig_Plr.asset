@@ -10,27 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpConfig_FlyingHead
-  m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
-  displayName: Flying Head
+  m_Name: CpCommonConfig_Plr
+  m_EditorClassIdentifier: Assembly-CSharp::So_CpData
+  displayName: Player
+  falling_HorAcc: 10
+  falling_TgtHorSpd: 1
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
-  walkTgtHorSpd: 5
+  walkTgtHorSpd: 7
   walkYawSpd: 1000
   windup_YawSpd: 1000
-  cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
-  hp_Max: 4
+  hp_Max: 10
   ignoredKnockback: 0
   knockbackStrMult: 1
-  rHandItem: 1
-  team: 1
+  team: 0
   enableDbgMsgs: 0
-  act_AtkFlying_TgtHorSpeed: 2
-  act_AtkJump_DownSpeedAfterJumpFinished: 10
-  act_Falling_LandingStFallDistThreshold: 2
-  act_Falling_HorAcc: 10
-  act_Falling_TgtHorSpd: 1
-  act_Dodge_YawAngSpd: 400
-  act_Dodge_HorMovSpdMult: 1

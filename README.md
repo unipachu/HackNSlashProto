@@ -2,7 +2,7 @@
 
 This repository contains a hack and slash prototype developed with **Unity 6000.3.25f1**.
 
-No AI agents were used in the development of this project.
+Some of the code was generated using an LLM. No AI agents were used in the development of this project.
 
 ## Getting Started
 

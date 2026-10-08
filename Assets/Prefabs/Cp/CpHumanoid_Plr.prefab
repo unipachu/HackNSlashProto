@@ -52,9 +52,17 @@ PrefabInstance:
       propertyPath: so_cpData
       value: 
       objectReference: {fileID: 11400000, guid: cb105a8688779a64ba26fd821fe0069c, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: cb105a8688779a64ba26fd821fe0069c, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 49768273847b48549823e8c37f8ed985, type: 2}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
-      value: Cp_Plr
+      value: CpHumanoid_Plr
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

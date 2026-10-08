@@ -13,18 +13,22 @@ public static class CpUtils{
     /// NOTE: Use this when transitioning from neutral states like walk or idle. For combo chain transitions,
     /// use: <see cref="TryComboTransition"/>. (6.9.2026)
     /// </summary>
-    public static Func<IFsmSt_Cp> FindStateEnterFunc(BufferableInput input, int cpI) {
-        var classRefs = CpMgr.inst.aos[cpI].classRefs;
+    public static Func<IFsmSt_Cp> CpHumd_FindStateEnterFunc(
+        ref Cp_CommonData commonData,
+        ref CpHumd_Data humdData,
+        BufferableInput input
+    ) {
+        var humdClassRefs = humdData.classRefs;
         if(input == BufferableInput.BtnE) {
-            if(CpMgr.inst.aos[cpI].cooldownTimer_Dodge == 0)
-                return () => classRefs.actSts.dodge.Enter();
+            if(humdData.cooldownTimer_Dodge == 0)
+                return () => humdClassRefs.actSts.dodge.Enter();
             return null;
         }
-        if (classRefs.rHandItem is IHandItem_Comboer comboer) {
+        if (humdClassRefs.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
-                BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, cpI),
-                BufferableInput.RTrg => GetEnterFunc(comboer.RTrgComboStart, cpI),
-                BufferableInput.LShldr => GetEnterFunc(comboer.LShldrComboStart, cpI),
+                BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, humdData.handle),
+                BufferableInput.RTrg => GetEnterFunc(comboer.RTrgComboStart, humdData.handle),
+                BufferableInput.LShldr => GetEnterFunc(comboer.LShldrComboStart, humdData.handle),
                 _ => GeneralUtils.LogErrorForInput<BufferableInput, Func<IFsmSt_Cp>>(input)
             };
             if (enter != null)
@@ -32,12 +36,12 @@ public static class CpUtils{
         }
         // NOTE: Casting is the best option here. We could do a ECS-style "GetComponent", but for this
         // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
-        if (classRefs.rHandItem is IHandItem_Hitter hitter) {
+        if (humdClassRefs.rHandItem is IHandItem_Hitter hitter) {
             // TODO: Do not hard code hit effects!
             if(input == BufferableInput.LShldr) {
                 // TODO: ehh, this method is supposed to be generic for all CPs but now it uses PlrMgr...
                 if(PlrMgr.inst.TryConsumeUltMeter())
-                    return () => classRefs.actSts.atk_FlyingAtk.Enter(
+                    return () => humdClassRefs.actSts.atk_FlyingAtk.Enter(
                         new HitEffects(3, HitT.Blunt, KnockbackT.Strong, 5),
                         hitter.HitDealer
                     );
@@ -45,15 +49,15 @@ public static class CpUtils{
             }
             // TODO: Do not hard code hit effects!
             if(input == BufferableInput.RTrg)
-                return () => classRefs.actSts.atk_Jump.Enter(
+                return () => humdClassRefs.actSts.atk_Jump.Enter(
                     new HitEffects(1, HitT.Blunt, KnockbackT.Strong, 1),
                     hitter.HitDealer
                 );
         }
         return null;
         // Helper
-        static Func<IFsmSt_Cp> GetEnterFunc(IComboNode comboStart, int cpI)
-            => comboStart == null ? null : comboStart.GetEnterFunc(cpI);
+        static Func<IFsmSt_Cp> GetEnterFunc(IComboNode_CpHumanoid comboStart, CpHandle cpHumd)
+            => comboStart == null ? null : comboStart.GetEnterFunc(cpHumd);
     }
 
     /// <summary>
@@ -62,37 +66,39 @@ public static class CpUtils{
     // TODO MINOR: I'm not using this for anyhitng...
     public static bool GeneralSwitchStConditions<TState>(CpHandle cp) where TState : IFsmSt
         => typeof(TState) != typeof(CpSt_Dodge)
-            || cp.Data.cooldownTimer_Dodge <= 0f;
+            || cp.HumdData.cooldownTimer_Dodge <= 0f;
 
     /// <summary>
     /// Updates navMeshInfo if not already updated this tick and returns if the pawn is on the navmesh.
     /// </summary>
-    public static bool IsOnNavMesh(int cpI) {
-        var cpData = CpMgr.GetData(cpI);
-        if (cpData.navTgtInfo.hasUpdatedNavTgtInfoThisTick)
-            return cpData.navTgtInfo.isCpOnNavmesh;
-        Transform trf = cpData.handle.transform;
-        cpData.navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
-        cpData.navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
+    public static bool IsOnNavMesh(ref Cp_CommonData commonData) {
+        if (commonData.navTgtInfo.hasUpdatedNavTgtInfoThisTick)
+            return commonData.navTgtInfo.isCpOnNavmesh;
+        Transform trf = commonData.handle.Go.transform;
+        commonData.navTgtInfo.hasUpdatedNavTgtInfoThisTick = true;
+        commonData.navTgtInfo.isCpOnNavmesh = NavMesh.SamplePosition(
             trf.position,
             out NavMeshHit hit,
-            cpData.navTgtInfo.maxDistToNavMesh,
-            cpData.handle.navMeshAgent.areaMask
+            commonData.navTgtInfo.maxDistToNavMesh,
+            commonData.handle.NavMeshAgent.areaMask
         );
-        return cpData.navTgtInfo.isCpOnNavmesh;
+        return commonData.navTgtInfo.isCpOnNavmesh;
     }
 
     /// <summary>
     /// True if switched.
     /// </summary>
-    public static bool SwitchToFallingStIfNotGrounded(int cpI) {
-        var classRefs = CpMgr.inst.aos[cpI].classRefs;
+    public static bool SwitchToFallingStIfNotGrounded(
+        ref Cp_CommonData commonData,
+        ref CpHumd_Data humanoidData
+    ) {
+        var classRefs = humanoidData.classRefs;
         if (
-            !CpMgr.GetData(cpI).isGrounded
-            && classRefs.st_cur.GetType() != typeof(CpSt_Falling)
+            !commonData.isGrounded
+            && commonData.classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
-            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.falling.Enter(), cpI, true);
+            CpMgr.TrySwitchActSt(() => classRefs.actSts.falling.Enter(), ref commonData, true);
             return true;
         }
         return false;
@@ -101,33 +107,39 @@ public static class CpUtils{
     /// <summary>
     /// Used to transition to a baic action state after an attack/special move etc.
     /// </summary>
-    public static void TransitionToFallIdleOrWalk(int cpI) {
-        var classRefs = CpMgr.inst.aos[cpI].classRefs;
-        SwitchToFallingStIfNotGrounded(cpI);
-        if (math.all(CpMgr.GetData(cpI).input_mov != float2.zero))
-            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), cpI, true);
+    public static void TransitionToFallIdleOrWalk(
+        ref Cp_CommonData commonData,
+        ref CpHumd_Data humanoidData
+    ) {
+        var classRefs = humanoidData.classRefs;
+        SwitchToFallingStIfNotGrounded(ref commonData, ref humanoidData);
+        if (math.all(commonData.input_mov != float2.zero))
+            CpMgr.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), ref commonData, true);
         else
-            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), cpI, true);
+            CpMgr.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref commonData, true);
     }
 
     /// <summary>
     /// Can be used from neutral states like "walk" or "idle" to transition to new states with input.<br/>
     /// Returns true if succeeded changing state.
     /// </summary>
-    public static bool TrySwitchStFromNeutralStByBufferedInput(int cpI) {
-        BufferableInput input = CpMgr.GetData(cpI).inputBuffer_BufferedInput;
+    public static bool CpHumd_TrySwitchStFromNeutralStByBufferedInput(
+        ref Cp_CommonData commonData,
+        ref CpHumd_Data humdData
+    ) {
+        BufferableInput input = commonData.inputBuffer_BufferedInput;
         if(input == BufferableInput.None)
             return false;
-        Func<IFsmSt_Cp> enterFunc = FindStateEnterFunc(input, cpI);
+        Func<IFsmSt_Cp> enterFunc = CpHumd_FindStateEnterFunc(ref commonData, ref humdData, input);
         if (
             enterFunc != null
                 && InputBufferUtils.TryConsumeInput(
                     input,
-                    ref CpMgr.GetData(cpI).inputBuffer_BufferedInput,
-                    ref CpMgr.GetData(cpI).inputBuffer_RemainingTime
+                    ref commonData.inputBuffer_BufferedInput,
+                    ref commonData.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.TrySwitchActSt(enterFunc, cpI, true);
+            CpMgr.TrySwitchActSt(enterFunc, ref commonData, true);
             return true;
         }
         return false;
@@ -139,43 +151,51 @@ public static class CpUtils{
     /// </summary>
     // You could combine tgtHorDir and tgtHorSpd to tgtHorVel
     public static void UpdateMovInputData(
-        int cpI,
-        float2 tgtHorDir,
-        float3 additionalLinMov,
+        ref Cp_CommonData commonData,
+        Vector2 tgtHorDir,
+        Vector3 additionalLinMov, // NOTE: Currently only linear movement is used.
         float tgtHorSpd,
         float yawSpd,
         float horAcc
     ) {
-        CpMgr.GetData(cpI).movInput_tgtHorDir = tgtHorDir;
-        CpMgr.GetData(cpI).movInput_additionalLinMov = additionalLinMov;
-        CpMgr.GetData(cpI).movInput_tgtHorSpd = tgtHorSpd;
-        CpMgr.GetData(cpI).movInput_yawSpd = yawSpd;
-        CpMgr.GetData(cpI).movInput_horAcc = horAcc;
+        commonData.movInput_tgtHorDir = tgtHorDir;
+        commonData.movInput_additionalLinMov = additionalLinMov;
+        commonData.movInput_tgtHorSpd = tgtHorSpd;
+        commonData.movInput_yawSpd = yawSpd;
+        commonData.movInput_horAcc = horAcc;
     }
 
     /// <summary>
     /// Transitions to any existing next combo node that require input if such input was buffered.
     /// Immediately returns true if successfully switched state.
     /// </summary>
-    public static bool TryAnyComboInputTransition(int cpI, IComboNode curComboNode)
-    => TryComboTransition(BufferableInput.RShldr, curComboNode, cpI)
-        || TryComboTransition(BufferableInput.RTrg, curComboNode, cpI)
-        || TryComboTransition(BufferableInput.BtnE, curComboNode, cpI)
-        || TryComboTransition(BufferableInput.LShldr, curComboNode, cpI);
+    public static bool TryAnyComboInputTransition(CpHandle cpHumanoid, IComboNode_CpHumanoid curComboNode)
+        => TryComboTransition(cpHumanoid, BufferableInput.RShldr, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.RTrg, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.BtnE, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.LShldr, curComboNode);
 
     /// <summary>
     /// Returns true if successfully transitioned to the next action state of the combo.
     /// </summary>
-    static bool TryComboTransition(BufferableInput input, IComboNode curComboNode, int cpI) {
+    static bool TryComboTransition(
+        CpHandle cpHumanoid,
+        BufferableInput input,
+        IComboNode_CpHumanoid curComboNode
+    ) {
         if (
             curComboNode.GetNextNode(input) != null
                 && InputBufferUtils.TryConsumeInput(
                     input,
-                    ref CpMgr.GetData(cpI).inputBuffer_BufferedInput,
-                    ref CpMgr.GetData(cpI).inputBuffer_RemainingTime
+                    ref cpHumanoid.CommonData.inputBuffer_BufferedInput,
+                    ref cpHumanoid.CommonData.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.inst.TrySwitchActSt(curComboNode.GetNextNode(input).GetEnterFunc(cpI), cpI, true);
+            CpMgr.TrySwitchActSt(
+                curComboNode.GetNextNode(input).GetEnterFunc(cpHumanoid),
+                ref cpHumanoid.CommonData,
+                true
+            );
             return true;
         }
         return false;

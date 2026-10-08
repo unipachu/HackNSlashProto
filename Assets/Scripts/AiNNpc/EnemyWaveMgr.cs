@@ -51,8 +51,8 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
     bool HasNextWave()
         => currentWaveIndex + 1 < waveConfig.waves.Length;
 
-    public void OnEnemyDied(CpHandle cp) {
-        cp.Data.action_Died -= OnEnemyDied;
+    public void OnEnemyDied(ICp cp) {
+        cp.CommonData.action_Died -= OnEnemyDied;
         currentEnemyCount--;
         if (currentEnemyCount == 0 && spawningWave == false && !HasNextWave())
             Debug.Log("Player completed all enemy waves!!!", this);
@@ -60,7 +60,7 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
     }
 
     public void OnSpawnPtFinishedSpawning(AiCtrlHandle spawnedEnemy) {
-        spawnedEnemy.Data.cp.Data.action_Died += OnEnemyDied;
+        spawnedEnemy.Data.cp.CommonData.action_Died += OnEnemyDied;
     }
     
     bool ShouldBlockNextWave(EnemyWave wave) {

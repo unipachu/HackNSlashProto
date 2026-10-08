@@ -7,6 +7,7 @@ using UnityEngine;
 public class So_AiCpConfig : ScriptableObject{
     public float aggroRange = 20;
     public float atkRange = 3;
-    public CpHandle cpPrefab;
+    // TODO: Serialize
+    public InterfaceReference<ICp> cpPrefab;
     public BtT btT;
 }

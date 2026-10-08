@@ -7,27 +7,27 @@ using UnityEngine;
 /// NOTE C: action e.g. BasicImpact. (6.9.2026)
 /// </summary>
 public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
-    CpHandle cp;
+    CpHandle cpHumd;
     /// <summary>
-    /// Normalized animation time when <see cref="Cp_Data.inputMovAllowed"/> is first read as true in Tick().
+    /// Normalized animation time when <see cref="CpHumd_Data.inputMovAllowed"/> is first read as true in Tick().
     /// </summary>
     float inputMovAllowedNrmTime;
 
-    public CpSt_ComboEnd_BasicRecovery(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_ComboEnd_BasicRecovery(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_ComboEnd_BasicRecovery Enter(AnimInfo animInfo) {
-        ref var cpData = ref cp.Data;
+        ref var commonData = ref cpHumd.CommonData;
         inputMovAllowedNrmTime = -1;
-        cpData.comboAllowed = false;
-        cpData.inputMovAllowed = false;
+        commonData.comboAllowed = false;
+        commonData.inputMovAllowed = false;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref cpData.animEventPlrData,
-            cpData.handle.anim,
+            ref commonData.animEventPlrData,
+            cpHumd.anim,
             animInfo,
             0.1f
         );
@@ -37,7 +37,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cp.I);
+                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -46,35 +46,40 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
     }
 
     public void Tick() {
-        ref var cpData = ref cp.Data;
+        ref var commonData = ref cpHumd.CommonData;
+        ref var humdData = ref cpHumd.HumdData;
         //Debug.Log("anim nrm time: " + animEventPlrData.prevTotalNrmT);
         float interpValue = 0;
-        if (cpData.inputMovAllowed) {
+        if (commonData.inputMovAllowed) {
             if (inputMovAllowedNrmTime < 0)
-                inputMovAllowedNrmTime = cpData.animEventPlrData.prevTotalNrmT;
+                inputMovAllowedNrmTime = commonData.animEventPlrData.prevTotalNrmT;
             // Interpolate to walking speed.
-            interpValue = (cpData.animEventPlrData.prevTotalNrmT - inputMovAllowedNrmTime)
+            interpValue = (commonData.animEventPlrData.prevTotalNrmT - inputMovAllowedNrmTime)
                 / (1 - inputMovAllowedNrmTime);
             interpValue = Mathf.Clamp01(interpValue);
         }
         //Dbg.Log($"{nameof(interpValue)}: {interpValue}", cp, cpData.enableDbgMsgs);
         CpUtils.UpdateMovInputData(
-            cp.I,
-            cpData.input_mov,
+            ref commonData,
+            commonData.input_mov,
             float3.zero,
-            cp.so_cpData.walkTgtHorSpd * interpValue,
-            cp.so_cpData.walkYawSpd * interpValue,
-            cp.so_cpData.walkHorAcc
+            cpHumd.so_cpCommonData.walkTgtHorSpd * interpValue,
+            cpHumd.so_cpCommonData.walkYawSpd * interpValue,
+            cpHumd.so_cpCommonData.walkHorAcc
         );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
-        if (cpData.dodgeAllowed && cpData.cooldownTimer_Dodge == 0) {
+        if (humdData.dodgeAllowed && humdData.cooldownTimer_Dodge == 0) {
             if (InputBufferUtils.TryConsumeInput(
                 BufferableInput.BtnE,
-                ref cpData.inputBuffer_BufferedInput,
-                ref cpData.inputBuffer_RemainingTime)
+                ref commonData.inputBuffer_BufferedInput,
+                ref commonData.inputBuffer_RemainingTime)
             ) {
-                CpMgr.inst.TrySwitchActSt(() => CpMgr.inst.aos[cp.I].classRefs.actSts.dodge.Enter(), cp.I, true);
+                CpMgr.TrySwitchActSt(
+                    () => CpMgr.inst.humdData[cpHumd.I].classRefs.actSts.dodge.Enter(),
+                    ref commonData,
+                    true
+                );
                 return;
             }
         }

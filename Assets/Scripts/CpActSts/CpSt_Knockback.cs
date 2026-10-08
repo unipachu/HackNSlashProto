@@ -1,11 +1,12 @@
 using Unity.Mathematics;
 using UnityEngine;
 
+// TODO: Rename to CpHumd
 public class CpSt_Knockback : IFsmSt_Cp{
-    CpHandle cp;
+    CpHandle cpHumd;
 
-    public CpSt_Knockback(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_Knockback(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt {
@@ -16,8 +17,8 @@ public class CpSt_Knockback : IFsmSt_Cp{
 
     public CpSt_Knockback Enter(AnimInfo knockbackAnimInfo) {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
+            ref cpHumd.CommonData.animEventPlrData,
+            cpHumd.anim,
             knockbackAnimInfo,
             0.1f
         );
@@ -27,7 +28,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cp.I);
+                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -39,10 +40,11 @@ public class CpSt_Knockback : IFsmSt_Cp{
         //if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
         //    return;
         //Debug.Log($"knocback: {data.lastKnockbackStr[cp.Id]}\nanim delta: {data.animDPos[cp.Id]}");
+        ref var commonData = ref cpHumd.CommonData;
         CpUtils.UpdateMovInputData(
-            cp.I,
+            ref commonData,
             float2.zero,
-            cp.Data.animDPos * cp.Data.lastKnockbackStr * cp.so_cpData.knockbackStrMult,
+            commonData.animDPose.position * commonData.lastKnockbackStr * cpHumd.so_cpCommonData.knockbackStrMult,
             0,
             0,
             float.PositiveInfinity

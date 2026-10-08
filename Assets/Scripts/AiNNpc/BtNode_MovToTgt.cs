@@ -11,11 +11,10 @@ public class BtNode_MovToTgt : IBtNode{
 
     public BtResult Eval() {
         ref AiCtrlData data = ref AiCtrlMgr.GetData(aiCtrl);
-        int cpI = data.cp.I;
-        int aiCtrlId = aiCtrl.I;
+        int aiCtrlI = aiCtrl.I;
         float2 horDesiredVel = new(
-            AiCtrlMgr.inst.aos[aiCtrlId].agentDesiredVel.x,
-            AiCtrlMgr.inst.aos[aiCtrlId].agentDesiredVel.z
+            AiCtrlMgr.inst.aos[aiCtrlI].agentDesiredVel.x,
+            AiCtrlMgr.inst.aos[aiCtrlI].agentDesiredVel.z
         );
         // Agent can have 0 desired velocity, thus to avoid NaNs:
         if (math.lengthsq(horDesiredVel) > 0.0001f)

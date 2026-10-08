@@ -5,13 +5,13 @@ using UnityEngine;
 /// Basic impact combo move using a hit dealer (e.g. a melee weapon hit box).<br/>
 /// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
 /// </summary>
-public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
+public class ComboNode_BasicImpact : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
     IHandItem_Hitter hitter;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_BasicImpact(CpAnimInfoT animInfoT, UnityEngine.Object ctx) {
+    public ComboNode_BasicImpact(CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
         IHandItem_Hitter handItem_HitDealer = (IHandItem_Hitter)ctx;
         Debug.Assert(
@@ -22,25 +22,25 @@ public class ComboNode_BasicImpact : IComboNode, IComboNodeTransitionsHolder {
         hitter = handItem_HitDealer;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
+    public Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicImpact thisNode = this;
-        return () => CpMgr.inst.aos[cpI].classRefs.actSts.comboBranch_BasicImpact.Enter(
+        return () => cp.HumdData.classRefs.actSts.comboBranch_BasicImpact.Enter(
             thisNode.hitter.HitEffects,
             thisNode,
             thisNode.hitter.HitDealer
         );
     }
 
-    public IComboNode GetNextNode(BufferableInput input) {
+    public IComboNode_CpHumanoid GetNextNode(BufferableInput input) {
         return input switch {
             BufferableInput.None => Transitions.node_NoInput,
             BufferableInput.RShldr => Transitions.node_RShldr,
             BufferableInput.RTrg => Transitions.node_RTrg,
             BufferableInput.LShldr => Transitions.node_LShldr,
             BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
+            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode_CpHumanoid>(input)
         };
     }
 }

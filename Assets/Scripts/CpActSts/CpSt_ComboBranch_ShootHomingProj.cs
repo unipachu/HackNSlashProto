@@ -2,23 +2,23 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
-    IComboNode comboNode;
-    CpHandle cp;
+    IComboNode_CpHumanoid comboNode;
+    CpHandle cpHumd;
     HitEffects hitEffects;
     HomingProjData homingProjData;
     Transform projSpawnPose;
     ProjT projT;
     Transform homingProjTgt;
 
-    public CpSt_ComboBranch_ShootHomingProj(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_ComboBranch_ShootHomingProj(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_ComboBranch_ShootHomingProj Enter(
-        IComboNode comboNode,
+        IComboNode_CpHumanoid comboNode,
         HitEffects hitEffects,
         HomingProjData homingProjData,
         Transform projSpawnPose,
@@ -32,35 +32,34 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
         this.projT = projT;
         this.homingProjTgt = homingProjTgt;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
-            CpAnimInfoFactory.Construct(CpAnimInfoT.atk_GunShoot_Windup),
+            ref cpHumd.CommonData.animEventPlrData,
+            cpHumd.anim,
+            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
         return this;
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        ref Cp_Data cpData = ref cp.Data;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 //Dbg.Log($"Cp {cp.I} fired finished windup", cpData.enableDbgMsgs);
                 HomingProjMgr.inst.ShootProj(
-                    cpData.action_HitSomething,
+                    cpHumd.CommonData.action_HitSomething,
                     HitDirMode.HitDealerMovDir,
                     hitEffects,
                     homingProjData,
                     projT,
-                    new HashSet<IHitReceiver>{ cp.hitReciever },
+                    new HashSet<IHitReceiver>{ cpHumd.hitReciever },
                     homingProjTgt,
-                    cp.so_cpData.team,
+                    cpHumd.so_cpCommonData.team,
                     projSpawnPose.position,
                     projSpawnPose.forward
                 );
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.inst.TrySwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                        cp.I,
+                    CpMgr.TrySwitchActSt(
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
+                        ref cpHumd.CommonData,
                         true
                     );
                     return;
@@ -74,12 +73,13 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
 
     public void Tick() {
         //Dbg.Log($"Cp {cp.I} ticked windup", cp.Data.enableDbgMsgs);
+        ref Cp_CommonData commonData = ref cpHumd.CommonData;
         CpUtils.UpdateMovInputData(
-            cp.I,
-            cp.Data.input_mov_LastNonZero,
-            cp.Data.animDPos,
+            ref commonData,
+            commonData.input_mov_LastNonZero,
+            commonData.animDPose.position,
             0,
-            cp.so_cpData.impact_YawSpd, // NOTE: Yaw speed is set here.
+            cpHumd.so_cpCommonData.impact_YawSpd, // NOTE: Yaw speed is set here.
             float.PositiveInfinity
         );
     }

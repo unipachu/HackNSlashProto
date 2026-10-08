@@ -85,9 +85,21 @@ public enum CpAnimEventT : byte {
 }
 
 /// <summary>
-/// All animation states of capsule pawn.
+/// All animation states of <see cref="CpFlyingHeadHandle"/>.
 /// </summary>
-public enum CpAnimInfoT : byte {
+public enum CpFlyingHeadAnimInfoT : byte {
+    atk_DashAtk_Impact,
+    atk_DashAtk_Recovery,
+    atk_DashAtk_Windup,
+    idle,
+    knockback_Weak_Bwd,
+    knockback_Weak_Fwd,
+}
+
+/// <summary>
+/// All animation states of <see cref="CpHandle"/>.
+/// </summary>
+public enum CpHumanoidAnimInfoT : byte {
     atk_FlyingAtk_Impact,
     atk_FlyingAtk_Recovery,
     atk_FlyingAtk_Windup,

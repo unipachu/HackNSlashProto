@@ -52,9 +52,17 @@ PrefabInstance:
       propertyPath: so_cpData
       value: 
       objectReference: {fileID: 11400000, guid: 3e0ccefdc49240b4aa3a391dfa1676d5, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: 3e0ccefdc49240b4aa3a391dfa1676d5, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 0528c2b54ccdd8d4889560b77625016c, type: 2}
     - target: {fileID: 6101628137683636955, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
       propertyPath: m_Name
-      value: CpGiant_Club
+      value: CpGiantHumanoid_Club
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -7,10 +7,10 @@ using System;
 /// Combo nodes allow modular reuse of animations and action states and with those, creation of
 /// weapon-specific combo move sequences (see <see cref="ComboGraphFactory"/>).
 /// </summary>
-public interface IComboNode {
+public interface IComboNode_CpHumanoid {
     AnimInfo AnimInfo { get; }
 
-    Func<IFsmSt_Cp> GetEnterFunc(int cpI);
+    Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp);
 
-    IComboNode GetNextNode(BufferableInput input);
+    IComboNode_CpHumanoid GetNextNode(BufferableInput input);
 }

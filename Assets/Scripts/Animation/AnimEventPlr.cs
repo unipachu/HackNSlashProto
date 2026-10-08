@@ -62,11 +62,15 @@ public static class AnimEventPlr {
     /// NOTE: Tick this in LateUpdate to make sure that the queued animator changes during this
     /// frame Update have already been applied!
     /// </summary>
-    public static void Tick(
-        int cpI,
+    /// <param name="callerData">
+    /// Data used with the invoked action, e.g. a reference to the animated object if using a generic
+    /// animation event handler.
+    /// </param>
+    public static void Tick<T>(
+        T callerData,
         ref AnimEventPlrData data,
         Animator anim,
-        Action<int, CpAnimEventT> animEventAction
+        Action<T, CpAnimEventT> animEventAction
     ) {
         //Dbg.Log(
         //    $"{nameof(data.animInfo)}: {data.animInfo}\n"
@@ -104,7 +108,7 @@ public static class AnimEventPlr {
         float curTotalNrmT = info.normalizedTime;
         if (firstTickHelper && data.fireEventsBeforeStartOffset) {
             FireEventsInNrmRange(
-                cpI,
+                callerData,
                 data,
                 0,
                 data.cursor,
@@ -121,7 +125,7 @@ public static class AnimEventPlr {
         data.prevTotalNrmT = curTotalNrmT;
         if (!data.animInfo.looping) {
             FireEventsInNrmRange(
-                cpI,
+                callerData,
                 data,
                 data.cursor,
                 Mathf.Min(curTotalNrmT, 1),
@@ -142,7 +146,7 @@ public static class AnimEventPlr {
             float toLoopEnd = 1 - data.cursor;
             if (dTotalNrmT < toLoopEnd) {
                 FireEventsInNrmRange(
-                    cpI,
+                    callerData,
                     data,
                     data.cursor,
                     data.cursor + dTotalNrmT,
@@ -156,7 +160,7 @@ public static class AnimEventPlr {
                 dTotalNrmT = 0;
             }else {
                 FireEventsInNrmRange(
-                    cpI,
+                    callerData,
                     data,
                     data.cursor,
                     1,
@@ -199,13 +203,13 @@ public static class AnimEventPlr {
     /// Invokes events.
     /// NOTE: from and to need to be normalized!
     /// </summary>
-    static void FireEventsInNrmRange(
-        int cpI,
-        in AnimEventPlrData data,
+    static void FireEventsInNrmRange<TCallerData>(
+        TCallerData eventData,
+        AnimEventPlrData data,
         float from,
         float to,
         bool includeFrom,
-        Action<int, CpAnimEventT> animEventAction
+        Action<TCallerData, CpAnimEventT> animEventAction
     ) {
         // Find first event in the range. NOTE that it doesn't include "from", but does include
         // "to". This way events do not fire twice. That also means we need a separate check for
@@ -218,7 +222,7 @@ public static class AnimEventPlr {
             float t = data.animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
             //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
-            animEventAction?.Invoke(cpI, data.animInfo.sortedAnimEvents[i].id);
+            animEventAction?.Invoke(eventData, data.animInfo.sortedAnimEvents[i].t);
             // If the animation event switched animation, we return.
             if (data.firstTick)
                 return;

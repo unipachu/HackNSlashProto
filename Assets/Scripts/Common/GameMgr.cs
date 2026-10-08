@@ -33,13 +33,22 @@ public class GameMgr : Singleton<GameMgr> {
         ParticleFactory.inst.Init();
         SfxMgr.inst.Init();
         CamMgr.inst.Init();
+        CpRegister.inst.Init();
     }
 
     void Start() {
         Debug.Assert(gameOverScreen != null, "Game over screen was null!");
         gameOverScreen.gameObject.SetActive(false);
+        //Debug.Log(
+        //    $"Before SpawnPlrCpAtSpawnPt: " +
+        //    $"plrPrefab={plrPrefab}, " +
+        //    $"spawnPoint={spawnPoint}, " +
+        //    $"plrMgr={plrMgr}, " +
+        //    $"CamMgr.inst={CamMgr.inst}, " +
+        //    $"cam={(CamMgr.inst != null ? CamMgr.inst.cam : null)}"
+        //);
         plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
-        plrCp.Data.action_Died += OnPlrDied;
+        plrCp.CommonData.action_Died += OnPlrDied;
         EnemyWaveMgr.inst.StartSpawningWaves(true);
     }
 
@@ -86,8 +95,8 @@ public class GameMgr : Singleton<GameMgr> {
     /// <summary>
     /// Game over logic.
     /// </summary>
-    void OnPlrDied(CpHandle cp) {
-        plrCp.Data.action_Died -= OnPlrDied;
+    void OnPlrDied(ICp cp) {
+        plrCp.CommonData.action_Died -= OnPlrDied;
         CamMgr.inst.movByInputAllowed = false;
         TimeMgr.SetSlowMotion(true);
         gameOver = true;

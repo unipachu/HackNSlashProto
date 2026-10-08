@@ -22,7 +22,7 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     // Register and Unregister
     // ----------------------------------------------------------------------------------
 
-    public void Register(Transform anchor, CpHandle cpHandle) {
+    public void Register(Transform anchor, ICp cpHandle) {
         int newI = entityCount;
         // TODO MINOR: Pool these?
         WldHpBar hpBar = Instantiate(wldHpBarPrefab, wldHpBarLayer);
@@ -35,18 +35,18 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
             barVisibleUntil = 0f
         };
         ArrayUtils.Add(ref bars, entityCount, data);
-        data.cpHandle.Data.action_CurHpChanged += hpBar.OnCurHpChanged;
-        data.cpHandle.Data.action_DmgTaken += hpBar.OnDmgTaken;
-        data.cpHandle.Data.action_MarkedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
-        data.cpHandle.Data.action_MaxHpChanged += hpBar.OnMaxHpChanged;
-        data.cpHandle.Data.action_PlrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
-        data.cpHandle.Data.action_PlrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
+        data.cpHandle.CommonData.action_CurHpChanged += hpBar.OnCurHpChanged;
+        data.cpHandle.CommonData.action_DmgTaken += hpBar.OnDmgTaken;
+        data.cpHandle.CommonData.action_MarkedForPendingUnregister += hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.CommonData.action_MaxHpChanged += hpBar.OnMaxHpChanged;
+        data.cpHandle.CommonData.action_PlrLockedOnStarted += hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.CommonData.action_PlrLockedOnEnded += hpBar.OnPlrLockedOnEnded;
         hpBar.I = newI;
         entityCount++;
         hpBar.gameObject.SetActive(false);
-        hpBar.SetName(cpHandle.so_cpData.displayName);
-        hpBar.SetHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.hp_Max);
-        hpBar.SetYellowHp(cpHandle.Data.hp_Cur, cpHandle.so_cpData.hp_Max);
+        hpBar.SetName(cpHandle.So_CpCommonConfig.displayName);
+        hpBar.SetHp(cpHandle.CommonData.hp_Cur, cpHandle.So_CpCommonConfig.hp_Max);
+        hpBar.SetYellowHp(cpHandle.CommonData.hp_Cur, cpHandle.So_CpCommonConfig.hp_Max);
     }
 
     /// <summary>
@@ -54,12 +54,12 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
     /// </summary>
     public void Unregister(int i) {
         ref var data = ref bars[i];
-        data.cpHandle.Data.action_CurHpChanged -= data.hpBar.OnCurHpChanged;
-        data.cpHandle.Data.action_DmgTaken -= data.hpBar.OnDmgTaken;
-        data.cpHandle.Data.action_MarkedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
-        data.cpHandle.Data.action_MaxHpChanged -= data.hpBar.OnMaxHpChanged;
-        data.cpHandle.Data.action_PlrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
-        data.cpHandle.Data.action_PlrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
+        data.cpHandle.CommonData.action_CurHpChanged -= data.hpBar.OnCurHpChanged;
+        data.cpHandle.CommonData.action_DmgTaken -= data.hpBar.OnDmgTaken;
+        data.cpHandle.CommonData.action_MarkedForPendingUnregister -= data.hpBar.OnCpMarkedForUnregister;
+        data.cpHandle.CommonData.action_MaxHpChanged -= data.hpBar.OnMaxHpChanged;
+        data.cpHandle.CommonData.action_PlrLockedOnStarted -= data.hpBar.OnPlrLockedOnStarted;
+        data.cpHandle.CommonData.action_PlrLockedOnEnded -= data.hpBar.OnPlrLockedOnEnded;
         int lastId = entityCount - 1;
         WldHpBar swappedCtrl = i != lastId
             ? bars[lastId].hpBar

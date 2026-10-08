@@ -11,7 +11,6 @@ public class BtNode_Cmd_Idle : IBtNode{
 
     public BtResult Eval() {
         ref AiCtrlData data = ref AiCtrlMgr.GetData(aiCtrl);
-        int cpI = data.cp.I;
         int aiCtrlId = aiCtrl.I;
         data.ctrlInputData.input_LStick = float2.zero;
         //Dbg.Log(

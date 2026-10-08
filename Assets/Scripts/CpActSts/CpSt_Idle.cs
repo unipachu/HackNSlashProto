@@ -1,10 +1,10 @@
 using Unity.Mathematics;
 
 public class CpSt_Idle : IFsmSt_Cp {
-    CpHandle cp;
+    CpHandle cpHumd;
 
-    public CpSt_Idle(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_Idle(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
@@ -12,42 +12,46 @@ public class CpSt_Idle : IFsmSt_Cp {
 
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
-            CpAnimInfoFactory.Construct(CpAnimInfoT.idle),
+            ref cpHumd.CommonData.animEventPlrData,
+            cpHumd.Anim,
+            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.idle),
             0.1f
         );
         return this;
     }
 
     public void Tick() {
-        var classRefs = cp.Data.classRefs;
+        ref var commonData = ref cpHumd.CommonData;
+        ref var humdData = ref cpHumd.HumdData;
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
-        if (classRefs.st_prev == classRefs.actSts.walk)
+        if (commonData.classRefs.st_prev == humdData.classRefs.actSts.walk)
             CpUtils.UpdateMovInputData(
-                cp.I,
-                cp.Data.input_mov_LastNonZero,
+                ref commonData,
+                commonData.input_mov_LastNonZero,
                 float3.zero,
                 0,
-                cp.so_cpData.walkYawSpd,
+                cpHumd.so_cpCommonData.walkYawSpd,
                 float.PositiveInfinity
             );
         else
             CpUtils.UpdateMovInputData(
-                cp.I,
+                ref commonData,
                 float2.zero,
                 float3.zero,
                 0,
                 0,
                 float.PositiveInfinity
             );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref humdData))
             return;
         // Try consume input
-        if (CpUtils.TrySwitchStFromNeutralStByBufferedInput(cp.I))
+        if (CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref humdData))
             return;
-        if (math.all(cp.Data.input_mov != float2.zero)) {
-            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), cp.I, true);
+        if (math.all(commonData.input_mov != float2.zero)) {
+            CpMgr.TrySwitchActSt(
+                () => cpHumd.HumdData.classRefs.actSts.walk.Enter(),
+                ref commonData,
+                true);
             return;
         }
     }

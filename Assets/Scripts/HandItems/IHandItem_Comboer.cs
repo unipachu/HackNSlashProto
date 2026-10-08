@@ -2,7 +2,7 @@
 /// Hand item which allows for combo moves.
 /// </summary>
 public interface IHandItem_Comboer : IHandItem {
-    IComboNode LShldrComboStart { get; }
-    IComboNode RShldrComboStart{ get; }
-    IComboNode RTrgComboStart{ get; }
+    IComboNode_CpHumanoid LShldrComboStart { get; }
+    IComboNode_CpHumanoid RShldrComboStart{ get; }
+    IComboNode_CpHumanoid RTrgComboStart{ get; }
 }

@@ -2,48 +2,55 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Falling : IFsmSt_Cp {
-    CpHandle cp;
+    CpHandle cpHumd;
 
-    public CpSt_Falling(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_Falling(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_Falling Enter() {
-        cp.Data.act_Falling_StartHgt = cp.Data.handle.transform.position.y;
+        cpHumd.HumdData.act_Falling_StartHgt = cpHumd.HumdData.handle.transform.position.y;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
-            CpAnimInfoFactory.Construct(CpAnimInfoT.falling),
+            ref cpHumd.CommonData.animEventPlrData,
+            cpHumd.anim,
+            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.falling),
             2 // NOTE: Transition is long to give a sense of accleration during falling. // TODO: So.
         );
         return this;
     }
     
     public void Tick() {
-        var unityComps = cp;
-        var classRefs = cp.Data.classRefs;
+        ref var commonData = ref cpHumd.CommonData;
+        ref var humdData = ref cpHumd.HumdData;
         CpUtils.UpdateMovInputData(
-            cp.I,
+            ref commonData,
             float2.zero,
             float3.zero,
-            cp.so_cpData.act_Falling_TgtHorSpd,
+            cpHumd.so_cpCommonData.falling_TgtHorSpd,
             0,
-            cp.so_cpData.act_Falling_HorAcc
+            cpHumd.so_cpCommonData.falling_HorAcc
         );
-        if (cp.Data.isGrounded){
+        if (commonData.isGrounded){
             //Debug.Log("Is grounded");
-            float fallDist = cp.Data.act_Falling_StartHgt - cp.Data.handle.transform.position.y;
-            if(fallDist > cp.so_cpData.act_Falling_LandingStFallDistThreshold) {
-                CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.fallLanding.Enter(), cp.I, true);
+            float fallDist = humdData.act_Falling_StartHgt - cpHumd.transform.position.y;
+            if(fallDist > cpHumd.so_cpHumdConfig.act_Falling_LandingStFallDistThreshold) {
+                CpMgr.TrySwitchActSt(
+                    () => cpHumd.HumdData.classRefs.actSts.fallLanding.Enter(),
+                    ref commonData,
+                    true
+                );
                 return;
             }
-            CpUtils.TransitionToFallIdleOrWalk(cp.I);
+            CpUtils.TransitionToFallIdleOrWalk(ref commonData, ref humdData);
             return;
         }
         Debug.Assert(
-            cp.Data.curStDur <= 15, $"{cp.I} likely stuck falling as curStDur was: {cp.Data.curStDur}.", cp);
+            commonData.curStDur <= 15,
+            $"{cpHumd.I} likely stuck falling as curStDur was: {commonData.curStDur}.",
+            cpHumd
+        );
     }
 }

@@ -18,15 +18,15 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
     [SerializeField] Transform projSpawnPose;
     [SerializeField] ProjT projT;
 
-    List<IComboNode> comboGraph;
+    List<IComboNode_CpHumanoid> comboGraph;
 
     public AimLaser AimLaser => aimLaser;
     public IHitDealer HitDealer => meleeHitDealer;
     public HitEffects HitEffects => meleeHitEffects;
     public HomingProjData HomingProjData => homingProjData;
-    public IComboNode LShldrComboStart => null;
-    public IComboNode RShldrComboStart => comboGraph[0];
-    public IComboNode RTrgComboStart => null;
+    public IComboNode_CpHumanoid LShldrComboStart => null;
+    public IComboNode_CpHumanoid RShldrComboStart => comboGraph[0];
+    public IComboNode_CpHumanoid RTrgComboStart => null;
     public HitEffects ProjHitEffects => projHitEffects;
     public Transform ProjSpawnPoseTrf => projSpawnPose;
     public ProjT ProjT => projT;

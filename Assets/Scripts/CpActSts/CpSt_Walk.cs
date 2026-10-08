@@ -12,30 +12,30 @@ public class CpSt_Walk : IFsmSt_Cp {
 
     public CpSt_Walk Enter() {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            ref cp.CommonData.animEventPlrData,
             cp.anim,
-            CpAnimInfoFactory.Construct(CpAnimInfoT.walk),
+            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.walk),
             0.5f
         );
         return this;
     }
 
     public void Tick() {
-        var classRefs = cp.Data.classRefs;
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        var classRefs = cp.HumdData.classRefs;
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref cp.CommonData, ref cp.HumdData))
             return;
         CpUtils.UpdateMovInputData(
-            cp.I,
-            cp.Data.input_mov,
+            ref cp.CommonData,
+            cp.CommonData.input_mov,
             float3.zero,
-            cp.so_cpData.walkTgtHorSpd,
-            cp.so_cpData.walkYawSpd,
-            cp.so_cpData.walkHorAcc
+            cp.so_cpCommonData.walkTgtHorSpd,
+            cp.so_cpCommonData.walkYawSpd,
+            cp.so_cpCommonData.walkHorAcc
         );
-        if (CpUtils.TrySwitchStFromNeutralStByBufferedInput(cp.I))
+        if (CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(ref cp.CommonData, ref cp.HumdData))
             return;
-        if (math.all(cp.Data.input_mov == float2.zero)) {
-            CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), cp.I, true);
+        if (math.all(cp.CommonData.input_mov == float2.zero)) {
+            CpMgr.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref cp.CommonData, true);
             return;
         }
     }

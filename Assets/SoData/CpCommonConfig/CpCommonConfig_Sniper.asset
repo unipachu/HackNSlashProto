@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpConfig_Pistol
-  m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
-  displayName: Pistol Enemy
+  m_Name: CpCommonConfig_Sniper
+  m_EditorClassIdentifier: Assembly-CSharp::So_CpData
+  displayName: Sniper Enemy
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 105
   walkHorAcc: 100
-  walkTgtHorSpd: 5
+  walkTgtHorSpd: 5.18
   walkYawSpd: 1000
   windup_YawSpd: 105
   cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
-  hp_Max: 3
+  hp_Max: 2
   ignoredKnockback: 0
   knockbackStrMult: 1
-  rHandItem: 2
+  rHandItem: 3
   team: 1
   enableDbgMsgs: 0
   act_AtkFlying_TgtHorSpeed: 2

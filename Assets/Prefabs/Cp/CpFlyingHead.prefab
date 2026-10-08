@@ -40,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1582683670335378908}
-  - component: {fileID: 1730021812194126965}
   - component: {fileID: 9175790116073506310}
   - component: {fileID: 4596513238272593172}
   - component: {fileID: 5079058612890601784}
@@ -69,27 +68,6 @@ Transform:
   - {fileID: 7217122771945984390}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1730021812194126965
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6101628137683636955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95c1d6ee28d5acf4685da2b66f490860, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CpRegisterer
-  so_cpData: {fileID: 0}
-  anim: {fileID: 1091843080481240901}
-  animEventHandler: {fileID: 4596513238272593172}
-  cc: {fileID: 5079058612890601784}
-  hitReciever: {fileID: 5634786316121275709}
-  navMeshAgent: {fileID: 8087861647241408892}
-  rHand: {fileID: 0}
-  lockOnTrf: {fileID: 2296725825080284018}
-  wldHpBarPos: {fileID: 7217122771945984390}
 --- !u!114 &9175790116073506310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,18 +200,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: CpFlyingHeadVis
       objectReference: {fileID: 0}
-    - target: {fileID: 3907151629497665675, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 4189095800914533336, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 7815050015801306029, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -244,22 +210,6 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 8587577820381872883, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
   m_PrefabInstance: {fileID: 8649785375372342710}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &2296725825080284018 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 7482077672245274308, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
-  m_PrefabInstance: {fileID: 8649785375372342710}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &5634786316121275709 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3907151629497665675, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
-  m_PrefabInstance: {fileID: 8649785375372342710}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f9043e6b090aff34da82013d9c71bcae, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CpHitRecieveHandler
 --- !u!4 &6608411704339734578 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2576057435514721668, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public interface ICpCtrlInputter{
+public interface ICpCtrl{
     public Vector2 Input_RStick { get; }
     public Vector2 Input_PointerDelta { get; }
     public Vector2 Input_LStick { get; }

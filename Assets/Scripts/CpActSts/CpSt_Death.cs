@@ -12,10 +12,11 @@ public class CpSt_Death : IFsmSt_Cp {
         => false; // Cannot change to anything when dying.
 
     public CpSt_Death Enter(AnimInfo deathAnim) {
-        cp.Data.ignoreHits = true;
-        cp.Data.action_Died?.Invoke(cp);
+        ref Cp_CommonData commonData = ref cp.CommonData;
+        commonData.ignoreHits = true;
+        commonData.action_Died?.Invoke(cp);
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
+            ref commonData.animEventPlrData,
             cp.anim,
             deathAnim,
             0.1f
@@ -26,7 +27,7 @@ public class CpSt_Death : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpMgr.inst.MarkForPendingUnregister(cp.I);
+                CpMgr.MarkForPendingUnregister(ref cp.CommonData);
                 return;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -35,10 +36,11 @@ public class CpSt_Death : IFsmSt_Cp {
     }
 
     public void Tick() {
+        ref var commonData = ref cp.CommonData;
         CpUtils.UpdateMovInputData(
-            cp.I,
+            ref commonData,
             float2.zero,
-            cp.Data.animDPos * cp.Data.lastKnockbackStr * cp.so_cpData.knockbackStrMult,
+            commonData.animDPose.position * commonData.lastKnockbackStr * cp.so_cpCommonData.knockbackStrMult,
             0,
             0,
             float.PositiveInfinity

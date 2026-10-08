@@ -1,48 +1,53 @@
 using Unity.Mathematics;
 using UnityEngine;
 
+// TODO: Rename to CpHumanoid
 public class CpSt_FallLanding : IFsmSt_Cp {
-    CpHandle cp;
+    CpHandle cpHumanoid;
 
-    public CpSt_FallLanding(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_FallLanding(CpHandle cpHumanoid) {
+        this.cpHumanoid = cpHumanoid;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
     public CpSt_FallLanding Enter() {
-        cp.Data.dodgeAllowed = false;
+        cpHumanoid.HumdData.dodgeAllowed = false;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
-            CpAnimInfoFactory.Construct(CpAnimInfoT.fallLanding),
+            ref cpHumanoid.CommonData.animEventPlrData,
+            cpHumanoid.anim,
+            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.fallLanding),
             0.2f
         );
         return this;
     }
 
     public void Tick() {
-        var classRefs = cp.Data.classRefs;
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        ref var commonData = ref cpHumanoid.CommonData;
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumanoid.HumdData))
             return;
         CpUtils.UpdateMovInputData(
-            cp.I,
+            ref commonData,
             float2.zero,
             float3.zero,
             0,
             0,
             float.PositiveInfinity
         );
-        if (cp.Data.dodgeAllowed && cp.Data.cooldownTimer_Dodge == 0) {
+        if (cpHumanoid.HumdData.dodgeAllowed && cpHumanoid.HumdData.cooldownTimer_Dodge == 0) {
             if (
                 InputBufferUtils.TryConsumeInput(
                     BufferableInput.BtnE,
-                    ref cp.Data.inputBuffer_BufferedInput,
-                    ref cp.Data.inputBuffer_RemainingTime
+                    ref commonData.inputBuffer_BufferedInput,
+                    ref commonData.inputBuffer_RemainingTime
                 )
             ) {
-                CpMgr.inst.TrySwitchActSt(() => classRefs.actSts.dodge.Enter(), cp.I, true);
+                CpMgr.TrySwitchActSt(
+                    () => cpHumanoid.HumdData.classRefs.actSts.dodge.Enter(),
+                    ref commonData,
+                    true
+                );
                 return;
             }
         }
@@ -51,7 +56,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(cp.I);
+                CpUtils.TransitionToFallIdleOrWalk(ref cpHumanoid.CommonData, ref cpHumanoid.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

@@ -10,27 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7729e5f239230f94db57e0535f2aa8ee, type: 3}
-  m_Name: CpConfig_Club
+  m_Name: CpCommonConfig_Club
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
   displayName: Hammer Enemy
+  falling_HorAcc: 10
+  falling_TgtHorSpd: 1
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
   walkTgtHorSpd: 5
   walkYawSpd: 500
   windup_YawSpd: 500
-  cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 5
   ignoredKnockback: 1
   knockbackStrMult: 0.2
-  rHandItem: 0
   team: 1
-  enableDbgMsgs: 1
-  act_AtkFlying_TgtHorSpeed: 2
-  act_AtkJump_DownSpeedAfterJumpFinished: 10
-  act_Falling_LandingStFallDistThreshold: 2
-  act_Falling_HorAcc: 10
-  act_Falling_TgtHorSpd: 1
-  act_Dodge_YawAngSpd: 400
-  act_Dodge_HorMovSpdMult: 1
+  enableDbgMsgs: 0

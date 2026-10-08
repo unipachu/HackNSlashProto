@@ -12,10 +12,9 @@ public class BtNode_Cmd_Atk1 : IBtNode{
 
     public BtResult Eval() {
         ref AiCtrlData aiCtrlData = ref aiCtrl.Data;
-        int cpI = aiCtrlData.cp.I;
         int aiCtrlId = aiCtrl.I;
         aiCtrlData.ctrlInputData.input_Rb = true;
-        Vector3 dirToTgt = (aiCtrlData.followTgt.TrfToFollow.position - aiCtrlData.cp.transform.position);
+        Vector3 dirToTgt = (aiCtrlData.followTgt.TrfToFollow.position - aiCtrlData.cp.Go.transform.position);
         if (dirToTgt.sqrMagnitude > 0.0001f)
             dirToTgt = dirToTgt.normalized;
         float2 horDesiredVel = new(

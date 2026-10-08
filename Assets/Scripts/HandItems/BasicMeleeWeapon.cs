@@ -9,13 +9,13 @@ public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitt
     [SerializeField] HitDealer_CapsuleSubstepper hitDealer;
     [SerializeField] HitEffects hitEffects = new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1);
 
-    List<IComboNode> comboGraph;
+    List<IComboNode_CpHumanoid> comboGraph;
 
     public IHitDealer HitDealer => hitDealer;
     public HitEffects HitEffects => hitEffects;
-    public IComboNode LShldrComboStart => null;
-    public IComboNode RShldrComboStart => comboGraph[0];
-    public IComboNode RTrgComboStart => null;
+    public IComboNode_CpHumanoid LShldrComboStart => null;
+    public IComboNode_CpHumanoid RShldrComboStart => comboGraph[0];
+    public IComboNode_CpHumanoid RTrgComboStart => null;
     public Transform Trf => transform;
 
 

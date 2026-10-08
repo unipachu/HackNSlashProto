@@ -22,10 +22,11 @@ public class PlrMgr : Singleton<PlrMgr>{
 
     void ClearPlr() {
         Debug.Assert(cp != null, "No player was set!");
-        cp.Data.action_CurHpChanged -= OnPlrCurHpChanged;
-        cp.Data.action_MaxHpChanged -= OnPlrMaxHpChanged;
-        cp.Data.action_HitSomething -= OnPlrHitSomething;
-        cp.Data.action_MarkedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
+        ref var commonData = ref cp.CommonData;
+        commonData.action_CurHpChanged -= OnPlrCurHpChanged;
+        commonData.action_MaxHpChanged -= OnPlrMaxHpChanged;
+        commonData.action_HitSomething -= OnPlrHitSomething;
+        commonData.action_MarkedForPendingUnregister -= OnPlrMarkedForPendingUnregister;
         cp = null;
         HudMgr.inst.ResetYellowTrail();
     }
@@ -36,7 +37,7 @@ public class PlrMgr : Singleton<PlrMgr>{
 
     void OnPlrHitSomething(HashSet<HitResult> hitResults) {
         // NOTE: Cannot gain ult meter when doing ult attack.
-        if (cp.Data.classRefs.st_cur == cp.Data.classRefs.actSts.atk_FlyingAtk)
+        if (cp.CommonData.classRefs.st_cur == cp.HumdData.classRefs.actSts.atk_FlyingAtk)
             return;
         foreach(var hitResult in hitResults) {
             // We increase ult meter for each hit that dealt damage.
@@ -62,11 +63,12 @@ public class PlrMgr : Singleton<PlrMgr>{
     public void SetPlr(CpHandle cp) {
         Debug.Assert(this.cp == null, "Player already set!");
         this.cp = cp;
-        cp.Data.action_HitSomething += OnPlrHitSomething;
-        cp.Data.action_CurHpChanged += OnPlrCurHpChanged;
-        cp.Data.action_MaxHpChanged += OnPlrMaxHpChanged;
-        cp.Data.action_MarkedForPendingUnregister += OnPlrMarkedForPendingUnregister;
-        HudMgr.inst.SetHp(cp.Data.hp_Cur, cp.so_cpData.hp_Max);
+        ref var commonData = ref cp.CommonData;
+        commonData.action_HitSomething += OnPlrHitSomething;
+        commonData.action_CurHpChanged += OnPlrCurHpChanged;
+        commonData.action_MaxHpChanged += OnPlrMaxHpChanged;
+        commonData.action_MarkedForPendingUnregister += OnPlrMarkedForPendingUnregister;
+        HudMgr.inst.SetHp(commonData.hp_Cur, cp.so_cpCommonData.hp_Max);
         HudMgr.inst.ResetYellowTrail();
         HudMgr.inst.SetUlt(0, config.maxUlt);
     }

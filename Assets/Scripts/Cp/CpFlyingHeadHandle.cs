@@ -8,7 +8,7 @@ using UnityEngine.AI;
 /// </summary>
 public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
-    public So_CpConfig so_cpData;
+    public So_CpCommonConfig so_cpData;
     
     [Header("Unity Obj Refs")]
     public Animator anim;
@@ -21,18 +21,34 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     public Transform wldHpBarPos;
 
     /// <summary>
-    /// Index to the corresponding entity data in <see cref="CpMgr"/>.
+    /// Index to the corresponding entity data in <see cref="CpFlyingHeadMgr"/>.
     /// </summary>
     public int I { get; set; } = -1;
 
-    public ref Cp_Data Data => ref CpMgr.inst.aos[I];
+    public Animator Anim => throw new System.NotImplementedException();
+    public CpFlyingHeadAnimEventHandler AnimEventHandler => throw new System.NotImplementedException();
+    public CharacterController Cc => throw new System.NotImplementedException();
+    public So_CpCommonConfig So_CpCommonConfig => throw new System.NotImplementedException();
+    public ref Cp_CommonData CommonData => throw new System.NotImplementedException();
+    public GameObject Go => throw new System.NotImplementedException();
     public Transform LockOnTrf => lockOnTrf;
+    public NavMeshAgent NavMeshAgent => throw new System.NotImplementedException();
     public Transform TrfToFollow => transform;
+    public Transform WldHpBarPos => throw new System.NotImplementedException();
 
     public bool IsOnNavMesh()
-        => CpUtils.IsOnNavMesh(I);
+        => CpUtils.IsOnNavMesh(ref CommonData);
 
     public void OnHitSomething(HashSet<HitResult> hits) {
-        Data.action_HitSomething?.Invoke(hits);
+        CommonData.action_HitSomething?.Invoke(hits);
+    }
+
+    public bool TryEnterDeathSt() {
+        throw new System.NotImplementedException();
+    }
+
+    public bool TrySetupNEnterKnockbackSt() {
+        // TODO: Check how the humanoid cp does this.
+        throw new System.NotImplementedException();
     }
 }

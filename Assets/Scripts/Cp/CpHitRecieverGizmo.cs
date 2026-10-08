@@ -14,14 +14,14 @@ public class CpHitRecieverGizmo : MonoBehaviour{
     [SerializeField] Vector3 sizeMult = new(1,1,1);
 
     [Header("External Refs")]
-    [SerializeField] CpHandle cp;
+    [SerializeField] InterfaceReference<ICp> cp;
     [SerializeField] Collider col;
 
     private void OnDrawGizmos() {
         // NOTE: No warning, no error. You need to remember to set the references!
         if (cp == null || col == null || !drawGizmo || CpMgr.inst == null)
             return;
-        Color color = cp.Data.ignoreHits ? invulnerableColor : vulnerableColor;
+        Color color = cp.Value.CommonData.ignoreHits ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {
             var radiusMult = Mathf.Max(sizeMult.x, sizeMult.z);
             float radius = capsuleCollider.radius * radiusMult;

@@ -52,9 +52,17 @@ PrefabInstance:
       propertyPath: so_cpData
       value: 
       objectReference: {fileID: 11400000, guid: f37605fa9dcc3494bae3fe21d3bf0a84, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: f37605fa9dcc3494bae3fe21d3bf0a84, type: 2}
+    - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 9e378fe8693f8ba45820e3c88f16ea3b, type: 2}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
-      value: Cp_Hammer
+      value: CpHumanoid_Hammer
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Radius

@@ -3,7 +3,7 @@ using UnityEngine;
 /// <summary>
 /// Used as a memory managed handle to the entity id.
 /// </summary>
-public class AiCtrlHandle : ICpCtrlInputter {
+public class AiCtrlHandle : ICpCtrl {
     /// <summary>
     /// Index to the corresponding entity data <see cref="AiCtrlMgr"/>.
     /// </summary>

@@ -80,7 +80,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95c1d6ee28d5acf4685da2b66f490860, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpRegisterer
-  so_cpData: {fileID: 0}
+  so_cpCommonData: {fileID: 0}
+  so_cpHumdConfig: {fileID: 0}
   anim: {fileID: 1091843080481240901}
   animEventHandler: {fileID: 4596513238272593172}
   cc: {fileID: 5079058612890601784}
@@ -160,8 +161,16 @@ PrefabInstance:
       propertyPath: cp
       value: 
       objectReference: {fileID: 1730021812194126965}
+    - target: {fileID: 141906430116339270, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+      propertyPath: cp.underlyingValue
+      value: 
+      objectReference: {fileID: 1730021812194126965}
     - target: {fileID: 1000488504326016277, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cp
+      value: 
+      objectReference: {fileID: 1730021812194126965}
+    - target: {fileID: 1000488504326016277, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+      propertyPath: cp.underlyingValue
       value: 
       objectReference: {fileID: 1730021812194126965}
     - target: {fileID: 1200230796060022321, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
@@ -214,6 +223,10 @@ PrefabInstance:
       objectReference: {fileID: 1730021812194126965}
     - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cpReg
+      value: 
+      objectReference: {fileID: 1730021812194126965}
+    - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
+      propertyPath: cp.underlyingValue
       value: 
       objectReference: {fileID: 1730021812194126965}
     - target: {fileID: 6838515308935653087, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}

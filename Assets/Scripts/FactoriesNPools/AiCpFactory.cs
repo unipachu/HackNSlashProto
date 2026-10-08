@@ -11,14 +11,14 @@ public class AiCpFactory {
     public static AiCtrlHandle SpawnAiCpAtSpawnPt(So_AiCpConfig aiCpConfig, Transform spawnPt) {
         //Debug.Log($"Spawnin ai cp: {cpPrefab.gameObject.name}, with brain: {btT}.");
         AiCtrlHandle aiCtrl = new AiCtrlHandle();
-        CpHandle cp;
+        ICp cp;
         IBtNode bt;
-        cp = CpFactory.SpawnCpAtSpawnPt(aiCpConfig.cpPrefab, spawnPt);
+        cp = CpFactory.SpawnCpAtSpawnPt(aiCpConfig.cpPrefab.Value, spawnPt);
         bt = BtDataFactory.Construct(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCpConfig.aggroRange, aiCpConfig.atkRange, aiCtrl, bt, cp);
-        CpMgr.StartListeningToCtrlInput(cp.I, aiCtrl);
+        CpMgr.StartListeningToCtrlInput(ref cp.CommonData, aiCtrl);
         // Ui related
-        WldHpBarMgr.inst.Register(cp.wldHpBarPos, cp);
+        WldHpBarMgr.inst.Register(cp.WldHpBarPos, cp);
         return aiCtrl;
     }
 }

@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 
-public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
+public class ComboNode_ShootProj : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
     IHandItem_ProjectileSpawner projSpawner;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_ShootProj(CpAnimInfoT animInfoT, UnityEngine.Object ctx) {
+    public ComboNode_ShootProj(CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
         AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
         IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)ctx;
         Debug.Assert(
@@ -18,26 +18,26 @@ public class ComboNode_ShootProj : IComboNode, IComboNodeTransitionsHolder {
         this.projSpawner = projSpawner;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(int cpI) {
+    public Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp) {
         ComboNode_ShootProj thisNode = this;
-        return () => CpMgr.inst.aos[cpI].classRefs.actSts.comboBranch_ShootHomingProj.Enter(
+        return () => cp.HumdData.classRefs.actSts.comboBranch_ShootHomingProj.Enter(
             thisNode,
             thisNode.projSpawner.ProjHitEffects,
             thisNode.projSpawner.HomingProjData,
             thisNode.projSpawner.ProjSpawnPoseTrf,
             thisNode.projSpawner.ProjT,
-            CpMgr.inst.aos[cpI].classRefs.lockOnTgt.LockOnTrf
+            cp.CommonData.classRefs.lockOnTgt.LockOnTrf
         );
     }
 
-    public IComboNode GetNextNode(BufferableInput input) {
+    public IComboNode_CpHumanoid GetNextNode(BufferableInput input) {
         return input switch {
             BufferableInput.None => Transitions.node_NoInput,
             BufferableInput.RShldr => Transitions.node_RShldr,
             BufferableInput.RTrg => Transitions.node_RTrg,
             BufferableInput.LShldr => Transitions.node_LShldr,
             BufferableInput.BtnE => Transitions.node_BtnE,
-            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode>(input)
+            _ => GeneralUtils.LogErrorForInput<BufferableInput, IComboNode_CpHumanoid>(input)
         };
     }
 }

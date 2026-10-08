@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::So_AiCpConfig
   aggroRange: 20
   atkRange: 4
-  cpPrefab: {fileID: 6575454303958460453, guid: 7a9eacebebdc12f4d9065a5b069e6ec8, type: 3}
+  cpPrefab:
+    underlyingValue: {fileID: 6575454303958460453, guid: 7a9eacebebdc12f4d9065a5b069e6ec8, type: 3}
   btT: 0

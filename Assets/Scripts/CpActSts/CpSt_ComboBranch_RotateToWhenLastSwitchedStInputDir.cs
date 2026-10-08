@@ -5,25 +5,26 @@ using UnityEngine;
 /// input_mov_WhenLastSwitchedSt.
 /// </summary>
 public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
-    CpHandle cp;
-    IComboNode comboNode;
+    CpHandle cpHumd;
+    IComboNode_CpHumanoid comboNode;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir(CpHandle cp) {
-        this.cp = cp;
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir(CpHandle cpHumd) {
+        this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir Enter(IComboNode comboNode) {
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir Enter(IComboNode_CpHumanoid comboNode) {
+        ref var commonData = ref cpHumd.CommonData;
         this.comboNode = comboNode;
         InputBufferUtils.Clear(
-            ref cp.Data.inputBuffer_BufferedInput,
-            ref cp.Data.inputBuffer_RemainingTime
+            ref commonData.inputBuffer_BufferedInput,
+            ref commonData.inputBuffer_RemainingTime
         );
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
-            ref CpMgr.inst.aos[cp.I].animEventPlrData,
-            cp.anim,
+            ref commonData.animEventPlrData,
+            cpHumd.anim,
             comboNode.AnimInfo,
             0.1f
         );
@@ -31,13 +32,13 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        var classRefs = cp.Data.classRefs;
+        ref var commonData = ref cpHumd.CommonData;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.inst.TrySwitchActSt(
-                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cp.I),
-                        cp.I,
+                    CpMgr.TrySwitchActSt(
+                        comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
+                        ref commonData,
                         true
                     );
                     return;
@@ -50,23 +51,23 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
     }
 
     public void Tick() {
-        ref var cpData = ref cp.Data;
+        ref var commonData = ref cpHumd.CommonData;
         //Dbg.Log(
         //    $"Cp {cp.I}: {nameof(cpData.act_BasicWindup_MaxAngSpd)}: {cpData.act_BasicWindup_MaxAngSpd}",
         //    cpData.enableDbgMsgs
         //);
         CpUtils.UpdateMovInputData(
-            cp.I,
-            cpData.input_mov_WhenLastSwitchedSt,
-            cpData.animDPos,
+            ref commonData,
+            commonData.input_mov_WhenLastSwitchedSt,
+            commonData.animDPose.position,
             0,
-            cpData.handle.so_cpData.windup_YawSpd,
+            cpHumd.so_cpCommonData.windup_YawSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
-        if (CpUtils.SwitchToFallingStIfNotGrounded(cp.I))
+        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
-        if (cpData.comboAllowed && CpUtils.TryAnyComboInputTransition(cp.I, comboNode))
+        if (commonData.comboAllowed && CpUtils.TryAnyComboInputTransition(cpHumd, comboNode))
             return;
     }
 }
