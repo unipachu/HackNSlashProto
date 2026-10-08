@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class GameMgr : Singleton<GameMgr> {
     [SerializeField] PlrCtrl plrMgr;
-    [SerializeField] CpHandle plrPrefab;
+    [SerializeField] CpHumdHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
     [Header("Game Over")]
@@ -14,7 +14,7 @@ public class GameMgr : Singleton<GameMgr> {
     [Tooltip("Game over duration in unscaled time.")]
     [SerializeField] float gameOverVisibleDur = 3f;
 
-    [HideInInspector] CpHandle plrCp;
+    [HideInInspector] CpHumdHandle plrCp;
 
     bool gameOver;
     float gameOverTimer;
@@ -28,7 +28,7 @@ public class GameMgr : Singleton<GameMgr> {
         ApplySettings();
         TimeMgr.UpdateTimeScl();
         WldHpBarMgr.inst.Init();
-        CpMgr.inst.Init();
+        CpHumdMgr.inst.Init();
         AiCtrlMgr.inst.Init();
         ParticleFactory.inst.Init();
         SfxMgr.inst.Init();
@@ -53,7 +53,7 @@ public class GameMgr : Singleton<GameMgr> {
     }
 
     void FixedUpdate() {
-        CpMgr.inst.FixedTick();
+        CpHumdMgr.inst.FixedTick();
     }
 
     void Update() {
@@ -62,12 +62,12 @@ public class GameMgr : Singleton<GameMgr> {
         float dt = Time.deltaTime;
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick(dt);
-        CpMgr.inst.Tick(dt);
+        CpHumdMgr.inst.Tick(dt);
         EnemyWaveMgr.inst.Tick(dt, Time.time);
     }
 
     void LateUpdate() {
-        CpMgr.inst.LateTick(Time.deltaTime);
+        CpHumdMgr.inst.LateTick(Time.deltaTime);
         CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
         PlrMgr.inst.LateTick();

@@ -10,7 +10,7 @@ using System;
 public interface IComboNode_CpHumanoid {
     AnimInfo AnimInfo { get; }
 
-    Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp);
+    Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp);
 
     IComboNode_CpHumanoid GetNextNode(BufferableInput input);
 }

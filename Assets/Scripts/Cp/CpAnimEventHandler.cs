@@ -5,7 +5,7 @@ using UnityEngine;
 // C: reason you have this on every prefab.
 // TODO: Rename to CpHumanoidAnimEventHandler
 public class CpAnimEventHandler : MonoBehaviour {
-    public Action<CpHandle, CpAnimEventT> animEvent;
+    public Action<CpHumdHandle, CpAnimEventT> animEvent;
 
     void OnEnable() {
         animEvent += OnAnimEvent;
@@ -15,7 +15,7 @@ public class CpAnimEventHandler : MonoBehaviour {
         animEvent -= OnAnimEvent;
     }
 
-    void OnAnimEvent(CpHandle cpHumd, CpAnimEventT animEvent) {
+    void OnAnimEvent(CpHumdHandle cpHumd, CpAnimEventT animEvent) {
         //Debug.Log($"Anim event {animEvent} for {id} called!", this);
         ref var commonData = ref cpHumd.CommonData;
         ref var humdData = ref cpHumd.HumdData;

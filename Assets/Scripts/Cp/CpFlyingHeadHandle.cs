@@ -16,7 +16,6 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     public CharacterController cc;
     public CpHitReciever hitReciever;
     public NavMeshAgent navMeshAgent;
-    public Transform rHand;
     public Transform lockOnTrf;
     public Transform wldHpBarPos;
 

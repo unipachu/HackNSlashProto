@@ -19,7 +19,7 @@ public class CpHitRecieverGizmo : MonoBehaviour{
 
     private void OnDrawGizmos() {
         // NOTE: No warning, no error. You need to remember to set the references!
-        if (cp == null || col == null || !drawGizmo || CpMgr.inst == null)
+        if (cp == null || col == null || !drawGizmo || CpHumdMgr.inst == null)
             return;
         Color color = cp.Value.CommonData.ignoreHits ? invulnerableColor : vulnerableColor;
         if (col is CapsuleCollider capsuleCollider) {

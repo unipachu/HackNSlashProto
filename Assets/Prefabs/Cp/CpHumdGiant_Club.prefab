@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 799764370066193369, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: 3e0ccefdc49240b4aa3a391dfa1676d5, type: 2}
+    - target: {fileID: 799764370066193369, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: 0528c2b54ccdd8d4889560b77625016c, type: 2}
     - target: {fileID: 1582683670335378908, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -62,7 +70,7 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: 0528c2b54ccdd8d4889560b77625016c, type: 2}
     - target: {fileID: 6101628137683636955, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
       propertyPath: m_Name
-      value: CpGiantHumanoid_Club
+      value: CpHumdGiant_Club
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

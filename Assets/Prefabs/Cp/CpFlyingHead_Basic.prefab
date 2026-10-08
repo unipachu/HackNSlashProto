@@ -50,8 +50,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: d35a5a22739097945acc9f5fcc3a5646, type: 3}
       propertyPath: m_Name
-      value: CpFlyingHead
+      value: CpFlyingHead_Basic
       objectReference: {fileID: 0}
+    - target: {fileID: 9175790116073506310, guid: d35a5a22739097945acc9f5fcc3a5646, type: 3}
+      propertyPath: so_cpData
+      value: 
+      objectReference: {fileID: 11400000, guid: 8ac8b98e370535c48a40f0fb3d72d67b, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -3,14 +3,14 @@ using UnityEngine;
 
 public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
     IComboNode_CpHumanoid comboNode;
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     HitEffects hitEffects;
     HomingProjData homingProjData;
     Transform projSpawnPose;
     ProjT projT;
     Transform homingProjTgt;
 
-    public CpSt_ComboBranch_ShootHomingProj(CpHandle cpHumd) {
+    public CpSt_ComboBranch_ShootHomingProj(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -57,7 +57,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
                     projSpawnPose.forward
                 );
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.TrySwitchActSt(
+                    CpHumdMgr.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref cpHumd.CommonData,
                         true

@@ -429,7 +429,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
     /// <summary>
     /// Tries to lock onto the target the <paramref name="aiCtrl"/> is currently following.<br/>
     /// NOTE: Expects the <paramref name="aiCtrl"/> to already have a <see cref="AiCtrlData.followTgt"/>!<br/>
-    /// NOTE 2: The <see cref="Cp_NonUnityObjClassRefs.lockOnTgt"/> is owned by <see cref="CpMgr"/> instead
+    /// NOTE 2: The <see cref="Cp_NonUnityObjClassRefs.lockOnTgt"/> is owned by <see cref="CpHumdMgr"/> instead
     /// of <see cref="AiCtrlMgr"/> since in the future we might want to implement lock on funcitonality for
     /// the player as well. (20.9.2026)
     /// </summary>

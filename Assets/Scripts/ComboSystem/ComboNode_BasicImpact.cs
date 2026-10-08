@@ -22,7 +22,7 @@ public class ComboNode_BasicImpact : IComboNode_CpHumanoid, IComboNodeTransition
         hitter = handItem_HitDealer;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp) {
+    public Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp) {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicImpact thisNode = this;

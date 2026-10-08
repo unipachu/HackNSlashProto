@@ -5,10 +5,10 @@ using UnityEngine;
 /// character but target hor movement is 0. So input still works for rotation.
 /// </summary>
 public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     IComboNode_CpHumanoid comboNode;
 
-    public CpSt_ComboBranch_RotateToLastNonZeroInputDir(CpHandle cpHumd) {
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -35,7 +35,7 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.TrySwitchActSt(
+                    CpHumdMgr.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref cpHumd.CommonData,
                         true

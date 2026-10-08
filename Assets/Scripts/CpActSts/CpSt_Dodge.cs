@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class CpSt_Dodge : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
 
-    public CpSt_Dodge(CpHandle cpHumd) {
+    public CpSt_Dodge(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 

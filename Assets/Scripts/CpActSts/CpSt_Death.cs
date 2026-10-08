@@ -2,9 +2,9 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Death : IFsmSt_Cp {
-    CpHandle cp;
+    CpHumdHandle cp;
 
-    public CpSt_Death(CpHandle cp) {
+    public CpSt_Death(CpHumdHandle cp) {
         this.cp = cp;
     }
 
@@ -27,7 +27,7 @@ public class CpSt_Death : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpMgr.MarkForPendingUnregister(ref cp.CommonData);
+                CpHumdMgr.MarkForPendingUnregister(ref cp.CommonData);
                 return;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

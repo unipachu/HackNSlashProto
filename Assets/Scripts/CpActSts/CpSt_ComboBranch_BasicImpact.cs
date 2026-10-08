@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
     IComboNode_CpHumanoid comboNode;
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     IHitDealer hitDealer;
     HitEffects hitEffects;
 
-    public CpSt_ComboBranch_BasicImpact(CpHandle cpHumd) {
+    public CpSt_ComboBranch_BasicImpact(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -41,7 +41,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.TrySwitchActSt(
+                    CpHumdMgr.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref cpHumd.CommonData,
                         true

@@ -1,9 +1,9 @@
 using Unity.Mathematics;
 
 public class CpSt_Idle : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
 
-    public CpSt_Idle(CpHandle cpHumd) {
+    public CpSt_Idle(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -48,7 +48,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         if (CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref humdData))
             return;
         if (math.all(commonData.input_mov != float2.zero)) {
-            CpMgr.TrySwitchActSt(
+            CpHumdMgr.TrySwitchActSt(
                 () => cpHumd.HumdData.classRefs.actSts.walk.Enter(),
                 ref commonData,
                 true);

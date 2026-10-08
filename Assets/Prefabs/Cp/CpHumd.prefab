@@ -40,12 +40,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1582683670335378908}
-  - component: {fileID: 1730021812194126965}
+  - component: {fileID: 3968936679401605026}
   - component: {fileID: 4596513238272593172}
   - component: {fileID: 5079058612890601784}
   - component: {fileID: 8087861647241408892}
   m_Layer: 8
-  m_Name: CpHumanoid
+  m_Name: CpHumd
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -68,7 +68,7 @@ Transform:
   - {fileID: 7217122771945984390}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1730021812194126965
+--- !u!114 &3968936679401605026
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -77,9 +77,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6101628137683636955}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 95c1d6ee28d5acf4685da2b66f490860, type: 3}
+  m_Script: {fileID: 11500000, guid: 57970b74b0d54684196719b4831cb6d9, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CpRegisterer
+  m_EditorClassIdentifier: Assembly-CSharp::CpHumdHandle
   so_cpCommonData: {fileID: 0}
   so_cpHumdConfig: {fileID: 0}
   anim: {fileID: 1091843080481240901}
@@ -158,21 +158,13 @@ PrefabInstance:
     m_TransformParent: {fileID: 1582683670335378908}
     m_Modifications:
     - target: {fileID: 141906430116339270, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 141906430116339270, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cp.underlyingValue
       value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 1000488504326016277, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
+      objectReference: {fileID: 3968936679401605026}
     - target: {fileID: 1000488504326016277, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cp.underlyingValue
       value: 
-      objectReference: {fileID: 1730021812194126965}
+      objectReference: {fileID: 3968936679401605026}
     - target: {fileID: 1200230796060022321, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: m_Name
       value: CapsuleCharacterVisuals
@@ -218,21 +210,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      propertyPath: cpReg
-      value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 6608038514319621472, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
       propertyPath: cp.underlyingValue
       value: 
-      objectReference: {fileID: 1730021812194126965}
-    - target: {fileID: 6838515308935653087, guid: 52befdaa9f90fea4aa1c7f6a44203b67, type: 3}
-      propertyPath: cp
-      value: 
-      objectReference: {fileID: 1730021812194126965}
+      objectReference: {fileID: 3968936679401605026}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1001 &8854994053236361158
+--- !u!1001 &849458914672846948
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -51,18 +51,26 @@ PrefabInstance:
     - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: so_cpData
       value: 
-      objectReference: {fileID: 11400000, guid: 5557b3dda4d3bca4080a46ed4dc3b852, type: 2}
+      objectReference: {fileID: 11400000, guid: 6430943e054aaf7408389413ca54c3fd, type: 2}
     - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: so_cpCommonData
       value: 
-      objectReference: {fileID: 11400000, guid: 5557b3dda4d3bca4080a46ed4dc3b852, type: 2}
+      objectReference: {fileID: 11400000, guid: 6430943e054aaf7408389413ca54c3fd, type: 2}
     - target: {fileID: 1730021812194126965, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: so_cpHumdConfig
       value: 
-      objectReference: {fileID: 11400000, guid: 67957883a4c596d4990c19d79b012351, type: 2}
+      objectReference: {fileID: 11400000, guid: beb09e8613565e441b206d5c02de9a06, type: 2}
+    - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpCommonData
+      value: 
+      objectReference: {fileID: 11400000, guid: 6430943e054aaf7408389413ca54c3fd, type: 2}
+    - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: so_cpHumdConfig
+      value: 
+      objectReference: {fileID: 11400000, guid: beb09e8613565e441b206d5c02de9a06, type: 2}
     - target: {fileID: 6101628137683636955, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Name
-      value: CpHumanoid_PistolHighHp
+      value: CpHumd_Pistol
       objectReference: {fileID: 0}
     - target: {fileID: 8087861647241408892, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: m_Radius

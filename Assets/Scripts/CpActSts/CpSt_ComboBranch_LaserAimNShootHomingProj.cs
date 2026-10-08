@@ -5,13 +5,13 @@ using UnityEngine;
 public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
     AimLaser aimLaser;
     IComboNode_CpHumanoid comboNode;
-    CpHandle cpHumanoid;
+    CpHumdHandle cpHumanoid;
     HitEffects hitEffects;
     HomingProjData homingProjData;
     Transform projSpawnPose;
     ProjT projT;
 
-    public CpSt_ComboBranch_LaserAimNShootHomingProj(CpHandle cp) {
+    public CpSt_ComboBranch_LaserAimNShootHomingProj(CpHumdHandle cp) {
         this.cpHumanoid = cp;
     }
 
@@ -76,7 +76,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
                 projSpawnPose.forward
             );
             if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                CpMgr.TrySwitchActSt(
+                CpHumdMgr.TrySwitchActSt(
                     comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumanoid),
                     ref cpHumanoid.CommonData,
                     true

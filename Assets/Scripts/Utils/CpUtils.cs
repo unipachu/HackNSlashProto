@@ -56,7 +56,7 @@ public static class CpUtils{
         }
         return null;
         // Helper
-        static Func<IFsmSt_Cp> GetEnterFunc(IComboNode_CpHumanoid comboStart, CpHandle cpHumd)
+        static Func<IFsmSt_Cp> GetEnterFunc(IComboNode_CpHumanoid comboStart, CpHumdHandle cpHumd)
             => comboStart == null ? null : comboStart.GetEnterFunc(cpHumd);
     }
 
@@ -64,7 +64,7 @@ public static class CpUtils{
     /// Cooldown related and such conditions for state switching shared by most <see cref="IFsmSt.CanSwitchTo"/>.
     /// </summary>
     // TODO MINOR: I'm not using this for anyhitng...
-    public static bool GeneralSwitchStConditions<TState>(CpHandle cp) where TState : IFsmSt
+    public static bool GeneralSwitchStConditions<TState>(CpHumdHandle cp) where TState : IFsmSt
         => typeof(TState) != typeof(CpSt_Dodge)
             || cp.HumdData.cooldownTimer_Dodge <= 0f;
 
@@ -98,7 +98,7 @@ public static class CpUtils{
             && commonData.classRefs.st_cur.GetType() != typeof(CpSt_Falling)
         ) {
             //Debug.Log($"{id} was not grounded so switch to falling st!");
-            CpMgr.TrySwitchActSt(() => classRefs.actSts.falling.Enter(), ref commonData, true);
+            CpHumdMgr.TrySwitchActSt(() => classRefs.actSts.falling.Enter(), ref commonData, true);
             return true;
         }
         return false;
@@ -114,9 +114,9 @@ public static class CpUtils{
         var classRefs = humanoidData.classRefs;
         SwitchToFallingStIfNotGrounded(ref commonData, ref humanoidData);
         if (math.all(commonData.input_mov != float2.zero))
-            CpMgr.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), ref commonData, true);
+            CpHumdMgr.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), ref commonData, true);
         else
-            CpMgr.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref commonData, true);
+            CpHumdMgr.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref commonData, true);
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static class CpUtils{
                     ref commonData.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.TrySwitchActSt(enterFunc, ref commonData, true);
+            CpHumdMgr.TrySwitchActSt(enterFunc, ref commonData, true);
             return true;
         }
         return false;
@@ -169,7 +169,7 @@ public static class CpUtils{
     /// Transitions to any existing next combo node that require input if such input was buffered.
     /// Immediately returns true if successfully switched state.
     /// </summary>
-    public static bool TryAnyComboInputTransition(CpHandle cpHumanoid, IComboNode_CpHumanoid curComboNode)
+    public static bool TryAnyComboInputTransition(CpHumdHandle cpHumanoid, IComboNode_CpHumanoid curComboNode)
         => TryComboTransition(cpHumanoid, BufferableInput.RShldr, curComboNode)
             || TryComboTransition(cpHumanoid, BufferableInput.RTrg, curComboNode)
             || TryComboTransition(cpHumanoid, BufferableInput.BtnE, curComboNode)
@@ -179,7 +179,7 @@ public static class CpUtils{
     /// Returns true if successfully transitioned to the next action state of the combo.
     /// </summary>
     static bool TryComboTransition(
-        CpHandle cpHumanoid,
+        CpHumdHandle cpHumanoid,
         BufferableInput input,
         IComboNode_CpHumanoid curComboNode
     ) {
@@ -191,7 +191,7 @@ public static class CpUtils{
                     ref cpHumanoid.CommonData.inputBuffer_RemainingTime
                 )
         ) {
-            CpMgr.TrySwitchActSt(
+            CpHumdMgr.TrySwitchActSt(
                 curComboNode.GetNextNode(input).GetEnterFunc(cpHumanoid),
                 ref cpHumanoid.CommonData,
                 true

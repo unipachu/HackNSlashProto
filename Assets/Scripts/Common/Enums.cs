@@ -97,7 +97,7 @@ public enum CpFlyingHeadAnimInfoT : byte {
 }
 
 /// <summary>
-/// All animation states of <see cref="CpHandle"/>.
+/// All animation states of <see cref="CpHumdHandle"/>.
 /// </summary>
 public enum CpHumanoidAnimInfoT : byte {
     atk_FlyingAtk_Impact,

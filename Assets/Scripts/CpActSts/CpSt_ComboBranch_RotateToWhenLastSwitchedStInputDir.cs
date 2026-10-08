@@ -5,10 +5,10 @@ using UnityEngine;
 /// input_mov_WhenLastSwitchedSt.
 /// </summary>
 public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     IComboNode_CpHumanoid comboNode;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir(CpHandle cpHumd) {
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -36,7 +36,7 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpMgr.TrySwitchActSt(
+                    CpHumdMgr.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref commonData,
                         true

@@ -6,7 +6,7 @@ using UnityEngine.AI;
 /// Used as a memory managed handle to the entity index. Also contains capsule pawn initialization data.<br/>
 /// NOTE: Set this to the root of the capsule pawn!
 /// </summary>
-public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
+public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
     public So_CpCommonConfig so_cpCommonData;
     public So_CpHumdConfig so_cpHumdConfig;
@@ -22,7 +22,7 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     public Transform wldHpBarPos;
 
     /// <summary>
-    /// Index to the corresponding entity data in <see cref="CpMgr"/>.
+    /// Index to the corresponding entity data in <see cref="CpHumdMgr"/>.
     /// </summary>
     public int I { get; set; } = -1;
 
@@ -30,9 +30,9 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     public CpAnimEventHandler AnimEventHandler => animEventHandler;
     public CharacterController Cc => cc;
     public So_CpCommonConfig So_CpCommonConfig => so_cpCommonData;
-    public ref Cp_CommonData CommonData => ref CpMgr.inst.commonData[I];
+    public ref Cp_CommonData CommonData => ref CpHumdMgr.inst.commonData[I];
     public GameObject Go => gameObject;
-    public ref CpHumd_Data HumdData => ref CpMgr.inst.humdData[I];
+    public ref CpHumd_Data HumdData => ref CpHumdMgr.inst.humdData[I];
     public Transform LockOnTrf => lockOnTrf;
     public NavMeshAgent NavMeshAgent => navMeshAgent;
     public Transform TrfToFollow => transform;
@@ -46,7 +46,7 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     }
 
     public bool TrySetupNEnterKnockbackSt()
-        => CpMgr.TrySwitchActSt(
+        => CpHumdMgr.TrySwitchActSt(
             () => HumdData.classRefs.actSts.knockback.Enter(FindKnockbackAnim()),
             ref CommonData
         );
@@ -69,7 +69,7 @@ public class CpHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     }
 
     public bool TryEnterDeathSt() {
-        if (CpMgr.TrySwitchActSt(
+        if (CpHumdMgr.TrySwitchActSt(
             () => HumdData.classRefs.actSts.death.Enter(FindKnockbackAnim()),
                 ref CommonData
             )

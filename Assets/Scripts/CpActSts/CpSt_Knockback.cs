@@ -3,9 +3,9 @@ using UnityEngine;
 
 // TODO: Rename to CpHumd
 public class CpSt_Knockback : IFsmSt_Cp{
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
 
-    public CpSt_Knockback(CpHandle cpHumd) {
+    public CpSt_Knockback(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 

@@ -15,5 +15,5 @@ MonoBehaviour:
   aggroRange: 20
   atkRange: 8
   cpPrefab:
-    underlyingValue: {fileID: 1426418209356973073, guid: 1092f503677414742a98d61029935732, type: 3}
+    underlyingValue: {fileID: 4385833687638175686, guid: 1092f503677414742a98d61029935732, type: 3}
   btT: 0

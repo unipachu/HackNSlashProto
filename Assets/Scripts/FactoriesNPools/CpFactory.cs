@@ -5,8 +5,8 @@ public static class CpFactory {
     public static ICp SpawnCpAtSpawnPt(ICp prefab, Transform spawnPt) {
         GameObject cpGo = GameObject.Instantiate(prefab.Go, spawnPt.position, spawnPt.rotation);
         ICp instantiatedDp = cpGo.GetComponent<ICp>();
-        if (instantiatedDp is CpHandle cpHandle) {
-            CpMgr.inst.Register(cpHandle);
+        if (instantiatedDp is CpHumdHandle cpHandle) {
+            CpHumdMgr.inst.Register(cpHandle);
         }else if (instantiatedDp is CpFlyingHeadHandle cpFlyingHeadHandle) {
             CpFlyingHeadMgr.inst.Register(cpFlyingHeadHandle);
         }else
@@ -21,20 +21,20 @@ public static class CpFactory {
         //    1 << cp.navMeshAgent.agentTypeID
         //);
         //Debug.Log($"Agent type: {cp.navMeshAgent.agentTypeID}, NavMesh: {debugFound}, hit: {hit.position}");
-        Debug.Assert(CpMgr.inst != null, $"{typeof(CpMgr).Name} inst was null!");
+        Debug.Assert(CpHumdMgr.inst != null, $"{typeof(CpHumdMgr).Name} inst was null!");
         return instantiatedDp;
     }
 
-    public static CpHandle SpawnPlrCpAtSpawnPt(
-        CpHandle prefab,
+    public static CpHumdHandle SpawnPlrCpAtSpawnPt(
+        CpHumdHandle prefab,
         Transform spawnPt,
         PlrCtrl ctrl,
         CinemachineCamera cam
     ) {
         //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");
         ICp instantiatedCp = SpawnCpAtSpawnPt(prefab, spawnPt);
-        CpHandle instantiatedCpHumanoid = instantiatedCp as CpHandle;
-        CpMgr.StartListeningToCtrlInput(ref instantiatedCpHumanoid.CommonData, ctrl);
+        CpHumdHandle instantiatedCpHumanoid = instantiatedCp as CpHumdHandle;
+        CpHumdMgr.StartListeningToCtrlInput(ref instantiatedCpHumanoid.CommonData, ctrl);
         cam.Target.TrackingTarget = instantiatedCp.Go.transform;
         PlrMgr.inst.SetPlr(instantiatedCpHumanoid);
         return instantiatedCpHumanoid;

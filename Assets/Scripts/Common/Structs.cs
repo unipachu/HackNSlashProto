@@ -301,7 +301,7 @@ public struct CpHumanoid_ActSts {
     public CpSt_ComboBranch_RotateToLastNonZeroInputDir comboBranch_RotateToLastNonZeroInputDir;
     public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir comboBranch_RotateToWhenLastSwitchedStInputDir;
     public CpSt_ComboEnd_BasicRecovery comboEnd_BasicRecovery;
-    // TODO: Maybe name to just BasicShootProj and allow state to use different projectiles.
+    // TODO MAYBE: Maybe name to just BasicShootProj and allow state to use different projectiles.
     public CpSt_ComboBranch_ShootHomingProj comboBranch_ShootHomingProj;
     public CpSt_Dodge dodge;
     public CpSt_Falling falling;
@@ -310,7 +310,7 @@ public struct CpHumanoid_ActSts {
     public CpSt_Knockback knockback;
     public CpSt_Walk walk;
 
-    public CpHumanoid_ActSts(CpHandle cp) {
+    public CpHumanoid_ActSts(CpHumdHandle cp) {
         death = new(cp);
         comboBranch_BasicImpact = new(cp);
         comboBranch_RotateToLastNonZeroInputDir = new(cp);
@@ -330,7 +330,7 @@ public struct CpHumanoid_ActSts {
 }
 
 /// <summary>
-/// <see cref="CpHandle"/> specific data.
+/// <see cref="CpHumdHandle"/> specific data.
 /// </summary>
 public struct CpHumd_Data {
     // NOTE: "act_" means action state specific data (11.9.2026)
@@ -340,7 +340,7 @@ public struct CpHumd_Data {
     public bool cooldownFreezed_Dodge;
     public float cooldownTimer_Dodge;
     public bool dodgeAllowed;
-    public CpHandle handle;
+    public CpHumdHandle handle;
 }
 
 /// <summary>
@@ -396,7 +396,7 @@ public struct CpHumanoid_NonUnityObjClassRefs {
     public CpHumanoid_ActSts actSts;
     public IHandItem rHandItem;
 
-    public CpHumanoid_NonUnityObjClassRefs(CpHandle cp, IHandItem rHandItem) {
+    public CpHumanoid_NonUnityObjClassRefs(CpHumdHandle cp, IHandItem rHandItem) {
         actSts = new CpHumanoid_ActSts(cp);
         this.rHandItem = rHandItem;
     }

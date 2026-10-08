@@ -5,7 +5,7 @@ using UnityEngine;
 /// <summary>
 /// Capsule pawn (i.e. player or ai controlled character that uses capsule collision for movement) manager.
 /// </summary>
-public class CpMgr : Singleton<CpMgr> {
+public class CpHumdMgr : Singleton<CpHumdMgr> {
     [Tooltip("Initial capacity of arrays. They allocate more space if needed (but do not deallocate even" +
         "if pawns are unregistered.)")]
     [SerializeField] int initCapacity = 1;
@@ -32,7 +32,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// Registers new capsule pawn.
     /// NOTE: Initialize the game object beforehand and pass it in as a <paramref name="newCp"/>.
     /// </summary>
-    public void Register(CpHandle newCp) {
+    public void Register(CpHumdHandle newCp) {
         CpHumd_Data newAosData = new();
         Cp_CommonData newCommonData = new();
         // NOTE: If these are not set to false, the nav mesh agent component will try to move the capsule
@@ -91,7 +91,7 @@ public class CpMgr : Singleton<CpMgr> {
         humdData[cpI].classRefs.rHandItem.hitSomething -= humdData[cpI].handle.OnHitSomething;
         GameObject.Destroy(humdData[cpI].handle.gameObject);
         int lastI = entityCount - 1;
-        CpHandle swappedCp = cpI != lastI ? humdData[lastI].handle : null;
+        CpHumdHandle swappedCp = cpI != lastI ? humdData[lastI].handle : null;
         ArrayUtils.RemoveAtSwapBack(humdData, entityCount, cpI);
         ArrayUtils.RemoveAtSwapBack(commonData, entityCount, cpI);
         entityCount--;
@@ -351,7 +351,7 @@ public class CpMgr : Singleton<CpMgr> {
     /// <summary>
     /// NOTE: We want to unregister an entity at a safe point when we are not looping over the entities or
     /// otherwise using their Id's. You can safely mark a cp for deletion by destroying its
-    /// <see cref="CpHandle"/>, it will then be unregistered here.
+    /// <see cref="CpHumdHandle"/>, it will then be unregistered here.
     /// </summary>
     void LateTick_UnregisterNDestroyPending() {
         int i = 0;

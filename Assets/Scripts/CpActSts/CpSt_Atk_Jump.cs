@@ -3,11 +3,11 @@ using Unity.Mathematics;
 using UnityEngine;
 
 public class CpSt_Atk_Jump : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     IHitDealer hitDealer;
     HitEffects hitEffects;
 
-    public CpSt_Atk_Jump(CpHandle cpHumd) {
+    public CpSt_Atk_Jump(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 

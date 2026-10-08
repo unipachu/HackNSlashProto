@@ -7,13 +7,13 @@ using UnityEngine;
 /// NOTE C: action e.g. BasicImpact. (6.9.2026)
 /// </summary>
 public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
-    CpHandle cpHumd;
+    CpHumdHandle cpHumd;
     /// <summary>
     /// Normalized animation time when <see cref="CpHumd_Data.inputMovAllowed"/> is first read as true in Tick().
     /// </summary>
     float inputMovAllowedNrmTime;
 
-    public CpSt_ComboEnd_BasicRecovery(CpHandle cpHumd) {
+    public CpSt_ComboEnd_BasicRecovery(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
@@ -75,8 +75,8 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
                 ref commonData.inputBuffer_BufferedInput,
                 ref commonData.inputBuffer_RemainingTime)
             ) {
-                CpMgr.TrySwitchActSt(
-                    () => CpMgr.inst.humdData[cpHumd.I].classRefs.actSts.dodge.Enter(),
+                CpHumdMgr.TrySwitchActSt(
+                    () => CpHumdMgr.inst.humdData[cpHumd.I].classRefs.actSts.dodge.Enter(),
                     ref commonData,
                     true
                 );

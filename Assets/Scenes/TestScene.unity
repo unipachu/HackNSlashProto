@@ -286,7 +286,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 32162907}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b8f53ba9fd7a704f976e7589ca6599e, type: 3}
+  m_Script: {fileID: 11500000, guid: a8784ed424015ab49ab3d6f6cad87402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpMgr
   initCapacity: 5
@@ -5370,7 +5370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameMgr
   plrMgr: {fileID: 83296388}
-  plrPrefab: {fileID: 6821567841549916561, guid: 6cf62dcace6ef5d44890d38ff67ecfa7, type: 3}
+  plrPrefab: {fileID: 8195751439865082438, guid: 6cf62dcace6ef5d44890d38ff67ecfa7, type: 3}
   spawnPoint: {fileID: 1136357437}
   gameOverScreen: {fileID: 229536501}
   gameOverFadeDur: 0.5

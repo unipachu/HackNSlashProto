@@ -3,9 +3,9 @@ using UnityEngine;
 
 // TODO: Rename to CpHumanoid
 public class CpSt_FallLanding : IFsmSt_Cp {
-    CpHandle cpHumanoid;
+    CpHumdHandle cpHumanoid;
 
-    public CpSt_FallLanding(CpHandle cpHumanoid) {
+    public CpSt_FallLanding(CpHumdHandle cpHumanoid) {
         this.cpHumanoid = cpHumanoid;
     }
 
@@ -43,7 +43,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
                     ref commonData.inputBuffer_RemainingTime
                 )
             ) {
-                CpMgr.TrySwitchActSt(
+                CpHumdMgr.TrySwitchActSt(
                     () => cpHumanoid.HumdData.classRefs.actSts.dodge.Enter(),
                     ref commonData,
                     true

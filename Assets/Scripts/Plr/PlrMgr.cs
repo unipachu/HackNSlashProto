@@ -5,7 +5,7 @@ public class PlrMgr : Singleton<PlrMgr>{
     [SerializeField] So_PlrCpConfig config;
 
     int curUlt;
-    CpHandle cp;
+    CpHumdHandle cp;
 
     // -------------------------------------------------------------------------------
     // Tick Methods
@@ -60,7 +60,7 @@ public class PlrMgr : Singleton<PlrMgr>{
         HudMgr.inst.SetHp(curHp, maxHp);
     }
 
-    public void SetPlr(CpHandle cp) {
+    public void SetPlr(CpHumdHandle cp) {
         Debug.Assert(this.cp == null, "Player already set!");
         this.cp = cp;
         ref var commonData = ref cp.CommonData;

@@ -18,7 +18,7 @@ public class ComboNode_LaserAimNShootProj : IComboNode_CpHumanoid, IComboNodeTra
         this.projSpawner = projSpawner;
     }
 
-    public Func<IFsmSt_Cp> GetEnterFunc(CpHandle cp) {
+    public Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp) {
         ComboNode_LaserAimNShootProj thisNode = this;
         return () => cp.HumdData.classRefs.actSts.comboBranch_LaserAimNShootHomingProj.Enter(
             thisNode.projSpawner.AimLaser,
