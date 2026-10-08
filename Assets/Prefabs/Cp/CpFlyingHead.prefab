@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1582683670335378908}
   - component: {fileID: 9175790116073506310}
-  - component: {fileID: 4596513238272593172}
   - component: {fileID: 5079058612890601784}
   - component: {fileID: 8087861647241408892}
   m_Layer: 8
@@ -80,26 +79,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a1bd74757901f540936d0aca58d89b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpFlyingHeadHandle
-  so_cpData: {fileID: 0}
+  so_CpCommonConfig: {fileID: 0}
   anim: {fileID: 1091843080481240901}
-  animEventHandler: {fileID: 4596513238272593172}
+  animEventHandler: {fileID: 0}
   cc: {fileID: 5079058612890601784}
   hitReciever: {fileID: 5634786316121275709}
   navMeshAgent: {fileID: 8087861647241408892}
   lockOnTrf: {fileID: 2296725825080284018}
   wldHpBarPos: {fileID: 7217122771945984390}
---- !u!114 &4596513238272593172
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6101628137683636955}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7b988d7e86104d41b4491ef96387938, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::CpAnimEventHandler
 --- !u!143 &5079058612890601784
 CharacterController:
   m_ObjectHideFlags: 0

@@ -10,9 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a3f3e59767ce8e44da2f6a685fc45867, type: 3}
-  m_Name: EnemyWaveConfig_HammerSniperClubSwordPistol
+  m_Name: EnemyWaveConfig_HeadHammerSniperClubSwordPistol
   m_EditorClassIdentifier: Assembly-CSharp::So_EnemyWaveConfig
   waves:
+  - name: 
+    enemies:
+    - enemyConfig: {fileID: 11400000, guid: 6800ac0f8c4bcf84db5a4fc3475fa660, type: 2}
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: -1
+    forceNextWaveAtEnemyCount: -1
   - name: 
     enemies:
     - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}

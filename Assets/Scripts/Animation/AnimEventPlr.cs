@@ -54,7 +54,8 @@ public static class AnimEventPlr {
         InitAnimEventPlrData(
             ref animEventPlrData,
             animInfo,
-            nrmStartOffset
+            nrmStartOffset,
+            fireEventsBeforeStartOffset
         );
     }
 
@@ -62,12 +63,12 @@ public static class AnimEventPlr {
     /// NOTE: Tick this in LateUpdate to make sure that the queued animator changes during this
     /// frame Update have already been applied!
     /// </summary>
-    /// <param name="callerData">
-    /// Data used with the invoked action, e.g. a reference to the animated object if using a generic
-    /// animation event handler.
+    /// <param name="actionData">
+    /// Data used with the invoked action when animation event fires, e.g. a reference to the animated object
+    /// if using a generic animation event handler.
     /// </param>
     public static void Tick<T>(
-        T callerData,
+        T actionData,
         ref AnimEventPlrData data,
         Animator anim,
         Action<T, CpAnimEventT> animEventAction
@@ -102,14 +103,15 @@ public static class AnimEventPlr {
                 $"Short name hash ({data.animInfo.shortNameHash}) did not match current animation "
                 + $"({info.shortNameHash}).\nPerhaps action state was "
                 + "changed but animator transition hasn't have the time to start yet?"
+                + "Make sure to change action state before LateTick (and call this only in LateTick)!"
             );
             return;
         }
         float curTotalNrmT = info.normalizedTime;
         if (firstTickHelper && data.fireEventsBeforeStartOffset) {
             FireEventsInNrmRange(
-                callerData,
-                data,
+                actionData,
+                ref data,
                 0,
                 data.cursor,
                 true,
@@ -125,8 +127,8 @@ public static class AnimEventPlr {
         data.prevTotalNrmT = curTotalNrmT;
         if (!data.animInfo.looping) {
             FireEventsInNrmRange(
-                callerData,
-                data,
+                actionData,
+                ref data,
                 data.cursor,
                 Mathf.Min(curTotalNrmT, 1),
                 firstTickHelper,
@@ -146,8 +148,8 @@ public static class AnimEventPlr {
             float toLoopEnd = 1 - data.cursor;
             if (dTotalNrmT < toLoopEnd) {
                 FireEventsInNrmRange(
-                    callerData,
-                    data,
+                    actionData,
+                    ref data,
                     data.cursor,
                     data.cursor + dTotalNrmT,
                     firstTickHelper,
@@ -160,8 +162,8 @@ public static class AnimEventPlr {
                 dTotalNrmT = 0;
             }else {
                 FireEventsInNrmRange(
-                    callerData,
-                    data,
+                    actionData,
+                    ref data,
                     data.cursor,
                     1,
                     firstTickHelper,
@@ -204,8 +206,8 @@ public static class AnimEventPlr {
     /// NOTE: from and to need to be normalized!
     /// </summary>
     static void FireEventsInNrmRange<TCallerData>(
-        TCallerData eventData,
-        AnimEventPlrData data,
+        TCallerData actionData,
+        ref AnimEventPlrData data,
         float from,
         float to,
         bool includeFrom,
@@ -222,7 +224,7 @@ public static class AnimEventPlr {
             float t = data.animInfo.sortedAnimEvents[i].nrmT;
             if (t > to) break;
             //Debug.Log($"Event called: {animInfo.sortedAnimEvents[i].id}.");
-            animEventAction?.Invoke(eventData, data.animInfo.sortedAnimEvents[i].t);
+            animEventAction?.Invoke(actionData, data.animInfo.sortedAnimEvents[i].t);
             // If the animation event switched animation, we return.
             if (data.firstTick)
                 return;

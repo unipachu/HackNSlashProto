@@ -76,7 +76,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
                 projSpawnPose.forward
             );
             if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                CpHumdMgr.TrySwitchActSt(
+                CpUtils.TrySwitchActSt(
                     comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumanoid),
                     ref cpHumanoid.CommonData,
                     true

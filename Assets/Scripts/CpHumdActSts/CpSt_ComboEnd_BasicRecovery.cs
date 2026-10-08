@@ -37,7 +37,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
+                CpHumdUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -67,7 +67,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
             cpHumd.so_cpCommonData.walkYawSpd * interpValue,
             cpHumd.so_cpCommonData.walkHorAcc
         );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
         if (humdData.dodgeAllowed && humdData.cooldownTimer_Dodge == 0) {
             if (InputBufferUtils.TryConsumeInput(
@@ -75,7 +75,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
                 ref commonData.inputBuffer_BufferedInput,
                 ref commonData.inputBuffer_RemainingTime)
             ) {
-                CpHumdMgr.TrySwitchActSt(
+                CpUtils.TrySwitchActSt(
                     () => CpHumdMgr.inst.humdData[cpHumd.I].classRefs.actSts.dodge.Enter(),
                     ref commonData,
                     true

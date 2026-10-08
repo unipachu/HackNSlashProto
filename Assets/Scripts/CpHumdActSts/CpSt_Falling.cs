@@ -37,14 +37,14 @@ public class CpSt_Falling : IFsmSt_Cp {
             //Debug.Log("Is grounded");
             float fallDist = humdData.act_Falling_StartHgt - cpHumd.transform.position.y;
             if(fallDist > cpHumd.so_cpHumdConfig.act_Falling_LandingStFallDistThreshold) {
-                CpHumdMgr.TrySwitchActSt(
+                CpUtils.TrySwitchActSt(
                     () => cpHumd.HumdData.classRefs.actSts.fallLanding.Enter(),
                     ref commonData,
                     true
                 );
                 return;
             }
-            CpUtils.TransitionToFallIdleOrWalk(ref commonData, ref humdData);
+            CpHumdUtils.TransitionToFallIdleOrWalk(ref commonData, ref humdData);
             return;
         }
         Debug.Assert(

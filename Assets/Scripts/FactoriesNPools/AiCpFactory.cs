@@ -16,7 +16,7 @@ public class AiCpFactory {
         cp = CpFactory.SpawnCpAtSpawnPt(aiCpConfig.cpPrefab.Value, spawnPt);
         bt = BtDataFactory.Construct(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCpConfig.aggroRange, aiCpConfig.atkRange, aiCtrl, bt, cp);
-        CpHumdMgr.StartListeningToCtrlInput(ref cp.CommonData, aiCtrl);
+        CpUtils.StartListeningToCtrlInput(ref cp.CommonData, aiCtrl);
         // Ui related
         WldHpBarMgr.inst.Register(cp.WldHpBarPos, cp);
         return aiCtrl;

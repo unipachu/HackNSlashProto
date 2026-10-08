@@ -13,7 +13,6 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     
     [Header("Unity Obj Refs")]
     public Animator anim;
-    public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
     public CpHitReciever hitReciever;
     public NavMeshAgent navMeshAgent;
@@ -27,7 +26,6 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     public int I { get; set; } = -1;
 
     public Animator Anim => anim;
-    public CpAnimEventHandler AnimEventHandler => animEventHandler;
     public CharacterController Cc => cc;
     public So_CpCommonConfig So_CpCommonConfig => so_cpCommonData;
     public ref Cp_CommonData CommonData => ref CpHumdMgr.inst.commonData[I];
@@ -46,7 +44,7 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     }
 
     public bool TrySetupNEnterKnockbackSt()
-        => CpHumdMgr.TrySwitchActSt(
+        => CpUtils.TrySwitchActSt(
             () => HumdData.classRefs.actSts.knockback.Enter(FindKnockbackAnim()),
             ref CommonData
         );
@@ -69,7 +67,7 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     }
 
     public bool TryEnterDeathSt() {
-        if (CpHumdMgr.TrySwitchActSt(
+        if (CpUtils.TrySwitchActSt(
             () => HumdData.classRefs.actSts.death.Enter(FindKnockbackAnim()),
                 ref CommonData
             )

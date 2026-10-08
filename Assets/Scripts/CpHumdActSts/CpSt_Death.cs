@@ -27,7 +27,7 @@ public class CpSt_Death : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpHumdMgr.MarkForPendingUnregister(ref cp.CommonData);
+                CpUtils.MarkForPendingUnregister(ref cp.CommonData);
                 return;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

@@ -57,7 +57,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
                     projSpawnPose.forward
                 );
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpHumdMgr.TrySwitchActSt(
+                    CpUtils.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref cpHumd.CommonData,
                         true

@@ -25,7 +25,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
 
     public void Tick() {
         ref var commonData = ref cpHumanoid.CommonData;
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumanoid.HumdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumanoid.HumdData))
             return;
         CpUtils.UpdateMovInputData(
             ref commonData,
@@ -43,7 +43,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
                     ref commonData.inputBuffer_RemainingTime
                 )
             ) {
-                CpHumdMgr.TrySwitchActSt(
+                CpUtils.TrySwitchActSt(
                     () => cpHumanoid.HumdData.classRefs.actSts.dodge.Enter(),
                     ref commonData,
                     true
@@ -56,7 +56,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(ref cpHumanoid.CommonData, ref cpHumanoid.HumdData);
+                CpHumdUtils.TransitionToFallIdleOrWalk(ref cpHumanoid.CommonData, ref cpHumanoid.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

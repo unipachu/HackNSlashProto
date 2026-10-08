@@ -29,6 +29,7 @@ public class GameMgr : Singleton<GameMgr> {
         TimeMgr.UpdateTimeScl();
         WldHpBarMgr.inst.Init();
         CpHumdMgr.inst.Init();
+        CpFlyingHeadMgr.inst.Init();
         AiCtrlMgr.inst.Init();
         ParticleFactory.inst.Init();
         SfxMgr.inst.Init();
@@ -54,6 +55,7 @@ public class GameMgr : Singleton<GameMgr> {
 
     void FixedUpdate() {
         CpHumdMgr.inst.FixedTick();
+        CpFlyingHeadMgr.inst.FixedTick();
     }
 
     void Update() {
@@ -63,11 +65,13 @@ public class GameMgr : Singleton<GameMgr> {
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick(dt);
         CpHumdMgr.inst.Tick(dt);
+        CpFlyingHeadMgr.inst.Tick(dt);
         EnemyWaveMgr.inst.Tick(dt, Time.time);
     }
 
     void LateUpdate() {
         CpHumdMgr.inst.LateTick(Time.deltaTime);
+        CpFlyingHeadMgr.inst.LateTick(Time.deltaTime);
         CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
         PlrMgr.inst.LateTick();

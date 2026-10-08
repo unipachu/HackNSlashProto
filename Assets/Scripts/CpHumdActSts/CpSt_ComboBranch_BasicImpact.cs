@@ -41,7 +41,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpHumdMgr.TrySwitchActSt(
+                    CpUtils.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
                         ref cpHumd.CommonData,
                         true
@@ -82,9 +82,9 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
             angSpd,
             float.PositiveInfinity
         );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
-        if (commonData.comboAllowed && CpUtils.TryAnyComboInputTransition(cpHumd, comboNode))
+        if (commonData.comboAllowed && CpHumdUtils.TryAnyComboInputTransition(cpHumd, comboNode))
             return;
     }
 }

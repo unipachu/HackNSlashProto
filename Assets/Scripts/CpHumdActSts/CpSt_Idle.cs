@@ -1,4 +1,4 @@
-using Unity.Mathematics;
+using UnityEngine;
 
 public class CpSt_Idle : IFsmSt_Cp {
     CpHumdHandle cpHumd;
@@ -8,7 +8,7 @@ public class CpSt_Idle : IFsmSt_Cp {
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
-    => true;
+        => true;
 
     public CpSt_Idle Enter() {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
@@ -28,7 +28,7 @@ public class CpSt_Idle : IFsmSt_Cp {
             CpUtils.UpdateMovInputData(
                 ref commonData,
                 commonData.input_mov_LastNonZero,
-                float3.zero,
+                Vector3.zero,
                 0,
                 cpHumd.so_cpCommonData.walkYawSpd,
                 float.PositiveInfinity
@@ -36,22 +36,23 @@ public class CpSt_Idle : IFsmSt_Cp {
         else
             CpUtils.UpdateMovInputData(
                 ref commonData,
-                float2.zero,
-                float3.zero,
+                Vector2.zero,
+                Vector3.zero,
                 0,
                 0,
                 float.PositiveInfinity
             );
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref humdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref humdData))
             return;
         // Try consume input
-        if (CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref humdData))
+        if (CpHumdUtils.TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref humdData))
             return;
-        if (math.all(commonData.input_mov != float2.zero)) {
-            CpHumdMgr.TrySwitchActSt(
+        if (!commonData.input_mov.IsZeroOrNearlyZero()) {
+            CpUtils.TrySwitchActSt(
                 () => cpHumd.HumdData.classRefs.actSts.walk.Enter(),
                 ref commonData,
-                true);
+                true
+            );
             return;
         }
     }

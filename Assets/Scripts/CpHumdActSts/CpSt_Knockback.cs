@@ -28,7 +28,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
+                CpHumdUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");
@@ -37,7 +37,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
     }
 
     public void Tick() {
-        //if (CpUtils.SwitchToFallingStIfNotGrounded(cp.Id))
+        //if (CpHumdUtils.SwitchToFallingStIfNotGrounded(cp.Id))
         //    return;
         //Debug.Log($"knocback: {data.lastKnockbackStr[cp.Id]}\nanim delta: {data.animDPos[cp.Id]}");
         ref var commonData = ref cpHumd.CommonData;

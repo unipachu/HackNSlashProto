@@ -8,11 +8,10 @@ using UnityEngine.AI;
 /// </summary>
 public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
-    public So_CpCommonConfig so_cpData;
+    public So_CpCommonConfig so_CpCommonConfig;
     
     [Header("Unity Obj Refs")]
     public Animator anim;
-    public CpAnimEventHandler animEventHandler;
     public CharacterController cc;
     public CpHitReciever hitReciever;
     public NavMeshAgent navMeshAgent;
@@ -24,16 +23,16 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     /// </summary>
     public int I { get; set; } = -1;
 
-    public Animator Anim => throw new System.NotImplementedException();
-    public CpFlyingHeadAnimEventHandler AnimEventHandler => throw new System.NotImplementedException();
-    public CharacterController Cc => throw new System.NotImplementedException();
-    public So_CpCommonConfig So_CpCommonConfig => throw new System.NotImplementedException();
-    public ref Cp_CommonData CommonData => throw new System.NotImplementedException();
-    public GameObject Go => throw new System.NotImplementedException();
+    public Animator Anim => anim;
+    public CharacterController Cc => cc;
+    public So_CpCommonConfig So_CpCommonConfig => so_CpCommonConfig;
+    public ref Cp_CommonData CommonData => ref CpFlyingHeadMgr.inst.commonData[I];
+    public ref CpFlyingHead_Data FlyingHeadData => ref CpFlyingHeadMgr.inst.flyingHeadData[I];
+    public GameObject Go => gameObject;
     public Transform LockOnTrf => lockOnTrf;
-    public NavMeshAgent NavMeshAgent => throw new System.NotImplementedException();
+    public NavMeshAgent NavMeshAgent => navMeshAgent;
     public Transform TrfToFollow => transform;
-    public Transform WldHpBarPos => throw new System.NotImplementedException();
+    public Transform WldHpBarPos => wldHpBarPos;
 
     public bool IsOnNavMesh()
         => CpUtils.IsOnNavMesh(ref CommonData);

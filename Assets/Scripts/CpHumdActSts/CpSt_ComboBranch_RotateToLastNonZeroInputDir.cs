@@ -1,21 +1,21 @@
 using UnityEngine;
 
 /// <summary>
-/// NOTE: This name is not very descriptive. This has hor spd input = 0, but does have yaw. Yaw uses
-/// input_mov_WhenLastSwitchedSt.
+/// NOTE: The name of this is not very descriptive. This will use last non zero movement input to yaw the
+/// character but target hor movement is 0. So input still works for rotation.
 /// </summary>
-public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
+public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
     CpHumdHandle cpHumd;
     IComboNode_CpHumanoid comboNode;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir(CpHumdHandle cpHumd) {
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir(CpHumdHandle cpHumd) {
         this.cpHumd = cpHumd;
     }
 
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir Enter(IComboNode_CpHumanoid comboNode) {
+    public CpSt_ComboBranch_RotateToLastNonZeroInputDir Enter(IComboNode_CpHumanoid comboNode) {
         ref var commonData = ref cpHumd.CommonData;
         this.comboNode = comboNode;
         InputBufferUtils.Clear(
@@ -32,13 +32,12 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
     }
 
     public void HandleAnimEvent(CpAnimEventT animEvent) {
-        ref var commonData = ref cpHumd.CommonData;
         switch (animEvent) {
             case CpAnimEventT.Finished:
                 if (comboNode.GetNextNode(BufferableInput.None) != null) {
-                    CpHumdMgr.TrySwitchActSt(
+                    CpUtils.TrySwitchActSt(
                         comboNode.GetNextNode(BufferableInput.None).GetEnterFunc(cpHumd),
-                        ref commonData,
+                        ref cpHumd.CommonData,
                         true
                     );
                     return;
@@ -58,16 +57,16 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
         //);
         CpUtils.UpdateMovInputData(
             ref commonData,
-            commonData.input_mov_WhenLastSwitchedSt,
+            commonData.input_mov_LastNonZero,
             commonData.animDPose.position,
             0,
-            cpHumd.so_cpCommonData.windup_YawSpd,
+            cpHumd.so_cpCommonData.windup_YawSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;
-        if (commonData.comboAllowed && CpUtils.TryAnyComboInputTransition(cpHumd, comboNode))
+        if (commonData.comboAllowed && CpHumdUtils.TryAnyComboInputTransition(cpHumd, comboNode))
             return;
     }
 }

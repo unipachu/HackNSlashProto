@@ -52,7 +52,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         );
         if (
             commonData.bufferedInputStSwitchAllowed
-                && CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(
+                && CpHumdUtils.TrySwitchStFromNeutralStByBufferedInput(
                     ref cpHumd.CommonData,
                     ref cpHumd.HumdData
                 )
@@ -63,7 +63,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
     public void HandleAnimEvent(CpAnimEventT animEvent) {
         switch (animEvent) {
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
+                CpHumdUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             default:
                 Debug.LogError($"Switch defaulted with {animEvent}");

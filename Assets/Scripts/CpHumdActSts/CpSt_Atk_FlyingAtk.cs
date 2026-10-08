@@ -57,7 +57,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                         commonData.isAffectedByGravity = true;
                         break;
                     case AtkPhase.Recovery:
-                        CpUtils.TransitionToFallIdleOrWalk(ref commonData, ref cpHumd.HumdData);
+                        CpHumdUtils.TransitionToFallIdleOrWalk(ref commonData, ref cpHumd.HumdData);
                         break;
                     default:
                         Debug.LogError($"Switch defaulted with {commonData.act_AtkPhase}");

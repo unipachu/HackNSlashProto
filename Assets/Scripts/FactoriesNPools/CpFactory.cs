@@ -34,7 +34,7 @@ public static class CpFactory {
         //Debug.Log($"Spawnin player cp: {prefab.gameObject.name}.");
         ICp instantiatedCp = SpawnCpAtSpawnPt(prefab, spawnPt);
         CpHumdHandle instantiatedCpHumanoid = instantiatedCp as CpHumdHandle;
-        CpHumdMgr.StartListeningToCtrlInput(ref instantiatedCpHumanoid.CommonData, ctrl);
+        CpUtils.StartListeningToCtrlInput(ref instantiatedCpHumanoid.CommonData, ctrl);
         cam.Target.TrackingTarget = instantiatedCp.Go.transform;
         PlrMgr.inst.SetPlr(instantiatedCpHumanoid);
         return instantiatedCpHumanoid;

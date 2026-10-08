@@ -41,7 +41,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
                 cpHumd.CommonData.isAffectedByGravity = false;
                 break;
             case CpAnimEventT.Finished:
-                CpUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
+                CpHumdUtils.TransitionToFallIdleOrWalk(ref cpHumd.CommonData, ref cpHumd.HumdData);
                 break;
             case CpAnimEventT.HitDealerActivated:
                 hitDealer.ResetNActivate(

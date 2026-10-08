@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using Unity.Mathematics;
@@ -238,7 +239,7 @@ public struct Cp_CommonData {
     public bool comboAllowed;
     public float curStDur;
     public bool groundCastHitSomething;
-    public float3 groundCastNrm;
+    public Vector3 groundCastNrm;
     public ICp handle;
     public int hp_Cur;
     /// <summary>
@@ -246,15 +247,15 @@ public struct Cp_CommonData {
     /// NOTE: This overrides <see cref="So_CpCommonConfig.ignoredKnockback"/> when true.
     /// </summary>
     public bool hyperArmor;
-    public float2 input_mov;
+    public Vector2 input_mov;
     /// <summary>
     /// Last nonzero movement input (in world space).
     /// </summary>
-    public float2 input_mov_LastNonZero;
+    public Vector2 input_mov_LastNonZero;
     /// <summary>
     /// Movement input during last state switch (in world space).
     /// </summary>
-    public float2 input_mov_WhenLastSwitchedSt;
+    public Vector2 input_mov_WhenLastSwitchedSt;
     public BufferableInput inputBuffer_BufferedInput;
     public float inputBuffer_RemainingTime;
     public bool yawAllowed;
@@ -267,13 +268,13 @@ public struct Cp_CommonData {
     public bool isGrounded;
     public bool isSwitchingSt;
     public float lastKnockbackStr;
-    public float3 lastRecievedHitDir;
-    public float2 movInput_tgtHorDir;
+    public Vector3 lastRecievedHitDir;
+    public Vector2 movInput_tgtHorDir;
     /// <summary>
     /// Action states can set this to the delta animation, or any other value. It is then applied (ignoring
     /// acceleration) after other linear movement calculations (ignoring acceleration).
     /// </summary>
-    public float3 movInput_additionalLinMov;
+    public Vector3 movInput_additionalLinMov;
     public float movInput_tgtHorSpd;
     public float movInput_yawSpd;
     public float movInput_horAcc;
@@ -282,7 +283,7 @@ public struct Cp_CommonData {
     /// <summary>
     /// Current horisontal (XZ) velocity.
     /// </summary>
-    public float2 vel_Hor;
+    public Vector2 vel_Hor;
     /// <summary>
     /// Current vertical (Y) velocity.
     /// </summary>
@@ -290,9 +291,27 @@ public struct Cp_CommonData {
 }
 
 /// <summary>
-/// All action states available for capsule pawn.
+/// <see cref="CpFlyingHeadHandle"/> specific data.
 /// </summary>
-public struct CpHumanoid_ActSts {
+public struct CpFlyingHead_Data {
+    public CpFlyingHeadHandle handle;
+    public CpFlyingHead_ActSts actSts;
+}
+
+/// <summary>
+/// All action states available for <see cref="CpFlyingHeadHandle"/>.
+/// </summary>
+public struct CpFlyingHead_ActSts {
+    public CpFlyingHeadActSt_Idle idle;
+    public CpFlyingHead_ActSts(CpFlyingHeadHandle cpFlyingHead) {
+        idle = new(cpFlyingHead);
+    }
+}
+
+/// <summary>
+/// All action states available for <see cref="CpHumdHandle"/>.
+/// </summary>
+public struct CpHumd_ActSts {
     public CpSt_Death death;
     public CpSt_Atk_FlyingAtk atk_FlyingAtk;
     public CpSt_Atk_Jump atk_Jump;
@@ -310,7 +329,7 @@ public struct CpHumanoid_ActSts {
     public CpSt_Knockback knockback;
     public CpSt_Walk walk;
 
-    public CpHumanoid_ActSts(CpHumdHandle cp) {
+    public CpHumd_ActSts(CpHumdHandle cp) {
         death = new(cp);
         comboBranch_BasicImpact = new(cp);
         comboBranch_RotateToLastNonZeroInputDir = new(cp);
@@ -335,12 +354,26 @@ public struct CpHumanoid_ActSts {
 public struct CpHumd_Data {
     // NOTE: "act_" means action state specific data (11.9.2026)
     public float act_Falling_StartHgt;
-    public CpHumanoid_NonUnityObjClassRefs classRefs;
+    public CpHumd_NonUnityObjClassRefs classRefs;
     // Cooldown freeze fields can be used to stop cooldown timer from advancing.
     public bool cooldownFreezed_Dodge;
     public float cooldownTimer_Dodge;
     public bool dodgeAllowed;
     public CpHumdHandle handle;
+}
+
+/// <summary>
+/// Cp class dependencies that do not derive from Unity's Object class.
+/// </summary>
+// TODO MINOR: You could just combine these to CpHumd_Data.
+public struct CpHumd_NonUnityObjClassRefs {
+    public CpHumd_ActSts actSts;
+    public IHandItem rHandItem;
+
+    public CpHumd_NonUnityObjClassRefs(CpHumdHandle cp, IHandItem rHandItem) {
+        actSts = new CpHumd_ActSts(cp);
+        this.rHandItem = rHandItem;
+    }
 }
 
 /// <summary>
@@ -386,19 +419,6 @@ public struct Cp_NonUnityObjClassRefs {
         lockOnTgt = null;
         st_cur = null;
         st_prev = null;
-    }
-}
-
-/// <summary>
-/// Cp class dependencies that do not derive from Unity's Object class.
-/// </summary>
-public struct CpHumanoid_NonUnityObjClassRefs {
-    public CpHumanoid_ActSts actSts;
-    public IHandItem rHandItem;
-
-    public CpHumanoid_NonUnityObjClassRefs(CpHumdHandle cp, IHandItem rHandItem) {
-        actSts = new CpHumanoid_ActSts(cp);
-        this.rHandItem = rHandItem;
     }
 }
 

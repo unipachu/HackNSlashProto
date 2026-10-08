@@ -22,7 +22,7 @@ public class CpSt_Walk : IFsmSt_Cp {
 
     public void Tick() {
         var classRefs = cp.HumdData.classRefs;
-        if (CpUtils.SwitchToFallingStIfNotGrounded(ref cp.CommonData, ref cp.HumdData))
+        if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref cp.CommonData, ref cp.HumdData))
             return;
         CpUtils.UpdateMovInputData(
             ref cp.CommonData,
@@ -32,10 +32,10 @@ public class CpSt_Walk : IFsmSt_Cp {
             cp.so_cpCommonData.walkYawSpd,
             cp.so_cpCommonData.walkHorAcc
         );
-        if (CpUtils.CpHumd_TrySwitchStFromNeutralStByBufferedInput(ref cp.CommonData, ref cp.HumdData))
+        if (CpHumdUtils.TrySwitchStFromNeutralStByBufferedInput(ref cp.CommonData, ref cp.HumdData))
             return;
-        if (math.all(cp.CommonData.input_mov == float2.zero)) {
-            CpHumdMgr.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref cp.CommonData, true);
+        if (cp.CommonData.input_mov.IsZeroOrNearlyZero()) {
+            CpUtils.TrySwitchActSt(() => classRefs.actSts.idle.Enter(), ref cp.CommonData, true);
             return;
         }
     }

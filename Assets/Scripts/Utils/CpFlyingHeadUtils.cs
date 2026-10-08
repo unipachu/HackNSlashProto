@@ -1,24 +1,9 @@
-using System;
 using UnityEngine;
 
-// TODO: You could make this into a singleton (as well as the other cp anim event handler) but for some
-// C: reason you have this on every prefab.
-// TODO: Rename to CpHumanoidAnimEventHandler
-public class CpAnimEventHandler : MonoBehaviour {
-    public Action<CpHumdHandle, CpAnimEventT> animEvent;
-
-    void OnEnable() {
-        animEvent += OnAnimEvent;
-    }
-
-    void OnDisable() {
-        animEvent -= OnAnimEvent;
-    }
-
-    void OnAnimEvent(CpHumdHandle cpHumd, CpAnimEventT animEvent) {
+public static class CpFlyingHeadUtils{
+    public static void OnAnimEvent(CpFlyingHeadHandle cpFlyingHead, CpAnimEventT animEvent) {
         //Debug.Log($"Anim event {animEvent} for {id} called!", this);
-        ref var commonData = ref cpHumd.CommonData;
-        ref var humdData = ref cpHumd.HumdData;
+        ref var commonData = ref cpFlyingHead.CommonData;
         switch (animEvent) {
             case CpAnimEventT.BufferedInputStSwitchAllowed:
                 commonData.bufferedInputStSwitchAllowed = true;
@@ -28,9 +13,6 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.ComboDisallowed:
                 commonData.comboAllowed = false;
-                break;
-            case CpAnimEventT.DodgeAllowed:
-                humdData.dodgeAllowed = true;
                 break;
             case CpAnimEventT.Finished:
                 commonData.classRefs.st_cur.HandleAnimEvent(CpAnimEventT.Finished);
@@ -49,7 +31,6 @@ public class CpAnimEventHandler : MonoBehaviour {
                 break;
             case CpAnimEventT.AirtimeEnded:
                 commonData.isAffectedByGravity = true;
-                commonData.vel_Ver = -cpHumd.so_cpHumdConfig.act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
                 commonData.isAffectedByGravity = false;
@@ -61,7 +42,7 @@ public class CpAnimEventHandler : MonoBehaviour {
                 commonData.yawAllowed = false;
                 break;
             default:
-                Debug.LogError($"Switch defaulted with {animEvent}.", this);
+                Debug.LogError($"Switch defaulted with {animEvent}.", cpFlyingHead);
                 break;
         }
     }
