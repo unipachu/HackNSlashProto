@@ -14,7 +14,7 @@ public class CpSt_Walk : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cp.CommonData.animEventPlrData,
             cp.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.walk),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.walk),
             0.5f
         );
         return this;

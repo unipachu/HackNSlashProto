@@ -35,7 +35,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumanoid.CommonData.animEventPlrData,
             cpHumanoid.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_AimPose),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_AimPose),
             0.1f
         );
         aimLaser.gameObject.SetActive(true);

@@ -2,6 +2,13 @@ using System;
 using UnityEngine;
 
 public static class CpHumdUtils{
+    public static AnimInfo FindKnockbackAnim(Cp_CommonData commonData) {
+        if (CpUtils.FindKnockBackDir(commonData) == Dir2DHor.Forward)
+            // TODO MAYBE: Create different animation for "strong knockback".
+            return CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Fwd);
+        return CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Bwd);
+    }
+
     /// <summary>
     /// Finds next state to transition to based on input and held items. Returns null if no applicable
     /// state found.<br/>
@@ -14,16 +21,16 @@ public static class CpHumdUtils{
         BufferableInput input
     ) {
         var humdClassRefs = humdData.classRefs;
-        if (input == BufferableInput.BtnE) {
+        if (input == BufferableInput.B) {
             if (humdData.cooldownTimer_Dodge == 0)
                 return () => humdClassRefs.actSts.dodge.Enter();
             return null;
         }
         if (humdClassRefs.rHandItem is IHandItem_Comboer comboer) {
             Func<IFsmSt_Cp> enter = input switch {
-                BufferableInput.RShldr => GetEnterFunc(comboer.RShldrComboStart, humdData.handle),
-                BufferableInput.RTrg => GetEnterFunc(comboer.RTrgComboStart, humdData.handle),
-                BufferableInput.LShldr => GetEnterFunc(comboer.LShldrComboStart, humdData.handle),
+                BufferableInput.Rb => GetEnterFunc(comboer.RShldrComboStart, humdData.handle),
+                BufferableInput.Rt => GetEnterFunc(comboer.RTrgComboStart, humdData.handle),
+                BufferableInput.Lb => GetEnterFunc(comboer.LShldrComboStart, humdData.handle),
                 _ => GeneralUtils.LogErrorForInput<BufferableInput, Func<IFsmSt_Cp>>(input)
             };
             if (enter != null)
@@ -33,7 +40,7 @@ public static class CpHumdUtils{
         // NOTE C: architecture, this is easier and not meaningfully less performant O(1).
         if (humdClassRefs.rHandItem is IHandItem_Hitter hitter) {
             // TODO: Do not hard code hit effects!
-            if (input == BufferableInput.LShldr) {
+            if (input == BufferableInput.Lb) {
                 // TODO: ehh, this method is supposed to be generic for all CPs but now it uses PlrMgr...
                 if (PlrMgr.inst.TryConsumeUltMeter())
                     return () => humdClassRefs.actSts.atk_FlyingAtk.Enter(
@@ -43,7 +50,7 @@ public static class CpHumdUtils{
                 return null;
             }
             // TODO: Do not hard code hit effects!
-            if (input == BufferableInput.RTrg)
+            if (input == BufferableInput.Rt)
                 return () => humdClassRefs.actSts.atk_Jump.Enter(
                     new HitEffects(1, HitT.Blunt, KnockbackT.Strong, 1),
                     hitter.HitDealer
@@ -147,16 +154,15 @@ public static class CpHumdUtils{
             CpUtils.TrySwitchActSt(() => classRefs.actSts.walk.Enter(), ref commonData, true);
     }
 
-
     /// <summary>
     /// Transitions to any existing next combo node that require input if such input was buffered.
     /// Immediately returns true if successfully switched state.
     /// </summary>
     public static bool TryAnyComboInputTransition(CpHumdHandle cpHumanoid, IComboNode_CpHumanoid curComboNode)
-        => TryComboTransition(cpHumanoid, BufferableInput.RShldr, curComboNode)
-            || TryComboTransition(cpHumanoid, BufferableInput.RTrg, curComboNode)
-            || TryComboTransition(cpHumanoid, BufferableInput.BtnE, curComboNode)
-            || TryComboTransition(cpHumanoid, BufferableInput.LShldr, curComboNode);
+        => TryComboTransition(cpHumanoid, BufferableInput.Rb, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.Rt, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.B, curComboNode)
+            || TryComboTransition(cpHumanoid, BufferableInput.Lb, curComboNode);
 
     /// <summary>
     /// Returns true if successfully transitioned to the next action state of the combo.

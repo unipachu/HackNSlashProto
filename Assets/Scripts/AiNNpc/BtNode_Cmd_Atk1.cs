@@ -28,10 +28,10 @@ public class BtNode_Cmd_Atk1 : IBtNode{
         else
             aiCtrlData.ctrlInputData.input_LStick = float2.zero;
         //Dbg.Log(
-        //    $"{cpI} bt node: {typeof(BtNode_Cmd_Atk1).Name} mov input: "
-        //        + $"{aiCtrlData.ctrlInputData.input_Mov}",
-        //    aiCtrlData.cp,
-        //    aiCtrlData.cp.Data.enableDbgMsgs
+        //    $"{aiCtrlData.cp} bt node: {typeof(BtNode_Cmd_Atk1).Name} mov input: "
+        //        + $"{aiCtrlData.ctrlInputData.input_LStick}",
+        //    aiCtrlData.cp.Go,
+        //    aiCtrlData.cp.So_CpCommonConfig.enableDbgMsgs
         //);
         return BtResult.Success;
     }

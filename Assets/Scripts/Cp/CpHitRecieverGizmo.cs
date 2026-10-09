@@ -22,6 +22,7 @@ public class CpHitRecieverGizmo : MonoBehaviour{
         if (cp == null || col == null || !drawGizmo || CpHumdMgr.inst == null)
             return;
         Color color = cp.Value.CommonData.ignoreHits ? invulnerableColor : vulnerableColor;
+        //Dbg.Log($"{cp.Value.CommonData.ignoreHits}", cp.Value.So_CpCommonConfig.enableDbgMsgs);
         if (col is CapsuleCollider capsuleCollider) {
             var radiusMult = Mathf.Max(sizeMult.x, sizeMult.z);
             float radius = capsuleCollider.radius * radiusMult;

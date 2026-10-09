@@ -7,7 +7,7 @@ public class ComboNode_BasicRecovery : IComboNode_CpHumanoid {
     public AnimInfo AnimInfo { get; }
 
     public ComboNode_BasicRecovery(CpHumanoidAnimInfoT animInfoT) {
-        AnimInfo = CpAnimInfoFactory.Construct(animInfoT);
+        AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
     }
 
     public Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp) {

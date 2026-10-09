@@ -71,7 +71,8 @@ public static class AnimEventPlr {
         T actionData,
         ref AnimEventPlrData data,
         Animator anim,
-        Action<T, CpAnimEventT> animEventAction
+        Action<T, CpAnimEventT> animEventAction,
+        bool enableDbgMsgs = false
     ) {
         //Dbg.Log(
         //    $"{nameof(data.animInfo)}: {data.animInfo}\n"
@@ -82,13 +83,13 @@ public static class AnimEventPlr {
         //        + $"{nameof(data.finished)}: {data.finished}\n"
         //        + $"{nameof(data.fireEventsBeforeStartOffset)}: {data.fireEventsBeforeStartOffset}\n"
         //        + $"{nameof(data.firstTick)}: {data.firstTick}",
-        //    CpMgr.GetData(cpI).enableDbgMsgs
+        //    enableDbgMsgs
         //);
         bool firstTickHelper = data.firstTick;
         data.firstTick = false;
         //Dbg.Log(
         //    $"Num of anim events: {data.animInfo.sortedAnimEvents.Length}",
-        //    CpMgr.GetData(cpI).enableDbgMsgs
+        //    enableDbgMsgs
         //);
         if (data.finished) {
             return;

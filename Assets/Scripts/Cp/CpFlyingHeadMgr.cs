@@ -76,8 +76,8 @@ public class CpFlyingHeadMgr : Singleton<CpFlyingHeadMgr> {
             Debug.LogError($"{cpI} was greaterequal to {entityCount}!");
             return;
         }
-        CpRegister.inst.cps.Remove(commonData[cpI].handle);
-        GameObject.Destroy(commonData[cpI].handle.Go);
+        CpRegister.inst.cps.Remove(flyingHeadData[cpI].handle);
+        GameObject.Destroy(flyingHeadData[cpI].handle.gameObject);
         int lastI = entityCount - 1;
         CpFlyingHeadHandle swappedCp = cpI != lastI ? flyingHeadData[lastI].handle : null;
         ArrayUtils.RemoveAtSwapBack(commonData, entityCount, cpI);
@@ -116,8 +116,29 @@ public class CpFlyingHeadMgr : Singleton<CpFlyingHeadMgr> {
         // NOTE: We move character controller right after animation update so that animation rootmotion is
         // C: applied instantly.
         CpUtils.LateTick_Mov(commonData, dt, entityCount);
+        LateTick_AnimEventPlr();
         CpUtils.LateTick_Fsm(commonData, entityCount);
         LateTick_UnregisterNDestroyPending();
+    }
+
+    public void LateTick_AnimEventPlr() {
+        for (int i = 0; i < entityCount; i++) {
+            // NOTE: If pendingUnregister, animEventPlr is never ticked for a cp even if the Animator
+            // NOTE C: itself hadn't been destroyed yet (so it's possible to have an Animator update without
+            // NOTE C: the AnimEventPlr ticking for the corresponding Cp.
+            if (commonData[i].pendingUnregister)
+                continue;
+            //Debug.Log($"{aos[i].animEventPlrData}");
+            //Debug.Log($"{aos[i].unityComps.anim == null}");
+            //Debug.Log($"{aos[i].unityComps.animEvents == null}");
+            AnimEventPlr.Tick(
+                flyingHeadData[i].handle,
+                ref commonData[i].animEventPlrData,
+                commonData[i].handle.Anim,
+                CpFlyingHeadUtils.OnAnimEvent,
+                flyingHeadData[i].handle.so_CpCommonConfig.enableDbgMsgs
+            );
+        }
     }
 
     /// <summary>

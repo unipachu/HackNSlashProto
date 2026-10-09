@@ -13,6 +13,7 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     [Header("Unity Obj Refs")]
     public Animator anim;
     public CharacterController cc;
+    public HitDealer_SphereCast hitDealer;
     public CpHitReciever hitReciever;
     public NavMeshAgent navMeshAgent;
     public Transform lockOnTrf;
@@ -42,11 +43,18 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     }
 
     public bool TryEnterDeathSt() {
-        throw new System.NotImplementedException();
+        if (CpUtils.TrySwitchActSt(
+            () => FlyingHeadData.actSts.death.Enter(CpFlyingHeadUtils.FindKnockbackAnim(CommonData)),
+                ref CommonData
+            )
+        )
+            return true;
+        return false;
     }
 
-    public bool TrySetupNEnterKnockbackSt() {
-        // TODO: Check how the humanoid cp does this.
-        throw new System.NotImplementedException();
-    }
+    public bool TrySetupNEnterKnockbackSt()
+        => CpUtils.TrySwitchActSt(
+            () => FlyingHeadData.actSts.knockback.Enter(CpFlyingHeadUtils.FindKnockbackAnim(CommonData)),
+            ref CommonData
+        );
 }

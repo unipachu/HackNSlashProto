@@ -1,10 +1,9 @@
 using UnityEngine;
 
 /// <summary>
-/// Info about capsule pawn animation states used by <see cref="AnimEventPlr"/>.
+/// Info about <see cref="CpHumdHandle"/>'s animation states used by <see cref="AnimEventPlr"/>.
 /// </summary>
-// TODO: Rename to CpHumanoidAnimInfoFactory
-public static class CpAnimInfoFactory {
+public static class CpHumdAnimInfoFactory {
     public static AnimInfo Construct(CpHumanoidAnimInfoT t) {
         return t switch {
             CpHumanoidAnimInfoT.atk_FlyingAtk_Impact => new(

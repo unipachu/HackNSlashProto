@@ -8,6 +8,7 @@ using UnityEngine.AI;
 /// </summary>
 public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
+    // TODO MINOR: Rename to so_CpCommonConfig
     public So_CpCommonConfig so_cpCommonData;
     public So_CpHumdConfig so_cpHumdConfig;
     
@@ -45,30 +46,13 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
 
     public bool TrySetupNEnterKnockbackSt()
         => CpUtils.TrySwitchActSt(
-            () => HumdData.classRefs.actSts.knockback.Enter(FindKnockbackAnim()),
+            () => HumdData.classRefs.actSts.knockback.Enter(CpHumdUtils.FindKnockbackAnim(CommonData)),
             ref CommonData
         );
 
-    public AnimInfo FindKnockbackAnim() {
-        Vector3 horHitDir = new Vector3(
-            CommonData.lastRecievedHitDir.x,
-            0,
-            CommonData.lastRecievedHitDir.z
-        );
-        // If you, for some reason, set the hit direction to Vector3.zero.
-        if (horHitDir.sqrMagnitude < 0.0001f)
-            horHitDir = Vector3.down;
-        else
-            horHitDir.Normalize();
-        if (Vector3.Dot(horHitDir, transform.forward) > 0)
-            // TODO MAYBE: Create different animation for "strong knockback".
-            return CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Fwd);
-        return CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.knockback_Weak_Bwd);
-    }
-
     public bool TryEnterDeathSt() {
         if (CpUtils.TrySwitchActSt(
-            () => HumdData.classRefs.actSts.death.Enter(FindKnockbackAnim()),
+            () => HumdData.classRefs.actSts.death.Enter(CpHumdUtils.FindKnockbackAnim(CommonData)),
                 ref CommonData
             )
         )

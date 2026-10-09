@@ -20,7 +20,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_JumpVerSlam),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_JumpVerSlam),
             0.1f
         );
         return this;

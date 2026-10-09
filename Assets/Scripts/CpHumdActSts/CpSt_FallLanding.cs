@@ -17,7 +17,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumanoid.CommonData.animEventPlrData,
             cpHumanoid.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.fallLanding),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.fallLanding),
             0.2f
         );
         return this;
@@ -38,7 +38,7 @@ public class CpSt_FallLanding : IFsmSt_Cp {
         if (cpHumanoid.HumdData.dodgeAllowed && cpHumanoid.HumdData.cooldownTimer_Dodge == 0) {
             if (
                 InputBufferUtils.TryConsumeInput(
-                    BufferableInput.BtnE,
+                    BufferableInput.B,
                     ref commonData.inputBuffer_BufferedInput,
                     ref commonData.inputBuffer_RemainingTime
                 )

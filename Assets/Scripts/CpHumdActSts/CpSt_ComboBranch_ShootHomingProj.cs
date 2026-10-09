@@ -34,7 +34,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_Windup),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_Windup),
             0.1f
         );
         return this;

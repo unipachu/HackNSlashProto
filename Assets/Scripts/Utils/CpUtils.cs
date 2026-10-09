@@ -8,6 +8,27 @@ using UnityEngine.AI;
 /// </summary>
 public static class CpUtils{
     /// <summary>
+    /// Finds the local horizontal knockback direction for cp.
+    /// </summary>
+    public static Dir2DHor FindKnockBackDir(Cp_CommonData commonData) {
+        Vector3 horHitDir = new Vector3(
+            commonData.lastRecievedHitDir.x,
+            0,
+            commonData.lastRecievedHitDir.z
+        );
+        // If the hit dir is for some reason Vector3.zero.
+        if (horHitDir.IsZeroOrNearlyZero())
+            return Dir2DHor.Backward;
+        horHitDir.Normalize();
+        Transform trf = commonData.handle.Go.transform;
+        float forwardDot = Vector3.Dot(horHitDir, trf.forward);
+        float rightDot = Vector3.Dot(horHitDir, trf.right);
+        if (Mathf.Abs(forwardDot) >= Mathf.Abs(rightDot))
+            return forwardDot >= 0 ? Dir2DHor.Forward : Dir2DHor.Backward;
+        return rightDot >= 0 ? Dir2DHor.Right : Dir2DHor.Left;
+    }
+
+    /// <summary>
     /// Call this in FixedUpdate!
     /// </summary>
     public static void FixedTick_Fsm(Cp_CommonData[] commonData, int usedLength) {
@@ -158,28 +179,28 @@ public static class CpUtils{
                 InputBufferUtils.BufferInput(
                     ref commonData[i].inputBuffer_BufferedInput,
                     ref commonData[i].inputBuffer_RemainingTime,
-                    BufferableInput.RShldr,
+                    BufferableInput.Rb,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (commonData[i].classRefs.cpCtrl.TryConsume_Atk_Heavy())
                 InputBufferUtils.BufferInput(
                     ref commonData[i].inputBuffer_BufferedInput,
                     ref commonData[i].inputBuffer_RemainingTime,
-                    BufferableInput.RTrg,
+                    BufferableInput.Rt,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (commonData[i].classRefs.cpCtrl.TryConsume_Atk_Ult())
                 InputBufferUtils.BufferInput(
                     ref commonData[i].inputBuffer_BufferedInput,
                     ref commonData[i].inputBuffer_RemainingTime,
-                    BufferableInput.LShldr,
+                    BufferableInput.Lb,
                     GlobalData.inst.inputBuffer_Dur
                 );
             else if (commonData[i].classRefs.cpCtrl.TryConsume_Dodge())
                 InputBufferUtils.BufferInput(
                     ref commonData[i].inputBuffer_BufferedInput,
                     ref commonData[i].inputBuffer_RemainingTime,
-                    BufferableInput.BtnE,
+                    BufferableInput.B,
                     GlobalData.inst.inputBuffer_Dur
                 );
             if (commonData[i].inputBuffer_RemainingTime <= 0)

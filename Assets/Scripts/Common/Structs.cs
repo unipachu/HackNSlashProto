@@ -302,9 +302,18 @@ public struct CpFlyingHead_Data {
 /// All action states available for <see cref="CpFlyingHeadHandle"/>.
 /// </summary>
 public struct CpFlyingHead_ActSts {
+    public CpFlyingHeadActSt_Atk_Dash atk_Dash;
+    public CpFlyingHeadActSt_Death death;
+    public CpFlyingHeadActSt_Fly fly;
     public CpFlyingHeadActSt_Idle idle;
+    public CpFlyingHeadActSt_Knockback knockback;
+
     public CpFlyingHead_ActSts(CpFlyingHeadHandle cpFlyingHead) {
+        atk_Dash = new(cpFlyingHead);
+        death = new(cpFlyingHead);
+        fly = new(cpFlyingHead);
         idle = new(cpFlyingHead);
+        knockback = new(cpFlyingHead);
     }
 }
 

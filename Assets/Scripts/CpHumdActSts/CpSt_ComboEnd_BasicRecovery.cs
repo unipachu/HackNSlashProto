@@ -71,7 +71,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
             return;
         if (humdData.dodgeAllowed && humdData.cooldownTimer_Dodge == 0) {
             if (InputBufferUtils.TryConsumeInput(
-                BufferableInput.BtnE,
+                BufferableInput.B,
                 ref commonData.inputBuffer_BufferedInput,
                 ref commonData.inputBuffer_RemainingTime)
             ) {

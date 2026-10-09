@@ -59,7 +59,7 @@ Transform:
   m_GameObject: {fileID: 6101628137683636955}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.26, y: 0.08, z: -10.69}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -81,8 +81,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CpFlyingHeadHandle
   so_CpCommonConfig: {fileID: 0}
   anim: {fileID: 1091843080481240901}
-  animEventHandler: {fileID: 0}
   cc: {fileID: 5079058612890601784}
+  hitDealer: {fileID: 3590012538767028662}
   hitReciever: {fileID: 5634786316121275709}
   navMeshAgent: {fileID: 8087861647241408892}
   lockOnTrf: {fileID: 2296725825080284018}
@@ -106,7 +106,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 3
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.45
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -213,6 +213,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7482077672245274308, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
   m_PrefabInstance: {fileID: 8649785375372342710}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &3590012538767028662 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5321139961847071744, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}
+  m_PrefabInstance: {fileID: 8649785375372342710}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b8976603a9f74428967cd11f346a7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitDealer_SphereCast
 --- !u!114 &5634786316121275709 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3907151629497665675, guid: 8586b8351d4e48547a7d3ef50b0dead4, type: 3}

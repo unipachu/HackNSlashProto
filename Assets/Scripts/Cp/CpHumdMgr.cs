@@ -152,6 +152,7 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
         LateTick_UnregisterNDestroyPending();
     }
 
+    // TODO MINOR: other cps probably use similar, could this be made into a generic static method?
     public void LateTick_AnimEventPlr() {
         for (int i = 0; i < entityCount; i++) {
             // NOTE: If pendingUnregister, animEventPlr is never ticked for a cp even if the Animator
@@ -166,7 +167,8 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
                 humdData[i].handle,
                 ref commonData[i].animEventPlrData,
                 commonData[i].handle.Anim,
-                CpHumdUtils.OnAnimEvent
+                CpHumdUtils.OnAnimEvent,
+                humdData[i].handle.so_cpCommonData.enableDbgMsgs
             );
         }
     }

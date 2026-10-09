@@ -44,10 +44,10 @@ public enum BtT : byte {
 
 public enum BufferableInput : byte {
     None,
-    RShldr,
-    RTrg,
-    LShldr,
-    BtnE
+    B,
+    Lb,
+    Rb,
+    Rt,
 }
 
 public enum ProjT : byte {

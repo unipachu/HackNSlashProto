@@ -14,7 +14,7 @@ public class CpSt_Idle : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.Anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.idle),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.idle),
             0.1f
         );
         return this;

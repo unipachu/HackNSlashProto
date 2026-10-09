@@ -13,24 +13,17 @@ MonoBehaviour:
   m_Name: CpCommonConfig_FlyingHead
   m_EditorClassIdentifier: Assembly-CSharp::PC_BaseData
   displayName: Flying Head
+  falling_HorAcc: 10
+  falling_TgtHorSpd: 1
   groundSnapVerDownSpd: 1000
   impact_YawSpd: 1200
   walkHorAcc: 100
   walkTgtHorSpd: 5
   walkYawSpd: 1000
   windup_YawSpd: 1000
-  cooldownDur_Dodge: 0.2
   inputBufferDuration: 0.3
   hp_Max: 4
   ignoredKnockback: 0
   knockbackStrMult: 1
-  rHandItem: 1
   team: 1
-  enableDbgMsgs: 0
-  act_AtkFlying_TgtHorSpeed: 2
-  act_AtkJump_DownSpeedAfterJumpFinished: 10
-  act_Falling_LandingStFallDistThreshold: 2
-  act_Falling_HorAcc: 10
-  act_Falling_TgtHorSpd: 1
-  act_Dodge_YawAngSpd: 400
-  act_Dodge_HorMovSpdMult: 1
+  enableDbgMsgs: 1

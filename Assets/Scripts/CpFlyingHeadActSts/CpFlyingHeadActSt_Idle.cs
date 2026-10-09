@@ -25,16 +25,16 @@ public class CpFlyingHeadActSt_Idle : IFsmSt_Cp{
         ref CpFlyingHead_Data flyingHeadData = ref cpFlyingHead.FlyingHeadData;
         // If prev st is walk, we keep rotating towards the last inputted direction (other games do this too).
         // TODO: Uncomment below.
-        //if (commonData.classRefs.st_prev == humdData.classRefs.actSts.walk)
-        //    CpUtils.UpdateMovInputData(
-        //        ref commonData,
-        //        commonData.input_mov_LastNonZero,
-        //        Vector3.zero,
-        //        0,
-        //        cpFlyingHead.so_cpCommonData.walkYawSpd,
-        //        float.PositiveInfinity
-        //    );
-        //else
+        if (commonData.classRefs.st_prev == flyingHeadData.actSts.fly)
+            CpUtils.UpdateMovInputData(
+                ref commonData,
+                commonData.input_mov_LastNonZero,
+                Vector3.zero,
+                0,
+                cpFlyingHead.So_CpCommonConfig.walkYawSpd,
+                float.PositiveInfinity
+            );
+        else
             CpUtils.UpdateMovInputData(
                 ref commonData,
                 Vector2.zero,
@@ -43,19 +43,16 @@ public class CpFlyingHeadActSt_Idle : IFsmSt_Cp{
                 0,
                 float.PositiveInfinity
             );
-        // TODO: Uncomment below.
-        //if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref humdData))
-        //    return;
         //// Try consume input
-        //if (CpHumdUtils.TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref humdData))
-        //    return;
-        //if (!commonData.input_mov.IsZeroOrNearlyZero()) {
-        //    CpUtils.TrySwitchActSt(
-        //        () => cpFlyingHead.HumdData.classRefs.actSts.walk.Enter(),
-        //        ref commonData,
-        //        true
-        //    );
-        //    return;
-        //}
+        if (CpFlyingHeadUtils.TrySwitchStFromNeutralStByBufferedInput(ref commonData, ref flyingHeadData))
+            return;
+        if (!commonData.input_mov.IsZeroOrNearlyZero()) {
+            CpUtils.TrySwitchActSt(
+                () => cpFlyingHead.FlyingHeadData.actSts.fly.Enter(),
+                ref commonData,
+                true
+            );
+            return;
+        }
     }
 }

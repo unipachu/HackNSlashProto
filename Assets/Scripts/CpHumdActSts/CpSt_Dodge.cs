@@ -21,7 +21,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref commonData.animEventPlrData,
             cpHumd.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.dodge),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.dodge),
             0.1f
         );
         // NOTE: We instantly rotate towards movement input direction.

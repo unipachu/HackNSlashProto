@@ -16,7 +16,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.anim,
-            CpAnimInfoFactory.Construct(CpHumanoidAnimInfoT.falling),
+            CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.falling),
             2 // NOTE: Transition is long to give a sense of accleration during falling. // TODO: So.
         );
         return this;
