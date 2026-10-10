@@ -36,7 +36,7 @@ public class CpSt_Falling : IFsmSt_Cp {
         if (commonData.isGrounded){
             //Debug.Log("Is grounded");
             float fallDist = humdData.act_Falling_StartHgt - cpHumd.transform.position.y;
-            if(fallDist > cpHumd.so_cpHumdConfig.act_Falling_LandingStFallDistThreshold) {
+            if(fallDist > cpHumd.HumdConfig.act_Falling_LandingStFallDistThreshold) {
                 CpUtils.TrySwitchActSt(
                     () => cpHumd.HumdData.classRefs.actSts.fallLanding.Enter(),
                     ref commonData,

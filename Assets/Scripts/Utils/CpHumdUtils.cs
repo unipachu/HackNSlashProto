@@ -122,7 +122,7 @@ public static class CpHumdUtils{
                 break;
             case CpAnimEventT.AirtimeEnded:
                 commonData.isAffectedByGravity = true;
-                commonData.vel_Ver = -cpHumd.so_cpHumdConfig.act_AtkJump_DownSpeedAfterJumpFinished;
+                commonData.vel_Ver = -cpHumd.HumdConfig.act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
                 commonData.isAffectedByGravity = false;

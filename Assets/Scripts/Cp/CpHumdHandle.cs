@@ -9,7 +9,6 @@ using UnityEngine.AI;
 public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
     public string dataId;
-    public So_CpHumdConfig so_cpHumdConfig;
     
     [Header("Unity Obj Refs")]
     public Animator anim;
@@ -31,6 +30,7 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     public DbRow_CpCommonConfig CpCommonConfig => Db.inst.db.GetCpCommonConfig(dataId);
     public GameObject Go => gameObject;
     public ref CpHumd_Data HumdData => ref CpHumdMgr.inst.humdData[I];
+    public DbRow_CpHumdConfig HumdConfig => Db.inst.db.GetCpHumdConfig(dataId);
     public Transform LockOnTrf => lockOnTrf;
     public NavMeshAgent NavMeshAgent => navMeshAgent;
     public Transform TrfToFollow => transform;

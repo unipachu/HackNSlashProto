@@ -60,7 +60,7 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
         newCommonData.navTgtInfo = new(false, false, 0.2f);
         ArrayUtils.Add(ref commonData, entityCount, newCommonData);
         newAosData.handle = newCp;
-        IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.so_cpHumdConfig.rHandItem);
+        IHandItem rHandItem = HandItemFactory.InstantiateHandItem(newCp.HumdConfig.rHandItem);
         rHandItem.Trf.SetPositionAndRotation(
             newCp.rHand.position,
             newCp.rHand.rotation

@@ -16,7 +16,7 @@ public class CpSt_Dodge : IFsmSt_Cp {
         commonData.yawAllowed = false;
         commonData.bufferedInputStSwitchAllowed = false;
         commonData.ignoreHits = true;
-        humdData.cooldownTimer_Dodge = cpHumd.so_cpHumdConfig.cooldownDur_Dodge;
+        humdData.cooldownTimer_Dodge = cpHumd.HumdConfig.cooldownDur_Dodge;
         humdData.cooldownFreezed_Dodge = true;
         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
             ref commonData.animEventPlrData,
@@ -41,11 +41,11 @@ public class CpSt_Dodge : IFsmSt_Cp {
         ref var commonData = ref cpHumd.CommonData;
         float angSpd = 0;
         if (commonData.yawAllowed)
-            angSpd = cpHumd.so_cpHumdConfig.act_Dodge_YawAngSpd;
+            angSpd = cpHumd.HumdConfig.act_Dodge_YawAngSpd;
         CpUtils.UpdateMovInputData(
             ref commonData,
             commonData.input_mov,
-            commonData.animDPose.position * cpHumd.so_cpHumdConfig.act_Dodge_HorMovSpdMult,
+            commonData.animDPose.position * cpHumd.HumdConfig.act_Dodge_HorMovSpdMult,
             0,
             angSpd,
             float.PositiveInfinity

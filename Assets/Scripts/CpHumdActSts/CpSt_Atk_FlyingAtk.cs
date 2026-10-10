@@ -88,7 +88,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     ref commonData,
                     commonData.input_mov,
                     commonData.animDPose.position,
-                    cpHumd.so_cpHumdConfig.act_AtkFlying_TgtHorSpeed,
+                    cpHumd.HumdConfig.act_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );
@@ -98,7 +98,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     ref commonData,
                     commonData.input_mov,
                     commonData.animDPose.position,
-                    cpHumd.so_cpHumdConfig.act_AtkFlying_TgtHorSpeed,
+                    cpHumd.HumdConfig.act_AtkFlying_TgtHorSpeed,
                     0,
                     float.PositiveInfinity
                 );

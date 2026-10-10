@@ -35,7 +35,7 @@ public class CpSt_Atk_Jump : IFsmSt_Cp {
         switch (animEvent) {
             case CpAnimEventT.AirtimeEnded:
                 cpHumd.CommonData.isAffectedByGravity = true;
-                cpHumd.CommonData.vel_Ver = -cpHumd.so_cpHumdConfig.act_AtkJump_DownSpeedAfterJumpFinished;
+                cpHumd.CommonData.vel_Ver = -cpHumd.HumdConfig.act_AtkJump_DownSpeedAfterJumpFinished;
                 break;
             case CpAnimEventT.AirtimeStarted:
                 cpHumd.CommonData.isAffectedByGravity = false;
