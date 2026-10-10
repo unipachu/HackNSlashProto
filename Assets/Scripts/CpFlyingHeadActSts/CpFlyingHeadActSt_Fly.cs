@@ -25,9 +25,9 @@ public class CpFlyingHeadActSt_Fly : IFsmSt_Cp{
             ref cpFlyingHead.CommonData,
             cpFlyingHead.CommonData.input_mov,
             Vector3.zero,
-            cpFlyingHead.so_CpCommonConfig.walkTgtHorSpd,
-            cpFlyingHead.so_CpCommonConfig.walkYawSpd,
-            cpFlyingHead.so_CpCommonConfig.walkHorAcc
+            cpFlyingHead.CpCommonConfig.walkTgtHorSpd,
+            cpFlyingHead.CpCommonConfig.walkYawSpd,
+            cpFlyingHead.CpCommonConfig.walkHorAcc
         );
         if (
             CpFlyingHeadUtils.TrySwitchStFromNeutralStByBufferedInput(

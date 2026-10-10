@@ -5,8 +5,7 @@ using UnityEngine;
 /// Item data used for testing. Represents a row of the Items sheet.
 /// </summary>
 [Serializable]
-public class ExampleEnemyData : ISheetRowWithId
-{
+public class ExampleEnemyData : ISheetRowWithId{
     [SheetColumnRequired]
     [SheetColumn("Id")]
     [SerializeField] string id;

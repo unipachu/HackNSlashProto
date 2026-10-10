@@ -6,7 +6,7 @@ using UnityEngine;
 public class CpHitReciever : MonoBehaviour, IHitReceiver {
     [SerializeField] InterfaceReference<ICp> cp;
 
-    public Team GetTeam => cp.Value.So_CpCommonConfig.team;
+    public Team GetTeam => cp.Value.CpCommonConfig.team;
     /// <summary>
     /// NOTE This should be checked BEFORE calling <see cref="CpHitReciever.ReceiveHit"/>!
     /// </summary>
@@ -26,7 +26,7 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
         cp.Value.CommonData.hp_Cur -= dmgDealt;
         if(dmgDealt != 0) {
             cp.Value.CommonData.action_DmgTaken?.Invoke(hitData.hitEffects.dmg);
-            cp.Value.CommonData.action_CurHpChanged?.Invoke(cp.Value.CommonData.hp_Cur, cp.Value.So_CpCommonConfig.hp_Max);
+            cp.Value.CommonData.action_CurHpChanged?.Invoke(cp.Value.CommonData.hp_Cur, cp.Value.CpCommonConfig.hp_Max);
         }
         var safeHitNormal = hitData.normal.NrmSafe();
         switch (hitData.hitEffects.hitT) {
@@ -76,13 +76,13 @@ public class CpHitReciever : MonoBehaviour, IHitReceiver {
                     break;
                 case KnockbackT.Weak:
                     if (
-                        cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Weak
-                            && cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Strong
+                        cp.Value.CpCommonConfig.ignoredKnockback != KnockbackT.Weak
+                            && cp.Value.CpCommonConfig.ignoredKnockback != KnockbackT.Strong
                     )
                         cp.Value.TrySetupNEnterKnockbackSt();
                     break;
                 case KnockbackT.Strong:
-                    if (cp.Value.So_CpCommonConfig.ignoredKnockback != KnockbackT.Strong)
+                    if (cp.Value.CpCommonConfig.ignoredKnockback != KnockbackT.Strong)
                         cp.Value.TrySetupNEnterKnockbackSt();
                     break;
                 default:

@@ -70,7 +70,7 @@ public class CpSt_Atk_FlyingAtk : IFsmSt_Cp {
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver> { cpHumd.hitReciever },
-                    cpHumd.so_cpCommonData.team,
+                    cpHumd.CpCommonConfig.team,
                     Vector3.zero
                 );
                 break;

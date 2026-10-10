@@ -29,9 +29,9 @@ public class CpSt_Falling : IFsmSt_Cp {
             ref commonData,
             float2.zero,
             float3.zero,
-            cpHumd.so_cpCommonData.falling_TgtHorSpd,
+            cpHumd.CpCommonConfig.falling_TgtHorSpd,
             0,
-            cpHumd.so_cpCommonData.falling_HorAcc
+            cpHumd.CpCommonConfig.falling_HorAcc
         );
         if (commonData.isGrounded){
             //Debug.Log("Is grounded");

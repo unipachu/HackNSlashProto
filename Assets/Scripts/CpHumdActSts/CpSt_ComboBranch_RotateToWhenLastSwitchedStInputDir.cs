@@ -61,7 +61,7 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
             commonData.input_mov_WhenLastSwitchedSt,
             commonData.animDPose.position,
             0,
-            cpHumd.so_cpCommonData.windup_YawSpd,
+            cpHumd.CpCommonConfig.windup_YawSpd,
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)

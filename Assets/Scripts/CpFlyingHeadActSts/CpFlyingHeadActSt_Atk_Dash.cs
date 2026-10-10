@@ -67,7 +67,7 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver> { cpFlyingHead.hitReciever },
-                    cpFlyingHead.so_CpCommonConfig.team,
+                    cpFlyingHead.CpCommonConfig.team,
                     Vector3.zero
                 );
                 break;
@@ -97,7 +97,7 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                 //Dbg.Log(
                 //    $"anim d pos: {commonData.animDPose.position}",
                 //    cpFlyingHead,
-                //    cpFlyingHead.so_CpCommonConfig.enableDbgMsgs
+                //    cpFlyingHead.So_CpCommonConfig.enableDbgMsgs
                 //);
                 // TODO: It would feel better if the impact animation would end as it hits the player. This
                 // C: state would probably need to listen to the hit reciever - or perhaps have a OnHit

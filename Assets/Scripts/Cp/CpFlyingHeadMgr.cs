@@ -43,7 +43,7 @@ public class CpFlyingHeadMgr : Singleton<CpFlyingHeadMgr> {
         newCommonData.groundCastHitSomething = false;
         newCommonData.groundCastNrm = Unity.Mathematics.float3.zero;
         newCommonData.handle = newCp;
-        newCommonData.hp_Cur = newCp.so_CpCommonConfig.hp_Max;
+        newCommonData.hp_Cur = newCp.CpCommonConfig.hp_Max;
         newCommonData.input_mov = Unity.Mathematics.float2.zero;
         newCommonData.input_mov_LastNonZero = Unity.Mathematics.float2.zero;
         newCommonData.input_mov_WhenLastSwitchedSt = Unity.Mathematics.float2.zero;
@@ -136,7 +136,7 @@ public class CpFlyingHeadMgr : Singleton<CpFlyingHeadMgr> {
                 ref commonData[i].animEventPlrData,
                 commonData[i].handle.Anim,
                 CpFlyingHeadUtils.OnAnimEvent,
-                flyingHeadData[i].handle.so_CpCommonConfig.enableDbgMsgs
+                flyingHeadData[i].handle.CpCommonConfig.enableDbgMsgs
             );
         }
     }

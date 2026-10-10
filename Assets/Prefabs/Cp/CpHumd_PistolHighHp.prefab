@@ -61,6 +61,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 67957883a4c596d4990c19d79b012351, type: 2}
     - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: dataId
+      value: PistolHighHp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: so_cpCommonData
       value: 
       objectReference: {fileID: 11400000, guid: 5557b3dda4d3bca4080a46ed4dc3b852, type: 2}

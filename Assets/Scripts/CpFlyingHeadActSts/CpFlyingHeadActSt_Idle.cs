@@ -31,7 +31,7 @@ public class CpFlyingHeadActSt_Idle : IFsmSt_Cp{
                 commonData.input_mov_LastNonZero,
                 Vector3.zero,
                 0,
-                cpFlyingHead.So_CpCommonConfig.walkYawSpd,
+                cpFlyingHead.CpCommonConfig.walkYawSpd,
                 float.PositiveInfinity
             );
         else

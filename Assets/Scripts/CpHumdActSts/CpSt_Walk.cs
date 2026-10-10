@@ -28,9 +28,9 @@ public class CpSt_Walk : IFsmSt_Cp {
             ref cp.CommonData,
             cp.CommonData.input_mov,
             float3.zero,
-            cp.so_cpCommonData.walkTgtHorSpd,
-            cp.so_cpCommonData.walkYawSpd,
-            cp.so_cpCommonData.walkHorAcc
+            cp.CpCommonConfig.walkTgtHorSpd,
+            cp.CpCommonConfig.walkYawSpd,
+            cp.CpCommonConfig.walkHorAcc
         );
         if (CpHumdUtils.TrySwitchStFromNeutralStByBufferedInput(ref cp.CommonData, ref cp.HumdData))
             return;

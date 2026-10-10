@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 799764370066193369, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
+      propertyPath: dataId
+      value: Club
+      objectReference: {fileID: 0}
+    - target: {fileID: 799764370066193369, guid: 6626695f6c71eba439c133135889ac4c, type: 3}
       propertyPath: so_cpCommonData
       value: 
       objectReference: {fileID: 11400000, guid: 3e0ccefdc49240b4aa3a391dfa1676d5, type: 2}

@@ -15,10 +15,10 @@ public class CpRegister : Singleton<CpRegister>{
         foreach(ICp enemyCand in inst.cps) {
             if (enemyCand == cp)
                 continue;
-            Team candTeam = enemyCand.So_CpCommonConfig.team;
+            Team candTeam = enemyCand.CpCommonConfig.team;
             if (candTeam == Team.FriendToAll)
                 continue;
-            if (candTeam == Team.EnemyToAll || candTeam != cp.So_CpCommonConfig.team) {
+            if (candTeam == Team.EnemyToAll || candTeam != cp.CpCommonConfig.team) {
                 //Debug.Log("Found tgt: " + i);
                 return enemyCand;
             }

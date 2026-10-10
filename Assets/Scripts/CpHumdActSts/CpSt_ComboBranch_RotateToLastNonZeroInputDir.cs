@@ -60,7 +60,7 @@ public class CpSt_ComboBranch_RotateToLastNonZeroInputDir : IFsmSt_Cp {
             commonData.input_mov_LastNonZero,
             commonData.animDPose.position,
             0,
-            cpHumd.so_cpCommonData.windup_YawSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
+            cpHumd.CpCommonConfig.windup_YawSpd, // TODO: tgtHorSpd, yawSpd, and horAcc should be set in the state Enter method, since these are currently are set to work with melee windup moves and nothing else.
             float.PositiveInfinity
         );
         // NOTE: Windup can be optionally canceled. (5.9.2026)

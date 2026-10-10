@@ -68,7 +68,7 @@ public class PlrMgr : Singleton<PlrMgr>{
         commonData.action_CurHpChanged += OnPlrCurHpChanged;
         commonData.action_MaxHpChanged += OnPlrMaxHpChanged;
         commonData.action_MarkedForPendingUnregister += OnPlrMarkedForPendingUnregister;
-        HudMgr.inst.SetHp(commonData.hp_Cur, cp.so_cpCommonData.hp_Max);
+        HudMgr.inst.SetHp(commonData.hp_Cur, cp.CpCommonConfig.hp_Max);
         HudMgr.inst.ResetYellowTrail();
         HudMgr.inst.SetUlt(0, config.maxUlt);
     }

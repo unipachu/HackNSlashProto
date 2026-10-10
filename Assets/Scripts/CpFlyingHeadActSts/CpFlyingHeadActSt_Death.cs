@@ -44,7 +44,7 @@ public class CpFlyingHeadActSt_Death : IFsmSt_Cp{
             float2.zero,
             commonData.animDPose.position
                 * commonData.lastKnockbackStr
-                * cpFlyingHead.so_CpCommonConfig.knockbackStrMult,
+                * cpFlyingHead.CpCommonConfig.knockbackStrMult,
             0,
             0,
             float.PositiveInfinity

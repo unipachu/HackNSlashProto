@@ -335,7 +335,7 @@ public class AiCtrlMgr : Singleton<AiCtrlMgr>{
                     + $"steerTgt {agent.steeringTarget} pathEnd {agent.pathEndPosition} status "
                     + $"{agent.pathStatus} pending {agent.pathPending} hasPath {agent.hasPath} desVel "
                     + $"{aos[i].agentDesiredVel} input_Mov {aos[i].ctrlInputData.input_LStick}",
-                cp.So_CpCommonConfig.enableDbgMsgs
+                cp.CpCommonConfig.enableDbgMsgs
             );
         }
     }

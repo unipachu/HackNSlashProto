@@ -44,7 +44,7 @@ public class CpSt_Knockback : IFsmSt_Cp{
         CpUtils.UpdateMovInputData(
             ref commonData,
             float2.zero,
-            commonData.animDPose.position * commonData.lastKnockbackStr * cpHumd.so_cpCommonData.knockbackStrMult,
+            commonData.animDPose.position * commonData.lastKnockbackStr * cpHumd.CpCommonConfig.knockbackStrMult,
             0,
             0,
             float.PositiveInfinity

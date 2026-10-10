@@ -55,7 +55,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
             commonData.input_mov_LastNonZero,
             commonData.animDPose.position,
             0,
-            cpHumanoid.so_cpCommonData.impact_YawSpd, // NOTE: Yaw speed is set here.
+            cpHumanoid.CpCommonConfig.impact_YawSpd, // NOTE: Yaw speed is set here.
             float.PositiveInfinity
         );
         aimLaser.Tick();
@@ -71,7 +71,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
                 projT,
                 new HashSet<IHitReceiver> { cpHumanoid.hitReciever },
                 tgt,
-                cpHumanoid.so_cpCommonData.team,
+                cpHumanoid.CpCommonConfig.team,
                 projSpawnPose.position,
                 projSpawnPose.forward
             );

@@ -61,6 +61,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: b34794a53e6cd7348af965102f9a9bce, type: 2}
     - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
+      propertyPath: dataId
+      value: Sniper
+      objectReference: {fileID: 0}
+    - target: {fileID: 3968936679401605026, guid: 04441985141764a488372bd370c938f3, type: 3}
       propertyPath: so_cpCommonData
       value: 
       objectReference: {fileID: 11400000, guid: 258d9a9f306bbf446943fdd9ba816cfb, type: 2}

@@ -1,0 +1,144 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e47373aa6eae114192db786b349c35d, type: 3}
+  m_Name: SpreadsheetDb_Test
+  m_EditorClassIdentifier: Assembly-CSharp::So_SpreadsheetDb
+  spreadsheetId: 1AITJFgRohpz627oj99EOQ1AozLo-WL_SlI0YAV9ICpY
+  cpCommonConfig:
+  - id: Club
+    displayName: Club Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 1200
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 500
+    windup_YawSpd: 500
+    inputBufferDuration: 0.3
+    hp_Max: 5
+    ignoredKnockback: 1
+    knockbackStrMult: 0.2
+    team: 1
+    enableDbgMsgs: 0
+  - id: FlyingHead
+    displayName: Flying Head Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 1200
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 1000
+    inputBufferDuration: 0.3
+    hp_Max: 2
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0
+  - id: Hammer
+    displayName: Hammer Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 1200
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 1000
+    inputBufferDuration: 0.3
+    hp_Max: 3
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0
+  - id: Pistol
+    displayName: Pistol Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 105
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 105
+    inputBufferDuration: 0.3
+    hp_Max: 2
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0
+  - id: PistolHighHp
+    displayName: Pistol High Hp
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 105
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 105
+    inputBufferDuration: 0.3
+    hp_Max: 999
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0
+  - id: Plr
+    displayName: Player
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 1200
+    walkHorAcc: 100
+    walkTgtHorSpd: 7
+    walkYawSpd: 1000
+    windup_YawSpd: 1000
+    inputBufferDuration: 0.3
+    hp_Max: 10
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 0
+    enableDbgMsgs: 0
+  - id: Sniper
+    displayName: Sniper Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 105
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 105
+    inputBufferDuration: 0.3
+    hp_Max: 2
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0
+  - id: Sword
+    displayName: Sword Enemy
+    falling_HorAcc: 10
+    falling_TgtHorSpd: 1
+    groundSnapVerDownSpd: 1000
+    impact_YawSpd: 1200
+    walkHorAcc: 100
+    walkTgtHorSpd: 5
+    walkYawSpd: 1000
+    windup_YawSpd: 1000
+    inputBufferDuration: 0.3
+    hp_Max: 2
+    ignoredKnockback: 0
+    knockbackStrMult: 1
+    team: 1
+    enableDbgMsgs: 0

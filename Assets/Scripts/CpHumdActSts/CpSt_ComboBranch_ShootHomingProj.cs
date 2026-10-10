@@ -52,7 +52,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
                     projT,
                     new HashSet<IHitReceiver>{ cpHumd.hitReciever },
                     homingProjTgt,
-                    cpHumd.so_cpCommonData.team,
+                    cpHumd.CpCommonConfig.team,
                     projSpawnPose.position,
                     projSpawnPose.forward
                 );
@@ -79,7 +79,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
             commonData.input_mov_LastNonZero,
             commonData.animDPose.position,
             0,
-            cpHumd.so_cpCommonData.impact_YawSpd, // NOTE: Yaw speed is set here.
+            cpHumd.CpCommonConfig.impact_YawSpd, // NOTE: Yaw speed is set here.
             float.PositiveInfinity
         );
     }

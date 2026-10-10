@@ -44,9 +44,9 @@ public sealed class WldHpBarMgr : Singleton<WldHpBarMgr> {
         hpBar.I = newI;
         entityCount++;
         hpBar.gameObject.SetActive(false);
-        hpBar.SetName(cpHandle.So_CpCommonConfig.displayName);
-        hpBar.SetHp(cpHandle.CommonData.hp_Cur, cpHandle.So_CpCommonConfig.hp_Max);
-        hpBar.SetYellowHp(cpHandle.CommonData.hp_Cur, cpHandle.So_CpCommonConfig.hp_Max);
+        hpBar.SetName(cpHandle.CpCommonConfig.displayName);
+        hpBar.SetHp(cpHandle.CommonData.hp_Cur, cpHandle.CpCommonConfig.hp_Max);
+        hpBar.SetYellowHp(cpHandle.CommonData.hp_Cur, cpHandle.CpCommonConfig.hp_Max);
     }
 
     /// <summary>

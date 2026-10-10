@@ -63,9 +63,9 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
             ref commonData,
             commonData.input_mov,
             float3.zero,
-            cpHumd.so_cpCommonData.walkTgtHorSpd * interpValue,
-            cpHumd.so_cpCommonData.walkYawSpd * interpValue,
-            cpHumd.so_cpCommonData.walkHorAcc
+            cpHumd.CpCommonConfig.walkTgtHorSpd * interpValue,
+            cpHumd.CpCommonConfig.walkYawSpd * interpValue,
+            cpHumd.CpCommonConfig.walkHorAcc
         );
         if (CpHumdUtils.SwitchToFallingStIfNotGrounded(ref commonData, ref cpHumd.HumdData))
             return;

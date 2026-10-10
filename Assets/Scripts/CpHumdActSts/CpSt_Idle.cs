@@ -30,7 +30,7 @@ public class CpSt_Idle : IFsmSt_Cp {
                 commonData.input_mov_LastNonZero,
                 Vector3.zero,
                 0,
-                cpHumd.so_cpCommonData.walkYawSpd,
+                cpHumd.CpCommonConfig.walkYawSpd,
                 float.PositiveInfinity
             );
         else

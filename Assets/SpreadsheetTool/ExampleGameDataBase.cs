@@ -5,18 +5,17 @@ using UnityEngine;
 /// Example data base used for testing.
 /// </summary>
 [CreateAssetMenu(fileName = "ExampleGameDatabase", menuName = "Game Data/ExampleSpreadsheetDatabase")]
-public class ExampleGameDatabase : SpreadsheetContainerBase
-{
+public class ExampleGameDatabase : SpreadsheetContainerBase{
     [Sheet("Items")]
     [SerializeField]
-    private List<ExampleItemData> items;
+    List<ExampleItemData> items;
 
     [Sheet("Enemies")]
     [SerializeField]
-    private List<ExampleEnemyData> enemies;
+    List<ExampleEnemyData> enemies;
 
-    private SheetLookup<ExampleItemData> itemLookup;
-    private SheetLookup<ExampleEnemyData> enemyLookup;
+    SheetLookup<ExampleItemData> itemLookup;
+    SheetLookup<ExampleEnemyData> enemyLookup;
 
 
     public override void RebuildLookups()

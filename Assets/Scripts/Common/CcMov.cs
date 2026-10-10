@@ -11,7 +11,7 @@ public static class CcMov {
     /// </summary>
     public static void ApplyGravityNSlideDownSlopes(ref Cp_CommonData commonData, float dt){
         if (commonData.isGrounded)
-            commonData.vel_Ver = -commonData.handle.So_CpCommonConfig.groundSnapVerDownSpd * dt;
+            commonData.vel_Ver = -commonData.handle.CpCommonConfig.groundSnapVerDownSpd * dt;
         // Freefalling and slope down sliding.
         else {
             commonData.vel_Ver = commonData.handle.Cc.velocity.y;

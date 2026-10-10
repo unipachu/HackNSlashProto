@@ -8,8 +8,7 @@ using UnityEngine.AI;
 /// </summary>
 public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     [Header("Scriptable Object Data")]
-    // TODO MINOR: Rename to so_CpCommonConfig
-    public So_CpCommonConfig so_cpCommonData;
+    public string dataId;
     public So_CpHumdConfig so_cpHumdConfig;
     
     [Header("Unity Obj Refs")]
@@ -28,8 +27,9 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
 
     public Animator Anim => anim;
     public CharacterController Cc => cc;
-    public So_CpCommonConfig So_CpCommonConfig => so_cpCommonData;
+    // TODO: Rename property to CommonConfig
     public ref Cp_CommonData CommonData => ref CpHumdMgr.inst.commonData[I];
+    public DbRow_CpCommonConfig CpCommonConfig => Db.inst.db.GetCpCommonConfig(dataId);
     public GameObject Go => gameObject;
     public ref CpHumd_Data HumdData => ref CpHumdMgr.inst.humdData[I];
     public Transform LockOnTrf => lockOnTrf;

@@ -45,7 +45,7 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
         newCommonData.groundCastHitSomething = false;
         newCommonData.groundCastNrm = float3.zero;
         newCommonData.handle = newCp;
-        newCommonData.hp_Cur = newCp.so_cpCommonData.hp_Max;
+        newCommonData.hp_Cur = newCp.CpCommonConfig.hp_Max;
         newCommonData.input_mov = float2.zero;
         newCommonData.input_mov_LastNonZero = float2.zero;
         newCommonData.input_mov_WhenLastSwitchedSt = float2.zero;
@@ -168,7 +168,7 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
                 ref commonData[i].animEventPlrData,
                 commonData[i].handle.Anim,
                 CpHumdUtils.OnAnimEvent,
-                humdData[i].handle.so_cpCommonData.enableDbgMsgs
+                humdData[i].handle.CpCommonConfig.enableDbgMsgs
             );
         }
     }

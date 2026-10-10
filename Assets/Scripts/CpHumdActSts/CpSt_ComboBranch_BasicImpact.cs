@@ -56,7 +56,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
                     HitDirMode.FromHitSourceTrfToHitReciever,
                     hitEffects,
                     new HashSet<IHitReceiver>{cpHumd.hitReciever},
-                    cpHumd.so_cpCommonData.team,
+                    cpHumd.CpCommonConfig.team,
                     Vector3.zero
                 );
                 break;
@@ -73,7 +73,7 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
         ref var commonData = ref cpHumd.CommonData;
         float angSpd = 0;
         if (commonData.yawAllowed)
-            angSpd = cpHumd.so_cpCommonData.impact_YawSpd;
+            angSpd = cpHumd.CpCommonConfig.impact_YawSpd;
         CpUtils.UpdateMovInputData(
             ref commonData,
             commonData.input_mov,
