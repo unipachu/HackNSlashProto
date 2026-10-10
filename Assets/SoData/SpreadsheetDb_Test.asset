@@ -142,3 +142,60 @@ MonoBehaviour:
     knockbackStrMult: 1
     team: 1
     enableDbgMsgs: 0
+  cpHumdConfig:
+  - id: Club
+    cooldownDur_Dodge: 0.2
+    rHandItem: 0
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: Hammer
+    cooldownDur_Dodge: 0.2
+    rHandItem: 1
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: Pistol
+    cooldownDur_Dodge: 0.2
+    rHandItem: 2
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: PistolHighHp
+    cooldownDur_Dodge: 0.2
+    rHandItem: 2
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: Plr
+    cooldownDur_Dodge: 0.2
+    rHandItem: 4
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: Sniper
+    cooldownDur_Dodge: 0.2
+    rHandItem: 3
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5
+  - id: Sword
+    cooldownDur_Dodge: 0.2
+    rHandItem: 4
+    act_AtkFlying_TgtHorSpeed: 2
+    act_AtkJump_DownSpeedAfterJumpFinished: 10
+    act_Falling_LandingStFallDistThreshold: 2
+    act_Dodge_YawAngSpd: 400
+    act_Dodge_HorMovSpdMult: 1.5

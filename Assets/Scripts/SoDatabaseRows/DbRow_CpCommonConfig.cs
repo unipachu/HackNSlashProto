@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 [Serializable]
-// TODO: Rename to database row
 public class DbRow_CpCommonConfig : ISheetRowWithId{
     [SheetColumnRequired]
     [SheetColumn("Id")]

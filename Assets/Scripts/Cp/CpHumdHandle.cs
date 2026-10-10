@@ -27,7 +27,6 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
 
     public Animator Anim => anim;
     public CharacterController Cc => cc;
-    // TODO: Rename property to CommonConfig
     public ref Cp_CommonData CommonData => ref CpHumdMgr.inst.commonData[I];
     public DbRow_CpCommonConfig CpCommonConfig => Db.inst.db.GetCpCommonConfig(dataId);
     public GameObject Go => gameObject;
