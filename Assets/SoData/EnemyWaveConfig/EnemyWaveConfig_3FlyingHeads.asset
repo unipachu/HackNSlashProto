@@ -15,21 +15,21 @@ MonoBehaviour:
   waves:
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: 6800ac0f8c4bcf84db5a4fc3475fa660, type: 2}
+    - aiCpConfigId: FlyingHead
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 0
     forceNextWaveAtEnemyCount: 0
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: 6800ac0f8c4bcf84db5a4fc3475fa660, type: 2}
+    - aiCpConfigId: FlyingHead
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 0
     forceNextWaveAtEnemyCount: 0
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: 6800ac0f8c4bcf84db5a4fc3475fa660, type: 2}
+    - aiCpConfigId: FlyingHead
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 0

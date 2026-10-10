@@ -8,11 +8,12 @@ public class AiCpFactory {
     /// Spawns and registers an entity for <see cref="CpHumdMgr"/> and an entity for
     /// <see cref="AiCtrlMgr"/>. Returns handle to the spawned entity.
     /// </summary>
-    public static AiCtrlHandle SpawnAiCpAtSpawnPt(So_AiCpConfig aiCpConfig, Transform spawnPt) {
+    public static AiCtrlHandle SpawnAiCpAtSpawnPt(string aiCpConfigId, Transform spawnPt) {
         //Debug.Log($"Spawnin ai cp: {cpPrefab.gameObject.name}, with brain: {btT}.");
         AiCtrlHandle aiCtrl = new AiCtrlHandle();
         ICp cp;
         IBtNode bt;
+        DbRow_AiCpConfig aiCpConfig = Db.inst.db.GetAiCpConfig(aiCpConfigId);
         cp = CpFactory.SpawnCpAtSpawnPt(aiCpConfig.cpPrefab.Value, spawnPt);
         bt = BtDataFactory.Construct(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCpConfig.aggroRange, aiCpConfig.atkRange, aiCtrl, bt, cp);

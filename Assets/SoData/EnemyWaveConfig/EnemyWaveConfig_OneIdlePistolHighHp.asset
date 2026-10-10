@@ -15,7 +15,7 @@ MonoBehaviour:
   waves:
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: 47d42aa83a4aaa6499e5e3d0dc9d0b54, type: 2}
+    - aiCpConfigId: PistolHighHp
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 0

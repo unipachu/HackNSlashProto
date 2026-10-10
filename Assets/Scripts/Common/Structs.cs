@@ -460,7 +460,7 @@ public struct EnemyWave {
 
 [Serializable]
 public struct EnemyWave_EnemyEntry {
-    public So_AiCpConfig enemyConfig;
+    public string aiCpConfigId;
     [Min(1)] public int amount;
 }
 

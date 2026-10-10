@@ -17,12 +17,12 @@ public class EnemySpawnPt : MonoBehaviour {
         IsSpawning = false;
     }
 
-    public void QuickSpawn(So_AiCpConfig enemyConfig) {
-        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
+    public void QuickSpawn(string enemyConfigId) {
+        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(enemyConfigId, transform);
         EndSpawning(aiCtrl);
     }
 
-    IEnumerator SpawnRoutine(So_AiCpConfig enemyConfig) {
+    IEnumerator SpawnRoutine(string aiCpConfigId) {
         float t = 0;
         while(t < GlobalData.inst.enemySpawnAnimDur) {
             t += Time.deltaTime;
@@ -30,16 +30,16 @@ public class EnemySpawnPt : MonoBehaviour {
             //ShaderUtils.SetFresnelAmount(sphereRenderer, 1 - t / spawnDuration);
             yield return null;
         }
-        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(enemyConfig, transform);
+        AiCtrlHandle aiCtrl = AiCpFactory.SpawnAiCpAtSpawnPt(aiCpConfigId, transform);
         EndSpawning(aiCtrl);
     }
 
-    public bool TryBeginSpawning(So_AiCpConfig enemyConfig) {
+    public bool TryBeginSpawning(string aiCpConfigId) {
         if (IsSpawning)
             return false;
         IsSpawning = true;
         sphereRenderer.enabled = true;
-        StartCoroutine(SpawnRoutine(enemyConfig));
+        StartCoroutine(SpawnRoutine(aiCpConfigId));
         return true;
     }
 }

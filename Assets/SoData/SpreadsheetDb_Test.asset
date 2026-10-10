@@ -13,6 +13,49 @@ MonoBehaviour:
   m_Name: SpreadsheetDb_Test
   m_EditorClassIdentifier: Assembly-CSharp::So_SpreadsheetDb
   spreadsheetId: 1AITJFgRohpz627oj99EOQ1AozLo-WL_SlI0YAV9ICpY
+  aiCpConfig:
+  - id: Club
+    aggroRange: 20
+    atkRange: 4
+    cpPrefab:
+      underlyingValue: {fileID: 5213941317612928905, guid: 7a9eacebebdc12f4d9065a5b069e6ec8, type: 3}
+    btT: 0
+  - id: FlyingHead
+    aggroRange: 20
+    atkRange: 5
+    cpPrefab:
+      underlyingValue: {fileID: 6626251871490837434, guid: 1ac10bab3a67352488255f0d83ee64af, type: 3}
+    btT: 0
+  - id: Hammer
+    aggroRange: 20
+    atkRange: 3
+    cpPrefab:
+      underlyingValue: {fileID: 8138479029129729455, guid: 2a159f2280a1a374c8eff4124df4a7f7, type: 3}
+    btT: 0
+  - id: IdlePistolHighHp
+    aggroRange: 20
+    atkRange: 3
+    cpPrefab:
+      underlyingValue: {fileID: 5618025912820416612, guid: 66f44b0788edcb743a24699e022325d2, type: 3}
+    btT: 0
+  - id: Pistol
+    aggroRange: 20
+    atkRange: 8
+    cpPrefab:
+      underlyingValue: {fileID: 4385833687638175686, guid: 1092f503677414742a98d61029935732, type: 3}
+    btT: 0
+  - id: Sniper
+    aggroRange: 20
+    atkRange: 15
+    cpPrefab:
+      underlyingValue: {fileID: 6970871515480632290, guid: 86005b5b5bc650d438126539d6133f89, type: 3}
+    btT: 0
+  - id: Sword
+    aggroRange: 20
+    atkRange: 3
+    cpPrefab:
+      underlyingValue: {fileID: 3889575032266491499, guid: dedfb3ce99c0d3441ab4463e44084de2, type: 3}
+    btT: 0
   cpCommonConfig:
   - id: Club
     displayName: Club Enemy

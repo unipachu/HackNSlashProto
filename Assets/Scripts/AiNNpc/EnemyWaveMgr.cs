@@ -79,12 +79,13 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
         spawningWave = true;
         for (int i = 0; i < wave.enemies.Length; i++) {
             EnemyWave_EnemyEntry entry = wave.enemies[i];
-            if (entry.enemyConfig == null) {
-                Debug.LogError($"Wave {currentWaveIndex} contains an enemy entry with no enemy config.");
+            if (entry.aiCpConfigId == "") {
+                Debug.LogError($"Wave {currentWaveIndex}'s {nameof(entry.aiCpConfigId)} at index {i} contains "
+                    + $"an empty id for the enemy.");
                 continue;
             }
             for (int j = 0; j < entry.amount; j++) {
-                while (!TrySpawnToNextAvailableSpawnPt(instaSpawnWave, entry.enemyConfig))
+                while (!TrySpawnToNextAvailableSpawnPt(instaSpawnWave, entry.aiCpConfigId))
                     yield return null; // No free spawn point available, wait.
                 currentEnemyCount++;
             }
@@ -130,17 +131,17 @@ public class EnemyWaveMgr : Singleton<EnemyWaveMgr> {
     /// <param name="forceGetSpawnPt">
     /// Should this force spawn point to spawn an enemy even if it were occupied?
     /// </param>
-    bool TrySpawnToNextAvailableSpawnPt(bool forceGetSpawnPt, So_AiCpConfig enemyConfig) {
+    bool TrySpawnToNextAvailableSpawnPt(bool forceGetSpawnPt, string aiCpConfigId) {
         for (int i = 0; i < spawnPoints.Length; i++) {
             EnemySpawnPt spawnPt = spawnPoints[nextSpawnPtI];
             nextSpawnPtI++;
             if (nextSpawnPtI >= spawnPoints.Length)
                 nextSpawnPtI = 0;
             if (forceGetSpawnPt) {
-                spawnPt.QuickSpawn(enemyConfig);
+                spawnPt.QuickSpawn(aiCpConfigId);
                 return true;
             }
-            if(spawnPt.TryBeginSpawning(enemyConfig))
+            if(spawnPt.TryBeginSpawning(aiCpConfigId))
                 return true;
         }
         return false;

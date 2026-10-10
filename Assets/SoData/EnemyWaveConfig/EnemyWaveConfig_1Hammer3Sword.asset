@@ -15,16 +15,14 @@ MonoBehaviour:
   waves:
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: a9c47be4f076ba04b88fb8338aa7287b, type: 2}
-      amount: 1
-    - enemyConfig: {fileID: 11400000, guid: 82f77790c4c9ea34b9880622f9afa450, type: 2}
+    - aiCpConfigId: Hammer
       amount: 1
     timeUntilNextWave: 1
     blockNextWaveAtEnemyCount: -1
     forceNextWaveAtEnemyCount: -1
   - name: 
     enemies:
-    - enemyConfig: {fileID: 11400000, guid: 82f77790c4c9ea34b9880622f9afa450, type: 2}
+    - aiCpConfigId: Sword
       amount: 2
     timeUntilNextWave: 1
     blockNextWaveAtEnemyCount: -1
