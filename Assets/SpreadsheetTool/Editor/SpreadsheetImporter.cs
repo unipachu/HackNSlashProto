@@ -22,7 +22,8 @@ public static class SpreadsheetImporter{
         if (container == null)
             throw new ArgumentNullException(nameof(container));
         Type containerType = container.GetType();
-        // Reflection is used to get container instance fields (public, protected and private) regardless of container type.
+        // Reflection is used to get container instance fields (public, protected and private) regardless of
+        // container type.
         FieldInfo[] fields = containerType.GetFields(
             BindingFlags.Instance |
             BindingFlags.Public |
@@ -41,25 +42,34 @@ public static class SpreadsheetImporter{
                 $"No fields with [SheetAttribute] were found on {container.GetType().Name}."
             );
         }
-        // Now that the row data has been imported to a list, we want to rebuild our dictionary lookup table so that we can instantly use the dictionary to try and get row values from the list.
+        // Now that the row data has been imported to a list, we want to rebuild our dictionary lookup table
+        // so that we can instantly use the dictionary to try and get row values from the list.
         container.RebuildLookups();
-        // Marks scriptable object as having unsaved changes, since Unity doesn't automatically notice that assets have been changed by reflection, e.g.:
+        // Marks scriptable object as having unsaved changes, since Unity doesn't automatically notice that
+        // assets have been changed by reflection, e.g.:
         // listField.SetValue(container, list);
         // When scriptable object is set dirty, Unity seems to automatically save it.
         EditorUtility.SetDirty(container);
         // Below are two lines that can be used to manually save dirty assets.
-        // Scriptable objects seem to save changes automatically as part of the Editor workflow so the lines below is not needed.
+        // Scriptable objects seem to save changes automatically as part of the Editor workflow so the lines
+        // below is not needed.
         //AssetDatabase.SaveAssets();
         //AssetDatabase.SaveAssetIfDirty(container);
         Debug.Log($"Imported spreadsheet data into {container.name}.");
     }
 
     /// <summary>
-    /// Downloads csv file, parses it, creates row objects and writes the completed list into the container's corresponding field.
+    /// Downloads csv file, parses it, creates row objects and writes the completed list into the container's
+    /// corresponding field.
     /// </summary>
     /// <param name="container">Container we are importing the sheet into.</param>
-    /// <param name="listField">Reflection object representing container field (with <see cref="SheetAttribute"/>) that should recieve the imported data.</param>
-    /// <param name="sheetName">Name of the sheet in the spreadsheet with the data to be imported to the container.</param>
+    /// <param name="listField">
+    /// Reflection object representing container field (with <see cref="SheetAttribute"/>) that should
+    /// recieve the imported data.
+    /// </param>
+    /// <param name="sheetName">
+    /// Name of the sheet in the spreadsheet with the data to be imported to the container.
+    /// </param>
     static void ImportSheet(
         SpreadsheetContainerBase container,
         FieldInfo listField,
@@ -85,6 +95,17 @@ public static class SpreadsheetImporter{
         }
         List<string> headers = table[0];
         Dictionary<string, int> headerToIndex = BuildHeaderLookup(headers);
+        // Save old list so that we can reuse fields without matching columns.
+        IList oldList = (IList)listField.GetValue(container);
+        Dictionary<string, object> oldRowsById = new(StringComparer.Ordinal);
+        if (oldList != null) {
+            foreach (object oldRow in oldList) {
+                if (oldRow is ISheetRowWithId oldRowWithId &&
+                    !string.IsNullOrEmpty(oldRowWithId.Id)) {
+                    oldRowsById.Add(oldRowWithId.Id, oldRow);
+                }
+            }
+        }
         // Create list of the same type as the field in the container we are importing to.
         // This represents list of all table rows.
         IList list = (IList)Activator.CreateInstance(listType);
@@ -108,12 +129,14 @@ public static class SpreadsheetImporter{
                 if (!hasColumn){
                     if (isRequired){
                         throw new InvalidOperationException(
-                            $"Sheet '{sheetName}', row {rowIndex + 1}: required column '{columnName}' was not found."
+                            $"Sheet '{sheetName}', row {rowIndex + 1}: required column '{columnName}' was " 
+                            + $"not found."
                         );
                     }
                     continue;
                 }
-                // In case Google Sheets doesn't export rows with trailing commans up to the final relevant column. TODO: Check if this is needed.
+                // In case Google Sheets doesn't export rows with trailing commans up to the final
+                // relevant column. TODO: Check if this is needed.
                 string cellValue = columnIndex < row.Count ? row[columnIndex] : "";
                 // Does the cell actually contain data.
                 if (isRequired && string.IsNullOrWhiteSpace(cellValue)){
@@ -130,6 +153,18 @@ public static class SpreadsheetImporter{
                     columnName
                 );
                 rowField.SetValue(rowObject, convertedValue);
+            }
+            // Add old fields back if they don't match a column.
+            if (
+                rowObject is ISheetRowWithId rowWithId
+                    && oldRowsById.TryGetValue(rowWithId.Id, out object oldRow)
+            ) {
+                foreach (FieldInfo rowField in rowFields) {
+                    if (headerToIndex.ContainsKey(GetColumnName(rowField)))
+                        continue;
+
+                    rowField.SetValue(rowObject, rowField.GetValue(oldRow));
+                }
             }
             list.Add(rowObject);
         }
