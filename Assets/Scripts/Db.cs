@@ -4,5 +4,21 @@ using UnityEngine;
 /// Database for spreadsheets data.
 /// </summary>
 public class Db : Singleton<Db>{
-    public So_SpreadsheetDb db;
+    [SerializeField] So_SpreadsheetDb db;
+
+    public static DbRow_AiCpConfig GetAiCpConfig(string id) {
+        return inst.db.aiCpConfigLookup.Get(id);
+    }
+
+    public static DbRow_CpCommonConfig GetCpCommonConfig(string id) {
+        return inst.db.cpCommonConfigLookup.Get(id);
+    }
+
+    public static DbRow_CpHumdConfig GetCpHumdConfig(string id) {
+        return inst.db.cpHumdConfigLookup.Get(id);
+    }
+
+    public static DbRow_PlrCpConfig GetPlrCpConfig(string id) {
+        return inst.db.plrCpConfigLookup.Get(id);
+    }
 }

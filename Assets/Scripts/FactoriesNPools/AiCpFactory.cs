@@ -13,7 +13,7 @@ public class AiCpFactory {
         AiCtrlHandle aiCtrl = new AiCtrlHandle();
         ICp cp;
         IBtNode bt;
-        DbRow_AiCpConfig aiCpConfig = Db.inst.db.GetAiCpConfig(aiCpConfigId);
+        DbRow_AiCpConfig aiCpConfig = Db.GetAiCpConfig(aiCpConfigId);
         cp = CpFactory.SpawnCpAtSpawnPt(aiCpConfig.cpPrefab.Value, spawnPt);
         bt = BtDataFactory.Construct(aiCpConfig.btT, aiCtrl);
         AiCtrlMgr.inst.Register(aiCpConfig.aggroRange, aiCpConfig.atkRange, aiCtrl, bt, cp);

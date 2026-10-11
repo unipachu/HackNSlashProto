@@ -27,10 +27,10 @@ public class CpHumdHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollowTgt {
     public Animator Anim => anim;
     public CharacterController Cc => cc;
     public ref Cp_CommonData CommonData => ref CpHumdMgr.inst.commonData[I];
-    public DbRow_CpCommonConfig CpCommonConfig => Db.inst.db.GetCpCommonConfig(dataId);
+    public DbRow_CpCommonConfig CpCommonConfig => Db.GetCpCommonConfig(dataId);
     public GameObject Go => gameObject;
     public ref CpHumd_Data HumdData => ref CpHumdMgr.inst.humdData[I];
-    public DbRow_CpHumdConfig HumdConfig => Db.inst.db.GetCpHumdConfig(dataId);
+    public DbRow_CpHumdConfig HumdConfig => Db.GetCpHumdConfig(dataId);
     public Transform LockOnTrf => lockOnTrf;
     public NavMeshAgent NavMeshAgent => navMeshAgent;
     public Transform TrfToFollow => transform;

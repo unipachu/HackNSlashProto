@@ -27,7 +27,7 @@ public class CpFlyingHeadHandle : MonoBehaviour, ILockOnTargetable, ICp, IFollow
     public Animator Anim => anim;
     public CharacterController Cc => cc;
     public ref Cp_CommonData CommonData => ref CpFlyingHeadMgr.inst.commonData[I];
-    public DbRow_CpCommonConfig CpCommonConfig => Db.inst.db.GetCpCommonConfig(dataId);
+    public DbRow_CpCommonConfig CpCommonConfig => Db.GetCpCommonConfig(dataId);
     public ref CpFlyingHead_Data FlyingHeadData => ref CpFlyingHeadMgr.inst.flyingHeadData[I];
     public GameObject Go => gameObject;
     public Transform LockOnTrf => lockOnTrf;

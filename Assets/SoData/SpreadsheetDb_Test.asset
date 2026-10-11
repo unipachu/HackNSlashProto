@@ -242,3 +242,6 @@ MonoBehaviour:
     act_Falling_LandingStFallDistThreshold: 2
     act_Dodge_YawAngSpd: 400
     act_Dodge_HorMovSpdMult: 1.5
+  plrCpConfig:
+  - id: Plr
+    maxUlt: 2

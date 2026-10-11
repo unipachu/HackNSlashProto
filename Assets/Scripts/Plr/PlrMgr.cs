@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlrMgr : Singleton<PlrMgr>{
-    [SerializeField] So_PlrCpConfig config;
+    [SerializeField] string plrCpConfigId;
 
     int curUlt;
     CpHumdHandle cp;
@@ -36,20 +36,21 @@ public class PlrMgr : Singleton<PlrMgr>{
     }
 
     void OnPlrHitSomething(HashSet<HitResult> hitResults) {
+        int maxUlt = Db.GetPlrCpConfig(plrCpConfigId).maxUlt;
         // NOTE: Cannot gain ult meter when doing ult attack.
         if (cp.CommonData.classRefs.st_cur == cp.HumdData.classRefs.actSts.atk_FlyingAtk)
             return;
         foreach(var hitResult in hitResults) {
             // We increase ult meter for each hit that dealt damage.
             if (hitResult.dmgDealt > 0)
-                curUlt = Mathf.Min(config.maxUlt, curUlt + 1);
-            if(curUlt == config.maxUlt) {
+                curUlt = Mathf.Min(maxUlt, curUlt + 1);
+            if(curUlt == maxUlt) {
                 // TODO: Play some effect etc?
                 break;
             }
         }
         //Debug.Log($"Updated Ult meter to: {curUlt}");
-        HudMgr.inst.SetUlt(curUlt, config.maxUlt);
+        HudMgr.inst.SetUlt(curUlt, maxUlt);
     }
 
     void OnPlrMarkedForPendingUnregister() {
@@ -62,6 +63,7 @@ public class PlrMgr : Singleton<PlrMgr>{
 
     public void SetPlr(CpHumdHandle cp) {
         Debug.Assert(this.cp == null, "Player already set!");
+        int maxUlt = Db.GetPlrCpConfig(plrCpConfigId).maxUlt;
         this.cp = cp;
         ref var commonData = ref cp.CommonData;
         commonData.action_HitSomething += OnPlrHitSomething;
@@ -70,15 +72,16 @@ public class PlrMgr : Singleton<PlrMgr>{
         commonData.action_MarkedForPendingUnregister += OnPlrMarkedForPendingUnregister;
         HudMgr.inst.SetHp(commonData.hp_Cur, cp.CpCommonConfig.hp_Max);
         HudMgr.inst.ResetYellowTrail();
-        HudMgr.inst.SetUlt(0, config.maxUlt);
+        HudMgr.inst.SetUlt(0, maxUlt);
     }
 
     public bool TryConsumeUltMeter() {
         //Debug.Log($"Plr tried to consume ult meter. {nameof(curUlt)}: {curUlt}, " 
         //    + $"{nameof(config.maxUlt)}: {config.maxUlt}.");
-        if (curUlt == config.maxUlt) {
+        int maxUlt = Db.GetPlrCpConfig(plrCpConfigId).maxUlt;
+        if (curUlt == maxUlt) {
             curUlt = 0;
-            HudMgr.inst.SetUlt(curUlt, config.maxUlt);
+            HudMgr.inst.SetUlt(curUlt, maxUlt);
             return true;
         }
         return false;
