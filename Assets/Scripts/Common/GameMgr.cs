@@ -61,6 +61,10 @@ public class GameMgr : Singleton<GameMgr> {
         if (gameOver)
             UpdateGameOver();
         float dt = Time.deltaTime;
+        Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
+        // NOTE: When using the Recorder, delta time can be zero, so guard it here:
+        if (dt == 0)
+            dt = 0.0001f;
         // NOTE: Ai needs to be ticked before CpMgr for the ai ctrl input to work properly.
         AiCtrlMgr.inst.Tick(dt);
         CpHumdMgr.inst.Tick(dt);
@@ -69,8 +73,13 @@ public class GameMgr : Singleton<GameMgr> {
     }
 
     void LateUpdate() {
-        CpHumdMgr.inst.LateTick(Time.deltaTime);
-        CpFlyingHeadMgr.inst.LateTick(Time.deltaTime);
+        float dt = Time.deltaTime;
+        Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
+        // NOTE: When using the Recorder, delta time can be zero, so guard it here:
+        if (dt == 0)
+            dt = 0.0001f;
+        CpHumdMgr.inst.LateTick(dt);
+        CpFlyingHeadMgr.inst.LateTick(dt);
         CamMgr.inst.LateTick();
         WldHpBarMgr.inst.LateTick();
         PlrMgr.inst.LateTick();

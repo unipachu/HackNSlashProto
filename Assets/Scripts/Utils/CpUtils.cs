@@ -1,5 +1,4 @@
 using System;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -81,14 +80,17 @@ public static class CpUtils{
                 !float.IsNaN(commonData[i].vel_Hor.x) && !float.IsNaN(commonData[i].vel_Hor.y),
                 $"{i} vel_hor had NaN: {commonData[i].vel_Hor}"
             );
-            //Debug.Log($"UpdateMov: data.vel_Hor before calculations: {data.vel_Hor}");
+            Dbg.Log(
+                $"UpdateMov: data.vel_Hor before calculations: {commonData[i].vel_Hor}",
+                commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            );
             commonData[i].vel_Hor = Vector2.MoveTowards(
                 commonData[i].vel_Hor,
                 commonData[i].movInput_tgtHorDir * commonData[i].movInput_tgtHorSpd,
                 commonData[i].movInput_horAcc * dt
             );
             // Skip rotation if character is already rotated towards linear movement target direction.
-            if (math.lengthsq(commonData[i].movInput_tgtHorDir) > 0.0001f) {
+            if (!commonData[i].movInput_tgtHorDir.IsZeroOrNearlyZero()) {
                 commonData[i].handle.Go.transform.rotation = TrfMathUtils.RotateFwdTowardsTgt(
                     commonData[i].handle.Go.transform.rotation,
                     dt,
@@ -108,10 +110,17 @@ public static class CpUtils{
             // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
             Vector3 totalMov = (Vector3)commonData[i].movInput_additionalLinMov
                 + new Vector3(commonData[i].vel_Hor.x, commonData[i].vel_Ver, commonData[i].vel_Hor.y) * dt;
-            //Debug.Log($"UpdateMov: totalMov: {totalMov}");
+            Dbg.Log(
+                $"UpdateMov: totalMov: {totalMov}",
+                commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            );
             commonData[i].handle.Cc.Move(totalMov);
             // Save final velocity back to cp data.
-            commonData[i].vel_Hor = new float2(totalMov.x, totalMov.z) / dt;
+            commonData[i].vel_Hor = new Vector2(totalMov.x, totalMov.z) / dt;
+            Dbg.Log(
+                $"Save final velocity back to cp data. Vel hor: {commonData[i].vel_Hor}",
+                commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            );
             commonData[i].vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
             commonData[i].handle.NavMeshAgent.nextPosition = commonData[i].handle.Go.transform.position;
