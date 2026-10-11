@@ -35,15 +35,20 @@ public class SpringMov : MonoBehaviour {
     public bool startAtTgt = true;
     public Vector3 tgtPosWldOfs = Vector3.zero;
     public Vector3 tgtPosOfsInTgtSpc = Vector3.zero;
+    [Tooltip("If no target is set, should this try to find a target?")]
+    public bool tryFindFollowTgt = false;
+    [Tooltip("Name of the follow target. Tries to find an object of this name if " + nameof(tryFindFollowTgt)
+        + " is set to true.")]
+    public string tgtObjName = "Plr";
 
     [Header("Refs")]
-    [Tooltip("(Recommended but optional) Rigidbody to be moved with Rigidbody.Move in FixedUpdate." +
-        "Should be KINEMATIC for stable spring calculations and interpolation. " +
+    [Tooltip("(Recommended but optional) Rigidbody of this object to be moved with Rigidbody.Move in " +
+        "FixedUpdate. Should be KINEMATIC for stable spring calculations and interpolation. " +
         "If empty, moves Transform directly in Update which can cause unstable movement " +
         "calculations if framerate is not stable!")]
-    [SerializeField] Rigidbody optionalRb;
+    [SerializeField] Rigidbody thisRb;
     [Tooltip("Target for the spring.")]
-    public Transform tgt;
+    public Transform followTgt;
 
     Vector3 linVel;
     Vector3 angVel;
@@ -53,19 +58,29 @@ public class SpringMov : MonoBehaviour {
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
-        tgtPrevPose = new(TgtPos(), tgt.rotation);
+        if (followTgt == null)
+            return;
+        tgtPrevPose = new(TgtPos(), followTgt.rotation);
         if (startAtTgt) {
             transform.position = TgtPos();
-            transform.rotation = tgt.rotation;
-            if (optionalRb != null) {
-                optionalRb.position = TgtPos();
-                optionalRb.rotation = tgt.rotation;
+            transform.rotation = followTgt.rotation;
+            if (thisRb != null) {
+                thisRb.position = TgtPos();
+                thisRb.rotation = followTgt.rotation;
             }
         }
     }
 
     void Update() {
-        if (optionalRb != null)
+        if (tryFindFollowTgt && followTgt == null) {
+            var tgtCandidate = GameObject.Find(tgtObjName);
+            if (tgtCandidate == null)
+                return;
+            followTgt = tgtCandidate.transform;
+        }
+        if (followTgt == null)
+            return;
+        if (thisRb != null)
             return;
         UpdateTgtMotSt(Time.deltaTime);
         Vector3 trfPos = transform.position;
@@ -78,7 +93,7 @@ public class SpringMov : MonoBehaviour {
             tgtLinVel,
             tgtAngVel,
             TgtPos(),
-            tgt.rotation,
+            followTgt.rotation,
             Time.deltaTime,
             linSpring,
             maxLinSpringAcc,
@@ -97,15 +112,17 @@ public class SpringMov : MonoBehaviour {
         );
         transform.SetPositionAndRotation(trfPos, trfRot);
         // Update tgt prev pose.
-        tgtPrevPose = new(TgtPos(), tgt.rotation);
+        tgtPrevPose = new(TgtPos(), followTgt.rotation);
     }
 
     void FixedUpdate() {
-        if (optionalRb == null)
+        if (followTgt == null)
+            return;
+        if (thisRb == null)
             return;
         UpdateTgtMotSt(Time.fixedDeltaTime);
-        Vector3 rbPos = optionalRb.position;
-        Quaternion rbRot = optionalRb.rotation;
+        Vector3 rbPos = thisRb.position;
+        Quaternion rbRot = thisRb.rotation;
         MathUtils.UpdateSpringTrf(
             ref rbPos,
             ref rbRot,
@@ -114,7 +131,7 @@ public class SpringMov : MonoBehaviour {
             tgtLinVel,
             tgtAngVel,
             TgtPos(),
-            tgt.rotation,
+            followTgt.rotation,
             Time.fixedDeltaTime,
             linSpring,
             maxLinSpringAcc,
@@ -131,15 +148,15 @@ public class SpringMov : MonoBehaviour {
             maxAngDragDamperAcc,
             maxTotalAngAcc
         );
-        optionalRb.Move(rbPos, rbRot);
+        thisRb.Move(rbPos, rbRot);
         // Update tgt prev pose.
-        tgtPrevPose = new(TgtPos(), tgt.rotation);
+        tgtPrevPose = new(TgtPos(), followTgt.rotation);
     }
 
     Vector3 TgtPos()
-        => tgt.position
+        => followTgt.position
         + tgtPosWldOfs
-        + tgtPosOfsInTgtSpc.TrfPtUnscaled(tgt) - tgt.position;
+        + tgtPosOfsInTgtSpc.TrfPtUnscaled(followTgt) - followTgt.position;
 
     /// <summary>
     /// Saves target linear and angular velocities.
@@ -150,7 +167,7 @@ public class SpringMov : MonoBehaviour {
             // Linear velocity.
             tgtLinVel = (TgtPos() - tgtPrevPose.position) / dt;
             // Angular velocity.
-            tgtAngVel = MathUtils.AngVel(tgtPrevPose.rotation, tgt.rotation, dt);
+            tgtAngVel = MathUtils.AngVel(tgtPrevPose.rotation, followTgt.rotation, dt);
         }
         else {
             tgtLinVel = Vector3.zero;

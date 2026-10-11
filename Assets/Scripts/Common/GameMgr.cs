@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameMgr : Singleton<GameMgr> {
-    [SerializeField] PlrCtrl plrMgr;
     [SerializeField] CpHumdHandle plrPrefab;
     [SerializeField] Transform spawnPoint;
 
@@ -48,7 +47,7 @@ public class GameMgr : Singleton<GameMgr> {
         //    $"CamMgr.inst={CamMgr.inst}, " +
         //    $"cam={(CamMgr.inst != null ? CamMgr.inst.cam : null)}"
         //);
-        plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, plrMgr, CamMgr.inst.cam);
+        plrCp = CpFactory.SpawnPlrCpAtSpawnPt(plrPrefab, spawnPoint, PlrCtrl.inst, CamMgr.inst.cam);
         plrCp.CommonData.action_Died += OnPlrDied;
         EnemyWaveMgr.inst.StartSpawningWaves(true);
     }
