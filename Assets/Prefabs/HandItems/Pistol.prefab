@@ -800,19 +800,10 @@ MonoBehaviour:
   aimLaser: {fileID: 0}
   comboGraphT: 4
   meleeHitDealer: {fileID: 5092167040023849340}
-  meleeHitEffects:
-    dmg: 1
-    hitT: 0
-    knockbackT: 1
-    knockbackStr: 1
-  projHitEffects:
-    dmg: 1
-    hitT: 0
-    knockbackT: 1
-    knockbackStr: 1
+  hitEffectsConfigId: Pistol
   homingProjData:
-    spd: 10
-    maxLifetime: 4
+    spd: 7
+    maxLifetime: 3
     homingStr: 2
   projSpawnPose: {fileID: 4093082790708201532}
   projT: 1

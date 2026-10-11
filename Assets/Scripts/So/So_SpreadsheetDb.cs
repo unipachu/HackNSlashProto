@@ -13,6 +13,8 @@ public class So_SpreadsheetDb : SpreadsheetContainerBase {
     [SerializeField] List<DbRow_CpFlyingHeadConfig> cpFlyingHeadConfig;
     [Sheet("CpHumdConfig")]
     [SerializeField] List<DbRow_CpHumdConfig> cpHumdConfig;
+    [Sheet("HitEffectsConfig")]
+    [SerializeField] List<DbRow_HitEffectsConfig> hitEffectsConfig;
     // TODO MINOR: Some data only recuires one row. Now all sheets are made into lists, but there could be
     // C: support of individual row fields too.
     [Sheet("PlrCpConfig")]
@@ -23,6 +25,7 @@ public class So_SpreadsheetDb : SpreadsheetContainerBase {
     public SheetLookup<DbRow_CpCommonConfig> cpCommonConfigLookup;
     public SheetLookup<DbRow_CpFlyingHeadConfig> cpFlyingHeadConfigLookup;
     public SheetLookup<DbRow_CpHumdConfig> cpHumdConfigLookup;
+    public SheetLookup<DbRow_HitEffectsConfig> hitEffectsConfigLookup;
     public SheetLookup<DbRow_PlrCpConfig> plrCpConfigLookup;
 
     public override void RebuildLookups() {
@@ -31,6 +34,7 @@ public class So_SpreadsheetDb : SpreadsheetContainerBase {
         cpCommonConfigLookup = new SheetLookup<DbRow_CpCommonConfig>(cpCommonConfig);
         cpFlyingHeadConfigLookup = new SheetLookup<DbRow_CpFlyingHeadConfig>(cpFlyingHeadConfig);
         cpHumdConfigLookup = new SheetLookup<DbRow_CpHumdConfig> (cpHumdConfig);
+        hitEffectsConfigLookup = new SheetLookup<DbRow_HitEffectsConfig> (hitEffectsConfig);
         plrCpConfigLookup = new SheetLookup<DbRow_PlrCpConfig> (plrCpConfig);
     }
 }

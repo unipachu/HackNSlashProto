@@ -10,6 +10,7 @@ public class GameSettings : Singleton<GameSettings>{
     public float lookPointerSensitivity = 0.001f;
     [Tooltip("Squared deadzone for the left stick.")]
     public float movInputSqrDeadzone = 0.2f;
+    public bool lockCursorToWindowAndHideCursor = true;
 
     [Header("Display and Graphics")]
     [Tooltip("-1 = content is rendered unsynchronized as fast as possible\n" +

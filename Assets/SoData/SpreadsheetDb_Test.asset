@@ -70,7 +70,7 @@ MonoBehaviour:
     melee3HorHit_Recovery2Dur: -1
     meleeSingleHorHit_Windup: -1
     meleeSingleHorHit_Impact: -1
-    meleeSingleHorHit_Recovery: -1
+    meleeSingleHorHit_Recovery: 1
     meleeSingleVerHit_Windup: -1
     meleeSingleVerHit_Impact: -1
     meleeSingleVerHit_Recovery: -1
@@ -172,7 +172,7 @@ MonoBehaviour:
     ignoredKnockback: 0
     knockbackStrMult: 1
     team: 0
-    enableDbgMsgs: 1
+    enableDbgMsgs: 0
   - id: Sniper
     displayName: Sniper Enemy
     falling_HorAcc: 10
@@ -267,6 +267,32 @@ MonoBehaviour:
     act_Falling_LandingStFallDistThreshold: 2
     act_Dodge_YawAngSpd: 400
     act_Dodge_HorMovSpdMult: 1.5
+  hitEffectsConfig:
+  - id: Club
+    dmg: 1
+    hitT: 0
+    knockbackT: 1
+    knockbackStr: 1
+  - id: Hammer
+    dmg: 1
+    hitT: 0
+    knockbackT: 1
+    knockbackStr: 1
+  - id: Pistol
+    dmg: 1
+    hitT: 0
+    knockbackT: 1
+    knockbackStr: 1
+  - id: Sniper
+    dmg: 2
+    hitT: 3
+    knockbackT: 1
+    knockbackStr: 1
+  - id: Sword
+    dmg: 1
+    hitT: 1
+    knockbackT: 1
+    knockbackStr: 2
   plrCpConfig:
   - id: Plr
     maxUlt: 5

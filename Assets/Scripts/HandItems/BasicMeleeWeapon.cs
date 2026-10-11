@@ -7,12 +7,18 @@ public class BasicMeleeWeapon : MonoBehaviour, IHandItem_Comboer, IHandItem_Hitt
 
     [SerializeField] ComboGraphT comboGraphT;
     [SerializeField] HitDealer_CapsuleSubstepper hitDealer;
-    [SerializeField] HitEffects hitEffects = new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1);
+    [SerializeField] string hitEffectsConfigId = "";
 
     List<IComboNode_CpHumanoid> comboGraph;
 
     public IHitDealer HitDealer => hitDealer;
-    public HitEffects HitEffects => hitEffects;
+    public HitEffects HitEffects
+        => new(
+            Db.GetHitEffectsConfig(hitEffectsConfigId).dmg,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).hitT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackStr
+        );
     public IComboNode_CpHumanoid LShldrComboStart => null;
     public IComboNode_CpHumanoid RShldrComboStart => comboGraph[0];
     public IComboNode_CpHumanoid RTrgComboStart => null;

@@ -12,8 +12,7 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
     // C: of a weapon (and call them "base hit effects" or similar") and then to those add values from the
     // C: weapon instance stats (like added dmg, affinities etc) and finally add values/effects from the
     // C: player's stats, like bonuses from player level. Or do those in the opposite order.
-    [SerializeField] HitEffects meleeHitEffects = new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1);
-    [SerializeField] HitEffects projHitEffects = new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1);
+    [SerializeField] string hitEffectsConfigId = "";
     [SerializeField] HomingProjData homingProjData = new(10, 4, 0.5f);
     [SerializeField] Transform projSpawnPose;
     [SerializeField] ProjT projT;
@@ -22,12 +21,24 @@ public class BasicGun : MonoBehaviour, IHandItem_Hitter, IHandItem_ProjectileSpa
 
     public AimLaser AimLaser => aimLaser;
     public IHitDealer HitDealer => meleeHitDealer;
-    public HitEffects HitEffects => meleeHitEffects;
+    public HitEffects HitEffects // TODO MINOR: Use separate data for melee hit effects.
+        => new(
+            Db.GetHitEffectsConfig(hitEffectsConfigId).dmg,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).hitT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackStr
+        );
     public HomingProjData HomingProjData => homingProjData;
     public IComboNode_CpHumanoid LShldrComboStart => null;
     public IComboNode_CpHumanoid RShldrComboStart => comboGraph[0];
     public IComboNode_CpHumanoid RTrgComboStart => null;
-    public HitEffects ProjHitEffects => projHitEffects;
+    public HitEffects ProjHitEffects
+        => new(
+            Db.GetHitEffectsConfig(hitEffectsConfigId).dmg,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).hitT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackT,
+            Db.GetHitEffectsConfig(hitEffectsConfigId).knockbackStr
+        );
     public Transform ProjSpawnPoseTrf => projSpawnPose;
     public ProjT ProjT => projT;
     public Transform Trf => transform;

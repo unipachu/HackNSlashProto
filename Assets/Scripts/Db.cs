@@ -29,4 +29,8 @@ public class Db : Singleton<Db>{
     public static DbRow_PlrCpConfig GetPlrCpConfig(string id) {
         return inst.db.plrCpConfigLookup.Get(id);
     }
+
+    public static DbRow_HitEffectsConfig GetHitEffectsConfig(string id) {
+        return inst.db.hitEffectsConfigLookup.Get(id);
+    }
 }

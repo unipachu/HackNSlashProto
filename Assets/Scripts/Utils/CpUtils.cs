@@ -68,22 +68,22 @@ public static class CpUtils{
         for (int i = 0; i < usedLength; i++) {
             if (commonData[i].pendingUnregister)
                 continue;
-            Dbg.Log(
-                $"tgtHorSpd: {commonData[i].movInput_tgtHorSpd} "
-                + $"| additionalLinMov: {commonData[i].movInput_additionalLinMov} \n"
-                + $"| tgtHorDir: {commonData[i].movInput_tgtHorDir} "
-                + $"| horAcc: {commonData[i].movInput_horAcc} "
-                + $"| yawSpd {commonData[i].movInput_yawSpd}",
-                commonData[i].handle.CpCommonConfig.enableDbgMsgs
-            );
+            //Dbg.Log(
+            //    $"tgtHorSpd: {commonData[i].movInput_tgtHorSpd} "
+            //    + $"| additionalLinMov: {commonData[i].movInput_additionalLinMov} \n"
+            //    + $"| tgtHorDir: {commonData[i].movInput_tgtHorDir} "
+            //    + $"| horAcc: {commonData[i].movInput_horAcc} "
+            //    + $"| yawSpd {commonData[i].movInput_yawSpd}",
+            //    commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            //);
             Debug.Assert(
                 !float.IsNaN(commonData[i].vel_Hor.x) && !float.IsNaN(commonData[i].vel_Hor.y),
                 $"{i} vel_hor had NaN: {commonData[i].vel_Hor}"
             );
-            Dbg.Log(
-                $"UpdateMov: data.vel_Hor before calculations: {commonData[i].vel_Hor}",
-                commonData[i].handle.CpCommonConfig.enableDbgMsgs
-            );
+            //Dbg.Log(
+            //    $"UpdateMov: data.vel_Hor before calculations: {commonData[i].vel_Hor}",
+            //    commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            //);
             commonData[i].vel_Hor = Vector2.MoveTowards(
                 commonData[i].vel_Hor,
                 commonData[i].movInput_tgtHorDir * commonData[i].movInput_tgtHorSpd,
@@ -110,17 +110,17 @@ public static class CpUtils{
             // NOTE: Additional linear movement is used to apply animation root delta lin movement (9.9.2026)
             Vector3 totalMov = (Vector3)commonData[i].movInput_additionalLinMov
                 + new Vector3(commonData[i].vel_Hor.x, commonData[i].vel_Ver, commonData[i].vel_Hor.y) * dt;
-            Dbg.Log(
-                $"UpdateMov: totalMov: {totalMov}",
-                commonData[i].handle.CpCommonConfig.enableDbgMsgs
-            );
+            //Dbg.Log(
+            //    $"UpdateMov: totalMov: {totalMov}",
+            //    commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            //);
             commonData[i].handle.Cc.Move(totalMov);
             // Save final velocity back to cp data.
             commonData[i].vel_Hor = new Vector2(totalMov.x, totalMov.z) / dt;
-            Dbg.Log(
-                $"Save final velocity back to cp data. Vel hor: {commonData[i].vel_Hor}",
-                commonData[i].handle.CpCommonConfig.enableDbgMsgs
-            );
+            //Dbg.Log(
+            //    $"Save final velocity back to cp data. Vel hor: {commonData[i].vel_Hor}",
+            //    commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            //);
             commonData[i].vel_Ver = totalMov.y / dt;
             // NavMeshAgent will drift away from the capsule pawn transform if you don't set it back here.
             commonData[i].handle.NavMeshAgent.nextPosition = commonData[i].handle.Go.transform.position;

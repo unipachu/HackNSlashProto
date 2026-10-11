@@ -43,7 +43,7 @@ MonoBehaviour:
     forceNextWaveAtEnemyCount: -1
   - name: 
     enemies:
-    - aiCpConfigId: Sword
+    - aiCpConfigId: FlyingHead
       amount: 1
     timeUntilNextWave: 1
     blockNextWaveAtEnemyCount: 2
@@ -92,7 +92,7 @@ MonoBehaviour:
     forceNextWaveAtEnemyCount: -1
   - name: 
     enemies:
-    - aiCpConfigId: Sword
+    - aiCpConfigId: FlyingHead
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 3
@@ -124,4 +124,74 @@ MonoBehaviour:
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 4
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sword
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 4
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Pistol
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 5
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Pistol
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 5
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sniper
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 6
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sniper
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 6
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sniper
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 6
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sword
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 6
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sword
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 6
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sword
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 7
+    forceNextWaveAtEnemyCount: -1
+  - name: 
+    enemies:
+    - aiCpConfigId: Sword
+      amount: 1
+    timeUntilNextWave: 0
+    blockNextWaveAtEnemyCount: 7
     forceNextWaveAtEnemyCount: -1

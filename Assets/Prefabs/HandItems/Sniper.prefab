@@ -961,16 +961,7 @@ MonoBehaviour:
   aimLaser: {fileID: 5295744257320935573}
   comboGraphT: 0
   meleeHitDealer: {fileID: 5092167040023849340}
-  meleeHitEffects:
-    dmg: 1
-    hitT: 0
-    knockbackT: 1
-    knockbackStr: 1
-  projHitEffects:
-    dmg: 2
-    hitT: 3
-    knockbackT: 1
-    knockbackStr: 1
+  hitEffectsConfigId: Sniper
   homingProjData:
     spd: 40
     maxLifetime: 2

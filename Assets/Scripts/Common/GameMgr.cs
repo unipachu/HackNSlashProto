@@ -102,6 +102,10 @@ public class GameMgr : Singleton<GameMgr> {
     static void ApplySettings() {
         Application.targetFrameRate = GameSettings.inst.targetFrameRate;
         QualitySettings.vSyncCount = GameSettings.inst.vSyncCount;
+        if (GameSettings.inst.lockCursorToWindowAndHideCursor) {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
     /// <summary>
