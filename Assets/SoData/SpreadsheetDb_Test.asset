@@ -152,7 +152,7 @@ MonoBehaviour:
     ignoredKnockback: 0
     knockbackStrMult: 1
     team: 0
-    enableDbgMsgs: 0
+    enableDbgMsgs: 1
   - id: Sniper
     displayName: Sniper Enemy
     falling_HorAcc: 10

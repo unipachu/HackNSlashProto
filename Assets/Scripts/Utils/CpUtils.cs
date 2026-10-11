@@ -69,14 +69,14 @@ public static class CpUtils{
         for (int i = 0; i < usedLength; i++) {
             if (commonData[i].pendingUnregister)
                 continue;
-            //Dbg.Log(
-            //    $"tgtHorSpd: {cpData.movInput_tgtHorSpd} "
-            //    + $"| additionalLinMov: {cpData.movInput_additionalLinMov} \n"
-            //    + $"| tgtHorDir: {cpData.movInput_tgtHorDir} "
-            //    + $"| horAcc: {cpData.movInput_horAcc} "
-            //    + $"| yawSpd {cpData.movInput_yawSpd}",
-            //    cpData.enableDbgMsgs
-            //);
+            Dbg.Log(
+                $"tgtHorSpd: {commonData[i].movInput_tgtHorSpd} "
+                + $"| additionalLinMov: {commonData[i].movInput_additionalLinMov} \n"
+                + $"| tgtHorDir: {commonData[i].movInput_tgtHorDir} "
+                + $"| horAcc: {commonData[i].movInput_horAcc} "
+                + $"| yawSpd {commonData[i].movInput_yawSpd}",
+                commonData[i].handle.CpCommonConfig.enableDbgMsgs
+            );
             Debug.Assert(
                 !float.IsNaN(commonData[i].vel_Hor.x) && !float.IsNaN(commonData[i].vel_Hor.y),
                 $"{i} vel_hor had NaN: {commonData[i].vel_Hor}"

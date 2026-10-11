@@ -251,12 +251,19 @@ public static class SpreadsheetImporter{
             return string.IsNullOrEmpty(value)
                 ? 0d
                 : double.Parse(value, CultureInfo.InvariantCulture);
-        if (targetType == typeof(bool)){
+        if (targetType == typeof(bool)) {
             if (string.IsNullOrEmpty(value))
                 return false;
-            return value.Equals("true", StringComparison.OrdinalIgnoreCase) ||
-                   value.Equals("yes", StringComparison.OrdinalIgnoreCase) ||
-                   value == "1";
+            if (bool.TryParse(value, out bool boolValue))
+                return boolValue;
+            if (value.Equals("yes", StringComparison.OrdinalIgnoreCase) || value == "1")
+                return true;
+            if (value.Equals("no", StringComparison.OrdinalIgnoreCase) || value == "0")
+                return false;
+            throw new FormatException(
+                $"Sheet '{sheetName}', row {rowNumber}, column '{columnName}': "
+                + $"'{value}' is not a recognized boolean value."
+            );
         }
         if (targetType.IsEnum){
             if (string.IsNullOrWhiteSpace(value))

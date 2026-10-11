@@ -43,18 +43,18 @@ public class CpHumdMgr : Singleton<CpHumdMgr> {
         newCommonData.classRefs = new Cp_NonUnityObjClassRefs(null); ;
         newCommonData.curStDur = 0;
         newCommonData.groundCastHitSomething = false;
-        newCommonData.groundCastNrm = float3.zero;
+        newCommonData.groundCastNrm = Vector3.zero;
         newCommonData.handle = newCp;
         newCommonData.hp_Cur = newCp.CpCommonConfig.hp_Max;
-        newCommonData.input_mov = float2.zero;
-        newCommonData.input_mov_LastNonZero = float2.zero;
-        newCommonData.input_mov_WhenLastSwitchedSt = float2.zero;
+        newCommonData.input_mov = Vector2.zero;
+        newCommonData.input_mov_LastNonZero = Vector2.zero;
+        newCommonData.input_mov_WhenLastSwitchedSt = Vector2.zero;
         newCommonData.ignoreHits = false;
         newCommonData.isAffectedByGravity = true;
         newCommonData.isGrounded = true;
         newCommonData.lastKnockbackStr = 0;
-        newCommonData.lastRecievedHitDir = float3.zero;
-        newCommonData.vel_Hor = float2.zero;
+        newCommonData.lastRecievedHitDir = Vector3.zero;
+        newCommonData.vel_Hor = Vector2.zero;
         newCommonData.vel_Ver = 0;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026) TODO: Put this into global variables.
         newCommonData.navTgtInfo = new(false, false, 0.2f);

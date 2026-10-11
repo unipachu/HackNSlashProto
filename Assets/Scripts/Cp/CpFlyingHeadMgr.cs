@@ -41,18 +41,18 @@ public class CpFlyingHeadMgr : Singleton<CpFlyingHeadMgr> {
         newCommonData.classRefs = new Cp_NonUnityObjClassRefs(null);
         newCommonData.curStDur = 0;
         newCommonData.groundCastHitSomething = false;
-        newCommonData.groundCastNrm = Unity.Mathematics.float3.zero;
+        newCommonData.groundCastNrm = Vector3.zero;
         newCommonData.handle = newCp;
         newCommonData.hp_Cur = newCp.CpCommonConfig.hp_Max;
-        newCommonData.input_mov = Unity.Mathematics.float2.zero;
-        newCommonData.input_mov_LastNonZero = Unity.Mathematics.float2.zero;
-        newCommonData.input_mov_WhenLastSwitchedSt = Unity.Mathematics.float2.zero;
+        newCommonData.input_mov = Vector2.zero;
+        newCommonData.input_mov_LastNonZero = Vector2.zero;
+        newCommonData.input_mov_WhenLastSwitchedSt = Vector2.zero;
         newCommonData.ignoreHits = false;
         newCommonData.isAffectedByGravity = true;
         newCommonData.isGrounded = true;
         newCommonData.lastKnockbackStr = 0;
-        newCommonData.lastRecievedHitDir = Unity.Mathematics.float3.zero;
-        newCommonData.vel_Hor = Unity.Mathematics.float2.zero;
+        newCommonData.lastRecievedHitDir = Vector3.zero;
+        newCommonData.vel_Hor = Vector2.zero;
         newCommonData.vel_Ver = 0;
         // NOTE: We set default maxDistToNavMesh to 0.2! (10.9.2026) TODO: Put this into global variables.
         newCommonData.navTgtInfo = new(false, false, 0.2f);
