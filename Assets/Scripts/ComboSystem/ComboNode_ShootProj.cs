@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 
 public class ComboNode_ShootProj : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
+    float animDur;
     IHandItem_ProjectileSpawner projSpawner;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_ShootProj(CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+    public ComboNode_ShootProj(float animDur, CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
         IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)ctx;
         Debug.Assert(
@@ -21,6 +23,7 @@ public class ComboNode_ShootProj : IComboNode_CpHumanoid, IComboNodeTransitionsH
     public Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp) {
         ComboNode_ShootProj thisNode = this;
         return () => cp.HumdData.classRefs.actSts.comboBranch_ShootHomingProj.Enter(
+            animDur,
             thisNode,
             thisNode.projSpawner.ProjHitEffects,
             thisNode.projSpawner.HomingProjData,

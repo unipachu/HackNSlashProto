@@ -18,6 +18,7 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
         => true;
 
     public CpSt_ComboBranch_ShootHomingProj Enter(
+        float animDur,
         IComboNode_CpHumanoid comboNode,
         HitEffects hitEffects,
         HomingProjData homingProjData,
@@ -35,7 +36,10 @@ public class CpSt_ComboBranch_ShootHomingProj : IFsmSt_Cp{
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.anim,
             CpHumdAnimInfoFactory.Construct(CpHumanoidAnimInfoT.atk_GunShoot_Windup),
-            0.1f
+            0.1f,
+            0,
+            true,
+            animDur
         );
         return this;
     }

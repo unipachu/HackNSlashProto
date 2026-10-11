@@ -20,7 +20,7 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_ComboEnd_BasicRecovery Enter(AnimInfo animInfo) {
+    public CpSt_ComboEnd_BasicRecovery Enter(float animDur,AnimInfo animInfo) {
         ref var commonData = ref cpHumd.CommonData;
         inputMovAllowedNrmTime = -1;
         commonData.comboAllowed = false;
@@ -29,7 +29,10 @@ public class CpSt_ComboEnd_BasicRecovery : IFsmSt_Cp {
             ref commonData.animEventPlrData,
             cpHumd.anim,
             animInfo,
-            0.1f
+            0.1f,
+            0,
+            true,
+            animDur
         );
         return this;
     }

@@ -37,7 +37,7 @@ MonoBehaviour:
     atkRange: 3
     cpPrefab:
       underlyingValue: {fileID: 5618025912820416612, guid: 66f44b0788edcb743a24699e022325d2, type: 3}
-    btT: 0
+    btT: 1
   - id: Pistol
     aggroRange: 9999
     atkRange: 8
@@ -56,6 +56,26 @@ MonoBehaviour:
     cpPrefab:
       underlyingValue: {fileID: 3889575032266491499, guid: dedfb3ce99c0d3441ab4463e44084de2, type: 3}
     btT: 0
+  comboAnimDurConfig:
+  - id: Default
+    laserAimNShoot_WindupDur: -1
+    laserAimNShoot_AimDur: 1.5
+    laserAimNShoot_RecoveryDur: -1
+    melee3HorHit_Windup0Dur: 0.1
+    melee3HorHit_Impact0Dur: 0.4
+    melee3HorHit_Recovery0Dur: -1
+    melee3HorHit_Impact1Dur: 0.4
+    melee3HorHit_Recovery1Dur: -1
+    melee3HorHit_Impact2Dur: 0.4
+    melee3HorHit_Recovery2Dur: -1
+    meleeSingleHorHit_Windup: -1
+    meleeSingleHorHit_Impact: -1
+    meleeSingleHorHit_Recovery: -1
+    meleeSingleVerHit_Windup: -1
+    meleeSingleVerHit_Impact: -1
+    meleeSingleVerHit_Recovery: -1
+    shootProj_Windup: -1
+    shootProj_Recovery: -1
   cpCommonConfig:
   - id: Club
     displayName: Club Enemy
@@ -185,6 +205,11 @@ MonoBehaviour:
     knockbackStrMult: 1
     team: 1
     enableDbgMsgs: 0
+  cpFlyingHeadConfig:
+  - id: Default
+    dash_ImpactDur: 0.7
+    dash_RecoveryDur: 1
+    dash_WindupDur: 1
   cpHumdConfig:
   - id: Club
     cooldownDur_Dodge: 0.2
@@ -221,7 +246,7 @@ MonoBehaviour:
   - id: Plr
     cooldownDur_Dodge: 0.2
     rHandItem: 4
-    act_AtkFlying_TgtHorSpeed: 0
+    act_AtkFlying_TgtHorSpeed: 2
     act_AtkJump_DownSpeedAfterJumpFinished: 10
     act_Falling_LandingStFallDistThreshold: 2
     act_Dodge_YawAngSpd: 400
@@ -244,4 +269,4 @@ MonoBehaviour:
     act_Dodge_HorMovSpdMult: 1.5
   plrCpConfig:
   - id: Plr
-    maxUlt: 2
+    maxUlt: 5

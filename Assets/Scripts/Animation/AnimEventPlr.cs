@@ -29,13 +29,17 @@ public static class AnimEventPlr {
     /// <param name="fireEventsBeforeStartOffset">
     /// Should we fire animations before start offset during first tick?
     /// </param>
+    /// <param name="animTotalDurInSec">
+    /// Duration of the animation in seconds. Set to -1 if you want the animation to play at default speed.
+    /// </param>
     public static void CrossFadeInFixedTimeNInitAnimEventPlr(
         ref AnimEventPlrData animEventPlrData,
         Animator anim,
         AnimInfo animInfo,
         float fixedTransDur = 0.1f,
         float fixedTimeOffset = 0,
-        bool fireEventsBeforeStartOffset = true
+        bool fireEventsBeforeStartOffset = true,
+        float animTotalDurInSec = -1
     ) {
         //Debug.Log($"Called crossfade to anim: {animInfo.shortNameHash}, with nrmTransDur: {fixedTransDur}, and "
         //    + $"startOffset: {fixedTimeOffset}.");
@@ -45,6 +49,10 @@ public static class AnimEventPlr {
             animInfo.animLayer,
             fixedTimeOffset
         );
+        if (animTotalDurInSec == -1)
+            anim.speed = 1;
+        else
+            anim.speed = (animInfo.lastFrame + 1) / (30 * animTotalDurInSec);
         float nrmStartOffset = AnimUtils.TimeIntoAnimationToNormalizedTime(
             fixedTimeOffset,
             animInfo.lastFrame,

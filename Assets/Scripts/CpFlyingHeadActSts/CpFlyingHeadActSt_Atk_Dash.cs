@@ -5,6 +5,8 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
     CpFlyingHeadHandle cpFlyingHead;
     IHitDealer hitDealer;
     HitEffects hitEffects;
+    float impactDur;
+    float recoveryDur;
 
     public CpFlyingHeadActSt_Atk_Dash(CpFlyingHeadHandle cpFlyingHead) {
         this.cpFlyingHead = cpFlyingHead;
@@ -13,7 +15,13 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpFlyingHeadActSt_Atk_Dash Enter(HitEffects hitEffects, IHitDealer hitDealer) {
+    public CpFlyingHeadActSt_Atk_Dash Enter(
+        HitEffects hitEffects,
+        IHitDealer hitDealer,
+        float impactDur,
+        float recoveryDur,
+        float windupDur
+    ) {
         ref var commonData = ref cpFlyingHead.CommonData;
         this.hitEffects = hitEffects;
         this.hitDealer = hitDealer;
@@ -22,8 +30,13 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
             ref commonData.animEventPlrData,
             cpFlyingHead.anim,
             CpFlyingHeadAnimInfoFactory.Construct(CpFlyingHeadAnimInfoT.atk_DashAtk_Windup),
-            0.1f
+            0.1f,
+            0,
+            true,
+            windupDur
         );
+        this.impactDur = impactDur;
+        this.recoveryDur = recoveryDur;
         return this;
     }
 
@@ -41,7 +54,11 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
                             ref commonData.animEventPlrData,
                             cpFlyingHead.anim,
-                            CpFlyingHeadAnimInfoFactory.Construct(CpFlyingHeadAnimInfoT.atk_DashAtk_Impact)
+                            CpFlyingHeadAnimInfoFactory.Construct(CpFlyingHeadAnimInfoT.atk_DashAtk_Impact),
+                            0.1f,
+                            0,
+                            true,
+                            impactDur
                         );
                         commonData.act_AtkPhase = AtkPhase.Impact;
                         break;
@@ -50,7 +67,11 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                         AnimEventPlr.CrossFadeInFixedTimeNInitAnimEventPlr(
                             ref commonData.animEventPlrData,
                             cpFlyingHead.anim,
-                            CpFlyingHeadAnimInfoFactory.Construct(CpFlyingHeadAnimInfoT.atk_DashAtk_Recovery)
+                            CpFlyingHeadAnimInfoFactory.Construct(CpFlyingHeadAnimInfoT.atk_DashAtk_Recovery),
+                            0.1f,
+                            0,
+                            true,
+                            recoveryDur
                         );
                         break;
                     case AtkPhase.Recovery:

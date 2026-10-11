@@ -5,10 +5,13 @@ using System;
 /// other moves.<br/>
 /// </summary>
 public class ComboNode_RotateToWhenLastSwitchedStInputDir : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
+    float animDur;
+
     public AnimInfo AnimInfo { get; set; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_RotateToWhenLastSwitchedStInputDir(CpHumanoidAnimInfoT animInfoT) {
+    public ComboNode_RotateToWhenLastSwitchedStInputDir(float animDur, CpHumanoidAnimInfoT animInfoT) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
     }
 
@@ -17,7 +20,7 @@ public class ComboNode_RotateToWhenLastSwitchedStInputDir : IComboNode_CpHumanoi
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_RotateToWhenLastSwitchedStInputDir thisNode = this;
         return () => cp.HumdData.classRefs.actSts
-            .comboBranch_RotateToWhenLastSwitchedStInputDir.Enter(thisNode);
+            .comboBranch_RotateToWhenLastSwitchedStInputDir.Enter(thisNode, animDur);
     }
 
     public IComboNode_CpHumanoid GetNextNode(BufferableInput input) {

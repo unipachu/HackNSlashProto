@@ -4,9 +4,12 @@ using System;
 /// Recovery move - ends a combo chain and cannot be input canceled to other moves.<br/>
 /// </summary>
 public class ComboNode_BasicRecovery : IComboNode_CpHumanoid {
+    float animDur;
+
     public AnimInfo AnimInfo { get; }
 
-    public ComboNode_BasicRecovery(CpHumanoidAnimInfoT animInfoT) {
+    public ComboNode_BasicRecovery(float animDur, CpHumanoidAnimInfoT animInfoT) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
     }
 
@@ -14,7 +17,7 @@ public class ComboNode_BasicRecovery : IComboNode_CpHumanoid {
         // NOTE: For some stupid reason you need to create a local copy of the struct instead of directly
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicRecovery thisNode = this;
-        return () => cp.HumdData.classRefs.actSts.comboEnd_BasicRecovery.Enter(thisNode.AnimInfo);
+        return () => cp.HumdData.classRefs.actSts.comboEnd_BasicRecovery.Enter(animDur, thisNode.AnimInfo);
     }
 
     public IComboNode_CpHumanoid GetNextNode(BufferableInput input)

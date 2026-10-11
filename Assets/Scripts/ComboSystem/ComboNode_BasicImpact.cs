@@ -6,12 +6,14 @@ using UnityEngine;
 /// NOTE: Leave node indexes to -1 if you don't want that input to trigger transition. (5.9.2026)
 /// </summary>
 public class ComboNode_BasicImpact : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
+    float animDur;
     IHandItem_Hitter hitter;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_BasicImpact(CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+    public ComboNode_BasicImpact(float animDur, CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
         IHandItem_Hitter handItem_HitDealer = (IHandItem_Hitter)ctx;
         Debug.Assert(
@@ -27,9 +29,10 @@ public class ComboNode_BasicImpact : IComboNode_CpHumanoid, IComboNodeTransition
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_BasicImpact thisNode = this;
         return () => cp.HumdData.classRefs.actSts.comboBranch_BasicImpact.Enter(
-            thisNode.hitter.HitEffects,
+            animDur,
             thisNode,
-            thisNode.hitter.HitDealer
+            thisNode.hitter.HitDealer,
+            thisNode.hitter.HitEffects
         );
     }
 

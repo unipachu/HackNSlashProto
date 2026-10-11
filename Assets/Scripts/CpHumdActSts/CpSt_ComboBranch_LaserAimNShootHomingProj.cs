@@ -3,6 +3,7 @@ using UnityEngine;
 
 // TODO: Rename to CpHumanoidSt
 public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
+    float aimDur;
     AimLaser aimLaser;
     IComboNode_CpHumanoid comboNode;
     CpHumdHandle cpHumanoid;
@@ -19,6 +20,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         => true;
 
     public CpSt_ComboBranch_LaserAimNShootHomingProj Enter(
+        float aimDur,
         AimLaser aimLaser,
         IComboNode_CpHumanoid comboNode,
         HitEffects hitEffects,
@@ -26,6 +28,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
         Transform projSpawnPose,
         ProjT projT
     ) {
+        this.aimDur = aimDur;
         this.aimLaser = aimLaser;
         this.comboNode = comboNode;
         this.hitEffects = hitEffects;
@@ -59,7 +62,7 @@ public class CpSt_ComboBranch_LaserAimNShootHomingProj : IFsmSt_Cp {
             float.PositiveInfinity
         );
         aimLaser.Tick();
-        if (commonData.curStDur > 1) { // TODO: so
+        if (commonData.curStDur > aimDur) {
             Transform tgt = null;
             if (commonData.classRefs.lockOnTgt != null)
                 tgt = commonData.classRefs.lockOnTgt.LockOnTrf;

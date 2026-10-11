@@ -1,10 +1,13 @@
 using System;
 
 public class ComboNode_RotateToLastNonZeroInput : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
+    float animDur;
+
     public AnimInfo AnimInfo { get; set; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_RotateToLastNonZeroInput(CpHumanoidAnimInfoT animInfoT) {
+    public ComboNode_RotateToLastNonZeroInput(float animDur,CpHumanoidAnimInfoT animInfoT) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
     }
 
@@ -13,7 +16,7 @@ public class ComboNode_RotateToLastNonZeroInput : IComboNode_CpHumanoid, IComboN
         // NOTE C: passing it to the Enter method. (5.9.2026)
         ComboNode_RotateToLastNonZeroInput thisNode = this;
         return () => cp.HumdData.classRefs.actSts
-            .comboBranch_RotateToLastNonZeroInputDir.Enter(thisNode);
+            .comboBranch_RotateToLastNonZeroInputDir.Enter(thisNode, animDur);
     }
 
     public IComboNode_CpHumanoid GetNextNode(BufferableInput input) {

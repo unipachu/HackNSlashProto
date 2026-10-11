@@ -2,12 +2,14 @@ using System;
 using UnityEngine;
 
 public class ComboNode_LaserAimNShootProj : IComboNode_CpHumanoid, IComboNodeTransitionsHolder {
+    float animDur;
     IHandItem_ProjectileSpawner projSpawner;
 
     public AnimInfo AnimInfo { get; }
     public ComboNode_Transitions Transitions { get; set; }
 
-    public ComboNode_LaserAimNShootProj(CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+    public ComboNode_LaserAimNShootProj(float animDur, CpHumanoidAnimInfoT animInfoT, UnityEngine.Object ctx) {
+        this.animDur = animDur;
         AnimInfo = CpHumdAnimInfoFactory.Construct(animInfoT);
         IHandItem_ProjectileSpawner projSpawner = (IHandItem_ProjectileSpawner)ctx;
         Debug.Assert(
@@ -21,6 +23,7 @@ public class ComboNode_LaserAimNShootProj : IComboNode_CpHumanoid, IComboNodeTra
     public Func<IFsmSt_Cp> GetEnterFunc(CpHumdHandle cp) {
         ComboNode_LaserAimNShootProj thisNode = this;
         return () => cp.HumdData.classRefs.actSts.comboBranch_LaserAimNShootHomingProj.Enter(
+            animDur,
             thisNode.projSpawner.AimLaser,
             thisNode,
             thisNode.projSpawner.ProjHitEffects,

@@ -12,9 +12,10 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
     }
 
     public CpSt_ComboBranch_BasicImpact Enter(
-        HitEffects hitEffects,
+        float animDur,
         IComboNode_CpHumanoid comboNode,
-        IHitDealer hitDealer
+        IHitDealer hitDealer,
+        HitEffects hitEffects
     ) {
         this.comboNode = comboNode;
         this.hitDealer = hitDealer;
@@ -25,7 +26,10 @@ public class CpSt_ComboBranch_BasicImpact : IFsmSt_Cp {
             ref cpHumd.CommonData.animEventPlrData,
             cpHumd.anim,
             comboNode.AnimInfo,
-            0.1f
+            0.1f,
+            0,
+            true,
+            animDur
         );
         return this;
     }

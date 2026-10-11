@@ -61,7 +61,7 @@ public class GameMgr : Singleton<GameMgr> {
         if (gameOver)
             UpdateGameOver();
         float dt = Time.deltaTime;
-        Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
+        //Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
         // NOTE: When using the Recorder, delta time can be zero, so guard it here:
         if (dt == 0)
             dt = 0.0001f;
@@ -74,7 +74,7 @@ public class GameMgr : Singleton<GameMgr> {
 
     void LateUpdate() {
         float dt = Time.deltaTime;
-        Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
+        //Debug.Assert(dt > 0, $"Delta time was zero: {dt == 0}. This can cause NaN errors.", this);
         // NOTE: When using the Recorder, delta time can be zero, so guard it here:
         if (dt == 0)
             dt = 0.0001f;

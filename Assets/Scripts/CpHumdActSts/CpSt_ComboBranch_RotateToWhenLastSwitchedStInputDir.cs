@@ -15,7 +15,10 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
     public bool CanSwitchTo<TState>() where TState : IFsmSt
         => true;
 
-    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir Enter(IComboNode_CpHumanoid comboNode) {
+    public CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir Enter(
+        IComboNode_CpHumanoid comboNode,
+        float animDur
+    ) {
         ref var commonData = ref cpHumd.CommonData;
         this.comboNode = comboNode;
         InputBufferUtils.Clear(
@@ -26,7 +29,10 @@ public class CpSt_ComboBranch_RotateToWhenLastSwitchedStInputDir : IFsmSt_Cp {
             ref commonData.animEventPlrData,
             cpHumd.anim,
             comboNode.AnimInfo,
-            0.1f
+            0.1f,
+            0,
+            true,
+            animDur
         );
         return this;
     }

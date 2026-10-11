@@ -25,9 +25,16 @@ public static class ComboGraphFactory {
         };
 
     static List<IComboNode_CpHumanoid> LaserAimNShoot(Object ctx) {
-        var i0 = new ComboNode_RotateToLastNonZeroInput(CpHumanoidAnimInfoT.atk_GunShoot_Windup);
-        var i1 = new ComboNode_LaserAimNShootProj(CpHumanoidAnimInfoT.atk_GunShoot_AimPose, ctx);
-        var i2 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_GunShoot_Recovery);
+        var i0 = new ComboNode_RotateToLastNonZeroInput(Db.GetComboAnimDurConfig("Default").laserAimNShoot_WindupDur, CpHumanoidAnimInfoT.atk_GunShoot_Windup);
+        var i1 = new ComboNode_LaserAimNShootProj(
+            Db.GetComboAnimDurConfig("Default").laserAimNShoot_AimDur,
+            CpHumanoidAnimInfoT.atk_GunShoot_AimPose,
+            ctx
+        );
+        var i2 = new ComboNode_BasicRecovery(
+            Db.GetComboAnimDurConfig("Default").laserAimNShoot_RecoveryDur,
+            CpHumanoidAnimInfoT.atk_GunShoot_Recovery
+        );
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         i1.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
         List<IComboNode_CpHumanoid> nodes = new List<IComboNode_CpHumanoid> { i0, i1, i2 };
@@ -35,41 +42,98 @@ public static class ComboGraphFactory {
     }
 
     static List<IComboNode_CpHumanoid> Melee3HorHit(Object ctx) {
-        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpHumanoidAnimInfoT.atk_HorSlash0_Windup);
-        var i1 = new ComboNode_BasicImpact(CpHumanoidAnimInfoT.atk_HorSlash0_Impact, ctx);
-        var i2 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_HorSlash0_Recovery);
-        var i3 = new ComboNode_BasicImpact(CpHumanoidAnimInfoT.atk_HorSlash1_Impact, ctx);
-        var i4 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_HorSlash1_Recovery);
-        var i5 = new ComboNode_BasicImpact(CpHumanoidAnimInfoT.atk_HorSlash2_Impact, ctx);
+        var animDurs = Db.GetComboAnimDurConfig("Default");
+        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(
+            animDurs.melee3HorHit_Windup0Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Windup
+        );
+        var i1 = new ComboNode_BasicImpact(
+            animDurs.melee3HorHit_Impact0Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Impact,
+            ctx
+        );
+        var i2 = new ComboNode_BasicRecovery(
+            animDurs.melee3HorHit_Recovery0Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Recovery
+        );
+        var i3 = new ComboNode_BasicImpact(
+            animDurs.melee3HorHit_Impact1Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash1_Impact,
+            ctx
+        );
+        var i4 = new ComboNode_BasicRecovery(
+            animDurs.melee3HorHit_Recovery1Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash1_Recovery
+        );
+        var i5 = new ComboNode_BasicImpact(
+            animDurs.melee3HorHit_Impact2Dur,
+            CpHumanoidAnimInfoT.atk_HorSlash2_Impact,
+            ctx
+        );
+        var i6 = new ComboNode_BasicRecovery(
+            animDurs.melee3HorHit_Recovery2Dur,
+            // NOTE: We can reuse HorSlash0_Recovery anim here.
+            CpHumanoidAnimInfoT.atk_HorSlash0_Recovery
+        );
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         i1.Transitions = new ComboNode_Transitions(null, null, i2, i3, null);
         i3.Transitions = new ComboNode_Transitions(null, null, i4, i5, null);
-        i5.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
-        return new List<IComboNode_CpHumanoid> {i0, i1, i2, i3, i4, i5};
+        i5.Transitions = new ComboNode_Transitions(null, null, i6, null, null);
+        return new List<IComboNode_CpHumanoid> {i0, i1, i2, i3, i4, i5, i6};
     }
 
     // TODO MINOR: Combine single hit combo generators into one method.
     static List<IComboNode_CpHumanoid> MeleeSingleHorHit(Object ctx) {
-        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpHumanoidAnimInfoT.atk_HorSlash0_Windup);
-        var i1 = new ComboNode_BasicImpact(CpHumanoidAnimInfoT.atk_HorSlash0_Impact, ctx);
-        var i2 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_HorSlash0_Recovery);
+        var animDurs = Db.GetComboAnimDurConfig("Default");
+        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(
+            animDurs.meleeSingleHorHit_Windup,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Windup
+        );
+        var i1 = new ComboNode_BasicImpact(
+            animDurs.meleeSingleHorHit_Impact,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Impact,
+            ctx
+        );
+        var i2 = new ComboNode_BasicRecovery(
+            animDurs.meleeSingleHorHit_Recovery,
+            CpHumanoidAnimInfoT.atk_HorSlash0_Recovery
+        );
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         i1.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
         return new List<IComboNode_CpHumanoid> {i0, i1, i2 };
     }
 
     static List<IComboNode_CpHumanoid> MeleeSingleVerHit(Object ctx) {
-        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(CpHumanoidAnimInfoT.atk_VerSlash0_Windup);
-        var i1 = new ComboNode_BasicImpact(CpHumanoidAnimInfoT.atk_VerSlash0_Impact, ctx);
-        var i2 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_VerSlash0_Recovery);
+        var animDurs = Db.GetComboAnimDurConfig("Default");
+        var i0 = new ComboNode_RotateToWhenLastSwitchedStInputDir(
+            animDurs.meleeSingleVerHit_Windup,
+            CpHumanoidAnimInfoT.atk_VerSlash0_Windup
+        );
+        var i1 = new ComboNode_BasicImpact(
+            animDurs.meleeSingleVerHit_Impact,
+            CpHumanoidAnimInfoT.atk_VerSlash0_Impact,
+            ctx
+        );
+        var i2 = new ComboNode_BasicRecovery(
+            animDurs.meleeSingleVerHit_Recovery,
+            CpHumanoidAnimInfoT.atk_VerSlash0_Recovery
+        );
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         i1.Transitions = new ComboNode_Transitions(null, null, i2, null, null);
         return new List<IComboNode_CpHumanoid> {i0, i1, i2 };
     }
 
     static List<IComboNode_CpHumanoid> ShootProj(Object ctx) {
-        var i0 = new ComboNode_ShootProj(CpHumanoidAnimInfoT.atk_GunShoot_Windup, ctx);
-        var i1 = new ComboNode_BasicRecovery(CpHumanoidAnimInfoT.atk_GunShoot_Recovery);
+        var animDurs = Db.GetComboAnimDurConfig("Default");
+        var i0 = new ComboNode_ShootProj(
+            animDurs.shootProj_Windup,
+            CpHumanoidAnimInfoT.atk_GunShoot_Windup,
+            ctx
+        );
+        var i1 = new ComboNode_BasicRecovery(
+            animDurs.shootProj_Recovery,
+            CpHumanoidAnimInfoT.atk_GunShoot_Recovery
+        );
         i0.Transitions = new ComboNode_Transitions(null, null, i1, null, null);
         return new List<IComboNode_CpHumanoid> {i0, i1};
     }

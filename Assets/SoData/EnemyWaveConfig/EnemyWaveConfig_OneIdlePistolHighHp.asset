@@ -15,7 +15,7 @@ MonoBehaviour:
   waves:
   - name: 
     enemies:
-    - aiCpConfigId: PistolHighHp
+    - aiCpConfigId: IdlePistolHighHp
       amount: 1
     timeUntilNextWave: 0
     blockNextWaveAtEnemyCount: 0

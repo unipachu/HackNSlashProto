@@ -18,13 +18,17 @@ public static class CpFlyingHeadUtils{
         ref CpFlyingHead_Data flyingHeadData,
         BufferableInput input
     ) {
+        var animDurs = Db.GetCpFlyingHeadConfig("Default");
         var atk_Dash = flyingHeadData.actSts.atk_Dash;
         var hitDealer = flyingHeadData.handle.hitDealer;
         if (input == BufferableInput.Rb) {
             return () => atk_Dash.Enter(
                 // TODO: So
                 new HitEffects(1, HitT.Blunt, KnockbackT.Weak, 1),
-                hitDealer
+                hitDealer,
+                animDurs.dash_ImpactDur,
+                animDurs.dash_RecoveryDur,
+                animDurs.dash_WindupDur
             );
         }
         return null;

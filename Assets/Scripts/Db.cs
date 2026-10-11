@@ -10,8 +10,16 @@ public class Db : Singleton<Db>{
         return inst.db.aiCpConfigLookup.Get(id);
     }
 
+    public static DbRow_ComboAnimDurConfig GetComboAnimDurConfig(string id) {
+        return inst.db.comboAnimDurConfigLookup.Get(id);
+    }
+
     public static DbRow_CpCommonConfig GetCpCommonConfig(string id) {
         return inst.db.cpCommonConfigLookup.Get(id);
+    }
+
+    public static DbRow_CpFlyingHeadConfig GetCpFlyingHeadConfig(string id) {
+        return inst.db.cpFlyingHeadConfigLookup.Get(id);
     }
 
     public static DbRow_CpHumdConfig GetCpHumdConfig(string id) {
