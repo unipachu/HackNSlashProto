@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3590012538767028662, guid: d35a5a22739097945acc9f5fcc3a5646, type: 3}
+      propertyPath: sphere.center.z
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 6101628137683636955, guid: d35a5a22739097945acc9f5fcc3a5646, type: 3}
       propertyPath: m_Name
       value: CpFlyingHead_Basic
