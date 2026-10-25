@@ -182,6 +182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlrConfigsManager
   lookPointerSensitivity: 0.001
   movInputSqrDeadzone: 0.2
+  lockCursorToWindowAndHideCursor: 1
   targetFrameRate: -1
   vSyncCount: 0
 --- !u!114 &5146368584134124080
@@ -383,7 +384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6030ca2f392cfe24ab34aba6e3cae51d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlrMgr
-  plrCpConfigId: Plr
+  plrCpConfigId: Default
 --- !u!114 &6511415600805886397
 MonoBehaviour:
   m_ObjectHideFlags: 0

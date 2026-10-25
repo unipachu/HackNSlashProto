@@ -83,7 +83,7 @@ MonoBehaviour:
     falling_TgtHorSpd: 1
     groundSnapVerDownSpd: 1000
     impact_YawSpd: 1200
-    walkHorAcc: 100
+    walkHorAcc: 50
     walkTgtHorSpd: 5
     walkYawSpd: 500
     windup_YawSpd: 500
@@ -100,7 +100,7 @@ MonoBehaviour:
     groundSnapVerDownSpd: 1000
     impact_YawSpd: 1200
     walkHorAcc: 100
-    walkTgtHorSpd: 5
+    walkTgtHorSpd: 6
     walkYawSpd: 1000
     windup_YawSpd: 1000
     inputBufferDuration: 0.3
@@ -164,7 +164,7 @@ MonoBehaviour:
     groundSnapVerDownSpd: 1000
     impact_YawSpd: 1200
     walkHorAcc: 100
-    walkTgtHorSpd: 7
+    walkTgtHorSpd: 9
     walkYawSpd: 1000
     windup_YawSpd: 1000
     inputBufferDuration: 0.3
@@ -180,7 +180,7 @@ MonoBehaviour:
     groundSnapVerDownSpd: 1000
     impact_YawSpd: 105
     walkHorAcc: 100
-    walkTgtHorSpd: 5
+    walkTgtHorSpd: 4
     walkYawSpd: 1000
     windup_YawSpd: 105
     inputBufferDuration: 0.3
@@ -269,10 +269,10 @@ MonoBehaviour:
     act_Dodge_HorMovSpdMult: 1.5
   hitEffectsConfig:
   - id: Club
-    dmg: 1
+    dmg: 2
     hitT: 0
     knockbackT: 1
-    knockbackStr: 1
+    knockbackStr: 6
   - id: Hammer
     dmg: 1
     hitT: 0
@@ -294,5 +294,5 @@ MonoBehaviour:
     knockbackT: 1
     knockbackStr: 2
   plrCpConfig:
-  - id: Plr
+  - id: Default
     maxUlt: 5

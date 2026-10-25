@@ -802,8 +802,8 @@ MonoBehaviour:
   meleeHitDealer: {fileID: 5092167040023849340}
   hitEffectsConfigId: Pistol
   homingProjData:
-    spd: 7
-    maxLifetime: 3
-    homingStr: 2
+    spd: 6
+    maxLifetime: 4
+    homingStr: 0.8
   projSpawnPose: {fileID: 4093082790708201532}
   projT: 1

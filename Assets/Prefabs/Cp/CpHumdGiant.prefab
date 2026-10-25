@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 2030058682777809789}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.47, z: 0}
+  m_LocalPosition: {x: 0, y: 4.31, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,10 +79,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57970b74b0d54684196719b4831cb6d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CpHumdHandle
-  so_cpCommonData: {fileID: 0}
-  so_cpHumdConfig: {fileID: 0}
+  dataId: 
   anim: {fileID: 1091843080481240901}
-  animEventHandler: {fileID: 0}
   cc: {fileID: 5079058612890601784}
   hitReciever: {fileID: 5634786316121275709}
   navMeshAgent: {fileID: 8087861647241408892}
