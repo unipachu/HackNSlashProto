@@ -59,7 +59,7 @@ MonoBehaviour:
   comboAnimDurConfig:
   - id: Default
     laserAimNShoot_WindupDur: -1
-    laserAimNShoot_AimDur: 1.5
+    laserAimNShoot_AimDur: 1.2
     laserAimNShoot_RecoveryDur: -1
     melee3HorHit_Windup0Dur: 0.1
     melee3HorHit_Impact0Dur: 0.4

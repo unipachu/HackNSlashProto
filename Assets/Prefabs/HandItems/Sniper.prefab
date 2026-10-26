@@ -963,7 +963,7 @@ MonoBehaviour:
   meleeHitDealer: {fileID: 5092167040023849340}
   hitEffectsConfigId: Sniper
   homingProjData:
-    spd: 40
+    spd: 80
     maxLifetime: 2
     homingStr: 0
   projSpawnPose: {fileID: 4093082790708201532}
