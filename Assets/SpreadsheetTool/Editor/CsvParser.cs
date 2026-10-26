@@ -1,3 +1,8 @@
+// Portions of this file are based on NorskaLib.Spreadsheets.
+// Original project: https://github.com/NorskaGames/NorskaLib.Spreadsheets
+// Original copyright: Copyright (c) 2022 NorskaGames.
+// Licensed under the MIT License
+
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using System.Text;
@@ -5,75 +10,47 @@ using System.Text;
 /// <summary>
 /// Includes utility method for parsing a csv (as a string).
 /// </summary>
-public static class CsvParser
-{
+public static class CsvParser{
     /// <returns>List of all rows of the csv. Rows are a list of strings.</returns>
-    public static List<List<string>> Parse(string csv)
-    {
+    public static List<List<string>> Parse(string csv){
         List<List<string>> rows = new();
         List<string> row = new();
         StringBuilder cell = new();
-
         bool insideQuotes = false;
-
-        for (int i = 0; i < csv.Length; i++)
-        {
+        for (int i = 0; i < csv.Length; i++){
             char c = csv[i];
-
-            if (insideQuotes)
-            {
-                if (c == '"')
-                {
-                    if (i + 1 < csv.Length && csv[i + 1] == '"')
-                    {
+            if (insideQuotes){
+                if (c == '"'){
+                    if (i + 1 < csv.Length && csv[i + 1] == '"'){
                         cell.Append('"');
                         i++;
-                    }
-                    else
-                    {
+                    }else{
                         insideQuotes = false;
                     }
-                }
-                else
-                {
+                }else{
                     cell.Append(c);
                 }
-            }
-            else
-            {
-                if (c == '"')
-                {
+            }else{
+                if (c == '"'){
                     insideQuotes = true;
-                }
-                else if (c == ',')
-                {
+                }else if (c == ','){
                     row.Add(cell.ToString());
                     cell.Clear();
-                }
-                else if (c == '\n')
-                {
+                }else if (c == '\n'){
                     row.Add(cell.ToString());
                     cell.Clear();
-
                     rows.Add(row);
                     row = new List<string>();
-                }
-                else if (c == '\r')
-                {
+                }else if (c == '\r'){
                     // Ignore.
-                }
-                else
-                {
+                }else{
                     cell.Append(c);
                 }
             }
         }
-
         row.Add(cell.ToString());
-
         if (row.Count > 1 || row[0].Length > 0)
             rows.Add(row);
-
         return rows;
     }
 }

@@ -1,3 +1,8 @@
+// Portions of this file are based on NorskaLib.Spreadsheets.
+// Original project: https://github.com/NorskaGames/NorskaLib.Spreadsheets
+// Original copyright: Copyright (c) 2022 NorskaGames.
+// Licensed under the MIT License
+
 #if UNITY_EDITOR
 using System;
 using System.Collections;

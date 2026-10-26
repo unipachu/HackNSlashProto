@@ -1,3 +1,8 @@
+// Portions of this file are based on NorskaLib.Spreadsheets.
+// Original project: https://github.com/NorskaGames/NorskaLib.Spreadsheets
+// Original copyright: Copyright (c) 2022 NorskaGames.
+// Licensed under the MIT License
+
 #if UNITY_EDITOR
 using System;
 using System.Net;
@@ -5,8 +10,7 @@ using System.Net;
 /// <summary>
 /// Utility class for downloading .cvs file from Google Sheets.
 /// </summary>
-public static class GoogleSheetCsvDownloader
-{
+public static class GoogleSheetCsvDownloader{
     /// <summary>
     /// Downloads a .csv from Google Sheets.
     /// </summary>
@@ -14,19 +18,14 @@ public static class GoogleSheetCsvDownloader
     /// <param name="sheetName">Name of the sheet (tab) of the spreadsheet we want to download.</param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static string DownloadCsv(string spreadsheetId, string sheetName)
-    {
+    public static string DownloadCsv(string spreadsheetId, string sheetName){
         if (string.IsNullOrWhiteSpace(spreadsheetId))
             throw new ArgumentException("Spreadsheet ID is empty.");
-
         if (string.IsNullOrWhiteSpace(sheetName))
             throw new ArgumentException("Sheet name is empty.");
-
         // Turns the sheet name into URL form.
         string escapedSheetName = Uri.EscapeDataString(sheetName);
-
         string url = $"https://docs.google.com/spreadsheets/d/{spreadsheetId}/gviz/tq?tqx=out:csv&sheet={escapedSheetName}";
-
         // .NET class which allows downloading data from the internet.
         // "using" should automatically dispose the client when we exit this scope.
         using WebClient client = new WebClient();
