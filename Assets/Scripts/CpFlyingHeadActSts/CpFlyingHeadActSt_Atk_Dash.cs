@@ -103,6 +103,7 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
 
     public void Tick() {
         ref var commonData = ref cpFlyingHead.CommonData;
+        var commonConfig = Db.GetCpCommonConfig("FlyingHead");
         switch (commonData.act_AtkPhase) {
             case AtkPhase.Windup:
                 CpUtils.UpdateMovInputData(
@@ -110,7 +111,7 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                     commonData.input_mov,
                     commonData.animDPose.position,
                     0,
-                    commonData.movInput_yawSpd,
+                    commonConfig.windup_YawSpd,
                     float.PositiveInfinity
                 );
                 break;
@@ -128,7 +129,7 @@ public class CpFlyingHeadActSt_Atk_Dash : IFsmSt_Cp{
                     commonData.input_mov,
                     commonData.animDPose.position,
                     0,
-                    0,
+                    commonConfig.impact_YawSpd,
                     float.PositiveInfinity
                 );
                 break;

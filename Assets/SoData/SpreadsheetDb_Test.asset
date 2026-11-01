@@ -58,24 +58,24 @@ MonoBehaviour:
     btT: 0
   comboAnimDurConfig:
   - id: Default
-    laserAimNShoot_WindupDur: -1
+    laserAimNShoot_WindupDur: 0.5
     laserAimNShoot_AimDur: 1.2
-    laserAimNShoot_RecoveryDur: -1
+    laserAimNShoot_RecoveryDur: 1.5
     melee3HorHit_Windup0Dur: 0.1
-    melee3HorHit_Impact0Dur: 0.4
-    melee3HorHit_Recovery0Dur: -1
-    melee3HorHit_Impact1Dur: 0.4
-    melee3HorHit_Recovery1Dur: -1
-    melee3HorHit_Impact2Dur: 0.4
-    melee3HorHit_Recovery2Dur: -1
-    meleeSingleHorHit_Windup: -1
-    meleeSingleHorHit_Impact: -1
+    melee3HorHit_Impact0Dur: 0.35
+    melee3HorHit_Recovery0Dur: 0.2
+    melee3HorHit_Impact1Dur: 0.35
+    melee3HorHit_Recovery1Dur: 0.2
+    melee3HorHit_Impact2Dur: 0.35
+    melee3HorHit_Recovery2Dur: 0.2
+    meleeSingleHorHit_Windup: 0.6
+    meleeSingleHorHit_Impact: 0.4
     meleeSingleHorHit_Recovery: 1
-    meleeSingleVerHit_Windup: -1
-    meleeSingleVerHit_Impact: -1
-    meleeSingleVerHit_Recovery: -1
-    shootProj_Windup: -1
-    shootProj_Recovery: -1
+    meleeSingleVerHit_Windup: 0.8
+    meleeSingleVerHit_Impact: 0.4
+    meleeSingleVerHit_Recovery: 1.2
+    shootProj_Windup: 1.5
+    shootProj_Recovery: 1.5
   cpCommonConfig:
   - id: Club
     displayName: Club Enemy
@@ -98,11 +98,11 @@ MonoBehaviour:
     falling_HorAcc: 10
     falling_TgtHorSpd: 1
     groundSnapVerDownSpd: 1000
-    impact_YawSpd: 1200
+    impact_YawSpd: 0
     walkHorAcc: 100
     walkTgtHorSpd: 6
     walkYawSpd: 1000
-    windup_YawSpd: 1000
+    windup_YawSpd: 0
     inputBufferDuration: 0.3
     hp_Max: 2
     ignoredKnockback: 0
@@ -178,7 +178,7 @@ MonoBehaviour:
     falling_HorAcc: 10
     falling_TgtHorSpd: 1
     groundSnapVerDownSpd: 1000
-    impact_YawSpd: 105
+    impact_YawSpd: 80
     walkHorAcc: 100
     walkTgtHorSpd: 4
     walkYawSpd: 1000
@@ -208,8 +208,8 @@ MonoBehaviour:
   cpFlyingHeadConfig:
   - id: Default
     dash_ImpactDur: 0.7
-    dash_RecoveryDur: 1
-    dash_WindupDur: 1
+    dash_RecoveryDur: 1.5
+    dash_WindupDur: 0.7
   cpHumdConfig:
   - id: Club
     cooldownDur_Dodge: 0.2
